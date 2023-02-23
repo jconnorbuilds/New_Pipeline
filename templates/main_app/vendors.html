@@ -1,0 +1,24 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+{% block title%}Vendors: {{ vendor.name }}{% endblock %}
+
+{% block body_block %}
+	
+	<div class="container bg-body-secondary">
+		<h1>Vendor info:</h1>
+		<h1>{{ vendor.full_name }}</h1>
+		<h2>{{ vendor.unique_id }}</h2>
+		<div class="container bg-body-tertiary">
+			
+			<h1>Invoice info:</h1>
+				{% for cost in costs %}
+				<p>{{ cost }}, {{ cost.invoice_status}}</p>
+				<p>{{ cost.description }}</p>
+				{% endfor %}
+			<h1>Job list:</h1>
+				{% for job in jobs %}
+				<p>{{ job.job_name }}, {{ job.status }}</p>
+				{% endfor %}
+		</div>
+	</div>
+{% endblock %}

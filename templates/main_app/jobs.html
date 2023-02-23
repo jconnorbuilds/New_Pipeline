@@ -1,0 +1,49 @@
+{# tutorial/templates/tutorial/people.html #}
+{% extends "main_app/base.html" %}
+{% load render_table from django_tables2 %}
+<!doctype html>
+{% block body_block %}
+    
+    
+    <h1 class="display-3">{{ job.job_name }} - {{ job.job_code }} </h1>
+    <h5 class="display-5">Job details</h5>
+    
+    <div class="container bg-body-secondary p-3">
+
+        <p><strong>Client:</strong> {{ job.client.name }}</p>
+        <p><strong>Job code:</strong> {{ job.job_code }}</p>
+        <p><strong>Budget:</strong> ¥{{ job.budget }}</p>
+        {% if job.vendors.all %}
+        <p><strong>Vendors:</strong></p>
+            <ul>
+            {% for vendor in job.vendors.all %}
+                <li>{{ vendor }}</li>
+            {% endfor %}
+            </ul>
+            <p><strong>Costs:</strong></p>
+            <ul>
+            {% for cost in job.cost_rel.all %}
+                <li><strong>{{ cost.vendor.full_name }} - {{ cost.currency }}{{ cost.amount }}</strong>
+                <br>Description: {{ cost.description }} 
+                <br>Invoice status: {{ cost.get_invoice_status_display }}  </li>
+            {% endfor %}
+            </ul>
+
+        {% endif %}
+        <hr>
+            <p><strong>Total cost: ¥{{job.total_cost}}</strong> // Profit ¥{{job.profit}}</strong> <em>({{job.profit_rate}}%)</em></p>
+            <p><strong></p>
+        
+    
+        {% if job.relatedJobs.all %}
+        <div class="container bg-body-tertiary p-3">
+            <h3>Related jobs:</h3>
+                {% for relatedJob in job.relatedJobs.all %}
+                <p><strong>{{ relatedJob.job_name }} - {{ relatedJob.job_code }}</strong></p>
+                <p>Invoice name: {{ relatedJob.invoiceName }} - ¥{{ relatedJob.budget }}</p>
+            </div>
+                {% endfor %}
+        {% endif %}
+        </div>
+    </div>
+{% endblock %}

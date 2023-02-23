@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% extends "main_app/base.html" %}
+	{% block body_block %}
+	<h1 class="display-1">INDEX</h1>
+	<h3 class="display-3">Eventually cool stuff will go here</h3>
+
+	{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+	{% endblock %}
+

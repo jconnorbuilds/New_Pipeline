@@ -1,0 +1,43 @@
+{% extends "main_app/base.html" %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+<div class="row">
+	<div class="col-6">
+		<h1 class="display-1">Add a client</h1>
+		<form method="post">{% csrf_token %}
+		  {{ form.as_p }}
+		  <input type="submit" value="Save">
+		</form>
+		<br>
+		<div class="row justify-items-start">
+			<div class="col">
+				<h3 class="">Bulk import</h3>
+			</div>
+			<div class="col">
+				<a href="{% url 'main_app:import-client' %}"><button type="button" id="import-client-csv-btn" class="m-3 btn btn-light">Import clients</button></a>
+			</div>
+		</div>
+	</div>
+	<div class="col-6">
+		<div class="container p-3">
+
+		{% if messages %}
+		{% for message in messages %}
+		<div class="container-fluid p-0">
+		  <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+		    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		      {# <span aria-hidden="True">&times;</span> #}
+		    </button>
+		    {{ message }}
+		  </div>
+		</div>
+		{% endfor %}
+		{% endif %}
+		</div>
+</div>
+
+	
+</div>
+{% endblock %}
+

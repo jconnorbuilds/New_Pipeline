@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+{% extends "main_app/base.html" %}
+{% load render_table from django_tables2 %}
+{% load widget_tweaks %}
+{# {% load django_bootstrap5 %} #}
+{% load static %}
+
+	{% block body_block %}
+	<div class="d-flex justify-content-between">
+		<div class="col-4 me-auto">
+				<h1 class="display-1">Pipeline</h1>
+				<h1 class="display-1">{{ year }}</h1>
+
+				{# <h1 class="display-2">Jobs</h1> #}
+				{% if job_form.errors %}
+					{% for error in job_form.errors %}
+					<p>{{ error }} </p>
+					{% endfor %}
+				{% endif %}
+				<a href="{% url 'main_app:import-job' %}"><button type="button" id="import-job-csv-btn" class="m-3 btn btn-light">Import jobs</button></a>
+		</div>
+		<div class="col-auto me-auto">
+		{% if messages %}
+			{% for message in messages %}
+				<div class="container-fluid p-0">
+				  <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+				    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				    </button>
+				    {{ message }}
+				  </div>
+				</div>
+			{% endfor %}
+		{% endif %}
+		</div>
+
+		<div class="csv-export col-auto p-1">
+			<form method="post">
+				{% csrf_token %}
+					<div class="row">
+						<div class="col">
+						{{ csv_export_form.fromMonth}}
+						{{ csv_export_form.fromYear }}
+						{{ csv_export_form.useRange }}
+						<label for="csv-export-use-range">Multi-month report</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col mb-3">
+						{{ csv_export_form.thruMonth|add_class:"invisible" }}
+						{{ csv_export_form.thruYear|add_class:"invisible"}}
+						</div>
+					</div>
+						<div class="row">
+							<div class="col">
+							
+							<input type="submit" name="csvexport" value="Export CSV" class="btn btn-light">
+							</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+		{# Fields area #}
+
+		<div class="container-auto bg-body-secondary p-5">
+			<form method="post" class="form-control">
+				{% csrf_token %}
+				<div class="row g-1">
+					<div class="col me-auto">
+						<h3 class="">Add a job</h3>
+					</div>
+						<div class="col">
+						{% render_field job_form.job_name class+="form-control" id="" placeholder="Enter job name" %}
+					</div>
+					<div class="col">
+						{% render_field job_form.client class+="form-select" id="" %}
+					</div>
+					<div class="col">
+						{% render_field job_form.budget class+="form-control" id="" placeholder="Enter budget (万)" help_text="sample" %}
+					</div>
+					<div class="col">
+						{% render_field job_form.personInCharge class+="form-select" id="" %}
+					</div>
+					<div class="col">
+						{% render_field job_form.job_type class+="form-select" id="" %}
+					</div>
+					<div class="col">
+						{% render_field job_form.year class+="form-control" id="" %}
+					</div>
+					<div class="col">
+						{% render_field job_form.month class+="form-control" id="" %}
+					</div>
+					<div class="col">
+					<input type="submit" name="addjob" value="Add Job" class="btn btn-dark">
+					</div>
+				</div>
+
+				</div>
+			</form>
+		</div>
+		{# select, sort #}
+		<div class="bg-body-tertiary p-5">
+			<form action="" method="get" class="form-control">
+			<div class="row g-1">
+				<div class="col">
+					<h3>Filter</h3>
+				</div>
+			{% if filter %}
+	    		<div class="col">
+			    	{% render_field filter.form.month class+="form-select" id="filter-month" %}
+			    </div>
+			    <div class="col">
+			    	{% render_field filter.form.year class+="form-select" id="filter-year" %}
+			    </div>
+			    <div class="col">
+			    	{% render_field filter.form.client class+="form-control" placeholder=filter.form.client.label id="filter-client" %}
+			    </div>
+			    <div class="col">
+			    	{% render_field filter.form.job_name class+="form-control" placeholder="Job name" id="filter-job-name" %}
+			    </div>
+			    <div class="col">
+			    	{% render_field filter.form.full_name class+="form-control" placeholder="Vendor name" id="filter-vendor-name" %}
+			    </div>
+		    	<div class="col">
+			    	<input type="submit" class="btn btn-light" value="Filter" />
+			    </div>
+				</div>
+			</form>
+			{% else %}
+			<p>Looks like the filter broke...</p>
+			{% endif %}
+
+		<div class="d-flex p-3">
+		<form method="post" class="">
+			{% csrf_token %}
+			<div class="row">
+				<div class="col-auto">
+					<h5 class="">Bulk actions</h5>
+
+				</div>
+				<div class="col-auto">
+					{{ bulk_actions.actions }}
+				</div>
+				<div class="col-auto">
+					<input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
+				</div>
+				</div>
+			</div>
+			<hr>
+		
+		
+			{# Pipeline table #}
+		
+		{% render_table table 'django_tables2/bootstrap5.html' %}
+		</form>
+		</div>
+
+		</div>
+
+	{% endblock %}

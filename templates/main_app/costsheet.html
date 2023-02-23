@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% extends "main_app/base.html" %}
+{% load static %}
+{% block header %}
+{{ block.super }}
+<style type="text/css">
+	a{ text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block title %}COST SHEET{% endblock %}
+
+{% block body_block %}
+	<h1 class="display-2">cost sheet</h1>
+	<div class="container">
+	  <div class="row">
+	    <div class="col-3">    	
+	    	<p>{{ currentJob.job_name }}
+	    	<br>
+	    	{{ currentJob.job_code }}
+			</p>
+		</div>
+	    <div class="col-3">col</div>
+	    <div class="col-3">col</div>
+	    <div class="col-3">col</div>
+	  </div>
+	</div>
+	{% if errors %}
+		{% for error in errors %}
+		<p>Error:{{error}}</p>
+		{% endfor %}
+	{% endif %}
+	{% if temp_messages %}
+		{% for message in temp_messages %}
+		<p>Message:{{message}}</p>
+		{% endfor %}
+	{% endif %}
+
+	<form method="post">
+		{% csrf_token %}
+		<div class="cost-form">
+			{{ cost_form.vendor }}
+			{{ cost_form.description }}
+			{{ cost_form.amount }}
+			{{ cost_form.currency }}
+			{{ cost_form.invoice_status }}
+			{{ cost_form.notes }}
+			{{ cost_form.PO_number }}
+
+			{# <button class="btn btn-sm btn-info add-cost-btn">Add Cost</button> #}
+		</div>
+
+		<input type="submit" value="Update" class="btn btn-outline-success">
+	</form>
+	<div class="container p-2">
+	<table class="table table-dark table-hover table-sm table-striped">
+		<tr>
+			<thead>
+			  <tr>
+			  	<th scope="col">cost#</th>
+			  	<th scope="col">Vendor</th>
+			    <th scope="col">PO#</th>
+			    <th scope="col">Description</th>
+			    <th scope="col">Amount</th>
+			    <th scope="col">Invoice</th>
+			    <th scope="col">Edit/Delete</th>
+
+			  </tr>
+			</thead>
+			<tbody>
+			  <tr>
+			  	{% for cost in all_costs %}
+			    <th scope="row">1</th>
+				    <td><a href="{% url 'main_app:vendors-detail' cost.vendor.id %}">{{ cost.vendor }}</a></td>
+				    <td>{{ cost.PO_number }}</td>
+				    <td>{{ cost.description }}</td>
+				    <td>{{ cost.currency }}{{ cost.amount }}</td>
+				    <td>{{ cost.get_invoice_status_display }}</td>
+
+				    <td>
+				    	<div class="btn-group " role="group" aria-label="edit and delete buttons">
+				    		<button class="btn btn-outline-info btn-sm"><a href="{% url 'main_app:cost-update' cost.pk %}" class="edit-del-btn-group"><i class="bi bi-wrench-adjustable-circle"></i></a></button>
+				    		<button class="btn btn-outline-danger btn-sm"><a href="{% url 'main_app:cost-delete' cost.id %}" class="edit-del-btn-group"><i class="bi bi-trash3-fill"></i></a></button>
+							</div>
+						</td>
+			    
+			 		</tr>
+			  	{% endfor %}
+			</tbody>
+		</tr>
+	</table>
+{% endblock %}

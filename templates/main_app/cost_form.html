@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% extends "main_app/base.html" %}
+{% load widget_tweaks %}
+{% load render_table from django_tables2 %}
+{% load static %}
+
+{% block header %}
+{{ block.super }}
+<style type="text/css">
+	a{ text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block title %}COST SHEET{% endblock %}
+
+{% block body_block %}
+	<h1 class="display-1">{{ currentJob.job_name }} - {{ currentJob.job_code }}</h1>
+
+	<div class="container bg-body-secondary p-3">
+		<form method="post">
+			{% csrf_token %}
+			<div class="add-vendor-form">
+				<h5>Add a vendor to this job: {{ simple_add_vendor_form.addVendor }} <input type="submit" value="+" name="add-vendor" class="btn btn-sm btn-outline-dark"></h5>
+			</div>
+		</form>
+		{% for vendor in currentJob.vendors.all %}
+			<p>{{ vendor }}</p>
+		{% endfor %}
+		<hr>
+		<div class="container">
+		  <div class="row">
+		    <div class="col-3">    
+			    <form method="post">	
+			    	{% csrf_token %}
+			    	<p>Amount: {{ form.amount }}</p>
+			    	<p>Currency: {{ form.currency }}</p>
+			    	<p>Description: {{ form.description }}</p>
+			    	<p>Invoice status: {{ form.invoice_status }}</p>
+			    	<input type="submit" value="Update" name="add-cost" class="btn btn-outline-success">
+			    </form>
+			   </div>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+	<h3 class="display-3">cost sheet</h3>
+	
+	<div class="container p-2">
+	<form method='post'>
+		{% csrf_token %}
+	{% render_table table 'django_tables2/bootstrap5.html' %}
+		<button type="submit" value="Update" name="update-cost-vendor" class="btn btn-outline-dark update-cost-table">Update</button>
+	</form>
+{% endblock %}

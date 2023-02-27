@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, Textarea
 from django.db.models import Q
-from .models import Cost, Job
+from .models import Cost, Job, Vendor
 from datetime import date
 import django_filters
 from datetime import date
@@ -31,12 +31,32 @@ class CostForm(ModelForm):
 	class Meta:
 		model = Cost
 		fields = ['vendor','description','amount','currency','invoice_status','notes']
+
+class AddVendorToCostForm(forms.Form):
+	VENDOR_CHOICES=[(vendor.unique_id, vendor.full_name) for vendor in Vendor.objects.all()]
+	addVendor = forms.CharField(max_length=100,
+				widget=forms.Select(choices=VENDOR_CHOICES))
+
+class UpdateCostForm(forms.Form):
+	vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), required=False, empty_label='Select vendor')
+	# invoice = forms.ChoiceField(required=False, choices=(
+	# 							('NR','Not ready to request'),
+	# 							('READY','Ready to request'),
+	# 							('REQ','Requested'),
+	# 							('REC','Received'),
+	# 							('CHECK','Needs manual check'),
+	# 							('PAID','Paid'),
+	# 							('NA','No Invoice')
+	# 							))
+	cost = forms.ModelChoiceField(queryset=Cost.objects.all(), widget=forms.HiddenInput)
+
 		
+
 class JobForm(ModelForm):
 	def __init__(self, *args, **kwargs):
-	        super().__init__(*args, **kwargs)
-	        self.fields['client'].empty_label = 'Select client'
-	        # self.fields['personInCharge'].empty_label = '-PIC-'
+			super().__init__(*args, **kwargs)
+			self.fields['client'].empty_label = 'Select client'
+			# self.fields['personInCharge'].empty_label = '-PIC-'
 
 	# job_date = forms.DateField(widget=forms.Select(choices=MONTH_CHOICES))
 	year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES))
@@ -80,6 +100,21 @@ class PipelineCSVExportForm(forms.Form):
 					"id":"csv-export-use-range", 
 					"aria-label":"Use range"}))
 
+class PipelineBulkActionsForm(forms.Form):
+	actions = forms.CharField(max_length=50,
+				widget=forms.Select(choices=
+					(('NEXT','Move to next month'),
+					('PREVIOUS','Move to previous month'),
+					('RELATE', 'Relate jobs'),
+					('UNRELATE', 'Unrelate jobs'),
+					('DEL','Delete'),
+				), attrs={
+				"class":"form-select",
+				"id":"pipeline-bulk-actions",
+				"aria-label":"Bulk actions",
+				}
+			))
+
 class JobFilter(django_filters.FilterSet):
 
 	year = django_filters.ChoiceFilter(field_name = 'year', lookup_expr='exact', label='Year', choices=(YEAR_CHOICES), initial=date.today().year, empty_label='-Select year-')
@@ -96,20 +131,4 @@ class JobFilter(django_filters.FilterSet):
 	class Meta:
 		model = Job
 		fields = []
-
-class PipelineBulkActionsForm(forms.Form):
-	actions = forms.CharField(max_length=50,
-				widget=forms.Select(choices=
-					(('NEXT','Move to next month'),
-					('PREVIOUS','Move to previous month'),
-					('RELATE', 'Relate jobs'),
-					('UNRELATE', 'Unrelate jobs'),
-					('DEL','Delete'),
-				), attrs={
-				"class":"form-select",
-				"id":"pipeline-bulk-actions",
-				"aria-label":"Bulk actions",
-				}
-			))
-
 

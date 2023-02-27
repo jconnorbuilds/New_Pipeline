@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 {% extends "main_app/base.html" %}
 {% load static %}
+{% load widget_tweaks %}
+
 {% block header %}
 {{ block.super }}
 <style type="text/css">
@@ -19,11 +21,6 @@
 	    	<br>
 	    	{{ currentJob.job_code }}
 			</p>
-		</div>
-	    <div class="col-3">col</div>
-	    <div class="col-3">col</div>
-	    <div class="col-3">col</div>
-	  </div>
 	</div>
 	{% if errors %}
 		{% for error in errors %}

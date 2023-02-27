@@ -4,9 +4,10 @@ from django.urls import reverse_lazy
 from django import forms
 from django.forms import formset_factory, modelformset_factory, Textarea
 from .models import Job, Vendor, Cost, Client
-from .forms import CostForm, JobForm, PipelineCSVExportForm, JobFilter, PipelineBulkActionsForm
-from .tables import JobTable
+from .forms import CostForm, JobForm, PipelineCSVExportForm, JobFilter, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm
+from .tables import JobTable, CostTable
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
+from django.views import View
 from django_filters.views import FilterView
 from django.views.generic.dates import MonthMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -213,15 +214,10 @@ class costsheetView(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		current_job_code = self.kwargs['job_code']
-		currentJob = Job.objects.get(job_code=current_job_code)
+		context['currentJob'] = Job.objects.get(job_code=current_job_code)
+		context['cost_form'] = self.form_class()
+		context['all_costs'] = Cost.objects.filter(job__job_code = current_job_code)
 		return context
-
-	def get(self, request, *args, **kwargs):
-		cost_form = self.form_class()
-		current_job_code = self.kwargs['job_code']
-		currentJob = Job.objects.get(job_code=current_job_code)
-		all_costs = Cost.objects.filter(job__job_code = current_job_code)
-		return render(request, self.template_name, {'cost_form':cost_form, 'currentJob':currentJob,'all_costs':all_costs,})
 
 	def post(self, request, *args, **kwargs):
 		cost_form = self.form_class(request.POST)
@@ -229,7 +225,6 @@ class costsheetView(TemplateView):
 		currentJob = Job.objects.get(job_code=current_job_code)
 		temp_messages = []
 		errors = ''
-
 
 		if cost_form.is_valid():
 			cost_instance = cost_form.save()
@@ -263,7 +258,6 @@ class costsheetView(TemplateView):
 														'temp_messages':temp_messages,
 														# 'all_costs':all_costs,
 														})
-
 
 class VendorDetailView(DetailView):
 	template_name = "main_app/vendors.html"
@@ -646,16 +640,113 @@ def importVendors(request):
 # Don't need the dedicated class-based view for deleting costs
 def CostDeleteView(request, cost_id):
 	cost = Cost.objects.get(id=cost_id)
-	job_code = cost.job.job_code
+	job_id = cost.job.id
 	cost.delete()
-	return redirect('main_app:costsheet', f'{job_code}')
+	return redirect('main_app:cost-add', job_id)
+
+class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
+	model = Cost
+	fields = ['vendor','description','amount','currency','invoice_status','notes']
+	template_name = "main_app/cost_form.html"
+	table_class = CostTable
+	simple_add_vendor_form = AddVendorToCostForm
+	cost_form = CostForm
+	update_vendor_form = UpdateCostForm
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		self.object=None
+		currentJob = Job.objects.get(pk=self.kwargs['pk'])
+		context['currentJob'] = currentJob
+		context['table'] = self.table_class(currentJob.cost_rel.all())
+		context['simple_add_vendor_form'] = self.simple_add_vendor_form()
+		context['update_vendor_form'] = self.update_vendor_form()
+		context['cost_form'] = self.cost_form()
+		context['vendors'] = Vendor.objects.filter(jobs_rel = currentJob)
+		return context
+
+	def post(self, request, *args, **kwargs):
+		self.object = None
+		context = self.get_context_data(**kwargs)
+		currentJob = Job.objects.get(pk=self.kwargs['pk'])
+		if 'add-cost' in request.POST:
+			form = self.cost_form(request.POST)
+			if form.is_valid():
+				instance = form.save()
+				instance.job = currentJob
+				instance.save()
+				print('added job!')
+			else:
+				print('oooops')
+
+		elif 'add-vendor' in request.POST:
+			form = self.simple_add_vendor_form(request.POST)
+			if form.is_valid():
+				newVendor = form.cleaned_data['addVendor']
+				currentJob.vendors.add(Vendor.objects.get(unique_id=newVendor))
+				currentJob.save()
+			else:
+				print('shit!')
+
+		elif 'update-cost-vendor' in request.POST:
+			currentJob = Job.objects.get(pk=self.kwargs['pk'])
+			table = self.table_class(currentJob.cost_rel.all())
+			forms = []
+			print(request.POST)
+			print(f"table data: {table.data}")
+			for i, cost in enumerate(table.data):
+				form = self.update_vendor_form(request.POST, prefix=cost.pk)
+				# print(i, form)
+				if form.is_valid():
+					cost.vendor = form.cleaned_data['vendor']
+					cost.save()
+				else:
+					print(f"{cost.id} went down to the bottom else")
+					for form in forms:
+						print(f'{cost.id}: {form.non_field_errors}')
+						print(f'{cost.id}: {form.errors}')
+				forms.append(form)
+
+			return redirect('main_app:cost-add', pk=self.kwargs['pk'])
+		
+		return render(request, self.template_name, self.get_context_data(**kwargs))
+		
+	# def post(self, request, *args, **kwargs):
+	# 	cost_form = self.form_class(request.POST)
+	# 	current_job_code = self.kwargs['job_code'].strip()
+	# 	currentJob = Job.objects.get(job_code=current_job_code)
+	# 	temp_messages = []
+	# 	errors = ''
+
+	# 	if cost_form.is_valid():
+	# 		cost_instance = cost_form.save()
+	# 		cost_instance.job = currentJob
+	# 		cost_instance.save()
+	# 		currentJob.vendors.add(cost_instance.vendor)
+	# 		currentJob.save()
+
+	# 		# Logic for generating the PO number
+	# 		POCount = 0
+	# 		POsForThisVendor = Cost.objects.filter(vendor__id = cost_instance.vendor.id)
+	# 		for PO in POsForThisVendor:
+	# 			if PO.PO_number:
+	# 				if int(PO.PO_number[-3::]) > POCount:
+	# 					POCount = int(PO.PO_number[-3::])
+	# 		POCount += 1
+
+	# 		cost_instance.PO_number = f'{cost_instance.vendor.unique_id}{cost_instance.job.client.job_code_prefix}{POCount:03d}'
+	# 		cost_instance.save()
+	# 		temp_messages.append(f'cost added, job date: {currentJob.job_date}')
+	# 		return redirect("main_app:costsheet", current_job_code)
+
+
 
 class CostUpdateView(UpdateView):
 	model = Cost
 	fields = ['vendor','description','amount','currency','invoice_status','notes']
 	template_name_suffix = '_update_form'
 	def get_success_url(self):
-		return reverse_lazy('main_app:costsheet', kwargs={'job_code': self.object.job.job_code})
+		return reverse_lazy('main_app:cost-add', kwargs={'pk': self.object.job.id})
 
 class JobUpdateView(UpdateView):
 	model = Job

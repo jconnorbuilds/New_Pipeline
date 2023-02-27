@@ -22,7 +22,7 @@ def PO_num_generator():
 PONumgen = PO_num_generator()
 
 class Vendor(models.Model):
-	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+	# id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 	unique_id = models.CharField(max_length=10, default = 'NEW00')
 	full_name = models.CharField(max_length=30, default='NewVendor')
 	vendor_initials = models.CharField(max_length=4)
@@ -76,10 +76,10 @@ class Client(models.Model):
 		return f'{self.name} - {self.job_code_prefix}'
 
 class Cost(models.Model):
-	vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='cost_rel')
+	vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True,)
 	description = models.CharField(max_length=30, blank=True)
 	amount = models.IntegerField(default=0, blank=True)
-	currency = models.CharField(max_length=10, default='JPY ¥', choices=(
+	currency = models.CharField(max_length=10, default='¥', choices=(
 							('¥','JPY ¥'),
 							('US$','USD $'),
 							('CA$','CAD $'),
@@ -88,7 +88,7 @@ class Cost(models.Model):
 							('£','GBP £'),
 							)
 						)
-	invoice_status = models.CharField(max_length=50, default='--invoice status--', choices=(
+	invoice_status = models.CharField(max_length=50, default='NR', choices=(
 								('NR','Not ready to request'),
 								('READY','Ready to request'),
 								('REQ','Requested'),
@@ -101,12 +101,41 @@ class Cost(models.Model):
 
 	notes = models.CharField(max_length=300, blank=True)
 	job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name='cost_rel', null=True)
-	PO_number = models.CharField(max_length=15, null=True, default=None,)
+	PO_number = models.CharField(max_length=15, null=True, default=None, editable = False)
 	PO_num_is_fixed = models.BooleanField(default=False)
 
+	def get_PO_number(self):
+		'''
+		This should only run once, so the logic runs in the overridden save() function
+
+		'''
+		po = ""
+		POCount = 0
+		POsForThisVendor = Cost.objects.filter(vendor_id = self.vendor.id)
+		for PO in POsForThisVendor:
+			if PO.PO_number:
+				if int(PO.PO_number[-3::]) > POCount:
+					POCount = int(PO.PO_number[-3::])
+		POCount += 1
+		po = f'{self.vendor.unique_id}{self.job.client.job_code_prefix}{POCount:03d}'
+
+		return po
+
+
+	def save(self, *args, **kwargs):
+		print('save just ran')
+		if self.vendor and not self.PO_num_is_fixed:
+			print('this cost has a vendor')
+			self.PO_number = self.get_PO_number()
+			self.PO_num_is_fixed = True
+		elif self.vendor and self.vendor.unique_id != self.PO_number[0:4]:
+			self.PO_number = self.get_PO_number()
+		else:
+			print('this cost does not have a vendor')
+		super().save(*args, **kwargs)
 
 	def __str__(self):
-		return f'{self.job.job_name}  ({self.job.job_code}) / {self.vendor.vendor_initials} ¥{self.amount}'
+		return f'{self.job.job_name} ({self.job.job_code}) ¥{self.amount} -- {self.vendor.unique_id if self.vendor else ""}'
 
 class Job(models.Model):
 
@@ -127,7 +156,7 @@ class Job(models.Model):
 	allVendorInvoicesPaid = models.BooleanField(default=False)
 	isInvoiced = models.BooleanField(default=False)
 	budget = models.IntegerField()
-	vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True)
+	vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
 	# Who the invoice is paid to, if it differs from the client
 	paidTo = models.CharField(max_length=100, blank=True)
 	# If the client has a job code or special name for the invoice
@@ -179,7 +208,6 @@ class Job(models.Model):
 		choices=JOB_TYPE_CHOICES,
 		default='Original',
 		)
-
 
 	notes = models.TextField(max_length=300, blank=True)
 

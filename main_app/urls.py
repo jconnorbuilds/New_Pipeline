@@ -8,7 +8,8 @@ app_name = 'main_app'
 urlpatterns = [
 	path('', views.pipelineView.as_view(model=Job), name="pipeline"),
 	path('pipeline/<int:year>/<int:month>/', views.pipelineMonthView.as_view(), name="pipeline-by-month"),
-	path('costsheet/<str:job_code>/', views.costsheetView.as_view(), name="costsheet"),
+	# path('costsheet/<str:job_code>/', views.costsheetView.as_view(), name="costsheet"),
+	path('cost-add/<pk>/', views.CostCreateView.as_view(), name="cost-add"),
 	path('<cost_id>/delete-cost/', views.CostDeleteView, name="cost-delete"),
 	path('<pk>/update-cost/', views.CostUpdateView.as_view(), name="cost-update"),
 	path('<pk>/delete-job/', views.JobDeleteView.as_view(), name="job-delete"),

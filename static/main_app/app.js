@@ -43,5 +43,14 @@ $(document).ready(function(){
 		}
 	});
 
+
+	$('.update-cost-table').click(function() {
+		var forms = document.getElementsByTagName('form');
+		for (var i = 0; i < forms.length; i++) {
+			forms[i].submit();
+			console.log('something happened in JS');
+		}
+	});
+
 });
 

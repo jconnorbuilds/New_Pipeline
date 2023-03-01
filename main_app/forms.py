@@ -30,27 +30,29 @@ YEAR_CHOICES = [(y[0],(str(y[1]))) for y in year_list]
 class CostForm(ModelForm):
 	class Meta:
 		model = Cost
-		fields = ['vendor','description','amount','currency','invoice_status','notes']
+		fields = ['vendor','description','amount','currency','notes']
 
 class AddVendorToCostForm(forms.Form):
-	VENDOR_CHOICES=[(vendor.unique_id, vendor.full_name) for vendor in Vendor.objects.all()]
+	VENDOR_CHOICES=[('', 'Select vendor')] + [(vendor.unique_id, vendor.full_name) for vendor in Vendor.objects.all()]
 	addVendor = forms.CharField(max_length=100,
 				widget=forms.Select(choices=VENDOR_CHOICES))
 
 class UpdateCostForm(forms.Form):
-	vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), required=False, empty_label='Select vendor')
-	# invoice = forms.ChoiceField(required=False, choices=(
-	# 							('NR','Not ready to request'),
-	# 							('READY','Ready to request'),
-	# 							('REQ','Requested'),
-	# 							('REC','Received'),
-	# 							('CHECK','Needs manual check'),
-	# 							('PAID','Paid'),
-	# 							('NA','No Invoice')
-	# 							))
-	cost = forms.ModelChoiceField(queryset=Cost.objects.all(), widget=forms.HiddenInput)
+	vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), required=False, empty_label='Select vendor', widget=forms.Select(attrs={'class':'form-select'}))
+	cost = forms.ModelChoiceField(queryset=Cost.objects.all())
+	invoice_status = forms.ChoiceField(required=False, widget=forms.Select(attrs={'class':'form-select'}), choices=(
+								('NR','Not ready to request'),
+								('READY','Ready to request'),
+								('REQ','Requested'),
+								('REC','Received'),
+								('CHECK','Needs manual check'),
+								('PAID','Paid'),
+								('NA','No Invoice')
+								))
 
-		
+	# def __init__(self, job, *args, **kwargs):
+	# 	super().__init__(*args, **kwargs)
+	# 	self.fields['vendor'].queryset = Vendor.objects.filter(jobs_rel=job)
 
 class JobForm(ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -132,3 +134,6 @@ class JobFilter(django_filters.FilterSet):
 		model = Job
 		fields = []
 
+class UploadInvoiceForm(forms.Form):
+	title = forms.CharField(max_length=50)
+	file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))

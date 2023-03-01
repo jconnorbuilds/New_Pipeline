@@ -26,5 +26,9 @@ urlpatterns = [
 	path('vendors/<pk>', views.VendorDetailView.as_view(), name="vendors-detail"),
 	path('add-vendor/', views.VendorCreateView.as_view(), name="vendor-add"),
 	path('vendor-list/', views.VendorListView.as_view(), name="vendor-list"),
+	path('remove-vendor-from-job/<job_id>/<pk>/', views.VendorRemoveFromJob, name="remove-vendor-from-job"),
+	path('invoice-upload/', views.UploadInvoiceView, name="invoice-upload"),
+	path('invoice-upload-success/', views.UploadSuccessView, name="invoice-upload-success"),
+
 ]
 

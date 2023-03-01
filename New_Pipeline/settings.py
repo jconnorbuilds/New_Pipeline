@@ -120,7 +120,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-#EMAIL info redacted
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'invoice@bwcatmusic.com'
+EMAIL_HOST_PASSWORD = 'fqmangqfxtnzjxpr'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
+ALLOWED_HOSTS = []
 
 
 # Internationalization

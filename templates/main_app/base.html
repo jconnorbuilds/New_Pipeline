@@ -55,7 +55,14 @@
 	            <li><a class="dropdown-item" href="{% url 'main_app:invoice-request-page' %}">Request Invoices</a></li>
 	            <li><a class="dropdown-item" href="{% url 'main_app:vendor-add' %}">Add Vendor</a></li>
 	            <li><a class="dropdown-item" href="{% url 'main_app:vendor-list' %}">View Vendors</a></li>
-
+	           </ul>
+	        <li class="nav-item dropdown">
+	          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+	            Testing
+	          </a>
+	          <ul class="dropdown-menu">
+	            <li><a class="dropdown-item" href="{% url 'main_app:invoice-upload' %}">Invoice upload</a></li>
+	            <li><a class="dropdown-item" href="{% url 'main_app:invoice-upload-success' %}">Invoice success</a></li>
 	          </ul>
 	        </li>
 	        <li class="nav-item">

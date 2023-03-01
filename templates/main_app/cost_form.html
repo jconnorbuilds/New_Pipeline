@@ -15,33 +15,60 @@
 
 {% block body_block %}
 	<h1 class="display-1">{{ currentJob.job_name }} - {{ currentJob.job_code }}</h1>
-
 	<div class="container bg-body-secondary p-3">
-		<form method="post">
-			{% csrf_token %}
-			<div class="add-vendor-form">
-				<h5>Add a vendor to this job: {{ simple_add_vendor_form.addVendor }} <input type="submit" value="+" name="add-vendor" class="btn btn-sm btn-outline-dark"></h5>
+
+		<div class="row" style="min-height: 200px;">
+			<div class="col-5">
+				<h3>New cost</h3>
+				<hr>
+				<div class="container m-3">
+				  <div class="row">
+				    <div class="col-auto">    
+							<form method="post">	
+								{% csrf_token %}
+								{% render_field form.amount class+="form-control" placeholder="Amount" id="costsheet-form-amount" %}
+								{% render_field form.currency class+="form-select" id="costsheet-form-currency" %}
+								{% render_field form.description class+="form-control" placeholder="Description" id="costsheet-form-description" %}
+					  </div>
+					</div>
+				</div>
+				<input type="submit" value="Add cost" name="add-cost" class="btn btn-outline-success">
+				</form>
 			</div>
-		</form>
-		{% for vendor in currentJob.vendors.all %}
-			<p>{{ vendor }}</p>
-		{% endfor %}
-		<hr>
-		<div class="container">
-		  <div class="row">
-		    <div class="col-3">    
-			    <form method="post">	
-			    	{% csrf_token %}
-			    	<p>Amount: {{ form.amount }}</p>
-			    	<p>Currency: {{ form.currency }}</p>
-			    	<p>Description: {{ form.description }}</p>
-			    	<p>Invoice status: {{ form.invoice_status }}</p>
-			    	<input type="submit" value="Update" name="add-cost" class="btn btn-outline-success">
-			    </form>
-			   </div>
+			<div class="col-1">
+			</div>
+			<div class="col-5 flex-column">
+				<h3>Vendors involved</h3>
+				<hr>
+				<div class="ps-3 flex-grow-1">
+						{% for vendor in currentJob.vendors.all %}
+						<div class="row">
+							<div class="col-5">
+								<p>{{ vendor }}</p>
+							</div>
+							<div class="col-2">
+								<a href="{% url 'main_app:remove-vendor-from-job' currentJob.id vendor.id %}"><button type="button", name="remove-vendor-{{ vendor.id }}" id="costsheet-remove-vendor-btn" class="btn btn-danger btn-sm">remove</button></a>
+							</div>
+						</div>
+						{% endfor %}
+
+						<form method="post">
+							{% csrf_token %}
+							<div class="row d-flex align-items-center">
+								<div class="col-5">
+									{% render_field simple_add_vendor_form.addVendor class+="form-select" %}
+								</div>
+								<div class="col-2">
+									<input type="submit" value="+" name="add-vendor" class="btn btn-sm btn-outline-dark">
+								</div>
+							</div>
+						</form>
+
+					</div>
+				</div>
 			</div>
 		</div>
-	</div>
+
 
 	<hr>
 	<h3 class="display-3">cost sheet</h3>

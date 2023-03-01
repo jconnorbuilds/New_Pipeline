@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.db import IntegrityError
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django import forms
 from django.forms import formset_factory, modelformset_factory, Textarea
 from .models import Job, Vendor, Cost, Client
-from .forms import CostForm, JobForm, PipelineCSVExportForm, JobFilter, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm
+from .forms import CostForm, JobForm, PipelineCSVExportForm, JobFilter, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, UploadInvoiceForm
 from .tables import JobTable, CostTable
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
 from django.views import View
@@ -52,6 +52,7 @@ class pipelineView(SingleTableMixin, FilterView):
 	def post(self, request, *args, **kwargs):
 		if 'addjob' in request.POST:
 			job_form = self.form_class(request.POST)
+			print(request.POST)
 			if job_form.is_valid():
 				# We take in the budget in terms of 万
 				job_form.instance.budget = job_form.instance.budget * 10000
@@ -65,7 +66,6 @@ class pipelineView(SingleTableMixin, FilterView):
 
 		elif 'csvexport' in request.POST:
 			csv_export_form = PipelineCSVExportForm(request.POST)
-			# jobs = Job.objects.all()
 
 			if csv_export_form.is_valid():
 				print('hello dude')
@@ -81,14 +81,13 @@ class pipelineView(SingleTableMixin, FilterView):
 				else:
 					thruYear = fromYear
 					thruMonth = fromMonth
-
 				if thruMonth != "12":
 					thruYear = thruYear
 					thruMonth = str(int(thruMonth) + 1)
 				else:
 					thruYear = str(int(thruYear) + 1)
 					thruMonth = "1"
-
+					ß
 				thruDate = f'{thruYear}-{thruMonth}'+'-01'
 				print(f'from: {fromDate}\nthru: {thruDate}')
 				
@@ -123,7 +122,6 @@ class pipelineView(SingleTableMixin, FilterView):
 
 			else:
 				print('something bad happened')
-				# messages.warning(request, 'Check the dates and try again!')	
 
 		elif 'bulk-actions' in request.POST:
 				bulk_form = self.bulk_actions(request.POST)
@@ -182,7 +180,6 @@ class pipelineView(SingleTableMixin, FilterView):
 		self.object_list = self.get_queryset()
 		return render(request, self.template_name, self.get_context_data())
 
-
 class pipelineMonthView(SingleTableMixin, MonthMixin, ListView):
 	model = Job
 	table_class = JobTable
@@ -206,59 +203,6 @@ class pipelineMonthView(SingleTableMixin, MonthMixin, ListView):
 		queryset = queryset.filter()
 		return queryset
 
-class costsheetView(TemplateView):
-	template_name = "main_app/costsheet.html"
-	form_class = CostForm
-	model = Cost
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		current_job_code = self.kwargs['job_code']
-		context['currentJob'] = Job.objects.get(job_code=current_job_code)
-		context['cost_form'] = self.form_class()
-		context['all_costs'] = Cost.objects.filter(job__job_code = current_job_code)
-		return context
-
-	def post(self, request, *args, **kwargs):
-		cost_form = self.form_class(request.POST)
-		current_job_code = self.kwargs['job_code'].strip()
-		currentJob = Job.objects.get(job_code=current_job_code)
-		temp_messages = []
-		errors = ''
-
-		if cost_form.is_valid():
-			cost_instance = cost_form.save()
-			cost_instance.job = currentJob
-			cost_instance.save()
-			currentJob.vendors.add(cost_instance.vendor)
-			currentJob.save()
-
-			# Logic for generating the PO number
-			POCount = 0
-			POsForThisVendor = Cost.objects.filter(vendor__id = cost_instance.vendor.id)
-			for PO in POsForThisVendor:
-				if PO.PO_number:
-					if int(PO.PO_number[-3::]) > POCount:
-						POCount = int(PO.PO_number[-3::])
-			POCount += 1
-
-			cost_instance.PO_number = f'{cost_instance.vendor.unique_id}{cost_instance.job.client.job_code_prefix}{POCount:03d}'
-			cost_instance.save()
-			temp_messages.append(f'cost added, job date: {currentJob.job_date}')
-			return redirect("main_app:costsheet", current_job_code)
-		else: 
-			print('oops')
-			print(cost_form.errors)
-			errors = cost_form.errors
-
-			# all_costs = Cost.objects.filter(job__job_code = current_job_code)
-			return render(request, self.template_name, {'cost_form':cost_form, 
-														'currentJob':currentJob, 
-														'errors':errors, 
-														'temp_messages':temp_messages,
-														# 'all_costs':all_costs,
-														})
-
 class VendorDetailView(DetailView):
 	template_name = "main_app/vendors.html"
 	model = Vendor
@@ -276,6 +220,36 @@ class JobDetailView(DetailView):
 	template_name = "main_app/jobs.html"
 	model = Job
 
+def handle_uploaded_file(f):
+	file_dir = f"/Users/joeconnor_bcwc/Black Cat White Cat Dropbox/Financial/testingsomeshit/{date.today().year}_{date.today().month}"
+	# file_dir = f"/Users/joeconnor_bcwc/Desktop/FINANCIAL_Test/{date.today().year}_{date.today().month}"
+	if not os.path.exists(file_dir):
+			os.makedirs(file_dir)
+	file_path = os.path.join(file_dir, f.name)
+	with open(file_path, 'wb+') as destination:
+		# Write the contents of the uploaded file to the new file
+		for chunk in f.chunks():
+			destination.write(chunk)
+			print(f'{file_path}')
+	return file_path
+
+def UploadInvoiceView(request):
+	if request.method == 'POST':
+		form = UploadInvoiceForm(request.POST, request.FILES)
+		if form.is_valid():
+			for file in request.FILES.getlist('file'):
+				print(file)
+				handle_uploaded_file(file)
+			return HttpResponseRedirect(reverse('main_app:invoice-upload-success'))
+		else:
+			print(form.errors)
+	else:
+		form = UploadInvoiceForm()
+	return render(request, 'main_app/invoice_upload.html', {'form': form})
+
+def UploadSuccessView(request):
+	html = "<html>Upload successful</html>"
+	return HttpResponse(html)
 
 def InvoicesView(request):
 	template_name = "main_app/request_invoices.html"
@@ -333,23 +307,6 @@ def InvoicesView(request):
 
 	return render(request, template_name, context)
 
-
-# class InvoicesView(TemplateView):
-# 	template_name = "main_app/request_invoices.html"
-
-# 	def get_files(self):
-# 		pathname = "/Users/joeconnor_bcwc/Black Cat White Cat Dropbox/Joe Connor/FINANCIAL_Test"
-# 		allFiles = os.listdir(pathname+'/test_dir')
-# 		return [file for file in allFiles if file.startswith('.') == False]
-
-
-# 	def get_context_data(self, **kwargs):
-# 		context = super().get_context_data(**kwargs)
-# 		context['costs_READY_REQ'] = Cost.objects.filter(invoice_status__in=['READY','REQ'])
-# 		context['costs_REC'] = Cost.objects.filter(invoice_status__in=['REC'])
-# 		context['files'] = self.get_files()
-# 		return context
-
 def RequestVendorInvoices(request):
 
 	'''
@@ -358,7 +315,7 @@ def RequestVendorInvoices(request):
 
 	'''
 	# Creates a list of vendors who have invoices ready to be requested, no dupes
-	vendors = set(Vendor.objects.filter(cost_rel__invoice_status='READY'))
+	vendors = set(Vendor.objects.filter(vendor_rel__invoice_status='READY'))
 	costCount = 0
 	vendorCount = 0
 
@@ -366,10 +323,10 @@ def RequestVendorInvoices(request):
 	# For use in calendar.month_abbr'
 	monthNum = int(str(timezone.now()).split('-')[1])
 	for vendor in vendors:
-		# if vendor isCompany():
-		# 	pass
-		# if vendor prefersJapanese():
-		# 	pass
+	# 	if vendor.isCompany():
+	# 		pass
+	# 	if vendor.prefersJapanese():
+	# 		pass
 		vendor_first_name = vendor.full_name.split(' ')[0]
 		
 		# args for use in send_mail
@@ -610,10 +567,6 @@ def importVendors(request):
 				itemCreated.append(f'{job_name} - {client}')
 			elif not created:
 				itemNotCreated.append(f'{job_name} - {client}')
-			# elif not created:
-			# 	itemUpdated.append(f'{name} - {job_code_prefix}')
-			# else:
-			# 	messages.warning.append(f'{name} - {job_code_prefix} !!! SOMETHING ELSE HAPPENED')
 
 		except IntegrityError as e:
 			print(f'{job_name} - {client}: {e}')
@@ -636,12 +589,18 @@ def importVendors(request):
 	myFile.close()
 	return redirect('main_app:pipeline')
 
-# CRUD VIEWS
-# Don't need the dedicated class-based view for deleting costs
 def CostDeleteView(request, cost_id):
 	cost = Cost.objects.get(id=cost_id)
 	job_id = cost.job.id
 	cost.delete()
+	return redirect('main_app:cost-add', job_id)
+
+def VendorRemoveFromJob(request, pk, job_id):
+	model = Vendor
+	job = Job.objects.get(id=job_id)
+	vendor = Vendor.objects.get(id=pk)
+	job.vendors.remove(vendor)
+	job.save()
 	return redirect('main_app:cost-add', job_id)
 
 class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
@@ -670,6 +629,7 @@ class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
 		context = self.get_context_data(**kwargs)
 		currentJob = Job.objects.get(pk=self.kwargs['pk'])
 		if 'add-cost' in request.POST:
+			print(request.POST)
 			form = self.cost_form(request.POST)
 			if form.is_valid():
 				instance = form.save()
@@ -677,7 +637,7 @@ class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
 				instance.save()
 				print('added job!')
 			else:
-				print('oooops')
+				print(f'errors: {form.errors}')
 
 		elif 'add-vendor' in request.POST:
 			form = self.simple_add_vendor_form(request.POST)
@@ -699,6 +659,7 @@ class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
 				# print(i, form)
 				if form.is_valid():
 					cost.vendor = form.cleaned_data['vendor']
+					cost.invoice_status = form.cleaned_data['invoice_status']
 					cost.save()
 				else:
 					print(f"{cost.id} went down to the bottom else")
@@ -710,36 +671,6 @@ class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
 			return redirect('main_app:cost-add', pk=self.kwargs['pk'])
 		
 		return render(request, self.template_name, self.get_context_data(**kwargs))
-		
-	# def post(self, request, *args, **kwargs):
-	# 	cost_form = self.form_class(request.POST)
-	# 	current_job_code = self.kwargs['job_code'].strip()
-	# 	currentJob = Job.objects.get(job_code=current_job_code)
-	# 	temp_messages = []
-	# 	errors = ''
-
-	# 	if cost_form.is_valid():
-	# 		cost_instance = cost_form.save()
-	# 		cost_instance.job = currentJob
-	# 		cost_instance.save()
-	# 		currentJob.vendors.add(cost_instance.vendor)
-	# 		currentJob.save()
-
-	# 		# Logic for generating the PO number
-	# 		POCount = 0
-	# 		POsForThisVendor = Cost.objects.filter(vendor__id = cost_instance.vendor.id)
-	# 		for PO in POsForThisVendor:
-	# 			if PO.PO_number:
-	# 				if int(PO.PO_number[-3::]) > POCount:
-	# 					POCount = int(PO.PO_number[-3::])
-	# 		POCount += 1
-
-	# 		cost_instance.PO_number = f'{cost_instance.vendor.unique_id}{cost_instance.job.client.job_code_prefix}{POCount:03d}'
-	# 		cost_instance.save()
-	# 		temp_messages.append(f'cost added, job date: {currentJob.job_date}')
-	# 		return redirect("main_app:costsheet", current_job_code)
-
-
 
 class CostUpdateView(UpdateView):
 	model = Cost
@@ -766,10 +697,6 @@ class ClientCreateView(SuccessMessageMixin, CreateView):
 	success_message = "Client added!"
 	def get_success_url(self):
 		return reverse_lazy('main_app:client-add')
-
-	# messages.success(request, 'Profile details updated.')
-
-	# messages.success(request, 'Profile details updated.')
 
 class ClientListView(ListView):
 	model = Client

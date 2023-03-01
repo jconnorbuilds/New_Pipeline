@@ -76,9 +76,9 @@ class Client(models.Model):
 		return f'{self.name} - {self.job_code_prefix}'
 
 class Cost(models.Model):
-	vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True,)
+	vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vendor_rel')
 	description = models.CharField(max_length=30, blank=True)
-	amount = models.IntegerField(default=0, blank=True)
+	amount = models.IntegerField(null=True)
 	currency = models.CharField(max_length=10, default='¥', choices=(
 							('¥','JPY ¥'),
 							('US$','USD $'),
@@ -152,8 +152,7 @@ class Job(models.Model):
 	job_code_isOverridden = models.BooleanField(default=False)
 	custom_job_code = models.CharField(max_length=15, null=True, blank=True)
 	isArchived = models.BooleanField(default=False)
-	allVendorInvoicesReceivd = models.BooleanField(default=False)
-	allVendorInvoicesPaid = models.BooleanField(default=False)
+
 	isInvoiced = models.BooleanField(default=False)
 	budget = models.IntegerField()
 	vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
@@ -279,9 +278,32 @@ class Job(models.Model):
 		else:
 			return 100
 
-	# @property
-	# def job_date(self):
-	# 	return f'{self.year}-{self.month}-01'
+	@property
+	def allVendorInvoicesRequested(self):
+		costs = Cost.objects.filter(job_id=self.id)
+		for cost in costs:
+			if cost.invoice_status not in ['REQ','REC','PAID']:
+				return False
+		else:
+			return True
+
+	@property
+	def allVendorInvoicesReceived(self):
+		costs = Cost.objects.filter(job_id=self.id)
+		for cost in costs:
+			if cost.invoice_status not in ['REC','PAID']:
+				return False
+		else:
+			return True
+
+	@property
+	def allVendorInvoicesPaid(self):
+		costs = Cost.objects.filter(job_id=self.id)
+		for cost in costs:
+			if cost.invoice_status not in ['PAID']:
+				return False
+		else:
+			return True
 
 
 	def save(self, *args, **kwargs):

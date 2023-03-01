@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+{% extends "main_app/base.html" %}
+{% load render_table from django_tables2 %}
+{% load widget_tweaks %}
+{# {% load django_bootstrap5 %} #}
+{% load static %}
+
+{% block body_block %}
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{form}}
+		<input type="submit" name="submit">
+	</form>
+{% endblock %}

@@ -24,9 +24,11 @@ class JobTable(tables.Table):
 
 	edit = tables.TemplateColumn(verbose_name='',template_name="main_app/tables_jobs_edit_column.html")
 
-	total_cost = tables.Column(orderable=False, linkify=('main_app:cost-add', {'pk':tables.A("pk")}))
+	total_cost = tables.Column(orderable=False, linkify=('main_app:cost-add', {'pk':tables.A("pk")}),attrs={"td":{"style":"text-align:right;", "class":"px-3"},"th":{"style":"text-align:right;", "class":"px-3"}})
+	budget = tables.Column(attrs={"td":{"style":"text-align:right;", "class":"px-3"},"th":{"style":"text-align:right;","class":"px-3"}})
+	job_code = tables.Column(attrs={"td":{"class":"px-3", "width":"100px"},"th":{"class":"px-3"}})
 	profit_rate = tables.Column(orderable=False)
-	job_name = tables.Column(linkify=True)
+	job_name = tables.Column(linkify=True,attrs={"td":{"width":"auto"}})
 	select = tables.CheckBoxColumn(accessor='pk', attrs={"input":{"class":"form-check-input"}})
 
 	# Doesn't work, cannot resolve keyword 'job_code' into field.
@@ -40,24 +42,37 @@ class JobTable(tables.Table):
 		model = Job
 		order_by = 'year','month','client__name'
 		template_name = "django_tables2/bootstrap5.html"
-		fields = ("select", "client", "job_name", "job_code", "budget", "total_cost", "profit_rate", "job_date", "job_type","status", "edit")
+		fields = ("select", "client","job_name","job_code", "budget", "total_cost", "profit_rate", "job_date", "job_type","status", "edit")
 
 class CostTable(tables.Table):
 	edit = tables.TemplateColumn(verbose_name='', template_name="main_app/tables_costsheet_edit_column.html")
-	# job = tables.Column(accessor='job.job_name')
-	vendor = tables.Column(empty_values=(), verbose_name='Vendor', order_by=('vendor',),)
+	vendor = tables.Column(empty_values=(), verbose_name='Vendor', order_by=('vendor',),attrs={"td":{"width":"250px"}})
+	invoice_status = tables.Column(empty_values=(), verbose_name='Invoice Status', order_by=('invoice_status',), attrs={"td":{"width":"auto"}},)
+	amount = tables.Column(attrs={"td":{"style":"text-align:right;","width":"120px","class":"px-5"},"th":{"style":"text-align:right;", "class":"px-5"}})
 
 	def render_vendor(self, value, record):
 		form = UpdateCostForm(initial={'vendor':value or None, 'cost':record}, prefix=record.pk)
-		print(f'form.as_p ran for {record.pk}')
-		return form.as_p()
+		vendor_html = form['vendor'].as_widget()
+		cost_html = form['cost'].as_hidden()
+		return format_html('{}\n{}',vendor_html, cost_html)
+
+	def render_invoice_status(self, value, record):
+		form = UpdateCostForm(initial={'invoice_status':record.invoice_status or None}, prefix=record.pk)
+		return form['invoice_status'].as_widget()
+
+	def render_amount(self, value):
+		return f'¥{value:,}'
 
 	def __init__(self, *args, **kwargs):
-			super().__init__(*args, **kwargs)
-			self.prefix = f"{id(self)}"
-
+		# job_instance = kwargs.pop('job_instance')
+		super().__init__(*args, **kwargs)
+		self.prefix = f"{id(self)}"
+		
 	class Meta:
 		model = Cost
 		order_by = 'vendor_initials'
 		# template_name = "django_tables2/bootstrap5.html"
-		fields = ("vendor", "description", "amount", "invoice", "PO_number", "edit")
+		fields = ("amount","vendor", "description", "PO_number", "invoice_status", "edit")
+		row_attrs = {
+		            "class": "align-middle"
+		        }

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
+import environ
+# from google.cloud import secretmanager
 
 MESSAGE_TAGS = {
         messages.DEBUG: 'alert-secondary',
@@ -27,18 +29,51 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 STATIC_DIR = BASE_DIR / 'static'
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2b-gmz-t+7bxcwi3x*9cbwps_)2&=9l9ulp17=nuzgu(pdn88a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: It's recommended that you use this when
+# running in production. The URL will be known once you first deploy
+# to App Engine. This code takes the URL and converts it to both these settings formats.
+
+# Secrets from Secret Manager
+env = environ.Env(DEBUG=(bool, False))
+env_file = BASE_DIR / ".env"
+
+if os.path.isfile(env_file):
+    # # Use a local secret file, if provided
+    env.read_env(env_file)
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+# ...
+elif os.environ.get("GOOGLE_CLOUD_PROJECT", None):
+    print('should not see this')
+    # Pull secrets from Secret Manager
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
+
+    client = secretmanager.SecretManagerServiceClient()
+    settings_name = os.environ.get("SETTINGS_NAME", "django_settings")
+    name = f"projects/{project_id}/secrets/{settings_name}/versions/latest"
+    payload = client.access_secret_version(name=name).payload.data.decode("UTF-8")
+
+    env.read_env(io.StringIO(payload))
+else:
+    print('def should not see this')
+    raise Exception("No local .env or GOOGLE_CLOUD_PROJECT detected. No secrets found.")
+
+APPENGINE_URL = env("APPENGINE_URL", default=None)
+if APPENGINE_URL:
+    # Ensure a scheme is present in the URL before it's processed.
+    if not urlparse(APPENGINE_URL).scheme:
+        APPENGINE_URL = f"https://{APPENGINE_URL}"
+
+    ALLOWED_HOSTS = [urlparse(APPENGINE_URL).netloc]
+    CSRF_TRUSTED_ORIGINS = [APPENGINE_URL]
+    SECURE_SSL_REDIRECT = True
+else:
+    ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -92,6 +127,23 @@ WSGI_APPLICATION = 'New_Pipeline.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# Use django-environ to parse the connection string
+try:
+    DATABASES = {"default": env.db()}
+except:
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# If the flag as been set, configure to use proxy
+if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
+    DATABASES["default"]["HOST"] = "127.0.0.1"
+    DATABASES["default"]["PORT"] = 5432
+
+    
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -126,7 +178,6 @@ EMAIL_HOST_PASSWORD = 'fqmangqfxtnzjxpr'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
-ALLOWED_HOSTS = []
 
 
 # Internationalization

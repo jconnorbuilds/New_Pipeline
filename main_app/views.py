@@ -221,17 +221,20 @@ class JobDetailView(DetailView):
 	model = Job
 
 def handle_uploaded_file(f):
-	file_dir = f"/Users/joeconnor_bcwc/Black Cat White Cat Dropbox/Financial/testingsomeshit/{date.today().year}_{date.today().month}"
+	file_dir = f"invoices/Financial_TEST/{date.today().year}_{date.today().month}"
 	# file_dir = f"/Users/joeconnor_bcwc/Desktop/FINANCIAL_Test/{date.today().year}_{date.today().month}"
-	if not os.path.exists(file_dir):
+	try:
+		if not os.path.exists(file_dir):
 			os.makedirs(file_dir)
-	file_path = os.path.join(file_dir, f.name)
-	with open(file_path, 'wb+') as destination:
-		# Write the contents of the uploaded file to the new file
-		for chunk in f.chunks():
-			destination.write(chunk)
-			print(f'{file_path}')
-	return file_path
+		file_path = os.path.join(file_dir, f.name)
+		with open(file_path, 'wb+') as destination:
+			# Write the contents of the uploaded file to the new file
+			for chunk in f.chunks():
+				destination.write(chunk)
+				print(f'{file_path}')
+		return file_path
+	except:
+		print('it looks like the filepath is configured incorrectly')
 
 def UploadInvoiceView(request):
 	if request.method == 'POST':

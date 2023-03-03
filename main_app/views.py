@@ -650,6 +650,7 @@ class CostCreateView(SuccessMessageMixin, SingleTableMixin, CreateView):
 				currentJob.save()
 			else:
 				print('shit!')
+				print(form.errors)
 
 		elif 'update-cost-vendor' in request.POST:
 			currentJob = Job.objects.get(pk=self.kwargs['pk'])

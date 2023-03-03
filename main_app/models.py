@@ -284,6 +284,7 @@ class Job(models.Model):
 		for cost in costs:
 			if cost.invoice_status not in ['REQ','REC','PAID']:
 				return False
+
 		else:
 			return True
 

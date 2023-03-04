@@ -37,10 +37,10 @@ STATIC_DIR = BASE_DIR / 'static'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# if not DEBUG:
-#     STATIC_ROOT = '/home/django/static/'
-STATIC_ROOT = '/home/django/static/'
-
+if not DEBUG:
+    STATIC_ROOT = '/home/django/static/'
+else:
+    STATIC_ROOT = BASE_DIR
 
 # SECURITY WARNING: It's recommended that you use this when
 # running in production. The URL will be known once you first deploy
@@ -129,7 +129,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'main_app.custom_context_processor.get_year_month',
             ],
         },
     },

@@ -2,6 +2,12 @@
   color: inherit;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /*.success {
   background-color: var(--bs-success-bg-subtle);
   color: var(--bs-success-text);

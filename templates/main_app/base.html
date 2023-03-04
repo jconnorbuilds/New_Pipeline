@@ -18,7 +18,7 @@
 		<script type="text/javascript" src="{% static 'main_app/app.js' %}"></script>
 {% endblock %}
 
-	<title>{% block title %}BCWC Tules{% endblock %}</title>
+	<title>{% block title %}BCWC Tools{% endblock %}</title>
 </head>
 
 <body>
@@ -37,7 +37,9 @@
 	          <a class="nav-link" href="{% url 'main_app:pipeline' %}">Pipeline</a>
 	        </li>
 	        <li class="nav-item">
-            <a class="nav-link" href="{% url 'main_app:pipeline-by-month' year month %}">Pipeline Monthly</a>
+	        	{% now "Y" as current_year %}
+	        	{% now "n" as current_month %}
+            <a class="nav-link" href="{% url 'main_app:pipeline-by-month' current_year current_month %}">Pipeline Monthly</a>
 	        </li>
 	        <li class="nav-item dropdown">
 	          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">

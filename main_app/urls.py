@@ -6,7 +6,7 @@ from .models import Job
 app_name = 'main_app'
 
 urlpatterns = [
-	path('', views.pipelineView.as_view(model=Job), name="pipeline"),
+	path('', views.pipelineView.as_view(), name="pipeline"),
 	path('pipeline/<int:year>/<int:month>/', views.pipelineMonthView.as_view(), name="pipeline-by-month"),
 	# path('costsheet/<str:job_code>/', views.costsheetView.as_view(), name="costsheet"),
 	path('cost-add/<pk>/', views.CostCreateView.as_view(), name="cost-add"),

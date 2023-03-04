@@ -1,0 +1,11 @@
+{% extends "main_app/base.html" %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+<form method="post">
+  {% csrf_token %}
+  {{client_form.as_p}}
+  <button type="submit" class="btn btn-dark" name="new-client">Add Client</button>
+</form>
+{% endblock %}
+

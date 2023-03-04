@@ -100,35 +100,7 @@
 		</div>
 		{# select, sort #}
 		<div class="bg-body-tertiary p-5">
-			<form action="" method="get" class="form-control">
-			<div class="row g-1">
-				<div class="col">
-					<h3>Filter</h3>
-				</div>
-			{% if filter %}
-	    		<div class="col">
-			    	{% render_field filter.form.month class+="form-select" id="filter-month" %}
-			    </div>
-			    <div class="col">
-			    	{% render_field filter.form.year class+="form-select" id="filter-year" %}
-			    </div>
-			    <div class="col">
-			    	{% render_field filter.form.client class+="form-control" placeholder=filter.form.client.label id="filter-client" %}
-			    </div>
-			    <div class="col">
-			    	{% render_field filter.form.job_name class+="form-control" placeholder="Job name" id="filter-job-name" %}
-			    </div>
-			    <div class="col">
-			    	{% render_field filter.form.full_name class+="form-control" placeholder="Vendor name" id="filter-vendor-name" %}
-			    </div>
-		    	<div class="col">
-			    	<input type="submit" class="btn btn-light" value="Filter" />
-			    </div>
-				</div>
-			</form>
-			{% else %}
-			<p>Looks like the filter broke...</p>
-			{% endif %}
+		
 
 		<div class="d-flex p-3">
 		<form method="post" class="">

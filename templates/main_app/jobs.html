@@ -13,7 +13,9 @@
         <p><strong>Client:</strong> {{ job.client.name }}</p>
         <p><strong>Job code:</strong> {{ job.job_code }}</p>
         <p><strong>Budget:</strong> ¥{{ job.budget }}</p>
+        {% if job.costs_rel.all %}
         <p><strong>Vendor invoices received:</strong>{{ job.allVendorInvoicesReceived }}</p>
+        {% endif  %}
         {% if job.vendors.all %}
         <p><strong>Vendors:</strong></p>
             <ul>

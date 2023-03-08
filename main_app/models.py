@@ -42,7 +42,7 @@ class Vendor(models.Model):
         return f'{self.full_name} - {self.unique_id}'
 
 class Client(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    friendly_name = models.CharField(max_length=100, unique=True)
     proper_name = models.CharField(max_length=100, null=True, blank=True)
     name_japanese = models.CharField(max_length=100, null= True, blank=True)
     proper_name_japanese = models.CharField(max_length=100, blank=True)
@@ -74,7 +74,7 @@ class Client(models.Model):
     notes = models.TextField(max_length=300, blank=True)
 
     def __str__(self):
-        return f'{self.name} - {self.job_code_prefix}'
+        return f'{self.friendly_name} - {self.job_code_prefix}'
 
     class Meta:
         constraints = [

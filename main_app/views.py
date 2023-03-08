@@ -31,7 +31,7 @@ import csv
 def index(request):
     return render(request, 'main_app/index.html')
 
-class pipelineView(SingleTableMixin, FilterView):
+class pipelineView(SingleTableMixin, SuccessMessageMixin, FilterView):
     model = Job
     table_class = JobTable
     csv_export_form = PipelineCSVExportForm
@@ -40,6 +40,7 @@ class pipelineView(SingleTableMixin, FilterView):
     bulk_actions = PipelineBulkActionsForm
     filterset_class = JobFilter
     template_name = "main_app/pipeline.html"
+    table_pagination = False
 
     # def get_queryset(self):
     #         queryset = super().get_queryset()
@@ -53,8 +54,6 @@ class pipelineView(SingleTableMixin, FilterView):
         print(client_id)
         context['job_form'] = JobForm(initial={'client': client_id})
         context['client_form'] = self.client_form_class
-        # if client_id:
-        #     context['table'] = JobTable(self.get_queryset())
         context['csv_export_form'] = self.csv_export_form
         context['filter'] = JobFilter
         context['bulk_actions'] = self.bulk_actions
@@ -63,18 +62,24 @@ class pipelineView(SingleTableMixin, FilterView):
 
     def post(self, request, *args, **kwargs):
         if 'addjob' in request.POST:
+            print(f'post request contents for successful addjob {request.POST}')
+            print('ajax request got here!')
             job_form = self.form_class(request.POST)
             print(request.POST)
             if job_form.is_valid():
-                # We take in the budget in terms of 万
+                # Take in the budget in terms of 万
                 job_form.instance.budget = job_form.instance.budget * 10000
                 print(f'{job_form.instance.month},{job_form.instance.year}')
                 instance = job_form.save()
                 print(instance.job_date)
-                print('success!')
+                success_message="Job added!"
             else:
-                for error in job_form.errors:
+                errors = {}
+                for field, error in job_form.errors.items():
+                    errors[field] = error[0]
+                for error in errors:
                     print(f'error: {error}')
+
 
         elif 'csvexport' in request.POST:
             csv_export_form = PipelineCSVExportForm(request.POST)
@@ -193,13 +198,13 @@ class pipelineView(SingleTableMixin, FilterView):
             form = self.client_form_class(request.POST)
             if form.is_valid():
                 instance = form.save()
-                vendorInit = instance.name
-                self.object_list = self.get_queryset()
-                print(self.get_queryset)
                 return redirect(reverse("main_app:pipeline") +f"?client_id={instance.id}")
             else:
                 print("client add didn't work")
                 print(form.errors)
+
+        else:
+            print(f'post request contents: {request.POST}')
 
         self.object_list = self.get_queryset()
         return render(request, self.template_name, self.get_context_data())
@@ -721,7 +726,7 @@ class JobDeleteView(DeleteView):
 
 class ClientCreateView(SuccessMessageMixin, CreateView):
     model = Client
-    fields = ["name", "job_code_prefix", "proper_name", "name_japanese", "proper_name_japanese", "paymentTerm", "notes"]
+    fields = ["friendly_name", "job_code_prefix", "proper_name", "name_japanese", "proper_name_japanese", "paymentTerm", "notes"]
 
     success_message = "Client added!"
     def get_success_url(self):

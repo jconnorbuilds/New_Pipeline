@@ -4,7 +4,6 @@
 {% load widget_tweaks %}
 {# {% load django_bootstrap5 %} #}
 {% load static %}
-
   {% block body_block %}
   <div class="d-flex justify-content-between">
     <div class="col-4">
@@ -38,7 +37,7 @@
   <div class="container bg-body-tertiary">
     <div class="row g-3 p-3 d-flex">
       <div class="col-lg-12 col-xl-8 me-auto">
-        <form method="post" class="form-control shadow">
+        <form method="post" class="form-control shadow" id="job-form">
           {% csrf_token %}
           <h3>Add a job</h3>
           <hr>
@@ -75,9 +74,14 @@
             <div class="col-sm-3">
               {% render_field job_form.year class+="form-control" %}
             </div>
-            <div class='row g-3 p-1'>
-              <div class="col-sm-12">
-                <input type="submit" name="addjob" value="Add Job" class="btn btn-dark">
+            <div class='row g-3 p-1 align-items-center'>
+              <div class="col-auto">
+                <input type="submit" name="addjob" id="add-job-btn" value="Add Job" class="btn btn-dark">
+              </div>
+              <div class="col-auto p-0">
+                <div class="spinner-border spinner-border-sm invisible" role="status" id="add-job-spinner">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
               </div>
             </div>
           </div>
@@ -112,19 +116,41 @@
     </div>
   </div>
 </div>
+
 {# Modal #}
 <div class="modal fade" id="new-client-modal" tabindex="-1" aria-labelledby="new-client-modal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form id="new-client-form" method="post" action="{% url 'main_app:pipeline' %}">
+      <form id="new-client-form" method="post" data-url="{% url 'main_app:pipeline' %}">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        
         {% csrf_token %}
-        {{client_form.as_p}}
+        <div class="row px-3 py-0 g-1">
+          <div class="col-9">
+            <label for="id_friendly_name" class="form-label small">Client name</label>
+            {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
+          </div>
+          <div class="col-3">
+            <label for="id_job_code_prefix" class="form-label small">Prefix</label>
+            {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
+            <div id="prefix_help" class="form-text">2-4 characters</div>
+          </div>
+        </div>
+        <div class="row p-3 g-1">
+          <p class="p-0 g-0">Proper client name</p>
+          <div class="col-6 pt-0">
+            <label for="id_proper_name" class="form-label small pt-0">English</label>
+            {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. "%}
+          </div>
+          <div class="col-6">
+            <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
+            {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
+          </div>
+          <div id="proper_name_help" class="form-text">The client name to be used for invoices. Enter one or the other.</div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -135,6 +161,7 @@
     </div>
   </div>
 </div>
+
   {# select, sort #}
   <div class="bg-body-tertiary p-5">
     <form action="" method="get" class="form-control shadow">

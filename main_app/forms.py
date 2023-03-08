@@ -80,7 +80,18 @@ class JobForm(ModelForm):
 class ClientForm(ModelForm):
     class Meta:
         model = Client
-        fields = ['name','proper_name','name_japanese','proper_name_japanese','job_code_prefix']
+        fields = ['friendly_name','proper_name','proper_name_japanese','job_code_prefix']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        proper_name = cleaned_data.get('proper_name')
+        print(f'proper name: {proper_name}')
+        proper_name_japanese = cleaned_data.get('proper_name_japanese')
+        print(f'proper name JP: {proper_name_japanese}')
+
+        if not proper_name and not proper_name_japanese:
+            raise forms.ValidationError("At least one proper name field must be filled in.")
+        return cleaned_data
 
 class PipelineCSVExportForm(forms.Form):
 
@@ -153,7 +164,7 @@ class JobFilter(django_filters.FilterSet):
     )
     client = django_filters.CharFilter(
         method='client_name_or_prefix',
-        field_name = 'client__name',
+        field_name = 'client__friendly_name',
         lookup_expr='icontains',
         label='Client name'
     )
@@ -165,7 +176,7 @@ class JobFilter(django_filters.FilterSet):
 
     def client_name_or_prefix(self, queryset, name, value):
         return queryset.filter(
-            Q(client__name__icontains=value)|Q(client__job_code_prefix__icontains=value)
+            Q(client__friendly_name__icontains=value)|Q(client__job_code_prefix__icontains=value)
         )
 
     class Meta:

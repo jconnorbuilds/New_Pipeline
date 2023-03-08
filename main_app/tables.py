@@ -20,7 +20,7 @@ class JobTable(tables.Table):
 		return f"¥{value:,}"
 
 	def render_client(self, value):
-		return f"{value.name}"
+		return f"{value.friendly_name}"
 
 	edit = tables.TemplateColumn(verbose_name='',template_name="main_app/tables_jobs_edit_column.html")
 
@@ -40,7 +40,7 @@ class JobTable(tables.Table):
 
 	class Meta:
 		model = Job
-		order_by = 'year','month','client__name'
+		order_by = '-job_date','client__friendly_name'
 		template_name = "django_tables2/bootstrap5.html"
 		fields = ("select", "client","job_name","job_code", "budget", "total_cost", "profit_rate", "job_date", "job_type","status", "edit")
 
@@ -71,7 +71,6 @@ class CostTable(tables.Table):
 	class Meta:
 		model = Cost
 		order_by = 'vendor_initials'
-		# template_name = "django_tables2/bootstrap5.html"
 		fields = ("amount","vendor", "description", "PO_number", "invoice_status", "edit")
 		row_attrs = {
 		            "class": "align-middle"

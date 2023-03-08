@@ -10,11 +10,13 @@
     
     <div class="container bg-body-secondary p-3">
 
-        <p><strong>Client:</strong> {{ job.client.name }}</p>
+        <p><strong>Client:</strong> {{ job.client.friendly_name }}</p>
         <p><strong>Job code:</strong> {{ job.job_code }}</p>
         <p><strong>Budget:</strong> ¥{{ job.budget }}</p>
-        {% if job.costs_rel.all %}
-        <p><strong>Vendor invoices received:</strong>{{ job.allVendorInvoicesReceived }}</p>
+        {% if job.cost_rel.all %}
+        <p><strong>Vendor invoices received: </strong>{{ job.allVendorInvoicesReceived }}</p>
+        {% else %}
+        <p><strong>No costs associated with this job. </strong>
         {% endif  %}
         {% if job.vendors.all %}
         <p><strong>Vendors:</strong></p>

@@ -4,7 +4,7 @@
 <h1>Clients</h1>
 <ul>
 {% for client in object_list %}
-    <li>{{ client.name }} - {{ client.job_code_prefix }}</li>
+    <li>{{ client.friendly_name }} - {{ client.job_code_prefix }}</li>
 {% empty %}
     <li>placeholder</li>
 {% endfor %}

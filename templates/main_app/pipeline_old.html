@@ -4,7 +4,6 @@
 {% load widget_tweaks %}
 {# {% load django_bootstrap5 %} #}
 {% load static %}
-
   {% block body_block %}
   <div class="d-flex justify-content-between">
     <div class="col-4">
@@ -165,56 +164,58 @@
   </div>
 </div>
 
+  {# select, sort #}
+  <div class="bg-body-tertiary p-5">
+    <form action="" method="get" class="form-control shadow">
+    <div class="row g-1">
+      <div class="col">
+        <h3>Filter</h3>
+      </div>
+      {% if filter %}
+        <div class="col">
+          {% render_field filter.form.year class+="form-select" id="filter-year" %}
+        </div>
+        <div class="col">
+          {% render_field filter.form.job_date class+="form-select" id="filter-date" %}
+        </div>
+        <div class="col">
+          {% render_field filter.form.client class+="form-control" placeholder=filter.form.client.label id="filter-client" %}
+        </div>
+        <div class="col">
+          {% render_field filter.form.job_name class+="form-control" placeholder="Job name" id="filter-job-name" %}
+        </div>
+        <div class="col">
+          {% render_field filter.form.full_name class+="form-control" placeholder="Vendor name" id="filter-vendor-name" %}
+        </div>
+        <div class="col">
+          <input type="submit" class="btn btn-light" value="Filter" />
+        </div>
+      </div>
+    </form>
+    {% else %}
+    <p>Looks like the filter broke...</p>
+    {% endif %}
 
-<div class="bg-body-tertiary p-4">
-  <form method="post" class="">
-    {% csrf_token %}
-    <div class="row d-flex align-items-baseline">
-      <div class="col-auto">
-        <h5 class="">Bulk actions</h5>
+  <div class="p-3">
+    <form method="post" class="">
+      {% csrf_token %}
+      <div class="row d-flex align-items-baseline">
+        <div class="col-auto">
+          <h5 class="">Bulk actions</h5>
+        </div>
+        <div class="col-auto">
+          {{ bulk_actions.actions }}
+        </div>
+        <div class="col-auto">
+          <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
+        </div>
+        <div class="col-1 ms-auto">
+          <a href="{% url 'main_app:import-job' %}"><button type="button" id="import-job-csv-btn" class="btn btn-sm btn-light">Import jobs</button></a>
+        </div>
       </div>
-      <div class="col-auto">
-        {{ bulk_actions.actions }}
-      </div>
-      <div class="col-auto">
-        <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
-      </div>
-      <div class="col-1 ms-auto">
-        <a href="{% url 'main_app:import-job' %}"><button type="button" id="import-job-csv-btn" class="btn btn-sm btn-light">Import jobs</button></a>
-      </div>
+      <hr>
     </div>
-    <hr>
-    <table id="job_table" class="display compact nowrap">
-      <thead>
-        <tr>
-          {% for item in headers %}
-          <th>{{ item }}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-      <tbody>
-        {% for job in jobs %}
-        <tr>
-          <td><input type="checkbox" name="select" value="{{ job.pk }}" class="form-check-input"></input></td>
-          <td>{{ job.client.friendly_name }}</td>
-          <td><a href="{% url 'main_app:job-detail' job.id %}">{{ job.job_name }}</a></td>
-          <td>{{ job.job_code }}</td>
-          <td>¥{{ job.budget }}</td>
-          <td><a href="{% url 'main_app:cost-add' job.id %}">¥{{ job.total_cost }}</a></td>
-          <td>{{ job.profit_rate|floatformat }}%</td>
-          <td>{{ job.job_date|date:"M Y" }}</td>
-          <td>{{ job.get_job_type_display }}</td>
-          <td>{{ job.get_status_display }}</td>
-          <td>
-            <div class="btn-group" role="group" aria-label="edit and delete buttons">
-              <button type="button" class="btn btn-dark btn-sm" ><a href="{% url 'main_app:job-update' job.id %}" class="edit-del-btn-group"><i class="bi bi-wrench-adjustable-circle"></i></a></button>
-              <button type="button" class="btn btn-danger btn-sm"><a href="{% url 'main_app:job-delete' job.id %}" class="edit-del-btn-group"><i class="bi bi-trash3-fill"></i></a></button>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  {% render_table table 'django_tables2/bootstrap5.html' %}
   </form>
 </div>
 

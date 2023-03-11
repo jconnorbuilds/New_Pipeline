@@ -36,7 +36,7 @@ def index(request):
 def is_ajax(request):
     return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
-class pipelineView(ListView, SuccessMessageMixin, FilterView):
+class pipelineView(BaseDatatableView, SuccessMessageMixin, FilterView):
     model = Job
     table_class = JobTable
     csv_export_form = PipelineCSVExportForm
@@ -50,13 +50,12 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         client_id = self.request.GET.get('client_id')
+        print(client_id)
         context['job_form'] = JobForm(initial={'client': client_id})
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
         context['filter'] = JobFilter
         context['bulk_actions'] = self.bulk_actions
-        context['jobs'] = Job.objects.all()
-        context['headers'] = ["", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
         return context
 
     def post(self, request, *args, **kwargs):
@@ -65,33 +64,23 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
             if job_form.is_valid():
                 # Take in the budget in terms of 万
                 job_form.instance.budget = job_form.instance.budget * 10000
+                print(f'{job_form.instance.month},{job_form.instance.year}')
                 instance = job_form.save()
-                print(instance)
                 print(instance.job_date)
                 success_message="Job added!"
-                job = Job.objects.get(pk=instance.pk)
-                # Has brackets on it, but I want to return the data without the brackets.
-                # data_bracketed = serializers.serialize('json', [Job.objects.get(pk=instance.pk)], ensure_ascii=False)
-                # data = data_bracketed[1:-1]
-                data = {
-                    'select': "<input type='checkbox' name='select' value={{job.pk}} class='form-check-input'>",
-                    'client_name': job.client.friendly_name,
-                    'job_name': render_to_string('main_app/job_name.html', {"job":job}),
-                    'job_code': job.job_code,
-                    'budget': f'¥{job.budget:,}',
-                    'total_cost': render_to_string('main_app/job_total_cost.html', {"job":job} ),
-                    'profit_rate': job.profit_rate,
-                    'job_date': f'{calendar.month_abbr[job.job_date.month]} {job.job_date.year}',
-                    'job_type': job.get_job_type_display(),
-                    'status': job.get_status_display(),
-                    'edit': render_to_string('main_app/job_edit_delete.html', {"job":job}),
-                }
-                print(data)
-                return JsonResponse({"status": "success", "data":data})
+                # data = serializers.serialize("json", [Job.objects.get(id=instance.id)])
+                job_table = JobTable([instance])
+                row = job_table.rows[-1]  # Get the last row added to the table
+                print(f'the row: {row}')
+                for i, column in enumerate(job_table.columns):
+                    print(row.get_cell(column.name))
+                #     html += row.cells[i].render()
+                # print(f'the html: {html}')
+                return JsonResponse({"status": "success"})
             else:
                 for error in errors:
                     print(f'errors: {error}')
-                return JsonResponse({"status":"error"})
+                return JsonResponse({"status":"error", "errors":form.errors})
 
         elif 'csvexport' in request.POST:
             csv_export_form = PipelineCSVExportForm(request.POST)
@@ -116,6 +105,7 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
                 else:
                     thruYear = str(int(thruYear) + 1)
                     thruMonth = "1"
+                    ß
                 thruDate = f'{thruYear}-{thruMonth}'+'-01'
                 print(f'from: {fromDate}\nthru: {thruDate}')
                 
@@ -154,7 +144,6 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
         elif 'bulk-actions' in request.POST:
             bulk_form = self.bulk_actions(request.POST)
             # all_items = self.table_class(request.POST)
-            print(request.POST)
             checked_jobs = Job.objects.filter(id__in=request.POST.getlist('select'))
             if bulk_form.is_valid():
                 action = bulk_form.cleaned_data["actions"]

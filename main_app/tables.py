@@ -40,8 +40,8 @@ class JobTable(tables.Table):
 
 	class Meta:
 		model = Job
-		order_by = '-job_date','client__friendly_name'
-		template_name = "django_tables2/bootstrap5.html"
+		order_by = '-job_date','client__job_code'
+		template_name = "django_tables2/bootstrap5-responsive.html"
 		fields = ("select", "client","job_name","job_code", "budget", "total_cost", "profit_rate", "job_date", "job_type","status", "edit")
 
 class CostTable(tables.Table):

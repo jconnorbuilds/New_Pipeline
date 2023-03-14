@@ -191,21 +191,28 @@ class Job(models.Model):
         prefix = self.client.job_code_prefix
         month = int(self.month)
         year = int(self.year)
+        date = f"{year}-{month:02d}-01"
         # Jobs by the same client in the same month
-        sameClientJobs = Job.objects.filter(month=month, year=year,
-                                    client__job_code_prefix=prefix)
+        sameClientJobs = Job.objects.filter(job_date=date, client__job_code_prefix=prefix)
+        for i, job in enumerate(sameClientJobs):
+            print(f"job {i}: {job}")
 
-        # 'iterating' part of the code iterates based on the highest job number from tha
+        # 'iterating' part of the code iterates based on the highest job number from
         # the same client in the same month
-        i = 0
-        for job in sameClientJobs:
-            if int(job.job_code[-6:-4]) > i:
-                i = int(job.job_code[-6:-4])
-        identifier = i+1
-        jc = f'{prefix}{month:02d}{identifier:02d}{year}'
+        i = 1
 
-        return jc
+        while jc == '' and i <= 99:
+            if not Job.objects.filter(job_code = f'{prefix}{month:02d}{i:02d}{year}').exists():
+                jc = f'{prefix}{month:02d}{i:02d}{year}'
+                print(f'{prefix}{month:02d}{i:02d}{year} created')
+                return jc
+            else:
+                print(f'{prefix}{month:02d}{i:02d}{year} exists, trying again')
+                i+= 1
 
+            if i > 99:
+                print('There is an issue with the job code logic')
+                break
 
     JOB_TYPE_CHOICES = [
         ('ORIGINAL', 'Original'),

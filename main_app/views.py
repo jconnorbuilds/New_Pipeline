@@ -29,6 +29,7 @@ import calendar
 import unicodedata
 import csv
 
+
 # Create your views here.
 def index(request):
     return render(request, 'main_app/index.html')
@@ -38,7 +39,6 @@ def is_ajax(request):
 
 class pipelineView(ListView, SuccessMessageMixin, FilterView):
     model = Job
-    table_class = JobTable
     csv_export_form = PipelineCSVExportForm
     form_class = JobForm
     client_form_class = ClientForm
@@ -74,7 +74,7 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
                 # data_bracketed = serializers.serialize('json', [Job.objects.get(pk=instance.pk)], ensure_ascii=False)
                 # data = data_bracketed[1:-1]
                 data = {
-                    'select': "<input type='checkbox' name='select' value={{job.pk}} class='form-check-input'>",
+                    'select': render_to_string('main_app/job_checkbox.html', {"job":job}),
                     'client_name': job.client.friendly_name,
                     'job_name': render_to_string('main_app/job_name.html', {"job":job}),
                     'job_code': job.job_code,
@@ -221,9 +221,8 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
         return render(request, self.template_name, self.get_context_data())
 
 
-class pipelineMonthView(SingleTableMixin, MonthMixin, ListView):
+class pipelineMonthView(pipelineView, MonthMixin):
     model = Job
-    table_class = JobTable
     form_class = JobForm
     bulk_actions = PipelineBulkActionsForm
     template_name = "main_app/pipeline_by_month.html"
@@ -232,17 +231,14 @@ class pipelineMonthView(SingleTableMixin, MonthMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['job_form'] = self.form_class
-        context['bulk_actions'] = self.bulk_actions
-        context['year'] = 2099
-        context['month'] = 2
+        # currentYear = self.kwargs['year']
+        # currentMonth = self.kwargs['month']
+        currentDate = f"{self.kwargs['year']}-{self.kwargs['month']:02d}-01"
+        print(currentDate)
+        context['jobs'] = Job.objects.filter(job_date=currentDate)
+        
         return context
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        print(f'the result of self.get_month: {self.get_month()}')
-        queryset = queryset.filter()
-        return queryset
 
 class VendorDetailView(DetailView):
     template_name = "main_app/vendors.html"
@@ -277,21 +273,28 @@ def handle_uploaded_file(f):
     except:
         print('it looks like the filepath is configured incorrectly')
 
-def UploadInvoiceView(request):
-    if request.method == 'POST':
-        form = UploadInvoiceForm(request.POST, request.FILES)
-        if form.is_valid():
-            for file in request.FILES.getlist('file'):
-                print(file)
-                handle_uploaded_file(file)
-            return HttpResponseRedirect(reverse('main_app:invoice-upload-success'))
-        else:
-            print(form.errors)
-    else:
-        form = UploadInvoiceForm()
-    return render(request, 'main_app/invoice_upload.html', {'form': form})
+def upload_invoice(request):
+    pass
+    # if request.method == 'POST' and request.FILES['invoice']:
+    #     form = UploadInvoiceForm(request.POST, request.FILES)
+    #     if form.is_valid():
+    #         for file in request.FILES.getlist('invoice'):
+    #             print(file)
+    #             invoice = request.FILES['invoice']
+    #             client = storage.Client()
+    #             bucket = client.get_bucket(settings.GOOGLE_CLOUD_STORAGE_BUCKET_NAME)
+    #             blob = bucket.blob(invoice.name)
+    #             blob.upload_from_file(invoice)
+    #             # Save the invoice file URL to your database or send it to the user in an email.
+    #             invoice_url = f'https://storage.googleapis.com/{settings.GOOGLE_CLOUD_STORAGE_BUCKET_NAME}/{blob.name}'
+    #         return HttpResponseRedirect(reverse('main_app:upload-invoice-success'))
+    #     else:
+    #         print(form.errors)
+    # else:
+    #     form = UploadInvoiceForm()
+    # return render(request, 'main_app/upload_invoice.html', {'form': form})
 
-def UploadSuccessView(request):
+def upload_invoice_success(request):
     html = "<html>Upload successful</html>"
     return HttpResponse(html)
 
@@ -433,12 +436,12 @@ def importClients(request):
         reader = csv.reader(myFile, delimiter=',')
         next(reader) # Skip the header row
         for column in reader:
-                name = column[0]
+                friendly_name = column[0]
                 job_code_prefix = column[1]
                 proper_name = column[2]
                 proper_name_japanese = column[3]
                 notes = column[4]
-                if Client.objects.filter(name__iexact=name).exists():
+                if Client.objects.filter(friendly_name__iexact=friendly_name).exists():
                     itemNotCreated.append(f'{column[0]} - {column[1]}')
                     continue
                 else:
@@ -446,7 +449,7 @@ def importClients(request):
                         # These lines were importing with invisble spaces, so
                         # I used .strip() import them without the spaces
                         temp,created = Client.objects.get_or_create(
-                                name = name.strip(),
+                                friendly_name = friendly_name.strip(),
                                 job_code_prefix = job_code_prefix.strip(),
                                 proper_name = proper_name.strip(),
                                 proper_name_japanese = proper_name_japanese.strip(),
@@ -454,22 +457,23 @@ def importClients(request):
                                 )
                         temp.save()
                         if created:
-                            itemCreated.append(f'{name} - {job_code_prefix}')
+                            itemCreated.append(f'{friendly_name} - {job_code_prefix}')
                         elif not created:
-                            itemNotCreated.append(f'{name} - {job_code_prefix}')
+                            itemNotCreated.append(f'{friendly_name} - {job_code_prefix}')
                         # elif not created:
                         #   itemUpdated.append(f'{name} - {job_code_prefix}')
                         # else:
                         #   messages.warning.append(f'{name} - {job_code_prefix} !!! SOMETHING ELSE HAPPENED')
 
                     except IntegrityError as e:
-                        print(f'{name} - {job_code_prefix}: {e}')
-                        messages.error(request, f"{name} - {job_code_prefix} wasn't added.\n{e}")
+                        print(f'{friendly_name} - {job_code_prefix}: {e}')
+                        messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added.\n{e}")
                     except NameError as n:
-                        print(f'{name} - {job_code_prefix}: {n}')
-                        messages.error(request, f"{name} - {job_code_prefix} wasn't added.\n{e}")
+                        print(f'{friendly_name} - {job_code_prefix}: {n}')
+                        messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added.\n{e}")
                     except Exception as e:
-                        messages.error(request, f"{name} - {job_code_prefix} wasn't added - something bad happened! \n{e}")
+                        print(e)
+                        messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added - something bad happened! \n{e}")
             
         if itemCreated:
             messages.success(request, f'{len(itemCreated)} clients were added successfully!')
@@ -493,8 +497,8 @@ def importJobs(request):
             return Client.objects.get(job_code_prefix = job_code[:2])
         elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
             return Client.objects.get(job_code_prefix = job_code[:4])
-        elif Client.objects.filter(name__iexact=client).exists():
-            return Client.objects.get(name__iexact=client)
+        elif Client.objects.filter(friendly_name__iexact=client).exists():
+            return Client.objects.get(friendly_name__iexact=client)
         else:
             return False
     for line in myFile:
@@ -571,8 +575,8 @@ def importVendors(request):
             return Client.objects.get(job_code_prefix = job_code[:2])
         elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
             return Client.objects.get(job_code_prefix = job_code[:4])
-        elif Client.objects.filter(name__iexact=client).exists():
-            return Client.objects.get(name__iexact=client)
+        elif Client.objects.filter(friendly_name__iexact=client).exists():
+            return Client.objects.get(friendly_name__iexact=client)
         else:
             return False
     for line in myFile:

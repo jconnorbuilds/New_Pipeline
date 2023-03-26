@@ -18,6 +18,7 @@ from django.contrib.messages import constants as messages
 from urllib.parse import urlparse
 # from google.cloud import secretmanager
 from dotenv import load_dotenv
+import boto3
 
 load_dotenv()
 
@@ -32,7 +33,14 @@ MESSAGE_TAGS = {
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
-STATIC_DIR = BASE_DIR / 'static'
+# STATIC_DIR = BASE_DIR / 'static'
+
+LINODE_STORAGE = boto3.client('s3', 
+        # MOVE TO .ENV
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+        endpoint_url=os.getenv("ENDPOINT_URL")
+        )
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -41,9 +49,9 @@ STATIC_DIR = BASE_DIR / 'static'
 DEBUG = True
 
 if not DEBUG:
-    STATIC_ROOT = '/home/django/static/'
-else:
-    STATIC_ROOT = BASE_DIR
+    STATIC_ROOT = BASE_DIR / 'var/www/static/'
+# else:
+#     STATIC_ROOT = BASE_DIR / 'static_test'
 
 env_file = BASE_DIR / ".env"
 print(f"debug: {DEBUG}")
@@ -112,6 +120,26 @@ WSGI_APPLICATION = 'New_Pipeline.wsgi.application'
 if DEBUG:
     try:
         DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.getenv('DATABASE_NAME'),
+                'USER': os.getenv('DATABASE_USER'),
+                'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+                'HOST': os.getenv('DATABASE_HOST'),
+                'PORT': os.getenv('DATABASE_PORT'),
+        }
+    }
+    except:
+        print("the main db didn't load")
+        DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+else:
+    DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DATABASE_NAME'),
@@ -121,16 +149,6 @@ if DEBUG:
             'PORT': os.getenv('DATABASE_PORT'),
         }
     }
-    except:
-        DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-else:
-    print('you forgot to switch to the prod db')
 
 # If the flag as been set, configure to use proxy
 # if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):
@@ -161,12 +179,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'invoice@bwcatmusic.com'
-EMAIL_HOST_PASSWORD = 'fqmangqfxtnzjxpr'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
-GOOGLE_CLOUD_STORAGE_BUCKET_NAME = 'npt-files'
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -185,7 +201,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    STATIC_DIR,
+    BASE_DIR / 'static',
+    # '/var/www/static/',
 ]
 
 # Default primary key field type

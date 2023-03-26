@@ -24,6 +24,8 @@ from django_tables2 import SingleTableView
 from django_tables2.views import SingleTableMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from datetime import date
+# import boto3
+import json
 import os
 import calendar
 import unicodedata
@@ -57,6 +59,9 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
         context['bulk_actions'] = self.bulk_actions
         context['jobs'] = Job.objects.all()
         context['headers'] = ["", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
+        # if settings.DEBUG == True:
+        #     context['test_uuid'] = Vendor.objects.get(id=1).uuid
+        #     print(context['test_uuid'])
         return context
 
     def post(self, request, *args, **kwargs):
@@ -70,9 +75,6 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
                 print(instance.job_date)
                 success_message="Job added!"
                 job = Job.objects.get(pk=instance.pk)
-                # Has brackets on it, but I want to return the data without the brackets.
-                # data_bracketed = serializers.serialize('json', [Job.objects.get(pk=instance.pk)], ensure_ascii=False)
-                # data = data_bracketed[1:-1]
                 data = {
                     'select': render_to_string('main_app/job_checkbox.html', {"job":job}),
                     'client_name': job.client.friendly_name,
@@ -257,46 +259,163 @@ class JobDetailView(DetailView):
     template_name = "main_app/jobs.html"
     model = Job
 
-def handle_uploaded_file(f):
-    file_dir = f"invoices/Financial_TEST/{date.today().year}_{date.today().month}"
-    # file_dir = f"/Users/joeconnor_bcwc/Desktop/FINANCIAL_Test/{date.today().year}_{date.today().month}"
-    try:
-        if not os.path.exists(file_dir):
-            os.makedirs(file_dir)
-        file_path = os.path.join(file_dir, f.name)
-        with open(file_path, 'wb+') as destination:
-            # Write the contents of the uploaded file to the new file
-            for chunk in f.chunks():
-                destination.write(chunk)
-                print(f'{file_path}')
-        return file_path
-    except:
-        print('it looks like the filepath is configured incorrectly')
+def handle_uploaded_file(request):
+    print(f'FILES:{request.FILES}')
+    print(f'POST:{request.POST}')
 
-def upload_invoice(request):
-    pass
-    # if request.method == 'POST' and request.FILES['invoice']:
-    #     form = UploadInvoiceForm(request.POST, request.FILES)
+    if request.POST and "invoices" in request.POST:
+        print("we've got invoices!")
+
+        s3 = settings.LINODE_STORAGE
+
+        invoice_data = json.loads(request.POST['invoices'])
+        file_dict = {}
+        for file in request.FILES.values():
+            file_dict[file.name] = file
+
+        for invoice_id, invoice_filename in invoice_data.items():
+            cost = Cost.objects.get(id=invoice_id)
+            invoice_file = file_dict.get(invoice_filename, None)
+            if invoice_file:
+                if invoice_file.size < 10 * 1024 * 1024:
+                    try:
+                        s3.upload_fileobj(invoice_file, 'bcwc-files', invoice_file.name)
+                        cost.invoice_status = 'REC'
+                        print(f'{cost.PO_number} processed!')
+                        cost.save()
+                    except Exception as e:
+                        print(e)
+                        return HttpResponse('error')
+                else:
+                    print('that shouldnt go through')
+                    return JsonResponse({'error': 'File size must be less than 10 MB'})
+            else:
+                print('why are we seeing this')
+        if settings.DEBUG == False:
+            return HttpResponse('upload')
+        else:
+            print('debuggin')
+    else:
+        print("not quite")
+
+    
+
+
+def invoice_upload_view(request, vendor_uuid):
+    vendor = Vendor.objects.get(uuid=vendor_uuid)
+    costs = Cost.objects.filter(vendor_id=vendor.id, invoice_status='REQ').select_related('job')
+    print(f'VENDOR ID: {vendor.id}')
+    jobs = list(Job.objects.filter(cost_rel__in=costs).values('pk','job_name', 'job_code'))
+    jobs_json = json.dumps(jobs)
+    costs_json = serializers.serialize('json', costs)
+    for cost in costs:
+        print(cost)
+    print("Amt of costs: " + str(len(costs)))
+    
+    if len(costs) == 0:
+        return HttpResponseRedirect(reverse('main_app:no-invoices'))
+
+    else:
+        context = {'costs':costs, 'costs_json':json.dumps(costs_json), 'jobs_json':jobs_json, 'vendor_id':vendor.id}
+        print(context)
+        return render(request, 'main_app/upload_invoice.html', context)
+
+    # if request.method == 'POST' and request.FILES.getlist('file'):
+    #     form = UploadInvoiceForm(request.POST, request.FILES, vendor=vendor)
+    #     invoices = request.FILES.getlist('file')
+    #     for invoice in invoices:
+    #         # Check file extension
+    #         ext = os.path.splitext(invoice.name)[1]
+    #         if ext.lower() not in ['.pdf', '.jpg']:
+    #             form.add_error('invoice', 'Only PDF and JPG files are allowed')
+    #         # Check file size
+    #         if invoice.size > 10 * 1024 * 1024:
+    #             form.add_error('invoice', 'File size must be less than 10 MB')
     #     if form.is_valid():
-    #         for file in request.FILES.getlist('invoice'):
-    #             print(file)
-    #             invoice = request.FILES['invoice']
-    #             client = storage.Client()
-    #             bucket = client.get_bucket(settings.GOOGLE_CLOUD_STORAGE_BUCKET_NAME)
-    #             blob = bucket.blob(invoice.name)
-    #             blob.upload_from_file(invoice)
-    #             # Save the invoice file URL to your database or send it to the user in an email.
-    #             invoice_url = f'https://storage.googleapis.com/{settings.GOOGLE_CLOUD_STORAGE_BUCKET_NAME}/{blob.name}'
+    #         s3 = boto3.client('s3', 
+    #                         # MOVE TO .ENV
+    #                         aws_access_key_id='90IAMLVRVJ0TZOP1500D',
+    #                         aws_secret_access_key='CmzZRJN065MVos9nKifqGRljDmiolUGCbeL7wrQm',
+    #                         endpoint_url='https://bcwc-files.ap-south-1.linodeobjects.com')
+    #         for invoice in invoices:
+    #             print(invoice)
+    #             try:
+    #                 s3.upload_fileobj(invoice, 'bcwc-files', invoice.name)
+                    
+    #             except Exception as e:
+    #                 print(e)
+    #                 return HttpResponse('error')
+
+    #             cost = Cost.objects.get(id=form.cleaned_data['cost'].id)
+    #             cost.invoice_status = 'REC'
+    #             cost.save()
+
     #         return HttpResponseRedirect(reverse('main_app:upload-invoice-success'))
     #     else:
     #         print(form.errors)
     # else:
-    #     form = UploadInvoiceForm()
-    # return render(request, 'main_app/upload_invoice.html', {'form': form})
+    #     form = UploadInvoiceForm(vendor=vendor)
+    # return render(request, 'main_app/upload_invoice.html', {'form':form, 'costs':costs})
+
+# def upload_invoice(request, vendor_id):
+#     vendor = Vendor.objects.get(id=vendor_id)
+#     costs = Cost.objects.filter(vendor_id=vendor.id, invoice_status='REQ')
+#     UploadInvoiceFormset = formset_factory(UploadInvoiceForm, extra=0 ) 
+#     for cost in costs:
+#         print(cost)
+#     print(len(costs))
+#     if len(costs) == 0:
+#         return HttpResponseRedirect(reverse('main_app:no-invoices'))
+
+#     print(request.FILES.getlist('invoice'))
+#     if request.method == 'POST' and request.FILES.getlist('invoice'):
+#         formset = UploadInvoiceFormset(request.POST, request.FILES, form_kwargs={'vendor': vendor})
+#         for form in formset:
+#             invoice = request.FILES['invoice']
+#             # Check file extension
+#             ext = os.path.splitext(invoice.name)[1]
+#             if ext.lower() not in ['.pdf', '.jpg']:
+#                 formset.add_error('invoice', 'Only PDF and JPG files are allowed')
+#             # Check file size
+#             if invoice.size > 10 * 1024 * 1024:
+#                 formset.add_error('invoice', 'File size must be less than 10 MB')
+#         if formset.is_valid():
+#             s3 = boto3.client('s3', 
+#                             # MOVE TO .ENV
+#                             aws_access_key_id='90IAMLVRVJ0TZOP1500D',
+#                             aws_secret_access_key='CmzZRJN065MVos9nKifqGRljDmiolUGCbeL7wrQm',
+#                             endpoint_url='https://bcwc-files.ap-south-1.linodeobjects.com')
+#             for invoice in invoices:
+#                 print(invoice)
+#                 try:
+#                     s3.upload_fileobj(invoice, 'bcwc-files', invoice.name)
+#                 except Exception as e:
+#                     print(formset.add_error(e))
+#                     return HttpResponse('error')
+
+#                 cost = Cost.objects.get(id=form.cleaned_data['cost'].id)
+#                 cost.invoice_status = 'REC'
+#                 cost.save()
+
+#             return HttpResponseRedirect(reverse('main_app:upload-invoice-success'))
+#         else:
+#             print(formset.errors)
+#     else:
+#         formset = UploadInvoiceFormset(form_kwargs={'vendor': vendor}, initial=[
+#             {
+#             'cost_id': cost.id,
+#             'cost_name': f'{cost.description}, {cost.job.job_name}, {cost.currency}{cost.amount}'} 
+#             for cost in costs
+#             ])
+
+#     return render(request, 'main_app/upload_invoice.html', {'formset':formset})
 
 def upload_invoice_success(request):
     html = "<html>Upload successful</html>"
     return HttpResponse(html)
+
+def invoice_error(request):
+    return render(request, 'main_app/no_invoices.html')
 
 def InvoicesView(request):
     template_name = "main_app/request_invoices.html"
@@ -385,7 +504,7 @@ def RequestVendorInvoices(request):
         from_email=None
 
         # creates rich text and plaintext versions to be sent; rich text will be read by default
-        html_message = render_to_string("main_app/invoice_request_template.html", context={'vendor_first_name':vendor_first_name, 'costs':costs})
+        html_message = render_to_string("main_app/invoice_request_template.html", context={'vendor_first_name':vendor_first_name, 'vendor':vendor, 'costs':costs})
         with open(settings.TEMPLATE_DIR / "main_app/invoice_request_template.html") as f:
             message = strip_tags(f.read())
         

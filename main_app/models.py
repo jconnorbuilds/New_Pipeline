@@ -22,7 +22,8 @@ def PO_num_generator():
 PONumgen = PO_num_generator()
 
 class Vendor(models.Model):
-    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     unique_id = models.CharField(max_length=10, default = 'NEW00')
     full_name = models.CharField(max_length=30, default='NewVendor')
     vendor_initials = models.CharField(max_length=4)

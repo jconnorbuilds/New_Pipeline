@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, Textarea
+from django.forms import ModelForm, Textarea, formset_factory, formsets, renderers
 from django.db.models import Q
 from .models import Cost, Job, Vendor, Client
 from datetime import date
@@ -184,5 +184,40 @@ class JobFilter(django_filters.FilterSet):
         fields = []
 
 class UploadInvoiceForm(forms.Form):
-    title = forms.CharField(max_length=50)
-    invoice = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    '''
+    Vendors can drag and drop files into the dropzone (dropzone.js), then have the form appear.
+    Then, the invoice name can be lined up with the cost that it goes with.
+
+    '''
+    # cost_id = forms.IntegerField(widget=forms.HiddenInput)
+    file = forms.FileField(widget=forms.ClearableFileInput())
+    # invoice_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"readonly":True}))
+    cost = forms.ModelChoiceField(queryset=Cost.objects.none())
+
+    def __init__(self, *args, vendor, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['cost'].queryset = Cost.objects.filter(vendor_id=vendor.id, invoice_status="REQ")
+        # self.fields['cost_name'].widget.attrs.update({'value': kwargs['initial']['cost_name']})
+        # 
+        # print(f'vendor from the form arguments : {vendor}')
+        # print(f'vendor ID: {vendor.id}')
+        # if vendor:
+        #     print(f'vendor: {vendor}')
+        # else:
+        #     print("NO VENDOR")
+        
+
+# class UploadInvoiceFormset(BaseFormSet):
+#     def __init__(self, *args, **kwargs):
+#         self.vendor = kwargs.pop('vendor', None)
+#         super().__init__(*args, **kwargs)
+
+#     def _construct_form(self, i, **kwargs):
+#         kwargs['vendor'] = self.vendor
+#         return super(UploadInvoiceFormset, self)._construct_form(i, **kwargs)
+
+
+
+
+
+

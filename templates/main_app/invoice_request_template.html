@@ -13,12 +13,16 @@
 
 	{% for cost in costs %}
 	<ul>
-		<li><strong>{{ cost.job.job_name }} - {{ cost.job.job_code }}</strong> 
+		<li><strong>{{ cost.job.job_name }} - PO Number: {{ cost.PO_number }}</strong> 
 			<br>Description: {{ cost.description }}
-			<br>Amount: ¥{{ cost.amount }}</li>
+			<br>Amount: {{ cost.currency }}{{ cost.amount }} (excl. tax)</li>
 	</ul>
 	{% endfor %}
+	<h4>Upload your invoices <a href="http://127.0.0.1:8000{% url 'main_app:upload-invoice' vendor.id %}">HERE</a>!</h4>
+	<p>Open the page and simply drag and drop.</p>
+	
+	
 	<p>We plan to pay you by the 25th of the following month upon receipt of invoice. If you have any questions or concerns, please reach out directly. Looking forward to working with you again! </p></br>
-	<p><em>If this email finds you erroneously, please forgive us! We're trying out something new.</em></p>
+	<p><small><em>If this email finds you erroneously, please forgive us! We're trying out something new to improve the way we work together.</em></small></p>
 </body>
 </html>

@@ -27,8 +27,10 @@ urlpatterns = [
 	path('add-vendor/', views.VendorCreateView.as_view(), name="vendor-add"),
 	path('vendor-list/', views.VendorListView.as_view(), name="vendor-list"),
 	path('remove-vendor-from-job/<job_id>/<pk>/', views.VendorRemoveFromJob, name="remove-vendor-from-job"),
-	path('upload-invoice/', views.upload_invoice, name="upload-invoice"),
+	path('upload-invoice/<vendor_uuid>', views.invoice_upload_view, name="upload-invoice"),
 	path('upload-invoice-success/', views.upload_invoice_success, name="upload-invoice-success"),
+	path('no-invoices/', views.invoice_error, name="no-invoices"),
+	path('file-handler/', views.handle_uploaded_file, name="file-handler"),
 
 ]
 

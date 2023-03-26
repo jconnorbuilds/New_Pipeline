@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% extends "main_app/base.html" %}
+{% load render_table from django_tables2 %}
+{% load widget_tweaks %}
+{% load static %}
+{% block header %}
+{{ block.super }}
+
+{% endblock %}
+
+{% block body_block %}
+
+	<div class="container-fluid bg-body-secondary">
+		<form method="post" class="form-control shadow dropzone" enctype="multipart/form-data">
+			{% csrf_token %}
+			{{ formset }}
+			{{ formset.management_form }}
+			<input type="submit" name="submit" class="btn btn-dark">
+		</form>
+	</div>
+{% endblock %}
+
+<script>
+	let myDropzone = new Dropzone("#invoice-upload-form");
+	myDropzone.on("addedfile", file => {
+  console.log(`File added: ${file.name}`);
+	});
+</script>

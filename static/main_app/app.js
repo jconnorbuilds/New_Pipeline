@@ -10,8 +10,9 @@ $(document).ready(function(){
     var table = $('#job_table').DataTable({
         paging: false,
         ajax: {
-            url: 'http://139.162.118.33/main-app/pipeline-data/' + currentYear + '/' + currentMonth + '/',
+            url: 'http://139.162.118.33:8000/main-app/pipeline-data/' + currentYear + '/' + currentMonth + '/',
             // url: 'http://127.0.0.1:8000/main_app/pipeline-data/' + currentYear + '/' + currentMonth + '/',
+            dataType : "application/json",
             dataSrc: function(json) {
                 // Sets these variables on initial page load
                 totalRevenueYtd = json.total_revenue_ytd;
@@ -188,7 +189,8 @@ $(document).ready(function(){
     var pipelineViewState = "monthly"
 
     function filterData(year, month, successCallback) {
-        var url = 'http://127.0.0.1:8000/main_app/pipeline-data/';
+        var url = 'http://139.162.118.33:8000/main-app/pipeline-data/';
+        // var url = 'http://127.0.0.1:8000/main_app/pipeline-data/';
         if (year !== undefined && month !== undefined) {
             url = url + year + '/' + month + '/';
         }

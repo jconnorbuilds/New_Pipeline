@@ -12,7 +12,6 @@ $(document).ready(function(){
         ajax: {
             url: 'http://139.162.118.33:8000/main_app/pipeline-data/' + currentYear + '/' + currentMonth + '/',
             // url: 'http://127.0.0.1:8000/main_app/pipeline-data/' + currentYear + '/' + currentMonth + '/',
-            dataType : "application/json",
             dataSrc: function(json) {
                 // Sets these variables on initial page load
                 totalRevenueYtd = json.total_revenue_ytd;

@@ -9,8 +9,9 @@
   <div class="d-flex justify-content-between">
     <div class="col-4">
         <h1 class="display-1">Pipeline</h1>
-
-        {# <h1 class="display-2">Jobs</h1> #}
+        <div class="">
+          <button type="button" class="btn btn-dark p-2 toggle-view" data-bs-toggle="button"><b>Viewing jobs by month</b></button>
+        </div>
         {% if job_form.errors %}
           {% for error in job_form.errors %}
           <p>{{ error }} </p>
@@ -35,7 +36,7 @@
     {# Fields area #}
 </div>
 <div class="container-auto bg-body-secondary p-4">
-  <div class="container bg-body-tertiary">
+  <div class="container bg-body-tertiary rounded-3">
     <div class="row g-3 p-3 d-flex">
       <div class="col-lg-12 col-xl-8 me-auto">
         <form method="post" class="form-control shadow" id="job-form">
@@ -107,12 +108,20 @@
             </div>
               <div class="row">
                 <div class="col">
-                
                 <input type="submit" name="csvexport" value="Export CSV" class="btn btn-light">
                 </div>
             </div>
           </div>
         </form>
+
+        <div id="monthly-view-panel" class="container-fluid p-3 my-3 bg-white rounded-2 shadow monthly-item">
+          <div class="row">
+            <div class="col" id="monthly-view-panel-inner">
+              <h5 id ="total-billed-ytd">Total billed (YTD):</h5>
+              <h5 id="total-billed-monthly"></h5> 
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -159,17 +168,44 @@
         <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
           <span class="visually-hidden">Loading...</span>
         </div>
-        </form>
       </div>
+    </form>
     </div>
   </div>
 </div>
-
-
 <div class="bg-body-tertiary p-4">
   <form method="post" class="">
     {% csrf_token %}
-    <div class="row d-flex align-items-baseline">
+    <div class="container-fluid p-3 my-3 bg-white rounded-2 shadow monthly-item">
+      <h4 id="view-state">Stuff goes here</h4>
+    </div>
+    <div class="container monthly-item">
+      <div class="row d-flex justify-content-center display-4">
+        <select class="form-control-plaintext" id="pipeline-year" style="width: auto;"></select>
+        <select class="form-control-plaintext" id="pipeline-month" style="width: auto;">
+          <option value="1">1月</option>
+          <option value="2">2月</option>
+          <option value="3">3月</option>
+          <option value="4">4月</option>
+          <option value="5">5月</option>
+          <option value="6">6月</option>
+          <option value="7">7月</option>
+          <option value="8">8月</option>
+          <option value="9">9月</option>
+          <option value="10">10月</option>
+          <option value="11">11月</option>
+          <option value="12">12月</option>
+        </select>
+      </div>
+      <div class="row d-flex justify-content-center">
+        <button type="button" class="btn btn-dark" id="pipeline-prev" style="width: auto;"><<</button>
+        <button type="button" class="btn btn-dark" id="pipeline-current" style="width: auto;">current month</button>
+        <button type="button" class="btn btn-dark" id="pipeline-next" style="width: auto;">>></button>
+      </div>
+    </div>
+
+      <hr>
+      <div class="row d-flex align-items-baseline">
       <div class="col-auto">
         <h5 class="">Bulk actions</h5>
       </div>
@@ -183,7 +219,7 @@
         <a href="{% url 'main_app:import-job' %}"><button type="button" id="import-job-csv-btn" class="btn btn-sm btn-light">Import jobs</button></a>
       </div>
     </div>
-    <hr>
+    
     <table id="job_table" class="display compact nowrap">
       <thead>
         <tr>

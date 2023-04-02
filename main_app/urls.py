@@ -6,8 +6,8 @@ from .models import Job
 app_name = 'main_app'
 
 urlpatterns = [
-	path('', views.pipelineView.as_view(model=Job), name="pipeline"),
-	path('pipeline/<int:year>/<int:month>/', views.pipelineMonthView.as_view(), name="pipeline-by-month"),
+	path('pipeline/', views.pipelineView.as_view(), name="pipeline"),
+	path('pipeline/<int:year>/<int:month>/', views.pipelineView.as_view(), name="pipeline-by-month"),
 	# path('costsheet/<str:job_code>/', views.costsheetView.as_view(), name="costsheet"),
 	path('cost-add/<pk>/', views.CostCreateView.as_view(), name="cost-add"),
 	path('<cost_id>/delete-cost/', views.CostDeleteView, name="cost-delete"),
@@ -31,6 +31,9 @@ urlpatterns = [
 	path('upload-invoice-success/', views.upload_invoice_success, name="upload-invoice-success"),
 	path('no-invoices/', views.invoice_error, name="no-invoices"),
 	path('file-handler/', views.handle_uploaded_file, name="file-handler"),
+	path('pipeline-data/<int:year>/<int:month>/', views.pipeline_data, name="pipeline-data"),
+	path('pipeline-data/', views.pipeline_data, name="pipeline-data"),
+
 
 ]
 

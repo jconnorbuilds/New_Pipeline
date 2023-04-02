@@ -5,6 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
 from django.core.mail import send_mail, send_mass_mail
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.forms import formset_factory, modelformset_factory, Textarea
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
@@ -57,7 +58,7 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
         context['csv_export_form'] = self.csv_export_form
         context['filter'] = JobFilter
         context['bulk_actions'] = self.bulk_actions
-        context['jobs'] = Job.objects.all()
+        # context['jobs'] = Job.objects.all()
         context['headers'] = ["", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
         # if settings.DEBUG == True:
         #     context['test_uuid'] = Vendor.objects.get(id=1).uuid
@@ -222,6 +223,33 @@ class pipelineView(ListView, SuccessMessageMixin, FilterView):
         self.object_list = self.get_queryset()
         return render(request, self.template_name, self.get_context_data())
 
+def pipeline_data(request, year=None, month=None):
+    jobs = Job.objects.none()
+    # Calculate total revenue
+    total_revenue_ytd = Job.objects.filter(job_date__year=date.today().year).aggregate(total_budget=Sum('budget'))['total_budget'] or 0
+    if year is not None and month is not None:
+        jobs = Job.objects.filter(job_date__month=month, job_date__year=year)
+    total_revenue_monthly = jobs.aggregate(total_budget=Sum('budget'))['total_budget'] or 0
+    data = {"data":[
+        {
+            'select': render_to_string('main_app/job_checkbox.html', {"job":job}),
+            'client_name': job.client.friendly_name,
+            'job_name': render_to_string('main_app/job_name.html', {"job":job}),
+            'job_code': job.job_code,
+            'budget': f'¥{job.budget:,}',
+            'total_cost': render_to_string('main_app/job_total_cost.html', {"job":job} ),
+            'profit_rate': job.profit_rate,
+            'job_date': f'{calendar.month_abbr[job.job_date.month]} {job.job_date.year}',
+            'job_type': job.get_job_type_display(),
+            'status': job.get_status_display(),
+            'edit': render_to_string('main_app/job_edit_delete.html', {"job":job}),
+        } 
+        for job in jobs
+    ],
+    "total_revenue_ytd":total_revenue_ytd,
+    "total_revenue_monthly":total_revenue_monthly,
+    }
+    return JsonResponse(data, safe=False,)
 
 class pipelineMonthView(pipelineView, MonthMixin):
     model = Job
@@ -319,96 +347,6 @@ def invoice_upload_view(request, vendor_uuid):
         context = {'costs':costs, 'costs_json':json.dumps(costs_json), 'jobs_json':jobs_json, 'vendor_id':vendor.id}
         print(context)
         return render(request, 'main_app/upload_invoice.html', context)
-
-    # if request.method == 'POST' and request.FILES.getlist('file'):
-    #     form = UploadInvoiceForm(request.POST, request.FILES, vendor=vendor)
-    #     invoices = request.FILES.getlist('file')
-    #     for invoice in invoices:
-    #         # Check file extension
-    #         ext = os.path.splitext(invoice.name)[1]
-    #         if ext.lower() not in ['.pdf', '.jpg']:
-    #             form.add_error('invoice', 'Only PDF and JPG files are allowed')
-    #         # Check file size
-    #         if invoice.size > 10 * 1024 * 1024:
-    #             form.add_error('invoice', 'File size must be less than 10 MB')
-    #     if form.is_valid():
-    #         s3 = boto3.client('s3', 
-    #                         # MOVE TO .ENV
-    #                         aws_access_key_id='90IAMLVRVJ0TZOP1500D',
-    #                         aws_secret_access_key='CmzZRJN065MVos9nKifqGRljDmiolUGCbeL7wrQm',
-    #                         endpoint_url='https://bcwc-files.ap-south-1.linodeobjects.com')
-    #         for invoice in invoices:
-    #             print(invoice)
-    #             try:
-    #                 s3.upload_fileobj(invoice, 'bcwc-files', invoice.name)
-                    
-    #             except Exception as e:
-    #                 print(e)
-    #                 return HttpResponse('error')
-
-    #             cost = Cost.objects.get(id=form.cleaned_data['cost'].id)
-    #             cost.invoice_status = 'REC'
-    #             cost.save()
-
-    #         return HttpResponseRedirect(reverse('main_app:upload-invoice-success'))
-    #     else:
-    #         print(form.errors)
-    # else:
-    #     form = UploadInvoiceForm(vendor=vendor)
-    # return render(request, 'main_app/upload_invoice.html', {'form':form, 'costs':costs})
-
-# def upload_invoice(request, vendor_id):
-#     vendor = Vendor.objects.get(id=vendor_id)
-#     costs = Cost.objects.filter(vendor_id=vendor.id, invoice_status='REQ')
-#     UploadInvoiceFormset = formset_factory(UploadInvoiceForm, extra=0 ) 
-#     for cost in costs:
-#         print(cost)
-#     print(len(costs))
-#     if len(costs) == 0:
-#         return HttpResponseRedirect(reverse('main_app:no-invoices'))
-
-#     print(request.FILES.getlist('invoice'))
-#     if request.method == 'POST' and request.FILES.getlist('invoice'):
-#         formset = UploadInvoiceFormset(request.POST, request.FILES, form_kwargs={'vendor': vendor})
-#         for form in formset:
-#             invoice = request.FILES['invoice']
-#             # Check file extension
-#             ext = os.path.splitext(invoice.name)[1]
-#             if ext.lower() not in ['.pdf', '.jpg']:
-#                 formset.add_error('invoice', 'Only PDF and JPG files are allowed')
-#             # Check file size
-#             if invoice.size > 10 * 1024 * 1024:
-#                 formset.add_error('invoice', 'File size must be less than 10 MB')
-#         if formset.is_valid():
-#             s3 = boto3.client('s3', 
-#                             # MOVE TO .ENV
-#                             aws_access_key_id='90IAMLVRVJ0TZOP1500D',
-#                             aws_secret_access_key='CmzZRJN065MVos9nKifqGRljDmiolUGCbeL7wrQm',
-#                             endpoint_url='https://bcwc-files.ap-south-1.linodeobjects.com')
-#             for invoice in invoices:
-#                 print(invoice)
-#                 try:
-#                     s3.upload_fileobj(invoice, 'bcwc-files', invoice.name)
-#                 except Exception as e:
-#                     print(formset.add_error(e))
-#                     return HttpResponse('error')
-
-#                 cost = Cost.objects.get(id=form.cleaned_data['cost'].id)
-#                 cost.invoice_status = 'REC'
-#                 cost.save()
-
-#             return HttpResponseRedirect(reverse('main_app:upload-invoice-success'))
-#         else:
-#             print(formset.errors)
-#     else:
-#         formset = UploadInvoiceFormset(form_kwargs={'vendor': vendor}, initial=[
-#             {
-#             'cost_id': cost.id,
-#             'cost_name': f'{cost.description}, {cost.job.job_name}, {cost.currency}{cost.amount}'} 
-#             for cost in costs
-#             ])
-
-#     return render(request, 'main_app/upload_invoice.html', {'formset':formset})
 
 def upload_invoice_success(request):
     html = "<html>Upload successful</html>"

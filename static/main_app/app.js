@@ -1,10 +1,25 @@
 $(document).ready(function(){
     console.log('Ready!');
-
+    let date = new Date()
+    let currentMonth = date.getMonth() + 1
+    let currentYear = date.getFullYear()
     // Initialise and set settings for the main Jobs table
-    $('#job_table').DataTable( {
+    var selectedDate = ""
+    var totalRevenueYtd = 0
+    var totalRevenueMonthly = 0
+    var table = $('#job_table').DataTable({
         paging: false,
-        scrollY: 800,
+        ajax: {
+            url: 'http://139.162.118.33/main-app/pipeline-data' + currentYear + '/' + currentMonth + '/',
+            // url: 'http://127.0.0.1:8000/main_app/pipeline-data/' + currentYear + '/' + currentMonth + '/',
+            dataSrc: function(json) {
+                // Sets these variables on initial page load
+                totalRevenueYtd = json.total_revenue_ytd;
+                totalRevenueMonthly = json.total_revenue_monthly;
+                return json.data
+            }
+        },
+        // scrollY: 800,
         columns: [
             {"data": "select"},
             {"data": "client_name"},
@@ -38,15 +53,6 @@ $(document).ready(function(){
 
 
     let rangeCheckbox = $('#csv-export-use-range')
-
-    // $('#thru-month').attr('disabled',true);
-    // $('#thru-year').attr('disabled',true);
-    // $('#thru-month').attr('hidden',true);
-    // $('#thru-year').attr('hidden',true);
-    let date = new Date()
-    let currentMonth = date.getMonth() + 1
-    let currentYear = date.getFullYear()
-
 
     rangeCheckbox.click(function(){
         if (rangeCheckbox.is(':checked')) {
@@ -84,21 +90,7 @@ $(document).ready(function(){
         }
     });
 
-    // $('#new-client-modal').on('shown.bs.modal', function() {
-    //     console.log('got u')
-    //     var form = $('#new-client-form');
-    //     $.ajax({
-    //         url: form.data('url'),
-    //         type: 'get',
-    //         data: form.serialize(), 
-    //         success: function(response) {
-    //             form.replaceWith($(response).find('#new-client-form'));
-    //             // re-initialize the form using Django's built-in form handling
-    //             django.jQuery.initGlobalHandlers();
-    //         }
-    //     });
-    // });
-
+    // Job form submission
     $("#job-form").submit(function(event) {
         var spinner = $("#add-job-spinner")
         event.preventDefault();
@@ -117,7 +109,7 @@ $(document).ready(function(){
         $.ajax({
             headers: {'X-CSRFToken': csrftoken },
             type: "POST",
-            url: "/main_app/",
+            url: "/main_app/pipeline/",
             data: formData,
             beforeSend: function() {
                   spinner.removeClass('invisible');
@@ -130,31 +122,10 @@ $(document).ready(function(){
                     $(".toast").each(function() {
                         $(this).show()
                     });
-                    var table = $("#job_table").DataTable();
+                    // var table = $("#job_table").DataTable();
                     var job = response.data;
                     
                     table.row.add($(job)).draw();
-
-                    // var row = '<tr>' +
-                    //               '<td><input type="checkbox" name="select" value="' + job.pk + '" class="form-check-input"></input></td>' +
-                    //               '<td>' + job.fields.client.friendly_name + '</td>' +
-                    //               '<td><a href="{% url \'main_app:job-detail\' job.id %}">' + job.fields.job_name + '</a></td>' +
-                    //               '<td>' + job.fields.job_code + '</td>' +
-                    //               '<td>¥' + job.fields.budget + '</td>' +
-                    //               '<td><a href="{% url \'main_app:cost-add\' job.id %}">¥' + job.fields.total_cost + '</a></td>' +
-                    //               '<td>' + job.fields.profit_rate + '%</td>' +
-                    //               '<td>' + new Date(job.fields.job_date).toLocaleDateString("en-US", { month: 'short', year: 'numeric' }) + '</td>' +
-                    //               '<td>' + job.fields.job_type + '</td>' +
-                    //               '<td>' + job.fields.status + '</td>' +
-                    //               '<td>' +
-                    //                 '<div class="btn-group" role="group" aria-label="edit and delete buttons">' +
-                    //                   '<button type="button" class="btn btn-dark btn-sm"><a href="{% url \'main_app:job-update\' job.id %}" class="edit-del-btn-group"><i class="bi bi-wrench-adjustable-circle"></i></a></button>' +
-                    //                   '<button type="button" class="btn btn-danger btn-sm"><a href="{% url \'main_app:job-delete\' job.id %}" class="edit-del-btn-group"><i class="bi bi-trash3-fill"></i></a></button>' +
-                    //                 '</div>' +
-                    //               '</td>' +
-                    //             '</tr>';
-
-                    // instantiate toast for successful job creation
                     var toast = document.createElement("div");
                     toast.classList.add('toast', 'position-fixed', 'bg-success-subtle', 'border-0', 'top-0', 'end-0');
                     toast.setAttribute('role', 'alert');
@@ -190,7 +161,7 @@ $(document).ready(function(){
 
                 } else {
                     console.log('it did not work')
-                    form.addClass('was-validated');
+                    $("#job-form").addClass('was-validated');
                     spinner.addClass('invisible');
                 };
             },
@@ -199,13 +170,118 @@ $(document).ready(function(){
                 spinner.addClass('invisible');
             },
         });
+        // table.clear().rows.add(formData).draw();
     });
 
-    var form = $('#new-client-form');
-    var submitButton = form.find('button[type="submit"]');
+    var pipelineMonth = $("#pipeline-month");
+    var pipelineYear = $("#pipeline-year");
+    filterEarliestYear = 2021;
+
+    yearOption = filterEarliestYear
+    while (yearOption <= currentYear +1) {
+        pipelineYear.append(`<option value="${yearOption}">${yearOption}年</option>`)
+        yearOption++;
+    };
+        
+    pipelineMonth.val(currentMonth);
+    pipelineYear.val(currentYear);
+    var pipelineViewState = "monthly"
+
+    function filterData(year, month, successCallback) {
+        var url = 'http://127.0.0.1:8000/main_app/pipeline-data/';
+        if (year !== undefined && month !== undefined) {
+            url = url + year + '/' + month + '/';
+        }
+        // console.log(url)
+        // console.log(year)
+        table.ajax.url(url).load();
+
+        // $.ajax({
+        //     url: url,
+        //     dataType: 'json',
+        //     success: function(data) {
+        //         totalRevenueYtd = data.total_revenue_ytd;
+        //         totalRevenueMonthly = data.total_revenue_monthly;
+        //         if (typeof successCallback === 'function') {
+        //             console.log(`total rev YTD: ${data.total_revenue_ytd}`)
+        //             console.log(`total rev monthly: ${data.total_revenue_monthly}`)
+        //             successCallback(data, totalRevenueYtd, totalRevenueMonthly);
+        //         }
+        //     }
+        // });
+    }
+    function displayData(data, totalRevenueYtd, totalRevenueMonthly) {
+        // Code to display the table data
+        // ...
+        table.clear().rows.add(data.data).draw();
+        $("#total-billed-ytd").html(`<p>Total billed YTD: ${totalRevenueYtd}</p>`)
+        $("#total-billed-monthly").html(`<p>Total billed this month: ${totalRevenueMonthly}</p>`)
+    }
+
+    $(".toggle-view").click(function() {
+        if (pipelineViewState == "monthly") {
+            pipelineViewState = "all";
+            $("#view-state").text(pipelineViewState);
+            $(".monthly-item").hide()
+            $(".toggle-view").html("<b>Viewing all jobs</b>")
+            filterData(undefined, undefined, displayData);
+        } else {
+            pipelineViewState = "monthly"
+            $("#view-state").text(pipelineViewState);
+            $(".monthly-item").show()
+            $(".toggle-view").html("<b>Viewing jobs by month</b>")
+            filterData(pipelineYear.val(), pipelineMonth.val(), displayData);
+        }
+    });
+
+    $("#pipeline-month, #pipeline-year").change(function() {
+        filterData(pipelineYear.val(), pipelineMonth.val(), displayData);
+    });
+
+    $("#pipeline-next").click(function() {
+        var month = parseInt(pipelineMonth.val());
+        var year = parseInt(pipelineYear.val());
+        if (month != 12) {
+           month ++;
+           
+        } else if ((year + 1) > currentYear + 1) {
+            // add some error message?
+        } else {
+            month = 1;
+            year++;
+        } 
+        pipelineMonth.val(month);
+        pipelineYear.val(year);
+        filterData(year, month, displayData);
+    });
+
+    $("#pipeline-prev").click(function() {
+        var month = parseInt(pipelineMonth.val());
+        var year = parseInt(pipelineYear.val());
+        if (month != 1) {
+           month --;
+        } else if ((year - 1) < filterEarliestYear) {
+            // add some error message?
+        } else {
+            month = 12;
+            year--;
+        }
+        pipelineMonth.val(month);
+        pipelineYear.val(year);
+        filterData(year, month, displayData);
+    });
+
+    $("#pipeline-current").click(function() {
+        pipelineYear.val(currentYear);
+        pipelineMonth.val(currentMonth);
+        filterData(currentYear, currentMonth, displayData);
+    });
+
+    var clientForm = $('#new-client-form');
+    var submitButton = clientForm.find('button[type="submit"]');
     // Get the input fields
-    var properNameInput = form.find('input[name="proper_name"]');
-    var properNameJapaneseInput = form.find('input[name="proper_name_japanese"]');
+    var properNameInput = clientForm.find('input[name="proper_name"]');
+    var properNameJapaneseInput = clientForm.find('input[name="proper_name_japanese"]');
 
     // Listen for changes to the input fields
     properNameInput.on('input', validateInputs);
@@ -224,6 +300,7 @@ $(document).ready(function(){
         }
     }
 
+    //New Client form submission
     $("#new-client-form").submit(function(event) {
         var spinner = $("#add-client-spinner")
         event.preventDefault();

@@ -116,6 +116,12 @@ WSGI_APPLICATION = 'New_Pipeline.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_table',
+    }
+}
 # Use django-environ to parse the connection string
 if DEBUG:
     try:

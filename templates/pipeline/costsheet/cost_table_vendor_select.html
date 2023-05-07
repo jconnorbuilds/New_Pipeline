@@ -1,0 +1,10 @@
+<select class="form-control-plaintext cost-vendor-select" name="vendor-select">
+    <option value="0">Select Vendor</option>
+    {% for vendor in vendors %}
+        {% if vendor == selectedVendor %}
+            <option value={{ vendor.id }} selected>{{ vendor }}</option>
+        {% else %}
+            <option value={{ vendor.id }}>{{ vendor }}</option>
+        {% endif %}
+    {% endfor %}
+</select>

@@ -1,0 +1,9 @@
+<select class="form-control-plaintext job-status-select" name="job_status">
+    {% for status in options %}
+        {% if status.0 == currentStatus %}
+            <option value={{ status.0 }} selected>{{ status.1 }}</option>
+        {% else %}
+            <option value={{ status.0 }}>{{ status.1 }}</option>
+        {% endif %}
+    {% endfor %}
+</select>

@@ -1,0 +1,11 @@
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+
+<h1>Clients</h1>
+<ul>
+{% for client in object_list %}
+    <li>{{ client.friendly_name }} - {{ client.job_code_prefix }}</li>
+{% empty %}
+    <li>placeholder</li>
+{% endfor %}
+</ul>

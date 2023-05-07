@@ -5,7 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'New_Pipeline.settings')
 import django
 django.setup()
 
-from main_app.models import Job, Client, Vendor
+from pipeline.models import Job, Client, Vendor
 from faker import Faker
 from datetime import date
 from django.utils import timezone

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
+{% load widget_tweaks %}
+{% load static %}
+{% block header %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'pipeline/dropzone.css' %}">
+<script src="{% static 'pipeline/dropzone-min.js' %}"></script>
+{% endblock %}
+{% block navbar %}
+{% endblock %}
+
+
+{% block body_block %}
+<div class="container">
+	<div class="p-2 container-fluid col-lg-9">
+		<div class="d-flex justify-content-between">
+			<div class="">
+				<h3 class="display-3">Upload invoices</h3>
+				<hr>
+				<h5 class="no-wrap">Step 1: Drag and drop your invoice(s)</h5>
+			</div>
+			<div class="col-xl-3 invoice-upload-logo">
+				<img src="{% static 'pipeline/images/bwcat_logo_720x720.png' %}" alt="BCWC logo" align="right" class="me-4 " width="155px">
+			</div>
+		</div>
+		
+		<div class="container-xl p-3" id="step-1-area" >
+			<form action="{% url 'pipeline:file-handler' %}" method="post" id="invoice-upload-form" enctype="multipart/form-data" class="dropzone shadow rounded">
+				<div class="dropzone-previews"></div>
+				{% csrf_token %}
+				<div class="fallback">
+				<input name="file" type="file" multiple />
+			</div>
+			</form>
+		</div>
+		<div class="container py-3" id="step-2-area">
+			<h5>Step 2: Select the job(s) that you're invoicing</h5>
+			<div class="container-sm-auto m-3 needs-validation">
+				<p><em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em></p>
+				<p id="invoice-hint">Files will appear here once you've added them.</p>
+				<div class="shadow rounded p-2" id="invoice-select-area" style="display: none;"></div>
+			</div>
+			
+		</div>
+			<h5>Step 3: Click Submit:
+				<!-- tooltip is initialized on the span because I used to use it on the disabled button. Need to update-->
+				<span class="d-inline-block m-4" data-bs-toggle="tooltip" data-bs-placement="right"
+			data-bs-custom-class="invoice-submit-disabled-tooltip"
+			data-bs-title="👍">
+			<button type="submit" name="submit" id="invoice-upload-btn" class="btn btn-dark disabled">Submit!</button>
+		</span>
+		</h5>
+		
+</div>
+	<script>
+	  window.costsJson = {{ costs_json|safe }};
+	  window.jobsJson = {{ jobs_json|safe }};
+	  window.vendorId = {{ vendor_id|safe }};
+
+	</script>
+{% endblock %}
+{% block footer %}
+{{ block.super}}
+<script type="text/javascript" src="{% static 'pipeline/invoice-request.js' %}"></script>
+{% endblock %}
+

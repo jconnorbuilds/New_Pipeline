@@ -15,10 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from main_app import views
+from pipeline import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('main_app/', include('main_app.urls', namespace='main_app')),
+    path('pipeline/', include('pipeline.urls', namespace='pipeline')),
+    path("accounts/", include("django.contrib.auth.urls")),
     path('', views.index, name='index'),
 ]

@@ -22,6 +22,8 @@ import boto3
 
 load_dotenv()
 
+# LOGIN_URL = "/admin/login/"
+LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
         messages.DEBUG: 'alert-secondary',
         messages.INFO: 'alert-info',
@@ -36,11 +38,14 @@ TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
 
 LINODE_STORAGE = boto3.client('s3', 
-        # MOVE TO .ENV
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         endpoint_url=os.getenv("ENDPOINT_URL")
         )
+
+WISE_API_KEY = os.getenv("WISE_API_KEY")
+DROPBOX_ACCESS_TOKEN = os.getenv("DROPBOX_ACCESS_TOKEN")
+DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -75,8 +80,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main_app',
-    'django_tables2',
+    'pipeline',
+    # 'django_tables2',
     'django_filters',
     'django_bootstrap5',
     'widget_tweaks',
@@ -195,7 +200,7 @@ EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Japan'
 
 USE_I18N = True
 

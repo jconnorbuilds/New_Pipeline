@@ -1,0 +1,77 @@
+:root {
+  --bs-body-font-family: 'Roboto', 'sans-serif';
+  /* --fw-regular: 300; */
+  --fw-bold: 700;
+}
+
+html,
+body {
+  height: 100%;
+  /* font-weight: var(--fw-regular); */
+}
+
+strong {
+  font-weight: var(--fw-bold);
+  /* Use the "bold" font weight from the mapping */
+}
+
+.edit-del-btn-group {
+  color: inherit;
+}
+
+.lost-password-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.dropzone .dz-preview .dz-progress {
+/*  top: 70% !important;*/
+/*  background: rgba(255,255,255,25%) !important;*/
+  display: none;
+}
+
+.dropzone .dz-preview .dz-error-message {
+    top: 150px !important;
+}
+
+.selected-row {
+  background-color: rgba(81, 208, 255, 0.2) !important;
+}
+
+.job-finished {
+  background-color: rgba(0, 139, 74, 0.64) !important;
+}
+
+.all-invoices-requested {
+  background-color: rgba(226, 244, 62, 0.35) !important;
+}
+
+/*.invoice-upload-logo {
+  object-fit: scale-down;
+}*/
+/*.success {
+  background-color: var(--bs-success-bg-subtle);
+  color: var(--bs-success-text);
+}
+
+.info {
+  background-color: var(--bs-success-bg-subtle);
+  color: var(--bs-success-text);
+}
+
+.warning {
+  background-color: var(--bs-warning-bg-subtle);
+  color: var(--bs-warning-text);
+}
+
+.error {
+  background-color: var(--bs-danger-bg-subtle);
+  color: var(--bs-danger-text);
+
+}*/

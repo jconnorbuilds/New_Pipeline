@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block body_block %}
+
+<div class="container">
+  <div class="d-flex justify-content-between">
+    <div class="col-4">
+        {% if job_form.errors %}
+          {% for error in job_form.errors %}
+          <p>{{ error }} </p>
+          {% endfor %}
+        {% endif %}
+    </div>
+    <div class="col-auto me-auto">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="container-fluid p-0">
+          <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              {# <span aria-hidden="True">&times;</span> #}
+            </button>
+            {{ message }}
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+    </div>
+  </div>
+    {# Fields area #}
+</div>
+<div class="container-auto bg-body-secondary p-4">
+  <div class="container bg-body-tertiary rounded-3">
+    <div class="row g-3 p-3 d-flex">
+      <div class="col-lg-12 col-xl-8 me-auto">
+        <form method="post" class="form-control shadow" id="job-form">
+          {% csrf_token %}
+          <h3>Add a job</h3>
+          <hr>
+          <div class="row g-3 p-1">
+            <div class="col-sm-12">
+              <div class="input-group">
+                {% render_field job_form.client class+="form-select" %}
+                <button class="btn btn-light" type="button" id="pipeline-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
+              </div>
+            </div>
+          </div>
+          <div class="row g-3 p-1">
+            <div class="col-sm-6">
+              {% render_field job_form.job_name class+="form-control" placeholder="Enter job name" %}
+            </div>
+            <div class="col-sm-6">
+              <div class="input-group">
+                <span class="input-group-text" id="yen-addon">¥</span>
+                {% render_field job_form.revenue class+="form-control" help_text="revenue in ¥10k increments" %}
+                <span class="input-group-text" id="man-addon">万</span>
+              </div>
+            </div>
+          </div>
+          <div class="row g-3 p-1">
+            <div class="col-sm-3">
+              {% render_field job_form.job_type class+="form-select" %}
+            </div>
+            <div class="col-sm-3">
+              {% render_field job_form.personInCharge class+="form-select" %}
+            </div>
+            <div class="col-sm-3">
+              {% render_field job_form.month class+="form-control" %}
+            </div>
+            <div class="col-sm-3">
+              {% render_field job_form.year class+="form-control" %}
+            </div>
+            <div class='row g-3 p-1 align-items-center'>
+              <div class="col-auto">
+                <input type="submit" name="addjob" id="add-job-btn" value="Add Job" class="btn btn-dark">
+              </div>
+              <div class="col-auto p-0">
+                <div class="spinner-border spinner-border-sm invisible" role="status" id="add-job-spinner">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="csv-export col-xl-2 p-1 d-none d-xl-block align-self-end">
+        <form method="post" class="form-control">
+          {% csrf_token %}
+            <div class="row">
+              <div class="col">
+              {{ csv_export_form.fromMonth}}
+              {{ csv_export_form.fromYear }}
+              {{ csv_export_form.useRange }}
+              <label for="csv-export-use-range">Multi-month report</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col mb-3">
+              {{ csv_export_form.thruMonth|add_class:"invisible" }}
+              {{ csv_export_form.thruYear|add_class:"invisible"}}
+              </div>
+            </div>
+              <div class="row">
+                <div class="col">
+                <input type="submit" name="csvexport" value="Export CSV" class="btn btn-light">
+                </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Modal #}
+<div class="modal fade" id="new-client-modal" tabindex="-1" aria-labelledby="new-client-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="new-client-form" method="post" data-url="{% url 'pipeline:index' %}">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <div class="row px-3 py-0 g-1">
+          <div class="col-9">
+            <label for="id_friendly_name" class="form-label small">Client name</label>
+            {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
+          </div>
+          <div class="col-3">
+            <label for="id_job_code_prefix" class="form-label small">Prefix</label>
+            {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
+            <div id="prefix_help" class="form-text">2-4 characters</div>
+          </div>
+        </div>
+        <div class="row p-3 g-1">
+          <p class="p-0 g-0">Proper client name</p>
+          <div class="col-6 pt-0">
+            <label for="id_proper_name" class="form-label small pt-0">English</label>
+            {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. "%}
+          </div>
+          <div class="col-6">
+            <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
+            {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
+          </div>
+          <div id="proper_name_help" class="form-text">The client name to be used for invoices. Enter one or the other.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-info submit" id="add-new-client-btn" name="new-client">Add Client</button>
+        <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
+{# Job table start #}
+<div class="p-4">
+  <form method="post" class="">
+    {% csrf_token %}
+    <div class="container-fluid bg-white rounded-2 shadow">
+      <div class="row d-flex p-2 justify-content-between align-items-center">
+        <div class="col-6">
+          <h1 class="display-1">Pipeline</h1>
+          <div class="p-2">
+            <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button"><b>Viewing jobs by month</b></button>
+          </div>
+        </div>
+        <div id="monthly-view-panel" class="wrapper col-6 monthly-item">
+          <div class="row d-flex align-items-baseline">
+            <div class="col-auto text-nowrap">
+              <h6>Total billed (YTD): </h6>
+              <h6>Monthly average (YTD): </h6> 
+              <h5>Total billed this month (Expected): </h5>
+              <h5>Total billed this month (Actual): </h5>
+            </div>
+            <div class="col-auto mx-3 text-nowrap" style="text-align: right;">
+              <h6 id ="total-revenue-ytd"></h6>
+              <h6 id ="avg-revenue-ytd"></h6>
+              <h5 id="total-revenue-monthly-exp"></h5>
+              <h5 id="total-revenue-monthly-act"></h5> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="pipeline-date-select" class="container monthly-item">
+      <div class="row d-flex justify-content-center display-4">
+        <select class="form-control-plaintext" id="pipeline-year" style="width: auto;"></select>
+        <select class="form-control-plaintext" id="pipeline-month" style="width: auto;">
+          <option value="1">1月</option>
+          <option value="2">2月</option>
+          <option value="3">3月</option>
+          <option value="4">4月</option>
+          <option value="5">5月</option>
+          <option value="6">6月</option>
+          <option value="7">7月</option>
+          <option value="8">8月</option>
+          <option value="9">9月</option>
+          <option value="10">10月</option>
+          <option value="11">11月</option>
+          <option value="12">12月</option>
+        </select>
+      </div>
+      <div class="row d-flex justify-content-center">
+        <button type="button" class="btn btn-dark" id="pipeline-prev" style="width: auto;"><<</button>
+        <button type="button" class="btn btn-dark" id="pipeline-current" style="width: auto;">current month</button>
+        <button type="button" class="btn btn-dark" id="pipeline-next" style="width: auto;">>></button>
+      </div>
+    </div>
+
+      <hr>
+      <div class="row d-flex align-items-baseline">
+      <div class="col-auto">
+        <h5 class="">Bulk actions</h5>
+      </div>
+      <div class="col-auto">
+        {{ bulk_actions.actions }}
+      </div>
+      <div class="col-auto">
+        <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
+      </div>
+      <div class="col-1 ms-auto">
+        <a href="{% url 'pipeline:import-job' %}"><button type="button" id="import-job-csv-btn" class="btn btn-sm btn-light">Import jobs</button></a>
+      </div>
+    </div>
+    
+    <div class="wrapper" style="min-height:550px;">
+      <table id="job-table" class="compact hover nowrap">
+        <thead>
+          <tr>
+            {% for item in headers %}
+            <th>{{ item }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            {% comment %} <td><input type="checkbox" name="select" value="{{ job.pk }}" class="form-check-input"></input></td>
+            <td>{{ job.client.friendly_name }}</td>
+            <td><a href="{% url 'pipeline:job-detail' job.id %}">{{ job.job_name }}</a></td>
+            <td>{{ job.job_code }}</td>
+            <td>¥{{ job.revenue }}</td>
+            <td><a href="{% url 'pipeline:cost-add' job.id %}">¥{{ job.total_cost }}</a></td>
+            <td>{{ job.profit_rate|floatformat }}%</td>
+            <td>{{ job.job_date|date:"M Y" }}</td>
+            <td>{{ job.get_job_type_display }}</td>
+            <td>{{ job.get_status_display }}</td>
+            <td>
+              <div class="btn-group" role="group" aria-label="edit and delete buttons">
+                <button type="button" class="btn btn-dark btn-sm" ><a href="{% url 'pipeline:job-update' job.id %}" class="edit-del-btn-group"><i class="bi bi-wrench-adjustable-circle"></i></a></button>
+                <button type="button" class="btn btn-danger btn-sm"><a href="{% url 'pipeline:job-delete' job.id %}" class="edit-del-btn-group"><i class="bi bi-trash3-fill"></i></a></button>
+              </div>
+            </td> {% endcomment %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </form>
+</div>
+
+  {% endblock %}

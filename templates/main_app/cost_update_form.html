@@ -1,9 +1,0 @@
-{% extends "main_app/base.html" %}
-{% load static %}
-{% block body_block %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input class="btn btn-success" type="submit" value="Update">
-</form>
-{% endblock %}

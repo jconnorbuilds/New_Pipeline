@@ -44,7 +44,9 @@ LINODE_STORAGE = boto3.client('s3',
         )
 
 WISE_API_KEY = os.getenv("WISE_API_KEY")
-DROPBOX_ACCESS_TOKEN = os.getenv("DROPBOX_ACCESS_TOKEN")
+DROPBOX_REFRESH_TOKEN = os.getenv("DROPBOX_REFRESH_TOKEN")
+DROPBOX_APP_KEY = os.getenv("DROPBOX_APP_KEY")
+DROPBOX_APP_SECRET = os.getenv("DROPBOX_APP_SECRET")
 DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 
 # Quick-start development settings - unsuitable for production

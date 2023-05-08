@@ -353,15 +353,7 @@ def cost_data(request, job_id):
         print(cost.currency)
         print(cost.invoice_status)
     
-    status_options = [
-        ('NR','Not ready to request'),
-        ('READY','Ready to request'),
-        ('REQ','Requested'),
-        ('REC','Received via upload'),
-        ('REC2','Received (direct PDF/paper)'),
-        ('PAID','Paid'),
-        ('NA','No Invoice'),
-    ]
+    status_options = Cost.INVOICE_STATUS_CHOICES
 
     data = {"data": [
         {
@@ -469,15 +461,8 @@ def all_invoices_data(request):
     costs = Cost.objects.all()
     print(request.POST)
 
-    status_options = [
-        ('NR', 'Not ready to request'),
-        ('READY', 'Ready to request'),
-        ('REQ', 'Requested'),
-        ('REC', 'Received via upload'),
-        ('REC2', 'Received (direct PDF/paper)'),
-        ('PAID', 'Paid'),
-        ('NA', 'No Invoice'),
-    ]
+    status_options = Cost.INVOICE_STATUS_CHOICES
+
     data = {"data": [
         {
             "select": render_to_string('pipeline/costsheet/checkbox.html', {"cost_id": cost.id}),
@@ -502,32 +487,43 @@ def all_invoices_data(request):
 def dropbox_connect():
     """Create a connection to Dropbox."""
     headers = {'Dropbox-API-Select-User': settings.DROPBOX_USER_ID}
+    
+    refresh_token = settings.DROPBOX_REFRESH_TOKEN
+    app_key = settings.DROPBOX_APP_KEY
+    app_secret = settings.DROPBOX_APP_SECRET
 
     try:
-        dbx = dropbox.Dropbox(settings.DROPBOX_ACCESS_TOKEN, headers=headers)
+        dbx = dropbox.Dropbox(
+            oauth2_refresh_token=refresh_token, 
+            app_key=app_key, 
+            app_secret=app_secret, 
+            headers=headers)
+        dbx.check_and_refresh_access_token()
+        # access_token = access_token.access_token
+        # dbx = dropbox.Dropbox(access_token, headers=headers)
     except AuthError as e:
         print('Error connecting to Dropbox with access token: ' + str(e))
     return dbx
 
-def dropbox_team_connect():
-    """Create a connection to Dropbox."""
-    try:
-        dbx_team = dropbox.DropboxTeam(settings.DROPBOX_ACCESS_TOKEN)
-    except AuthError as e:
-        print('Error connecting to Dropbox Team with access token: ' + str(e))
-    return dbx_team
+# def dropbox_team_connect():
+#     """Create a connection to Dropbox."""
+#     try:
+#         dbx_team = dropbox.DropboxTeam(settings.DROPBOX_ACCESS_TOKEN)
+#     except AuthError as e:
+#         print('Error connecting to Dropbox Team with access token: ' + str(e))
+#     return dbx_team
 
 def dropbox_upload_file(file_to_upload, dropbox_file_path):
 
     try:
         dbx = dropbox_connect()
-        # Upload the file to the Dropbox folder using the shared folder as the root path
         meta = dbx.with_path_root(
+            #namespace_id of the root folder of the Team Space in dropbox (e.g. "Black Cat White Cat Dropbox")
+            #this MAY change when a new team member is added so we should really assign it programatically.
             path_root=dropbox.common.PathRoot.namespace_id("9004345616")).files_upload(
                 f=file_to_upload.read(),
-                path=dropbox_file_path,
+                # path=dropbox_file_path,
                 mode=dropbox.files.WriteMode("overwrite"))
-        print(meta)
         return meta
     
     except dropbox.exceptions.ApiError as e:
@@ -563,15 +559,19 @@ def handle_uploaded_file(request):
                         invoice_folder = '/Financial/_ INVOICES/_VENDOR INVOICES'
                         full_filepath = (invoice_folder + "/" + date_folder_name + "/" + cost.currency + "/" + cost.PO_number + file_extension)
                         dropbox_upload_file(invoice_file, full_filepath)
-                        # s3.upload_fileobj(
-                        #     invoice_file, bucket_name, 
-                        #     date_folder_name + '/' + currency_folder_name + '/' + cost.PO_number + file_extension)
+                        cost.invoice_status = 'REC'
+                        cost.save()
                     except Exception as e:
                         print(e)
+                        s3.upload_fileobj(
+                            invoice_file, bucket_name,
+                            date_folder_name + cost.PO_number + file_extension)
+                        print("cost status should be ERR")
+                        cost.invoice_status = 'ERR'
+                        cost.save()
                         return HttpResponse('error')
                     
-                    cost.invoice_status = 'REC'
-                    cost.save()
+                    
                 else:
                     return JsonResponse({'error': 'File size must be less than 10 MB'})
             else:
@@ -1020,7 +1020,7 @@ class CostCreateView(CreateView):
     update_cost_form = UpdateCostForm
 
     
-    print(f"Team folder ID in here {dropbox_team_connect().team_team_folder_list().team_folders}")
+    # print(f"Team folder ID in here {dropbox_team_connect().team_team_folder_list().team_folders}")
     
 
     def get_context_data(self, **kwargs):
@@ -1093,15 +1093,7 @@ class CostCreateView(CreateView):
 
             cost.save()
 
-            status_options = [
-                ('NR', 'Not ready to request'),
-                ('READY', 'Ready to request'),
-                ('REQ', 'Requested'),
-                ('REC', 'Received via upload'),
-                ('REC2', 'Received (direct PDF/paper)'),
-                ('PAID', 'Paid'),
-                ('NA', 'No Invoice'),
-            ]
+            status_options = Cost.INVOICE_STATUS_CHOICES
 
             data = {
                 "amount_JPY": f'¥{round(cost.amount * forExRate(cost.currency)):,}',

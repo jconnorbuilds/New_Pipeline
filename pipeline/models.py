@@ -133,16 +133,18 @@ class Cost(models.Model):
                             ('GBP','GBP £'),
                             )
                         )
-    invoice_status = models.CharField(max_length=50, default='NR', choices=(
-                                ('NR','Not ready to request'),
-                                ('READY','Ready to request'),
-                                ('REQ','Requested'),
-                                ('REC','Received via upload'),
-                                ('REC2','Received (direct PDF/paper)'),
-                                ('PAID','Paid'),
-                                ('NA','No Invoice'),
-                                ),
-                            )
+    
+    INVOICE_STATUS_CHOICES = (
+        ('NR', 'Not ready to request'),
+        ('READY', 'Ready to request'),
+        ('REQ', 'Requested'),
+        ('REC', 'Received via upload'),
+        ('REC2', 'Received (direct PDF/paper)'),
+        ('ERR', 'Error on upload'),
+        ('PAID', 'Paid'),
+        ('NA', 'No Invoice'),
+    )
+    invoice_status = models.CharField(max_length=50, default='NR', choices=INVOICE_STATUS_CHOICES)
 
     notes = models.CharField(max_length=300, blank=True)
     job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name='cost_rel', null=True)

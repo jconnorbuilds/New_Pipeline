@@ -155,6 +155,7 @@ class Cost(models.Model):
     
     # a flag to cue the save method to re-calculate the exchange rate based on a custom datetime
     exchange_rate_override = models.BooleanField(default=False)
+    
     def calculate_exchange_rate_overide(self, source_currency, exchange_rate_locked_at):
         '''
         Calculates the exchange rate based on a specific point in time.

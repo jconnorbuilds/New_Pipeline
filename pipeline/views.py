@@ -563,10 +563,10 @@ def handle_uploaded_file(request):
                         cost.save()
                     except Exception as e:
                         print(e)
+                        # Maybe to get rid of Linode Object Storage we can just get the invoice as an email attachment
                         s3.upload_fileobj(
                             invoice_file, bucket_name,
-                            date_folder_name + cost.PO_number + file_extension)
-                        print("cost status should be ERR")
+                            date_folder_name + "/" + cost.PO_number + file_extension)
                         cost.invoice_status = 'ERR'
                         cost.save()
                         return HttpResponse('error')

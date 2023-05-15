@@ -113,7 +113,6 @@ function validateFormsAndFiles() {
     a selection is made one of the dropdown menus.
     */
 
-    var submitOk = true
     var noDuplicates = checkDuplicatesValidation();
     var allSelected = checkAllJobsSelected();
 
@@ -136,7 +135,6 @@ function validateFormsAndFiles() {
 };
 
 function checkDuplicatesValidation() {
-    var duplicateExists = false;
     var dupChecker = [];
     var duplicates = []
 
@@ -190,7 +188,6 @@ $(document).ready(function(){
     // Dynamic dropdown menu generation logic.
     // When a file is uploaded, a dropdown is generated with all 
     // costs that are awaiting invoices that are available to that vendor.
-    console.log("I see u")
     let myDropzone = new Dropzone("#invoice-upload-form");
 
     const costs = JSON.parse(window.costsJson);

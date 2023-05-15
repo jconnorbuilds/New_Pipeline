@@ -14,10 +14,42 @@
 {% block title %}All Invoices{% endblock %}
 
 {% block body_block %}
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container top-0 start-50 translate-middle-x p-3">
+    <div id="payment-template-error-toast" class="toast bg-danger-subtle" data-bs-autohide="false"  role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong class="me-auto"> Errors</strong>
+        <small class="text-muted">Just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+      </div>
+    </div>
+    <div id="payment-template-success-toast" class="toast bg-success-subtle" data-bs-delay="5000" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <i class="bi bi-check2-circle" class="rounded me-2"></i>
+        <strong class="me-auto"> Looks good!</strong>
+        <small class="text-muted">Just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="container">
   <h3 class="display-3">All Invoices</h3>
 </div>
   <div class="container-fluid p-4">
+  <div class="row">
+    <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
+      {% csrf_token %}
+      <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">Prepare Batch Payment</button>
+    </form>
+  </div>
   <hr>
   <div class="container p-2">
     {% csrf_token %}

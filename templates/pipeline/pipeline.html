@@ -84,9 +84,10 @@
           </div>
         </form>
       </div>
-      <div class="csv-export col-xl-2 p-1 d-none d-xl-block align-self-end">
-        <form method="post" class="form-control">
-          {% csrf_token %}
+      <div class="container form-wrapper p-1 col-xl-2 align-self-end">
+        <div class="csv-export d-none d-xl-block ">
+          <form method="post" action="/pipeline/jobs-csv-export/" class="form-control">
+            {% csrf_token %}
             <div class="row">
               <div class="col">
               {{ csv_export_form.fromMonth}}
@@ -101,13 +102,13 @@
               {{ csv_export_form.thruYear|add_class:"invisible"}}
               </div>
             </div>
-              <div class="row">
-                <div class="col">
+            <div class="row">
+              <div class="col">
                 <input type="submit" name="csvexport" value="Export CSV" class="btn btn-light">
-                </div>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>

@@ -17,21 +17,15 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
-# from django.views.generic.dates import MonthMixin
 from django.views import View
 from .models import Job, Vendor, Cost, Client
-from .forms import CostForm, JobForm, PipelineCSVExportForm, JobFilter, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, UploadInvoiceForm, ClientForm
-# from .tables import JobTable, CostTable
-# from django_filters.views import FilterView
-# import django_tables2 as tables
-# from django_tables2 import SingleTableView
-# from django_tables2.views import SingleTableMixin
-from django_datatables_view.base_datatable_view import BaseDatatableView
+from .forms import CostForm, JobForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, UploadInvoiceForm, ClientForm
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
 import dropbox
 from dropbox.exceptions import ApiError, AuthError
+from .utils import FOREX_RATES
 
 # import boto3
 import json
@@ -70,7 +64,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
     form_class = JobForm
     client_form_class = ClientForm
     bulk_actions = PipelineBulkActionsForm
-    filterset_class = JobFilter
     template_name = "pipeline/pipeline.html"
     table_pagination = False
 
@@ -80,7 +73,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context['job_form'] = JobForm(initial={'client': client_id})
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
-        context['filter'] = JobFilter
         context['bulk_actions'] = self.bulk_actions
         # context['jobs'] = Job.objects.all()
         context['headers'] = ["", "ID", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
@@ -144,64 +136,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'edit': render_to_string('pipeline/job_edit_delete.html', {"job_id":job.id}),
                 }
             return JsonResponse({"status": "success", "data": data})
-            
-        elif 'csvexport' in request.POST:
-            csv_export_form = PipelineCSVExportForm(request.POST)
-
-            if csv_export_form.is_valid():
-                print('hello dude')
-                useRange = csv_export_form.cleaned_data["useRange"]
-                fromYear = csv_export_form.cleaned_data["fromYear"]
-                fromMonth = csv_export_form.cleaned_data["fromMonth"]
-                fromDate = f'{fromYear}-{fromMonth}'+'-01'
-                if useRange:
-                    thruYear = csv_export_form.cleaned_data["thruYear"]
-                    # add an extra month to calculate from the first day of the next month
-                    # to save from having to calculate the last day of each month
-                    thruMonth = str(int(csv_export_form.cleaned_data["thruMonth"]))
-                else:
-                    thruYear = fromYear
-                    thruMonth = fromMonth
-                if thruMonth != "12":
-                    thruYear = thruYear
-                    thruMonth = str(int(thruMonth) + 1)
-                else:
-                    thruYear = str(int(thruYear) + 1)
-                    thruMonth = "1"
-                thruDate = f'{thruYear}-{thruMonth}'+'-01'
-                print(f'from: {fromDate}\nthru: {thruDate}')
-                
-                response = HttpResponse(content_type='text/csv',
-                headers = {'Content-Disposition': 'attachment; filename ="csv_simple_write.csv"'},
-                )
-                writer = csv.writer(response)
-                fields = ['クライアント', '案件名', 'ジョブコード', '予算 (¥)', '総費用', '案件タイプ', '日付']
-                writer.writerow(fields) 
-
-                scope = Job.objects.filter(job_date__gte=fromDate, job_date__lt=thruDate)
-                print(scope)
-
-                # receivedInvoices = Cost.objects.filter(job__job_date__gte=fromDate, job__job_date__lt=thruDate,invoice_status='PAID')
-                expectedGrossRevenue = sum([job.revenue for job in scope])
-                actualGrossRevenue = sum([job.revenue for job in scope if job.status in ['FINISHED','ARCHIVABLE','ARCHIVED']])
-
-                for job in scope:
-                    # Return date in format YYYY-MM
-                    date_MY = f'{job.job_date.year}年{job.job_date.month}月'
-                    if job.client.proper_name_japanese:
-                        client_name = job.client.proper_name_japanese
-                    else:
-                        client_name = job.client.proper_name
-                    data = [client_name, job.job_name, job.job_code, f'{job.revenue:,}', f'{job.total_cost:,}', job.job_type, date_MY]
-                    writer.writerow(data)
-                writer.writerow('')
-                writer.writerow(['','','','','','','','総収入(予想)', f'¥{expectedGrossRevenue:,}'])
-                writer.writerow(['','','','','','','','総収入(実際)', f'¥{actualGrossRevenue:,}'])
-
-                return response
-
-            else:
-                print('something bad happened')
 
         elif 'bulk-actions' in request.POST:
             bulk_form = self.bulk_actions(request.POST)
@@ -280,11 +214,9 @@ def pipeline_data(request, year=None, month=None):
         jobs = Job.objects.filter(job_date__month=month, job_date__year=year)
 
     total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
-    avg_monthly_revenue_ytd = 0
     total_revenue_monthly_actual = jobs.filter(
         status__in=["INVOICED","FINISHED","ARCHIVABLE","ARCHIVED"]).aggregate(
         total_revenue=Sum('revenue'))['total_revenue'] or 0
-    # print(f"trma: {total_revenue_monthly_actual}")
 
     data = {"data":[
         {
@@ -302,48 +234,20 @@ def pipeline_data(request, year=None, month=None):
             'edit': render_to_string('pipeline/job_edit_delete.html', {"job_id":job.id}),
         }
         for job in jobs
-    ],
-    "total_revenue_ytd":f'¥{total_revenue_ytd:,}',
-    "avg_monthly_revenue_ytd":f'¥{round(total_revenue_ytd/(date.today().month)):,}',
-    "total_revenue_monthly_expected":f'¥{total_revenue_monthly_expected:,}',
-    "total_revenue_monthly_actual":f'¥{total_revenue_monthly_actual:,}',
-    "invoice_info":[{
-        "all_invoices_requested":job.allVendorInvoicesRequested,
-        "all_invoices_received":job.allVendorInvoicesReceived,
-        "all_invoices_paid":job.allVendorInvoicesPaid,
-        }
-        for job in jobs
-    ]
+        ],
+        "total_revenue_ytd":f'¥{total_revenue_ytd:,}',
+        "avg_monthly_revenue_ytd":f'¥{round(total_revenue_ytd/(date.today().month)):,}',
+        "total_revenue_monthly_expected":f'¥{total_revenue_monthly_expected:,}',
+        "total_revenue_monthly_actual":f'¥{total_revenue_monthly_actual:,}',
+        "invoice_info":[{
+            "all_invoices_requested":job.allVendorInvoicesRequested,
+            "all_invoices_received":job.allVendorInvoicesReceived,
+            "all_invoices_paid":job.allVendorInvoicesPaid,
+            }
+            for job in jobs
+        ]
     }
     return JsonResponse(data, safe=False,)
-
-def forExRate(source_currency):
-    '''
-    Calculates the foreign exchange rate via Wise's API
-    '''
-    print("FOR EX RATE IS RUNNING")
-    # Set the endpoint URL for Wise's rates API'
-    url = 'https://api.wise.com/v1/rates/'
-    target_currency = 'JPY'
-    
-    # Set the API headers with API key and specify the response format as JSON
-    headers = {
-        'Authorization': f'Bearer {settings.WISE_API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    params = {
-        'source': source_currency,
-        'target': target_currency
-    }
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        print(response.json()[0].get('rate'))
-        print(response.json()[0].get('time'))
-        return response.json()[0].get('rate')
-    else:
-        # return JsonResponse({'error':'Failed to retrieve exchange rate from Wise API.'})
-        # make approximation and add warning message
-        return 1
 
 def cost_data(request, job_id):
     costs = Cost.objects.filter(job=job_id)
@@ -357,7 +261,7 @@ def cost_data(request, job_id):
 
     data = {"data": [
         {
-        "amount_JPY": f'¥{round(cost.amount * forExRate(cost.currency)):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
+        "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
         "amount_local": f'{cost.currency}{cost.amount}',
         "vendor": render_to_string("pipeline/costsheet/cost_table_vendor_select.html", context={"vendors": vendors.all(), "selectedVendor": cost.vendor}),
         "description":cost.description,
@@ -389,21 +293,18 @@ class JobDetailView(DetailView):
     template_name = "pipeline/jobs.html"
     model = Job
 
-class InvoiceView(ListView):
+class InvoiceView(TemplateView):
     # Will need to make more efficient for the long term
+    print(FOREX_RATES)
     model = Cost
     template_name = "pipeline/invoices_list.html"
     costs = Cost.objects.all()
-    # vendors = Vendor.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        current_url = self.request.build_absolute_uri()
-        # update_cost_url = reverse('update-cost') + \
-        #     '?' + urlencode({'return_to': current_url})
+        # current_url = self.request.build_absolute_uri()
         context['headers'] = ["", "Link", "Amt. (¥)", "Amt.(local)", "Job Date", "Job", "Job Code", "Vendor", "Description",
                               "PO Number", "Invoice Status", "Request Invoice", "Edit", "ID"]
-        # context['update-cost-url'] = update_cost_url
         return context
 
     def post(self, request, *args, **kwargs):
@@ -413,7 +314,7 @@ class InvoiceView(ListView):
         form_data_id = request.POST.get('cost_id')
         form_data_vendor = request.POST.get('vendor')
         form_data_status = request.POST.get('status')
-          # form_data_status = request.POST.get('status')
+        # form_data_status = request.POST.get('status')
         all_costs = Cost.objects.all()
         cost = Cost.objects.get(id=request.POST.get('cost_id'))
         print(f"cost amount: {cost.amount}")
@@ -428,19 +329,11 @@ class InvoiceView(ListView):
             cost.invoice_status = form_data_status
         cost.save()
 
-        status_options = [
-            ('NR', 'Not ready to request'),
-            ('READY', 'Ready to request'),
-            ('REQ', 'Requested'),
-            ('REC', 'Received via upload'),
-            ('REC2', 'Received (direct PDF/paper)'),
-            ('PAID', 'Paid'),
-            ('NA', 'No Invoice'),
-        ]
+        status_options = Cost.INVOICE_STATUS_CHOICES
         data = {
                 "select": render_to_string("pipeline/costsheet/checkbox.html", {"cost_id": cost.id}),
                 "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
-                "amount_JPY": f'¥{round(cost.amount * forExRate(cost.currency)):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
+                "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
                 "amount_local": f'{cost.currency}{cost.amount}',
                 "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
                 "job_name": cost.job.job_name,
@@ -453,6 +346,7 @@ class InvoiceView(ListView):
                 "edit": render_to_string("pipeline/costsheet/cost_edit_delete_btns.html", {"cost_id": cost.id}),
                 "id": cost.id,
             }
+        
         return JsonResponse({"status": "success", "data":data}, safe=False,)
         # return render(request, self.template_name, self.get_context_data(**kwargs))
 
@@ -460,6 +354,7 @@ class InvoiceView(ListView):
 def all_invoices_data(request):
     costs = Cost.objects.all()
     print(request.POST)
+    print(FOREX_RATES)
 
     status_options = Cost.INVOICE_STATUS_CHOICES
 
@@ -467,7 +362,7 @@ def all_invoices_data(request):
         {
             "select": render_to_string('pipeline/costsheet/checkbox.html', {"cost_id": cost.id}),
             "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
-            "amount_JPY": f'¥{round(cost.amount * forExRate(cost.currency)):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
+            "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
             "amount_local": f'{cost.currency}{cost.amount}',
             "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
             "job_name": cost.job.job_name,
@@ -522,14 +417,14 @@ def dropbox_upload_file(file_to_upload, dropbox_file_path):
             #this MAY change when a new team member is added so we should really assign it programatically.
             path_root=dropbox.common.PathRoot.namespace_id("9004345616")).files_upload(
                 f=file_to_upload.read(),
-                # path=dropbox_file_path,
+                path=dropbox_file_path,
                 mode=dropbox.files.WriteMode("overwrite"))
         return meta
     
     except dropbox.exceptions.ApiError as e:
         print(f'Error uploading file to Dropbox: {e.error}')
 
-def handle_uploaded_file(request):
+def process_uploaded_vendor_invoice(request):
     print(f'FILES:{request.FILES}')
     print(f'POST:{request.POST}')
 
@@ -557,7 +452,7 @@ def handle_uploaded_file(request):
                 if invoice_file.size < 10 * 1024 * 1024:
                     try:
                         invoice_folder = '/Financial/_ INVOICES/_VENDOR INVOICES'
-                        full_filepath = (invoice_folder + "/" + date_folder_name + "/" + cost.currency + "/" + cost.PO_number + file_extension)
+                        full_filepath = (invoice_folder + "/" + date_folder_name + "/" + currency_folder_name + "/" + cost.PO_number + file_extension)
                         dropbox_upload_file(invoice_file, full_filepath)
                         cost.invoice_status = 'REC'
                         cost.save()
@@ -610,62 +505,6 @@ def upload_invoice_success(request):
 def invoice_error(request):
     return render(request, 'pipeline/no_invoices.html')
 
-# def InvoicesView(request):
-#     template_name = "pipeline/request_invoices.html"
-#     costs_READY_REQ = Cost.objects.filter(invoice_status__in=['READY','REQ'])
-#     costs_REC = Cost.objects.filter(invoice_status__in=['REC',])
-
-#     def get_files():
-#         pathname = "/Users/joeconnor_bcwc/Black Cat White Cat Dropbox/Joe Connor/FINANCIAL_Test"
-#         allFiles = os.listdir(pathname+'/test_dir')
-#         allVisibleFiles = [file for file in allFiles if file.startswith('.') == False]
-#         return allVisibleFiles
-
-#     def check_for_received_invoices():
-#         for file in get_files():
-#             for cost in costs_READY_REQ:
-#                 if cost.job.job_code in file:
-#                     print(cost.job.job_code)
-#                     cost.invoice_status = 'REC'
-#                     cost.save()
-#                 else:
-#                     print('no match')
-
-#     def check_for_missing_invoices():
-#         missing = []
-#         for cost in costs_REC:
-#             missing.append(cost)
-#             print(f'{cost} appended to missing')
-#             for file in get_files():
-#                 if cost.job.job_code in file:
-#                     missing.remove(cost)
-#                     print(f'{cost} removed from missing')
-#         for cost in missing:
-#             cost.invoice_status = 'REQ'
-#             cost.save()
-
-#             # for file in get_files():
-#             #   if cost.job.job_code in get_files():
-#             #       print(f'match: {cost.job.job_code}')
-#             #   else:
-#             #       print('no match')
-
-#     check_for_received_invoices()
-#     check_for_missing_invoices()
-
-#     for cost in costs_READY_REQ:
-#         print (f'READY or REQ: {cost} - {cost.invoice_status}')
-#     for cost in costs_REC:
-#         print (f'REC: {cost} - {cost.invoice_status}')
-
-#     context = {
-#         'files': get_files(),
-#         'costs_READY_REQ': costs_READY_REQ,
-#         'costs_REC' : costs_REC,
-#         }
-
-#     return render(request, template_name, context)
-
 def RequestVendorInvoicesMultiple(request):
 
     '''
@@ -686,7 +525,7 @@ def RequestVendorInvoicesMultiple(request):
     #       pass
     #   if vendor.prefersJapanese():
     #       pass
-        vendor_first_name = vendor.full_name.split(' ')[0]
+        vendor_first_name = vendor.first_name
         
         # args for use in send_mail
         test_recipient_list = 'joe@bwcatmusic.com'
@@ -764,37 +603,177 @@ def RequestVendorInvoiceSingle(request, cost_id):
         return JsonResponse({"status":"error", "message": "error :("})
 
 # Simple CSV Write Operation
-def CSV_Write(request):
-    if request.method == "POST":
-        # Create the HttpResponse object with the appropriate CSV header.
-        response = HttpResponse(content_type='text/csv',
-        headers = {'Content-Disposition': 'attachment; filename ="csv_simple_write.csv"'},
-        )
+def jobs_csv_export(request):
+    csv_export_form = PipelineCSVExportForm(request.POST)
+    if csv_export_form.is_valid():
+        print('hello dude')
+        useRange = csv_export_form.cleaned_data["useRange"]
+        fromYear = csv_export_form.cleaned_data["fromYear"]
+        fromMonth = csv_export_form.cleaned_data["fromMonth"]
+        fromDate = f'{fromYear}-{fromMonth}'+'-01'
+        if useRange:
+            thruYear = csv_export_form.cleaned_data["thruYear"]
+            # add an extra month to calculate from the first day of the next month
+            # to save from having to calculate the last day of each month
+            thruMonth = str(int(csv_export_form.cleaned_data["thruMonth"]))
+        else:
+            thruYear = fromYear
+            thruMonth = fromMonth
+        if thruMonth != "12":
+            thruYear = thruYear
+            thruMonth = str(int(thruMonth) + 1)
+        else:
+            thruYear = str(int(thruYear) + 1)
+            thruMonth = "1"
+        thruDate = f'{thruYear}-{thruMonth}'+'-01'
+        print(f'from: {fromDate}\nthru: {thruDate}')
+        
+        response = HttpResponse(
+            content_type='text/csv',
+            headers = {'Content-Disposition': 'attachment; filename ="csv_simple_write.csv"'},
+            )
         writer = csv.writer(response)
-        fields = ['クライアント', '案件名', 'ジョブコード', '予算', '総合費用', '案件タイプ', '日付（月年）']
+        fields = ['クライアント', '案件名', 'ジョブコード', '予算 (¥)', '総費用', '案件タイプ', '日付']
         writer.writerow(fields) 
-        scope = Job.objects.filter(job_date__gte=fromDate, job_date__lte=thruDate)
-        receivedInvoices = Cost.objects.filter(job__job_date__gte=fromDate, job__job_date__lte=thruDate,invoice_status='PAID')
+
+        scope = Job.objects.filter(job_date__gte=fromDate, job_date__lt=thruDate)
+        print(scope)
+
         expectedGrossRevenue = sum([job.revenue for job in scope])
         actualGrossRevenue = sum([job.revenue for job in scope if job.status in ['FINISHED','ARCHIVABLE','ARCHIVED']])
 
         for job in scope:
-            # Return date in format YYYY-MM
-            date_MY = str(job.job_date)[:-3]
-            data = [job.client, job.job_name, job.job_code, job.revenue, job.total_cost, job.job_type, date_MY]
+            # Return date in format YYYY年MM月
+            date_MY = f'{job.job_date.year}年{job.job_date.month}月'
+            if job.client.proper_name_japanese:
+                client_name = job.client.proper_name_japanese
+            else:
+                client_name = job.client.proper_name
+            data = [client_name, job.job_name, job.job_code, f'{job.revenue:,}', f'{job.total_cost:,}', job.job_type, date_MY]
             writer.writerow(data)
         writer.writerow('')
-        writer.writerow(['','','','','','','','総収入(予想)', expectedGrossRevenue])
-        writer.writerow(['','','','','','','','総収入(実際)', actualGrossRevenue])
-        # writer.writerow(['','','','','','','','総収入', grossRevenue])
-    
-    return response
+        writer.writerow(['','','','','','','','総収入(予想)', f'¥{expectedGrossRevenue:,}'])
+        writer.writerow(['','','','','','','','総収入(実際)', f'¥{actualGrossRevenue:,}'])
 
+        return response
+    else:
+        print('something bad happened')
+
+def create_batch_payment_file(request):
+    '''
+    Create a WISE batch payment file from the template in /static. 
+    Each payment can be maximum 1m JPY, so anything over ¥950k is split into multiple payments.
+    
+    '''
+    if request.method == "POST":
+        invoices = Cost.objects.filter(invoice_status__in=["REC", "REC2"])
+        processing_status = {} # format: invoice PO number {status (success/error), message} 
+        
+        response = HttpResponse(
+            content_type='text/csv',
+            headers = {'Content-Disposition': 'attachment; filename = "WISE_BATCH_PAYMENT.csv"'},
+        )
+
+        def split_into_even_parts(amount, num_of_parts):
+            parts = []
+            base_amount = amount // num_of_parts
+            remainder = amount % num_of_parts
+            parts = [base_amount] * num_of_parts
+            for i in range(remainder):
+                parts[i] += 1
+            print(f"new parts: {parts}")
+            return parts
+
+        csvfile = 'static/pipeline/Recipients-Batch-File.csv'
+        try:
+            with open(csvfile, newline='') as templateCSV:
+                reader = csv.reader(templateCSV)
+                writer = csv.writer(response)
+                
+                column_names = ""
+                for row in reader:
+                    column_names = row #create header row with column names
+                    break
+                writer.writerow(column_names)
+                recipient_id_idx = column_names.index('recipientId')
+                source_currency_idx = column_names.index('sourceCurrency')
+                target_currency_idx = column_names.index('targetCurrency')
+                amount_currency_idx = column_names.index('amountCurrency')
+                amount_idx = column_names.index('amount')
+                payment_reference_idx = column_names.index('paymentReference')
+
+                for row in reader:
+                    recipient_id = int(row[recipient_id_idx])
+                    if recipient_id not in [invoice.vendor.payment_id for invoice in invoices]:
+                        continue
+
+                    invoices_from_vendor = [invoice for invoice in invoices if invoice.vendor.payment_id == recipient_id]
+                    for invoice in invoices_from_vendor:
+                        '''
+                        Account for large payments over ¥1m JPY. 
+                        To avoid errors, split anything over ¥950k into two or more payments.
+                        '''
+                        if invoice.currency != row[target_currency_idx]:
+                            processing_status[invoice.PO_number] = {"status":"error", "message": f"Currency mismatch. Invoices for this vendor should be in {row[target_currency_idx]}."}
+                            continue
+
+                        upper_limit_for_JPY = 950000
+                        approx_amount_in_JPY = invoice.amount * FOREX_RATES[row[target_currency_idx]]
+                        print(f"approx_amount_in_JPY: {approx_amount_in_JPY}")
+                        
+                        if approx_amount_in_JPY > upper_limit_for_JPY:
+                            split_into = 2
+                            within_limit = False
+                            while not within_limit:
+                                print(f"amount {approx_amount_in_JPY:,} to split_into: {split_into} == {approx_amount_in_JPY / split_into:,}")
+                                print(f"under 950k? {within_limit}")
+                                if (approx_amount_in_JPY / split_into) < upper_limit_for_JPY:
+                                    within_limit = True
+                                else:
+                                    split_into += 1
+                            
+                            split_payments = split_into_even_parts(invoice.amount, split_into)
+                            i = 0
+                            while i < len(split_payments):
+                                print(f"{i}: processing row")
+                                row[amount_idx] = split_payments[i]
+                                row[source_currency_idx] = "JPY"
+                                row[amount_currency_idx] = row[target_currency_idx]
+                                row[payment_reference_idx] = f"{invoice.PO_number} ({i+1} of {len(split_payments)})"
+                                writer.writerow(row)
+                                i += 1
+
+                            invoice.invoice_status = "QUE"
+                            # invoice.save()
+                            processing_status[invoice.PO_number] = { "status":"success", "message": f"Successfully processed as {split_into} payments!" }
+
+                        else:
+                            row[amount_idx] = invoice.amount
+                            row[source_currency_idx] = "JPY"
+                            row[amount_currency_idx] = row[target_currency_idx]
+                            row[payment_reference_idx] = invoice.PO_number
+                            
+                            writer.writerow(row)
+                            invoice.invoice_status = "QUE"
+                            # invoice.save()
+                            processing_status[invoice.PO_number] = { "status":"success", "message": "Successfully processed!" }
+
+            for key in processing_status:
+                print(key, processing_status[key])
+
+            data = processing_status
+            response['X-Processing-Status'] = json.dumps(data)
+            print(json.dumps(data))
+            return response
+
+        except FileNotFoundError:
+            return HttpResponse(f"Template file not found in the expected location: {csvfile}", status=404)
+        
 def importClients(request):
     with open('static/pipeline/clients.csv', 'r') as myFile:
         template_name = "pipeline/client_form.html"
-        itemCreated = []
-        itemNotCreated = []
+        created_items = []
+        not_created_items = []
         reader = csv.reader(myFile, delimiter=',')
         next(reader) # Skip the header row
         for column in reader:
@@ -804,7 +783,7 @@ def importClients(request):
                 proper_name_japanese = column[3]
                 notes = column[4]
                 if Client.objects.filter(friendly_name__iexact=friendly_name).exists():
-                    itemNotCreated.append(f'{column[0]} - {column[1]}')
+                    not_created_items.append(f'{column[0]} - {column[1]}')
                     continue
                 else:
                     try:
@@ -819,9 +798,9 @@ def importClients(request):
                                 )
                         temp.save()
                         if created:
-                            itemCreated.append(f'{friendly_name} - {job_code_prefix}')
+                            created_items.append(f'{friendly_name} - {job_code_prefix}')
                         elif not created:
-                            itemNotCreated.append(f'{friendly_name} - {job_code_prefix}')
+                            not_created_items.append(f'{friendly_name} - {job_code_prefix}')
                         # elif not created:
                         #   itemUpdated.append(f'{name} - {job_code_prefix}')
                         # else:
@@ -837,21 +816,21 @@ def importClients(request):
                         print(e)
                         messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added - something bad happened! \n{e}")
             
-        if itemCreated:
-            messages.success(request, f'{len(itemCreated)} clients were added successfully!')
+        if created_items:
+            messages.success(request, f'{len(created_items)} clients were added successfully!')
 
-        if itemNotCreated:
-            messages.info(request, f'{len(itemNotCreated)} items were already in the database, so they were left alone.')
-            # for item in itemNotCreated:
+        if not_created_items:
+            messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
+            # for item in not_created_items:
             #   messages.info(request, item)
 
     return redirect('pipeline:client-add')
 
 def importJobs(request):
     myFile = open('static/pipeline/jobs.csv', 'r')
-    template_name = "pipeline/pipeline.html"
-    itemCreated = []
-    itemNotCreated = []
+    # template_name = "pipeline/pipeline.html"
+    created_items = []
+    not_created_items = []
     def getClient(job_code):
         if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
             return Client.objects.get(job_code_prefix = job_code[:3])
@@ -896,9 +875,9 @@ def importJobs(request):
             )
             temp.save()
             if created:
-                itemCreated.append(f'{job_name} - {client}')
+                created_items.append(f'{job_name} - {client}')
             elif not created:
-                itemNotCreated.append(f'{job_name} - {client}')
+                not_created_items.append(f'{job_name} - {client}')
             # elif not created:
             #   itemUpdated.append(f'{name} - {job_code_prefix}')
             # else:
@@ -914,22 +893,22 @@ def importJobs(request):
             messages.error(request, f"{job_name} - {client} wasn't added - something bad happened!")
             print(e)
         
-    if itemCreated:
-        messages.success(request, f'{len(itemCreated)} jobs were added successfully!')
+    if created_items:
+        messages.success(request, f'{len(created_items)} jobs were added successfully!')
 
-    if itemNotCreated:
-        messages.info(request, f'{len(itemNotCreated)} items were already in the database, so they were left alone.')
-        # for item in itemNotCreated:
+    if not_created_items:
+        messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
+        # for item in not_created_items:
         #   messages.info(request, item)
 
     myFile.close()
     return redirect('pipeline:index')
 
 def importVendors(request):
-    myFile = open('static/pipeline/jobs.csv', 'r')
-    template_name = "pipeline/pipeline.html"
-    itemCreated = []
-    itemNotCreated = []
+    myFile = open('static/pipeline/vendors.csv', 'r')
+    # template_name = "pipeline/pipeline.html"
+    created_items = []
+    not_created_items = []
     def getClient(job_code):
         if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
             return Client.objects.get(job_code_prefix = job_code[:3])
@@ -974,9 +953,9 @@ def importVendors(request):
             )
             temp.save()
             if created:
-                itemCreated.append(f'{job_name} - {client}')
+                created_items.append(f'{job_name} - {client}')
             elif not created:
-                itemNotCreated.append(f'{job_name} - {client}')
+                not_created_items.append(f'{job_name} - {client}')
 
         except IntegrityError as e:
             print(f'{job_name} - {client}: {e}')
@@ -988,11 +967,11 @@ def importVendors(request):
             messages.error(request, f"{job_name} - {client} wasn't added - something bad happened!")
             print(e)
         
-    if itemCreated:
-        messages.success(request, f'{len(itemCreated)} jobs were added successfully!')
+    if created_items:
+        messages.success(request, f'{len(created_items)} jobs were added successfully!')
 
-    if itemNotCreated:
-        messages.info(request, f'{len(itemNotCreated)} items were already in the database, so they were left alone.')
+    if not_created_items:
+        messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
 
     myFile.close()
     return redirect('pipeline:index')
@@ -1018,11 +997,9 @@ class CostCreateView(CreateView):
     simple_add_vendor_form = AddVendorToCostForm
     cost_form = CostForm
     update_cost_form = UpdateCostForm
-
     
     # print(f"Team folder ID in here {dropbox_team_connect().team_team_folder_list().team_folders}")
     
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.object=None
@@ -1058,7 +1035,7 @@ class CostCreateView(CreateView):
             form = self.simple_add_vendor_form(request.POST)
             if form.is_valid():
                 newVendor = form.cleaned_data['addVendor']
-                currentJob.vendors.add(Vendor.objects.get(unique_id=newVendor))
+                currentJob.vendors.add(Vendor.objects.get(vendor_code=newVendor))
                 currentJob.save()
             else:
                 print(f'errors: {form.errors}')
@@ -1088,7 +1065,7 @@ class CostCreateView(CreateView):
                     This will give a close approximation for the amount actually paid to the vendor.
                     I'm thinking we need to incorporate Wise payments more closely to get more accuracy.
                     '''
-                    cost.locked_exchange_rate = forExRate(cost.currency)
+                    cost.locked_exchange_rate = FOREX_RATES[cost.currency]
                     cost.exchange_rate_locked_at = timezone.now()
 
             cost.save()
@@ -1096,7 +1073,7 @@ class CostCreateView(CreateView):
             status_options = Cost.INVOICE_STATUS_CHOICES
 
             data = {
-                "amount_JPY": f'¥{round(cost.amount * forExRate(cost.currency)):,}',
+                "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}',
                 "amount_local": f'{cost.currency}{cost.amount}',
                 "vendor": render_to_string("pipeline/costsheet/cost_table_vendor_select.html", context={"vendors": vendors.all(), "selectedVendor": cost.vendor}),
                 "description":cost.description,
@@ -1108,7 +1085,8 @@ class CostCreateView(CreateView):
                 }
             return JsonResponse({"status":"success", "data":data})
         
-        return render(request, self.template_name, self.get_context_data(**kwargs))
+        return HttpResponseRedirect(self.request.path_info)
+        # return render(request, self.template_name, self.get_context_data(**kwargs))
 
 
 class CostUpdateView(RedirectToPreviousMixin, UpdateView):

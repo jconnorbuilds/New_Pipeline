@@ -18,9 +18,10 @@ from django.contrib.messages import constants as messages
 from urllib.parse import urlparse
 # from google.cloud import secretmanager
 from dotenv import load_dotenv
+from dotenv import dotenv_values
 import boto3
+from celery.schedules import crontab
 
-load_dotenv()
 
 # LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/pipeline/"
@@ -37,6 +38,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
 
+env_file = BASE_DIR / ".env.dev"
+config = dotenv_values(".env.dev")
+
+if os.getenv('ENVIRONMENT') == 'production':
+    load_dotenv('.env.prod')
+else:
+    load_dotenv('.env.dev')
+
 LINODE_STORAGE = boto3.client('s3', 
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
         aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
@@ -49,18 +58,35 @@ DROPBOX_APP_KEY = os.getenv("DROPBOX_APP_KEY")
 DROPBOX_APP_SECRET = os.getenv("DROPBOX_APP_SECRET")
 DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 
+# Celery configuration
+# CELERY_BROKER_URL = 'redis://localhost:6379'
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'Japan'
+
+# # Periodic tasks
+# CELERY_BEAT_SCHEDULE = {
+#     'get_forex_rates': {
+#         'task': 'pipeline.tasks.get_forex_rates',
+#         'schedule': crontab(minute=0, hour='*'),
+#     },
+# }
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+DEBUG = os.getenv("DEBUG", False)
 
 if not DEBUG:
     STATIC_ROOT = BASE_DIR / 'var/www/static/'
 # else:
 #     STATIC_ROOT = BASE_DIR / 'static_test'
 
-env_file = BASE_DIR / ".env"
+
 print(f"debug: {DEBUG}")
 
 if os.path.isfile(env_file):
@@ -70,11 +96,10 @@ if os.path.isfile(env_file):
 else:
     raise Exception("No local .env found!")
 
+# ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -83,8 +108,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pipeline',
-    # 'django_tables2',
-    'django_filters',
     'django_bootstrap5',
     'widget_tweaks',
 ]
@@ -130,38 +153,16 @@ CACHES = {
     }
 }
 # Use django-environ to parse the connection string
-if DEBUG:
-    try:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.getenv('DATABASE_NAME'),
-                'USER': os.getenv('DATABASE_USER'),
-                'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-                'HOST': os.getenv('DATABASE_HOST'),
-                'PORT': os.getenv('DATABASE_PORT'),
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "NAME": os.getenv("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
+        "USER": os.getenv("SQL_USER", "user"),
+        "PASSWORD": os.getenv("SQL_PASSWORD", "password"),
+        "HOST": os.getenv("SQL_HOST", "localhost"),
+        "PORT": os.getenv("SQL_PORT", "5432"),
     }
-    except:
-        print("the main db didn't load")
-        DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DATABASE_NAME'),
-            'USER': os.getenv('DATABASE_USER'),
-            'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-            'HOST': os.getenv('DATABASE_HOST'),
-            'PORT': os.getenv('DATABASE_PORT'),
-        }
-    }
+}
 
 # If the flag as been set, configure to use proxy
 # if os.getenv("USE_CLOUD_SQL_AUTH_PROXY", None):

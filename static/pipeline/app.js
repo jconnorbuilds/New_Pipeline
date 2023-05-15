@@ -21,8 +21,7 @@ $(document).ready(function(){
             search: "",
         },
         ajax: {
-            // url: 'http://139.162.118.33:8000/pipeline/pipeline-data/' + currentYear + '/' + currentMonth + '/',
-            url: 'http://127.0.0.1:8000/pipeline/pipeline-data/' + currentYear + '/' + currentMonth + '/',
+            url: '/pipeline/pipeline-data/' + currentYear + '/' + currentMonth + '/',
             dataSrc: function(json) {
                 updateRevenueDisplay(json)
                 console.log(json)
@@ -183,8 +182,7 @@ $(document).ready(function(){
         },
         
         ajax: {
-            // url: 'http://139.162.118.33:8000/pipeline/pipeline-data/' + currentYear + '/' + currentMonth + '/',
-            url: 'http://127.0.0.1:8000/pipeline/cost-data/' + getJobID(),
+            url: '/pipeline/cost-data/' + getJobID(),
             
         },
         rowId: 'id',
@@ -466,8 +464,7 @@ $(document).ready(function(){
             search: "",
         },
         ajax: {
-            // url: 'http://139.162.118.33:8000/pipeline/pipeline-data/' + currentYear + '/' + currentMonth + '/',
-            url: 'http://127.0.0.1:8000/pipeline/all-invoices-data/',
+            url: '/pipeline/all-invoices-data/',
         },
         rowId: 'id',
         columns: [
@@ -523,8 +520,6 @@ $(document).ready(function(){
                 createdCell: function (td, cellData, rowData, row, col) {
                     $(td).css('padding-left', '10px')
                 }
-                
-
             },
             {
                 targets: 5,
@@ -550,7 +545,7 @@ $(document).ready(function(){
             // rowCallbackfunction, and not within the createdRow function.
             // At the time of writing this, I'm not totally sure why, but whatever
             var invoiceStatus = $(data.invoice_status).val()
-            var hasVendor = ($(data.vendor).val() !== "0");
+            var hasVendor = (data.vendor != "");
 
             if (hasVendor == false) {
                 $(row).find('.cost-status-select').hide();
@@ -573,6 +568,7 @@ $(document).ready(function(){
     $("#all-invoices-table").on("change", ".cost-vendor-select, .cost-status-select", function () {
         var formData = getCostUpdate(this);
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        $("#batch-pay-csv-dl-btn").attr("disabled",false)
         $.ajax({
             headers: { 'X-CSRFToken': csrftoken },
             type: "POST",
@@ -726,7 +722,7 @@ $(document).ready(function(){
 
     function filterData(year, month) {
         // var url = 'http://139.162.118.33:8000/pipeline/pipeline-data/';
-        var url = 'http://127.0.0.1:8000/pipeline/pipeline-data/';
+        var url = '/pipeline/pipeline-data/';
         if (year !== undefined && month !== undefined) {
             url = url + year + '/' + month + '/';
         }
@@ -911,6 +907,70 @@ $(document).ready(function(){
             },
         });
     });
+
+    $("#batch-pay-csv-dl").on("submit", function(e) {
+        e.preventDefault()
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        // $(this).find("button").attr("disabled", true);
+        $.ajax({
+            headers: { 'X-CSRFToken': csrftoken },
+            type: "POST",
+            url: "/pipeline/prepare-batch-payment/",
+            data: "",
+            success: function(data, testStatus, xhr) {
+                var blob = new Blob([data]);
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "WISE_batch_payment.csv";
+                link.click();
+
+                var processingStatus = JSON.parse(xhr.getResponseHeader('X-Processing-Status'));
+                console.log('Processing status:', processingStatus);
+
+                var batchProcessSuccess = []
+                var batchProcessError = []
+                const successToast = document.getElementById('payment-template-success-toast')
+                const errorToast = document.getElementById('payment-template-error-toast')
+                const successToastBody = successToast.querySelector('.toast-body');
+                const errorToastBody = errorToast.querySelector('.toast-body');
+                
+                for (var key in processingStatus) {
+                    for (var key in processingStatus) {
+                        if (processingStatus[key].status == "success") {
+                            batchProcessSuccess[key] = processingStatus[key];
+                        } else if (processingStatus[key].status == "error") {
+                            batchProcessError[key] = processingStatus[key];
+                        } else {
+                            alert("Unknown error during processing!")
+                        }
+                    }
+                }
+                successToastBody.innerHTML = "";
+                errorToastBody.innerHTML = "";
+                for (const i in batchProcessSuccess) {
+                    successToastBody.innerHTML +=
+                        `
+                        <li>${i}: ${batchProcessSuccess[i].message}</li>
+                        ` 
+                }
+                for (const i in batchProcessError) {
+                    errorToastBody.innerHTML +=
+                        `
+                        <li>${i}: ${batchProcessError[i].message}</li>
+                        `
+                }
+                const successToastBS = bootstrap.Toast.getOrCreateInstance(successToast)
+                const errorToastBS = bootstrap.Toast.getOrCreateInstance(errorToast)
+                if (Object.keys(batchProcessSuccess).length > 0) {
+                    successToastBS.show()
+                }
+
+                if (Object.keys(batchProcessError).length > 0) {
+                    errorToastBS.show()
+                }
+            }
+        })
+    })
 });
 
 

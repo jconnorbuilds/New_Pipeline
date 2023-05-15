@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
-{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
 {% load static %}
 
 {% block header %}
 {{ block.super }}
 <style type="text/css">
-  a{ text-decoration: none; }
+  a { text-decoration: none; }
 </style>
 {% endblock %}
 
@@ -24,7 +23,7 @@
           <form method="post">
             <div class="container m-3">
               <div class="row">
-                <div class="col-auto">    
+                <div class="col-auto">
                   {% csrf_token %}
                   {% render_field form.amount class+="form-control" placeholder="Amount" id="costsheet-form-amount" %}
                   {% render_field form.currency class+="form-select" id="costsheet-form-currency" %}

@@ -1,8 +1,10 @@
-from django.db import models
+from django.db import models, IntegrityError
 from django.conf import settings
 from datetime import date
 from django.urls import reverse
 from django.utils import timezone
+from .utils import FOREX_RATES
+from .currencies import currencies
 import uuid
 import requests
 
@@ -10,10 +12,10 @@ import requests
 def id_suffix_generator():
         n = 1
         while n < 9999:
-            yield (f"{n:02d}")
+            yield (f"{n:03d}")
             n += 1
-gen = id_suffix_generator()
 
+next_vendor_code_suffix = id_suffix_generator()
 
 def PO_num_generator():
         n = 1
@@ -23,55 +25,93 @@ def PO_num_generator():
 
 PONumgen = PO_num_generator()
 
-
-def forExRate(source_currency):
+# def forExRate(source_currency):
     
-    '''
-    Calculates the foreign exchange rate via Wise's API.
-    '''
-    # Set the endpoint URL for Wise's rates API'
-    API_KEY = '2577c5cf-0c38-4f18-89dc-3b10f273b6e1'
-    url = 'https://api.wise.com/v1/rates/'
-    target_currency = 'JPY'  # Example target currency (your local currency)
+#     '''
+#     Calculates the foreign exchange rate via Wise's API.
+#     '''
+#     # Set the endpoint URL for Wise's rates API'
+#     API_KEY = '2577c5cf-0c38-4f18-89dc-3b10f273b6e1'
+#     url = 'https://api.wise.com/v1/rates/'
+#     target_currency = 'JPY'  # Example target currency (your local currency)
 
-    # Set the API headers with your API key and specify the response format as JSON
-    headers = {
-        'Authorization': f'Bearer {API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    # Set the query parameters for the API request
-    params = {
-        'source': source_currency,
-        'target': target_currency
-    }
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        print(response.json()[0].get('rate'))
-        # return JsonResponse({'rate':response.json()[0].get('rate')})
-        return response.json()[0].get('rate')
-    else:
-        # return JsonResponse({'error':'Failed to retrieve exchange rate from Wise API.'})
-        return 1
+#     # Set the API headers with your API key and specify the response format as JSON
+#     headers = {
+#         'Authorization': f'Bearer {API_KEY}',
+#         'Content-Type': 'application/json'
+#     }
+#     # Set the query parameters for the API request
+#     params = {
+#         'source': source_currency,
+#         'target': target_currency
+#     }
+#     response = requests.get(url, headers=headers, params=params)
+#     if response.status_code == 200:
+#         print(response.json()[0].get('rate'))
+#         # return JsonResponse({'rate':response.json()[0].get('rate')})
+#         return response.json()[0].get('rate')
+#     else:
+#         # return JsonResponse({'error':'Failed to retrieve exchange rate from Wise API.'})
+#         return 1
 
 class Vendor(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    unique_id = models.CharField(max_length=10, default = 'NEW00')
-    full_name = models.CharField(max_length=30, default='NewVendor')
-    vendor_initials = models.CharField(max_length=4)
+    first_name = models.CharField(max_length=30, null=True)
+    last_name = models.CharField(max_length=30, null=True)
+    vendor_code_prefix = models.CharField(max_length=4,)
+    vendor_code = models.CharField(max_length=8, unique=True, null=True, blank=True)
     kanji_name = models.CharField(max_length=10, blank=True)
     kana_name = models.CharField(max_length=12, blank=True)
-    company_name = models.CharField(max_length=12, blank=True)
+    use_company_name = models.BooleanField(default=False)
+    company_name = models.CharField(max_length=20, blank=True, null=True)
     notes = models.TextField(max_length=300, blank=True)
-    email = models.EmailField(max_length=100, blank=True)
+    email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
+    payment_id = models.IntegerField(unique=True, null=True, blank=True)
+
+    @property
+    def full_name(self):
+        return ' '.join([self.first_name, self.last_name])
+
+    def get_vendor_code(self, vendor_code_prefix):
+        vendors = Vendor.objects.all()
+        new_vendor_code_suffix = 1
+        for vendor in vendors:
+            this_vendor_code_suffix = int(vendor.vendor_code[-3::])
+            if this_vendor_code_suffix == new_vendor_code_suffix:
+                new_vendor_code_suffix = this_vendor_code_suffix + 1
+        
+        i = 0
+        while i < 10:
+            new_vendor_code = f"{vendor_code_prefix}{new_vendor_code_suffix:03d}"
+            if not Vendor.objects.filter(vendor_code = new_vendor_code).exists():
+                return new_vendor_code
+            else:
+                new_vendor_code_suffix += 1
+                i += 1
 
     def save(self, *args, **kwargs):
-        if self.unique_id == 'NEW000':
-            self.unique_id = self.vendor_initials + str(next(gen))
+        if self.vendor_code is None:
+            self.vendor_code = self.get_vendor_code(self.vendor_code_prefix)
+
+            # while True:
+            #     try:
+            #         # Generate a new vendor code
+            #         new_vendor_code = f"{self.vendor_code_prefix}{next(next_vendor_code_suffix)}"
+            #         # Check if the code already exists in the database
+            #         if not Vendor.objects.filter(vendor_code=new_vendor_code).exists():
+            #             self.vendor_code = new_vendor_code
+            #             break
+            #     except IntegrityError:
+            #         # If there was an IntegrityError (e.g. due to a concurrent insert), try again
+            #         pass
         super().save(*args, **kwargs)
 
+    class Meta:
+        unique_together = (("first_name", "last_name"),)
+
     def __str__(self):
-        return f'{self.full_name} - {self.unique_id}'
+        return f'{self.full_name} - {self.vendor_code}'
 
 class Client(models.Model):
     friendly_name = models.CharField(max_length=100, unique=True)
@@ -124,15 +164,9 @@ class Cost(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vendor_rel')
     description = models.CharField(max_length=30, blank=True)
     amount = models.IntegerField(null=True)
-    currency = models.CharField(max_length=10, default='¥', choices=(
-                            ('JPY','JPY ¥'),
-                            ('USD','USD $'),
-                            ('CAD','CAD $'),
-                            ('AUD','AUD $'),
-                            ('EUR','EUR €'),
-                            ('GBP','GBP £'),
-                            )
-                        )
+    
+    CURRENCIES = currencies
+    currency = models.CharField(max_length=10, default='¥', choices=CURRENCIES)
     
     INVOICE_STATUS_CHOICES = (
         ('NR', 'Not ready to request'),
@@ -141,6 +175,7 @@ class Cost(models.Model):
         ('REC', 'Received via upload'),
         ('REC2', 'Received (direct PDF/paper)'),
         ('ERR', 'Error on upload'),
+        ('QUE', 'Queued for payment'),
         ('PAID', 'Paid'),
         ('NA', 'No Invoice'),
     )
@@ -182,7 +217,8 @@ class Cost(models.Model):
 
     def get_PO_number(self):
         '''
-        This should only run once, so the logic runs in the overridden save() function
+        Generate a unique Purchase Order number for a cost.
+        Example: JC01APL001
 
         '''
         po = ""
@@ -193,7 +229,7 @@ class Cost(models.Model):
                 if int(PO.PO_number[-3::]) > POCount:
                     POCount = int(PO.PO_number[-3::])
         POCount += 1
-        po = f'{self.vendor.unique_id}{self.job.client.job_code_prefix}{POCount:03d}'
+        po = f'{self.vendor.vendor_code}{self.job.client.job_code_prefix}{POCount:03d}'
 
         return po
 
@@ -201,7 +237,8 @@ class Cost(models.Model):
         if self.vendor and not self.PO_num_is_fixed:
             self.PO_number = self.get_PO_number()
             self.PO_num_is_fixed = True
-        elif self.vendor and self.vendor.unique_id != self.PO_number[0:4]:
+        elif self.vendor and self.vendor.vendor_code not in self.PO_number[0:6]:
+            print("changing PO number")
             self.PO_number = self.get_PO_number()
 
         if self.exchange_rate_override:
@@ -210,7 +247,7 @@ class Cost(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.job.job_name} ({self.job.job_code}) {self.currency}{self.amount} -- {self.vendor.unique_id if self.vendor else ""}'
+        return f'{self.job.job_name} ({self.job.job_code}) {self.currency}{self.amount} -- {self.vendor.vendor_code if self.vendor else ""}'
 
 class Job(models.Model):
 
@@ -352,7 +389,7 @@ class Job(models.Model):
                     total += round(cost.amount * cost.locked_exchange_rate)
                 else:
                     try:
-                        total += round(forExRate(cost.currency) * cost.amount)
+                        total += round(FOREX_RATES[cost.currency] * cost.amount)
                     except:
                         total += (cost.amount * 10)
                         print('There was an error getting the exchange rate')

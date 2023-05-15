@@ -27,7 +27,7 @@
 		</div>
 		
 		<div class="container-xl p-3" id="step-1-area" >
-			<form action="{% url 'pipeline:file-handler' %}" method="post" id="invoice-upload-form" enctype="multipart/form-data" class="dropzone shadow rounded">
+			<form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}" method="post" id="invoice-upload-form" enctype="multipart/form-data" class="dropzone shadow rounded">
 				<div class="dropzone-previews"></div>
 				{% csrf_token %}
 				<div class="fallback">

@@ -3,10 +3,8 @@ from django.forms import ModelForm, Textarea, formset_factory, formsets, rendere
 from django.db.models import Q
 from .models import Cost, Job, Vendor, Client
 from datetime import date
-import django_filters
 from datetime import date
 import calendar
-from django_filters.widgets import RangeWidget
 
 MONTH_CHOICES = [
     (1,'January'),
@@ -40,7 +38,7 @@ class CostForm(ModelForm):
 class AddVendorToCostForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['addVendor'].choices = [('', 'Select vendor...')] + [(vendor.unique_id, vendor.full_name) for vendor in Vendor.objects.all()]
+        self.fields['addVendor'].choices = [('', 'Select vendor...')] + [(vendor.vendor_code, vendor.full_name) for vendor in Vendor.objects.all()]
 
     addVendor = forms.ChoiceField(choices=[])
     # cost_id = forms.IntegerField(widget=forms.HiddenInput())
@@ -59,9 +57,6 @@ class UpdateCostForm(forms.Form):
                                 ('NA','No Invoice')
                                 ))
     
-    # def __init__(self, job, *args, **kwargs):
-    #   super().__init__(*args, **kwargs)
-    #   self.fields['vendor'].queryset = Vendor.objects.filter(jobs_rel=job)
 
 
 class JobForm(ModelForm):
@@ -142,47 +137,6 @@ class PipelineBulkActionsForm(forms.Form):
                 "aria-label":"Bulk actions",
                 }
             ))
-
-class JobFilter(django_filters.FilterSet):
-
-    year = django_filters.ChoiceFilter(
-        field_name = 'year',
-        lookup_expr='exact', 
-        label='Year', 
-        choices=YEAR_CHOICES, 
-        empty_label='-Select year-'
-    )
-    job_date = django_filters.ChoiceFilter(
-        field_name='job_date',
-        lookup_expr='icontains', 
-        label='Date', choices=DATE_CHOICES,
-        empty_label='-Select date-',
-    )
-    job_name = django_filters.CharFilter(
-        field_name='job_name',
-        lookup_expr='icontains', 
-        label='Job name'
-    )
-    client = django_filters.CharFilter(
-        method='client_name_or_prefix',
-        field_name = 'client__friendly_name',
-        lookup_expr='icontains',
-        label='Client name'
-    )
-    full_name = django_filters.CharFilter(
-        field_name='vendors__full_name',
-        lookup_expr='icontains',
-        label='Vendor'
-    )
-
-    def client_name_or_prefix(self, queryset, name, value):
-        return queryset.filter(
-            Q(client__friendly_name__icontains=value)|Q(client__job_code_prefix__icontains=value)
-        )
-
-    class Meta:
-        model = Job
-        fields = []
 
 class UploadInvoiceForm(forms.Form):
     '''

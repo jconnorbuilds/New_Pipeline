@@ -38,11 +38,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
 
-env_file = BASE_DIR / ".env.dev"
-config = dotenv_values(".env.dev")
-
 if os.getenv('ENVIRONMENT') == 'production':
-    load_dotenv('.env.prod')
+    load_dotenv('.env')
 else:
     load_dotenv('.env.dev')
 
@@ -89,15 +86,10 @@ if not DEBUG:
 
 print(f"debug: {DEBUG}")
 
-if os.path.isfile(env_file):
-    # # Use a local secret file, if provided
-    SECRET_KEY = os.getenv("SECRET_KEY")
-
-else:
-    raise Exception("No local .env found!")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
 INSTALLED_APPS = [

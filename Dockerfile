@@ -2,7 +2,7 @@
 FROM python:3.11.3-alpine3.17
 
 # set work directory
-WORKDIR /usr/src/New_Pipeline
+WORKDIR /usr/src/app/
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1

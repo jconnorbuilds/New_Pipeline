@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
-import io
 from django.contrib.messages import constants as messages
 # import environ
 from urllib.parse import urlparse
@@ -38,7 +37,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
 
-load_dotenv('.env')
+# load_dotenv('.env')
 
 LINODE_STORAGE = boto3.client('s3', 
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -73,7 +72,7 @@ DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.getenv("DEBUG", False)
+DEBUG = int(os.getenv("DEBUG", 0))
 
 print(f"debug: {DEBUG}")
 
@@ -125,7 +124,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'New_Pipeline.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -133,6 +131,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
         'LOCATION': 'cache_table',
+        # "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     }
 }
 # Use django-environ to parse the connection string

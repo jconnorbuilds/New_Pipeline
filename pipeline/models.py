@@ -25,35 +25,6 @@ def PO_num_generator():
 
 PONumgen = PO_num_generator()
 
-# def forExRate(source_currency):
-    
-#     '''
-#     Calculates the foreign exchange rate via Wise's API.
-#     '''
-#     # Set the endpoint URL for Wise's rates API'
-#     API_KEY = '2577c5cf-0c38-4f18-89dc-3b10f273b6e1'
-#     url = 'https://api.wise.com/v1/rates/'
-#     target_currency = 'JPY'  # Example target currency (your local currency)
-
-#     # Set the API headers with your API key and specify the response format as JSON
-#     headers = {
-#         'Authorization': f'Bearer {API_KEY}',
-#         'Content-Type': 'application/json'
-#     }
-#     # Set the query parameters for the API request
-#     params = {
-#         'source': source_currency,
-#         'target': target_currency
-#     }
-#     response = requests.get(url, headers=headers, params=params)
-#     if response.status_code == 200:
-#         print(response.json()[0].get('rate'))
-#         # return JsonResponse({'rate':response.json()[0].get('rate')})
-#         return response.json()[0].get('rate')
-#     else:
-#         # return JsonResponse({'error':'Failed to retrieve exchange rate from Wise API.'})
-#         return 1
-
 class Vendor(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -94,17 +65,6 @@ class Vendor(models.Model):
         if self.vendor_code is None:
             self.vendor_code = self.get_vendor_code(self.vendor_code_prefix)
 
-            # while True:
-            #     try:
-            #         # Generate a new vendor code
-            #         new_vendor_code = f"{self.vendor_code_prefix}{next(next_vendor_code_suffix)}"
-            #         # Check if the code already exists in the database
-            #         if not Vendor.objects.filter(vendor_code=new_vendor_code).exists():
-            #             self.vendor_code = new_vendor_code
-            #             break
-            #     except IntegrityError:
-            #         # If there was an IntegrityError (e.g. due to a concurrent insert), try again
-            #         pass
         super().save(*args, **kwargs)
 
     class Meta:

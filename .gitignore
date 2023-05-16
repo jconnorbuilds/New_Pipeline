@@ -1,6 +1,4 @@
 .DS_STORE
-.env
-.env.dev
-.env.prod
+.env*
 **/Dockerfile*
 **/__pycache__/

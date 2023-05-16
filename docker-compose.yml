@@ -2,11 +2,26 @@ version: '3.8'
 
 services:
   web:
+    # image: new_pipeline_image
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./New_Pipeline:/usr/src/New_Pipeline/
+      - ./:/usr/src/app/
     ports:
       - 8000:8000
     env_file:
-      - .env
+      - .env.dev
+    depends_on:
+      - db
+  db:
+    image: postgres:14.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=npt
+      - POSTGRES_PASSWORD=npt_dev
+      - POSTGRES_DB=npt_dev
+
+volumes:
+  postgres_data:

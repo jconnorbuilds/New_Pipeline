@@ -12,35 +12,35 @@ jobs:
     name: Build Docker Images
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout master
+      - name: Checkout main
         uses: actions/checkout@v1
-      - name: Add environment variables to .env
+      - name: Add environment variables to .env.prod
         run: |
-          echo "DEBUG=0" >> .env
-          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env
-          echo "DATABASE=postgres" >> .env
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env
-          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env
-          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
-          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
-          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
+          echo "DEBUG=0" >> .env.prod
+          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env.prod
+          echo "DATABASE=postgres" >> .env.prod
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env.prod
+          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env.prod
+          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env.prod
+          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env.prod
+          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env.prod
+          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env.prod
       - name: Set environment variables
         run: |
-          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
-          echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
+          echo "WEB_IMAGE=$(echo ${{env.prod.WEB_IMAGE}} )" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo ${{env.prod.NGINX_IMAGE}} )" >> $GITHUB_ENV
       - name: Log in to GitHub Packages
         run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Pull images
         run: |
-          docker pull ${{ env.WEB_IMAGE }} || true
-          docker pull ${{ env.NGINX_IMAGE }} || true
+          docker pull ${{ env.prod.WEB_IMAGE }} || true
+        #  docker pull ${{ env.prod.NGINX_IMAGE }} || true
       - name: Build images
         run: |
-          docker-compose -f docker-compose.yml build
+          docker-compose -f docker-compose.prod.yml build
       - name: Push images
         run: |
-          docker push ${{ env.WEB_IMAGE }}
-          # docker push ${{ env.NGINX_IMAGE }}
+          docker push ${{ env.prod.WEB_IMAGE }}
+        #  docker push ${{ env.prod.NGINX_IMAGE }}

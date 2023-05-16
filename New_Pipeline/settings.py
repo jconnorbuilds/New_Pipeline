@@ -38,10 +38,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
 
-if os.getenv('ENVIRONMENT') == 'production':
-    load_dotenv('.env')
-else:
-    load_dotenv('.env.dev')
+load_dotenv('.env')
 
 LINODE_STORAGE = boto3.client('s3', 
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -77,12 +74,6 @@ DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = os.getenv("DEBUG", False)
-
-if not DEBUG:
-    STATIC_ROOT = BASE_DIR / 'var/www/static/'
-# else:
-#     STATIC_ROOT = BASE_DIR / 'static_test'
-
 
 print(f"debug: {DEBUG}")
 
@@ -205,11 +196,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
     # '/var/www/static/',
 ]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

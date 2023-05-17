@@ -4,7 +4,7 @@ on: [push]
 
 env:
   WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
-  # NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
+  NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
 
 jobs:
 
@@ -36,11 +36,11 @@ jobs:
       - name: Pull images
         run: |
           docker pull ${{ env.prod.WEB_IMAGE }} || true
-        #  docker pull ${{ env.prod.NGINX_IMAGE }} || true
+         docker pull ${{ env.prod.NGINX_IMAGE }} || true
       - name: Build images
         run: |
           docker-compose -f docker-compose.prod.yml build
       - name: Push images
         run: |
           docker push ${{ env.prod.WEB_IMAGE }}
-        #  docker push ${{ env.prod.NGINX_IMAGE }}
+          docker push ${{ env.prod.NGINX_IMAGE }}

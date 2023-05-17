@@ -13,13 +13,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
-# import environ
 from urllib.parse import urlparse
-# from google.cloud import secretmanager
 from dotenv import load_dotenv
 from dotenv import dotenv_values
 import boto3
-from celery.schedules import crontab
+# from celery.schedules import crontab
 
 
 # LOGIN_URL = "/admin/login/"
@@ -36,8 +34,6 @@ MESSAGE_TAGS = {
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
-
-# load_dotenv('.env')
 
 LINODE_STORAGE = boto3.client('s3', 
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),

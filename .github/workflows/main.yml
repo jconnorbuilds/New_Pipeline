@@ -29,8 +29,8 @@ jobs:
       - 
         name: Set environment variables
         run: |
-          echo "WEB_IMAGE=$(echo ${{env.prod.WEB_IMAGE}} )" >> $GITHUB_ENV
-          echo "NGINX_IMAGE=$(echo ${{env.prod.NGINX_IMAGE}} )" >> $GITHUB_ENV
+          echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
       - 
         name: Log in to GitHub Packages
         run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
@@ -48,9 +48,9 @@ jobs:
       - 
         name: Push images
         run: |
-          docker push ${{ env.prod.WEB_IMAGE }}
-          docker push ${{ env.prod.NGINX_IMAGE }}
-          
+          docker push ${{ env.WEB_IMAGE }}
+          docker push ${{ env.NGINX_IMAGE }}
+
   deploy:
     name: Deploy to Linode
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@v3.2.0
       - name: Add environment variables to .env.prod
         run: |
-          echo "DEBUG=0" >> .env
+          echo "DEBUG=0" >> .env.prod
           echo "SQL_ENGINE=django.db.backends.postgresql" >> .env.prod
           echo "DATABASE=postgres" >> .env.prod
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env.prod

@@ -3,8 +3,8 @@ name: Continuous Integration and Delivery
 on: [push]
 
 env:
-  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web:latest
-  NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx:latest
+  WEB_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web
+  NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
 
 jobs:
   build:
@@ -26,7 +26,7 @@ jobs:
           echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
           echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
           echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
-      - 
+      -
         name: Set environment variables
         run: |
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
@@ -45,6 +45,11 @@ jobs:
         name: Build images
         run: |
           docker compose -f docker-compose.prod.yml build
+      - 
+        name: Tag images
+        run: |
+          docker tag npt_prod:local ${{ env.WEB_IMAGE }}:latest
+          docker tag npt_nginx_prod:local ${{ env.NGINX_IMAGE }}:latest
       - 
         name: Push images
         run: |

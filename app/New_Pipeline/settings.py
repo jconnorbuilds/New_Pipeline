@@ -20,7 +20,6 @@ import boto3
 # from celery.schedules import crontab
 
 
-# LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
         messages.DEBUG: 'alert-secondary',

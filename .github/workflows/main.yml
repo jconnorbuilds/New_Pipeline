@@ -13,7 +13,7 @@ jobs:
     steps:
       - 
         name: Checkout main
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
       - 
         name: Add environment variables to .env.prod
         run: |

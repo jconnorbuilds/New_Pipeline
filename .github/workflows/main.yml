@@ -92,12 +92,11 @@ jobs:
         run: |
           scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.LINODE_IP_ADDRESS }}:/app
           ssh -o StrictHostKeyChecking=no root@${{ secrets.LINODE_IP_ADDRESS }} << 'ENDSSH'
-          ls
-          sudo mkdir /app/app
             cd /app
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
+            ls -a
             sudo docker-compose -f docker-compose.prod.yml up -d
           ENDSSH

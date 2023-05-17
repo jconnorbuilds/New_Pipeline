@@ -36,7 +36,7 @@ jobs:
       - name: Pull images
         run: |
           docker pull ${{ env.prod.WEB_IMAGE }} || true
-         docker pull ${{ env.prod.NGINX_IMAGE }} || true
+          docker pull ${{ env.prod.NGINX_IMAGE }} || true
       - name: Build images
         run: |
           docker-compose -f docker-compose.prod.yml build

@@ -44,6 +44,7 @@ jobs:
       - 
         name: Build images
         run: |
+          ls
           docker compose -f docker-compose.prod.yml build
       - 
         name: Push images

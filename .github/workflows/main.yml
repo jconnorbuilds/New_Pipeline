@@ -15,17 +15,17 @@ jobs:
         name: Checkout main
         uses: actions/checkout@v3.2.0
       - 
-        name: Add environment variables to .env.prod
+        name: Add environment variables to .env
         run: |
-          echo "DEBUG=0" >> .env.prod
-          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env.prod
-          echo "DATABASE=postgres" >> .env.prod
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env.prod
-          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env.prod
-          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env.prod
-          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env.prod
-          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env.prod
-          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env.prod
+          echo "DEBUG=0" >> .env
+          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env
+          echo "DATABASE=postgres" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env
+          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env
+          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
+          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
+          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
       - 
         name: Set environment variables
         run: |
@@ -39,8 +39,8 @@ jobs:
       - 
         name: Pull images
         run: |
-          docker pull ${{ env.prod.WEB_IMAGE }} || true
-          docker pull ${{ env.prod.NGINX_IMAGE }} || true
+          docker pull ${{ env.WEB_IMAGE }} || true
+          docker pull ${{ env.NGINX_IMAGE }} || true
       - 
         name: Build images
         run: |
@@ -58,21 +58,21 @@ jobs:
     steps:
       - name: Checkout master
         uses: actions/checkout@v3.2.0
-      - name: Add environment variables to .env.prod
+      - name: Add environment variables to .env
         run: |
-          echo "DEBUG=0" >> .env.prod
-          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env.prod
-          echo "DATABASE=postgres" >> .env.prod
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env.prod
-          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env.prod
-          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env.prod
-          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env.prod
-          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env.prod
-          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env.prod
-          echo "WEB_IMAGE=${{ env.prod.WEB_IMAGE }}" >> .env.prod
-          echo "NGINX_IMAGE=${{ env.prod.NGINX_IMAGE }}" >> .env.prod
-          echo "NAMESPACE=${{ secrets.NAMESPACE }}" >> .env.prod
-          echo "PERSONAL_ACCESS_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> .env.prod
+          echo "DEBUG=0" >> .env
+          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env
+          echo "DATABASE=postgres" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env
+          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env
+          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
+          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
+          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
+          echo "WEB_IMAGE=${{ env.WEB_IMAGE }}" >> .env
+          echo "NGINX_IMAGE=${{ env.NGINX_IMAGE }}" >> .env
+          echo "NAMESPACE=${{ secrets.NAMESPACE }}" >> .env
+          echo "PERSONAL_ACCESS_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> .env
       - name: Add the private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -85,10 +85,10 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          scp  -o StrictHostKeyChecking=no -r ./.env.prod ./docker-compose.prod.yml root@${{ secrets.LINODE_IP_ADDRESS }}:/app
+          scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.LINODE_IP_ADDRESS }}:/app
           ssh -o StrictHostKeyChecking=no root@${{ secrets.LINODE_IP_ADDRESS }} << 'ENDSSH'
             cd /app
-            source .env.prod
+            source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE

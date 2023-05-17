@@ -90,11 +90,10 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          ls
           scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.LINODE_IP_ADDRESS }}:/app
           ssh -o StrictHostKeyChecking=no root@${{ secrets.LINODE_IP_ADDRESS }} << 'ENDSSH'
           ls
-          sudo mkdir /app
+          sudo mkdir /app/app
             cd /app
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN

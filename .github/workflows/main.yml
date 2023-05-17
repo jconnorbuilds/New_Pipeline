@@ -7,13 +7,12 @@ env:
   NGINX_IMAGE: ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx
 
 jobs:
-
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Add environment variables to .env.prod
         run: |
           echo "DEBUG=0" >> .env.prod

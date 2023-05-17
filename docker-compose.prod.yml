@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile.prod
     command: gunicorn New_Pipeline.wsgi:application --bind 0.0.0.0:8000 --timeout=5 --threads=10
     volumes:
+      - ./:/usr/src/app/
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
     expose:

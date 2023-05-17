@@ -10,11 +10,10 @@ jobs:
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
+    context: ./
     steps:
       - name: Checkout main
         uses: actions/checkout@v2
-        with:
-          context: ./..
       - name: Add environment variables to .env.prod
         run: |
           echo "DEBUG=0" >> .env.prod

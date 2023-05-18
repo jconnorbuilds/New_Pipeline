@@ -15,7 +15,6 @@ import os
 from django.contrib.messages import constants as messages
 from urllib.parse import urlparse
 from dotenv import load_dotenv
-from dotenv import dotenv_values
 import boto3
 # from celery.schedules import crontab
 
@@ -73,9 +72,10 @@ print(f"debug: {DEBUG}")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-# ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
-CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
+# CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:1337"]
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # Application definition
 INSTALLED_APPS = [

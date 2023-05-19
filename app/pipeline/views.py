@@ -293,7 +293,7 @@ class JobDetailView(DetailView):
     template_name = "pipeline/jobs.html"
     model = Job
 
-class InvoiceView(TemplateView):
+class InvoiceView(LoginRequiredMixin, TemplateView):
     # Will need to make more efficient for the long term
     print(FOREX_RATES)
     model = Cost
@@ -517,6 +517,11 @@ def RequestVendorInvoicesMultiple(request):
     costCount = 0
     vendorCount = 0
 
+    if settings.DEBUG:
+        domain_base = "localhost:8000"
+    else:
+        domain_base = "https://bwcat.tools"
+
     # Returns the month 'number' with no leading zeroes
     # For use in calendar.month_abbr'
     monthNum = int(str(timezone.now()).split('-')[1])
@@ -539,7 +544,7 @@ def RequestVendorInvoicesMultiple(request):
         from_email=None
 
         # creates rich text and plaintext versions to be sent; rich text will be read by default
-        html_message = render_to_string("pipeline/invoice_request_email_template.html", context={'vendor_first_name':vendor_first_name, 'vendor':vendor, 'costs':costs})
+        html_message = render_to_string("pipeline/invoice_request_email_template.html", context={'vendor_first_name':vendor_first_name, 'vendor':vendor, 'costs':costs, 'domain_base':domain_base})
         with open(settings.TEMPLATE_DIR / "pipeline/invoice_request_email_template.html") as f:
             message = strip_tags(f.read())
         
@@ -549,7 +554,7 @@ def RequestVendorInvoicesMultiple(request):
         vendorCount += 1
         for cost in costs:
             cost.invoice_status = 'REQ'
-            cost.save()
+            # cost.save()
 
     messages.success(request, f'{costCount} invoices were requested from {vendorCount} vendors!')
     
@@ -581,7 +586,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
 
         # creates rich text and plaintext versions to be sent; rich text will be read by default
         html_message = render_to_string("pipeline/invoice_request_email_template.html", context={
-                                        'vendor_first_name': vendor_first_name, 'vendor': vendor, 'cost': cost})
+                                        'vendor_first_name': vendor_first_name, 'vendor': vendor, 'cost': cost, 'request':request})
         with open(settings.TEMPLATE_DIR / "pipeline/invoice_request_email_template.html") as f:
             message = strip_tags(f.read())
 
@@ -990,7 +995,7 @@ def VendorRemoveFromJob(request, pk, job_id):
     job.save()
     return redirect('pipeline:cost-add', job_id)
 
-class CostCreateView(CreateView):
+class CostCreateView(LoginRequiredMixin, CreateView):
     model = Cost
     fields = ['vendor','description','amount','currency','invoice_status','notes']
     template_name = "pipeline/cost_form.html"

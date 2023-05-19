@@ -29,7 +29,8 @@
 		</ul>
 		{% endfor %}
 	{% endif %}
-	<h4>Upload your invoices <a href="http://127.0.0.1:8000/{% url 'pipeline:upload-invoice' vendor.uuid %}">HERE</a>!</h4>
+	{% comment %} <h4>Upload your invoices <a href="{{ domain_base }}{% url 'pipeline:upload-invoice' vendor.uuid %}">HERE</a>!</h4> {% endcomment %}
+	<h4>Upload your invoices <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'pipeline:upload-invoice' vendor.uuid %}">HERE</a>!</h4>
 	<p>Open the page and simply drag and drop.</p>
 	
 	

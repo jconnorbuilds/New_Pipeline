@@ -29,10 +29,8 @@
 		</ul>
 		{% endfor %}
 	{% endif %}
-	{% comment %} <h4>Upload your invoices <a href="{{ domain_base }}{% url 'pipeline:upload-invoice' vendor.uuid %}">HERE</a>!</h4> {% endcomment %}
 	<h4>Upload your invoices <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'pipeline:upload-invoice' vendor.uuid %}">HERE</a>!</h4>
 	<p>Open the page and simply drag and drop.</p>
-	
 	
 	<p>We plan to pay you by the 25th of the following month upon receipt of invoice. If you have any questions or concerns, please reach out directly. Looking forward to working with you again! </p></br>
 	<p><small><em>If this email finds you erroneously, please forgive us! We're trying out something new to improve the way we work together.</em></small></p>

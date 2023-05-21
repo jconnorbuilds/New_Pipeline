@@ -166,16 +166,16 @@
   <form method="post" class="">
     {% csrf_token %}
     <div class="container-fluid bg-white rounded-2 shadow">
-      <div class="row d-flex p-2 justify-content-between align-items-center">
-        <div class="col-6">
+      <div class="row p-2 align-items-center d-flex justify-content-lg-center">
+        <div class="col-lg-6 text-lg-start text-center">
           <h1 class="display-1">Pipeline</h1>
           <div class="p-2">
-            <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button"><b>Viewing jobs by month</b></button>
+            <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button" style="white-space: nowrap;"><b>Viewing jobs by month</b></button>
           </div>
         </div>
-        <div id="monthly-view-panel" class="wrapper col-6 monthly-item">
-          <div class="row d-flex align-items-baseline">
-            <div class="col-auto text-nowrap">
+        <div id="monthly-view-panel" class="wrapper col-lg-6 d-flex justify-content-center monthly-item" >
+          <div class="row d-flex align-items-baseline text-start flex-nowrap">
+            <div class="col-auto text-nowrap" >
               <h6>Total billed (YTD): </h6>
               <h6>Monthly average (YTD): </h6> 
               <h5>Total billed this month (Expected): </h5>
@@ -233,7 +233,7 @@
     </div>
     
     <div class="wrapper" style="min-height:550px;">
-      <table id="job-table" class="compact hover nowrap">
+      <table id="job-table" class="hover compact dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
             {% for item in headers %}

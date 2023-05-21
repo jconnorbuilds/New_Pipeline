@@ -30,6 +30,10 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+.single-invoice-request-btn {
+  white-space: nowrap;
+}
+
 .dropzone .dz-preview .dz-progress {
 /*  top: 70% !important;*/
 /*  background: rgba(255,255,255,25%) !important;*/

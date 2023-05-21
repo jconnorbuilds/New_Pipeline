@@ -303,8 +303,8 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # current_url = self.request.build_absolute_uri()
-        context['headers'] = ["", "Link", "Amt. (¥)", "Amt.(local)", "Job Date", "Job", "Job Code", "Vendor", "Description",
-                              "PO Number", "Invoice Status", "Request Invoice", "Edit", "ID"]
+        context['headers'] = ["", "", "Amt. (¥)", "Amt.(local)", "Job Date", "Job", "Job Code", "Vendor", "Description",
+                              "PO Number", "Invoice Status", "", "Edit", "ID"]
         return context
 
     def post(self, request, *args, **kwargs):

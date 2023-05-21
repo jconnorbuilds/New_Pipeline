@@ -72,10 +72,7 @@
     <h6> <small class="text-muted">Job Code: {{ currentJob.job_code }}</small></h6>
   </div>
   <div class="container p-2">
-  {% comment %} <form method='post' id='cost-table-form' action=''> {% endcomment %}
-    {% comment %} {% csrf_token %} {% endcomment %}
-    {% comment %} <input type="hidden" value="Update" value="update-cost-vendor"> {% endcomment %}
-    <table id="cost-table" class="display compact">
+    <table id="cost-table" class="display compact dt-responsive nowrap" style="width:100%">
       <thead>
         <tr>
           {% for item in headers %}

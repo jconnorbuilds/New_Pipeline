@@ -29,13 +29,13 @@ $(document).ready(function(){
             }
         },
         columns: [
-            {"data": "select"},
+            { "data": "select", responsivePriority: 2 },
             {"data": "id"},
-            {"data": "client_name"},
-            {"data": "job_name"},
-            {"data": "job_code"},
-            {"data": "revenue"},
-            {"data": "total_cost"},
+            { "data": "client_name", responsivePriority: 4 },
+            { "data": "job_name", responsivePriority: 1},
+            {"data": "job_code", },
+            { "data": "revenue", responsivePriority: 3 },
+            { "data": "total_cost", responsivePriority: 5 },
             {"data": "profit_rate"},
             {
                 "data": "job_date",
@@ -58,8 +58,16 @@ $(document).ready(function(){
                 searchable: false,
             },
             {
+                targets: [0, 1, -1, -2],
+                orderable: false
+            },
+            {
                 target: 1,
                 visible: false
+            },
+            {
+                target: 3,
+                // render: $.fn.dataTable.render.ellipsis(20, true)
             },
             {
                 targets: 5,
@@ -228,7 +236,6 @@ $(document).ready(function(){
         // createdRow: function(row, data, dataIndex) {
         //     var vendorColumnId = 'costsheet-vendor' + (dataIndex + 1);
         //     $(row).find('.cost-vendor-select').attr('id', vendorColumnId);
-
         // },
         rowCallback: function(row, data) {
             // This button disabling/enabling logic only works within the
@@ -456,7 +463,10 @@ $(document).ready(function(){
     var allInvoicesTable = $('#all-invoices-table').DataTable({
         paging: true,
         pageLength: 50,
-        responsive: true,
+        responsive: {
+            details: {
+                display: $.fn.dataTable.Responsive.display.childRow
+            }},
         order: [[4, 'asc'],[6, 'asc']],
         orderClasses: false,
         language: {
@@ -468,10 +478,10 @@ $(document).ready(function(){
         },
         rowId: 'id',
         columns: [
-            { "data": "select"},
-            { "data": "costsheet_link" },
+            { "data": "select", visible: false},
+            { "data": "costsheet_link", },
             { "data": "amount_JPY" },
-            { "data": "amount_local" },
+            { "data": "amount_local", responsivePriority: 1 },
             {
                 "data": "job_date",
                 "render": function (data) {
@@ -481,7 +491,7 @@ $(document).ready(function(){
                     return year + "年" + month + "月";
                 }
             },
-            { "data": "job_name" },
+            { "data": "job_name", responsivePriority: 1 },
             { "data": "job_code"},
             { "data": "vendor" },
             { "data": "description" },
@@ -501,7 +511,7 @@ $(document).ready(function(){
         ],
         columnDefs: [
             {
-                target: 0,
+                targets: [0, 1, -1, -2, -3],
                 orderable: false,
             },
             {
@@ -518,12 +528,12 @@ $(document).ready(function(){
                 className: "dt-left",
                 width: "100px",
                 createdCell: function (td, cellData, rowData, row, col) {
-                    $(td).css('padding-left', '10px')
+                    $(td).css('padding-left', '15px')
                 }
             },
             {
                 targets: 5,
-                render: $.fn.dataTable.render.ellipsis(18, true)
+                render: $.fn.dataTable.render.ellipsis(25, true)
             },
             {
                 target: 8,

@@ -54,7 +54,7 @@
   <div class="container p-2">
     {% csrf_token %}
   </div>
-    <table id="all-invoices-table" class="display compact">
+    <table id="all-invoices-table" class="display compact dt-responsive nowrap" style="width:100%">
       <thead>
         <tr>
           {% for item in headers %}

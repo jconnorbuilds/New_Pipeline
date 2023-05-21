@@ -756,13 +756,13 @@ $(document).ready(function(){
         if (pipelineViewState == "monthly") {
             pipelineViewState = "all";
             $("#view-state").text(pipelineViewState);
-            $(".monthly-item").slideUp("fast")
+            $(".monthly-item").slideUp("fast");
             $(".toggle-view").html("<b>Viewing all jobs</b>")
             filterData(undefined, undefined);
         } else {
-            pipelineViewState = "monthly"
+            pipelineViewState = "monthly";
             $("#view-state").text(pipelineViewState);
-            $(".monthly-item").slideDown("fast")
+            $(".monthly-item").slideDown("fast");
             $(".toggle-view").html("<b>Viewing jobs by month</b>")
             filterData(pipelineYear.val(), pipelineMonth.val());
         }

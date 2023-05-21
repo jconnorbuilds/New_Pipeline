@@ -87,7 +87,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'pipeline',
-    'livereload',
+    # 'livereload',
     'django_bootstrap5',
     'widget_tweaks',
 ]

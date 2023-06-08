@@ -9,8 +9,6 @@ const slugify = str =>
 let hintWithInvoices = "Simply choose the matching job from the dropdown menu. When you've finished, click the Submit button below.";
 let hintWithNoInvoices = "Files will appear here once you've added them."
 
-var landingPageUrl = '/invoice-uploader/thanks/'
-
 var myDropzone;
 Dropzone.options.invoiceUploadForm = {
     autoProcessQueue: false,

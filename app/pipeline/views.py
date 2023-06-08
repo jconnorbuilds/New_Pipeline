@@ -137,7 +137,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
         elif 'bulk-actions' in request.POST:
             bulk_form = self.bulk_actions(request.POST)
-            # all_items = self.table_class(request.POST)
             print(request.POST)
             checked_jobs = Job.objects.filter(id__in=request.POST.getlist('select'))
             if bulk_form.is_valid():
@@ -201,7 +200,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         else:
             print(f'post request contents: {request.POST}')
 
-        # self.object_list = self.get_queryset()
         return render(request, self.template_name, self.get_context_data())
 
 def pipeline_data(request, year=None, month=None):
@@ -300,26 +298,20 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # current_url = self.request.build_absolute_uri()
         context['headers'] = ["", "", "Amt. (¥)", "Amt.(local)", "Job Date", "Job", "Job Code", "Vendor", "Description",
                               "PO Number", "Invoice Status", "", "Edit", "ID"]
         return context
 
     def post(self, request, *args, **kwargs):
-        # currentJob = Job.objects.get(pk=self.kwargs['pk'])
         print(request.POST)
-        # vendors = Vendor.objects.filter(jobs_rel=currentJob.id)
         form_data_id = request.POST.get('cost_id')
         form_data_vendor = request.POST.get('vendor')
         form_data_status = request.POST.get('status')
-        # form_data_status = request.POST.get('status')
         all_costs = Cost.objects.all()
         cost = Cost.objects.get(id=request.POST.get('cost_id'))
         print(f"cost amount: {cost.amount}")
         print(f"cost currency: {cost.currency}")
 
-
-        # print(request.POST.get('cost_id'))
         if form_data_vendor:
             cost.vendor = Vendor.objects.get(id=form_data_vendor)
 
@@ -346,9 +338,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
             }
         
         return JsonResponse({"status": "success", "data":data}, safe=False,)
-        # return render(request, self.template_name, self.get_context_data(**kwargs))
 
-    # 
 def all_invoices_data(request):
     costs = Cost.objects.all()
     print(request.POST)
@@ -392,8 +382,7 @@ def dropbox_connect():
             app_secret=app_secret, 
             headers=headers)
         dbx.check_and_refresh_access_token()
-        # access_token = access_token.access_token
-        # dbx = dropbox.Dropbox(access_token, headers=headers)
+
     except AuthError as e:
         print('Error connecting to Dropbox with access token: ' + str(e))
     return dbx
@@ -818,8 +807,6 @@ def importClients(request):
 
         if not_created_items:
             messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
-            # for item in not_created_items:
-            #   messages.info(request, item)
 
     return redirect('pipeline:client-add')
 
@@ -874,10 +861,6 @@ def importJobs(request):
                 created_items.append(f'{job_name} - {client}')
             elif not created:
                 not_created_items.append(f'{job_name} - {client}')
-            # elif not created:
-            #   itemUpdated.append(f'{name} - {job_code_prefix}')
-            # else:
-            #   messages.warning.append(f'{name} - {job_code_prefix} !!! SOMETHING ELSE HAPPENED')
 
         except IntegrityError as e:
             print(f'{job_name} - {client}: {e}')
@@ -921,10 +904,6 @@ def importVendors(request):
                 familiar_name = company_name
             else:
                 familiar_name = " ".join([first_name, last_name]) if last_name else first_name
-
-            # attributes = ["------------", first_name, last_name, vendor_code, company_name, use_company_name, email, payment_id, familiar_name, "------------"]
-            # for attr in attributes:
-            #     print(attr)
             
             if Vendor.objects.filter(first_name__iexact=first_name, last_name__iexact=last_name).exists():
                 not_created_items.append(f'{familiar_name} {email if email else ""}')
@@ -965,13 +944,9 @@ def importVendors(request):
     
         if created_items:
             messages.success(request, f'{len(created_items)} vendors were added successfully!')
-            # for item in created_items:
-            #     messages.info(request, item)
 
         if not_created_items:
             messages.info(request, f'{len(not_created_items)} vendors were already in the database, so they were left alone. If you need to update vendor information, go to Vendors -> View Vendors and click the update link.')
-            # for item in not_created_items:
-            #     messages.info(request, item)
 
     return redirect('pipeline:vendor-add')
 

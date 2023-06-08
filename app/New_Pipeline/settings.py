@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 import boto3
 # from celery.schedules import crontab
 
-load_dotenv("../.env.dev")
+# load_dotenv("../.env.dev")
 
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {

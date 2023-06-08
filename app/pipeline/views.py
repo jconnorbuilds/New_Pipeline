@@ -10,7 +10,7 @@ from django.core.mail import send_mail, send_mass_mail
 from django.db import IntegrityError
 from django.db.models import Sum
 from django.forms import formset_factory, modelformset_factory, Textarea
-from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
+from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.template.loader import get_template, render_to_string
 from django.urls import reverse, reverse_lazy
@@ -29,9 +29,7 @@ from .utils import FOREX_RATES
 
 # import boto3
 import json
-# import os
 import calendar
-# import unicodedata
 import csv
 import requests
 
@@ -48,7 +46,7 @@ class RedirectToPreviousMixin:
         return self.request.session['previous_page']
 
 def index(request):
-    return render(request, 'pipeline/index.html')
+    return redirect('pipeline:index')
 
 def is_ajax(request):
     return request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -338,7 +336,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
                 "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
                 "job_name": cost.job.job_name,
                 "job_code": cost.job.job_code,
-                "vendor": cost.vendor.full_name,
+                "vendor": cost.vendor.familiar_name,
                 "description": cost.description,
                 "PO_number": cost.PO_number,
                 "invoice_status": render_to_string("pipeline/costsheet/cost_table_invoice_status.html", {"cost": cost, "options": status_options, "currentStatus": cost.invoice_status}),
@@ -367,7 +365,7 @@ def all_invoices_data(request):
             "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
             "job_name": cost.job.job_name,
             "job_code": cost.job.job_code,
-            "vendor": cost.vendor.full_name if cost.vendor else "",
+            "vendor": cost.vendor.familiar_name if cost.vendor else "",
             "description": cost.description,
             "PO_number": cost.PO_number,
             "invoice_status": render_to_string("pipeline/costsheet/cost_table_invoice_status.html", {"cost": cost, "options": status_options, "currentStatus": cost.invoice_status}),
@@ -428,6 +426,9 @@ def process_uploaded_vendor_invoice(request):
     print(f'FILES:{request.FILES}')
     print(f'POST:{request.POST}')
 
+    successful_invoices = []
+    unsuccessful_invoices = []
+
     if request.POST and "invoices" in request.POST:
         print("we've got invoices!")
 
@@ -435,6 +436,8 @@ def process_uploaded_vendor_invoice(request):
 
         invoice_data = json.loads(request.POST['invoices'])
         file_dict = {}
+        
+
         for file in request.FILES.values():
             file_dict[file.name] = file
 
@@ -448,14 +451,16 @@ def process_uploaded_vendor_invoice(request):
             file_extension = "." + invoice_filename.split('.')[-1]
             invoice_file = file_dict.get(invoice_filename, None)
 
-            if invoice_file and invoice_file.size <10 * 1024 * 1024:
+            if invoice_file and invoice_file.size < 10 * 1024 * 1024:
                 if invoice_file.size < 10 * 1024 * 1024:
                     try:
-                        invoice_folder = '/Financial/_ INVOICES/_VENDOR INVOICES'
+                        invoice_folder = '/Financial/_ INVOICES/_VENDOR INVOICES' if not settings.DEBUG else '/Financial/TEST/_ INVOICES/_VENDOR INVOICES'
                         full_filepath = (invoice_folder + "/" + date_folder_name + "/" + currency_folder_name + "/" + cost.PO_number + file_extension)
                         dropbox_upload_file(invoice_file, full_filepath)
                         cost.invoice_status = 'REC'
                         cost.save()
+                        successful_invoices.append(cost)
+                            
                     except Exception as e:
                         print(e)
                         # Maybe to get rid of Linode Object Storage we can just get the invoice as an email attachment
@@ -464,130 +469,118 @@ def process_uploaded_vendor_invoice(request):
                             date_folder_name + "/" + cost.PO_number + file_extension)
                         cost.invoice_status = 'ERR'
                         cost.save()
-                        return HttpResponse('error')
-                    
-                    
+                        unsuccessful_invoices.append(cost)
                 else:
                     return JsonResponse({'error': 'File size must be less than 10 MB'})
             else:
                 return JsonResponse({'status':'error', 'message':'There was an error'})
-            
-        if settings.DEBUG == False:
-            return HttpResponse('upload')
-        else:
-            return HttpResponse('uploaded')
+        
+        print(successful_invoices)
+        request.session['successful_invoices'] = json.dumps([cost.id for cost in successful_invoices])
+        request.session['unsuccessful_invoices'] = json.dumps([cost.id for cost in unsuccessful_invoices])
+        return HttpResponse('success')
+    
+    # UPDATE THIS to return an actual error page
+    elif request.POST and "invoices" not in request.POST:
+        return HttpResponse('error')
+
     else:
-        print("not quite")
+        return HttpResponse('error')
+    
+def upload_invoice_confirmation_email(request):
+    """
+    Sends a confirmation email to the vendor after their invoice submission.
+    There shouldn't really be any cases where 'unsuccessful_invoice_ids' is populated,
+    but left in as a safeguard at the moment.
+
+    vendor: should just be a single vendor, as all invoices cost.vendor should be the same.
+    """
+    successful_invoice_ids = json.loads(request.session.get('successful_invoices'))
+    unsuccessful_invoice_ids = json.loads(request.session.get('unsuccessful_invoices'))
+
+    successful_invoices = Cost.objects.filter(id__in=successful_invoice_ids)
+    unsuccessful_invoices = Cost.objects.filter(id__in=unsuccessful_invoice_ids)
+    context = {'successful_invoices':successful_invoices, 'unsuccessful_invoices':unsuccessful_invoices}
+
+    vendor_ids = []
+    for invoice in successful_invoices:
+        vendor_ids.append(invoice.vendor.id)
+    if len(list(set(vendor_ids))) == 1:
+        vendor = Vendor.objects.get(id = list(set(vendor_ids))[0])
+    else:
+        vendor = None
+        return HttpResponseServerError('Multiple recipients detected. Internal error occurred.')
+    
+    if vendor.use_company_name:
+        vendor_name = vendor.familiar_name
+    else:
+        vendor_name = vendor.first_name
+    
+    recipient_list = [vendor.email] if not settings.DEBUG else ["joe@bwcatmusic.com"]
+    success_subj = 'Confirmation - invoices received!'
+    error_subj = 'Confirmation - attention needed'
+    subject = success_subj if not unsuccessful_invoices else error_subj
+    from_email = None
+
+    # creates rich text and plaintext versions to be sent; rich text will be read by default
+    html_message = render_to_string("invoice_uploader/invoice_confirmation_email_template.html", 
+                                    context={
+                                    'vendor_name': vendor_name, 
+                                    'vendor': vendor, 
+                                    'successful_invoices': successful_invoices, 
+                                    'unsuccessful_invoices': unsuccessful_invoices, 
+                                    'request':request
+                                    })
+    with open(settings.TEMPLATE_DIR / "invoice_uploader/invoice_confirmation_email_template.html") as f:
+        message = strip_tags(f.read())
+
+    send_mail(subject, message, from_email, recipient_list,
+                fail_silently=False, html_message=html_message)
+
+    return redirect('upload-thanks')
 
 def invoice_upload_view(request, vendor_uuid):
     vendor = Vendor.objects.get(uuid=vendor_uuid)
-    costs = Cost.objects.filter(vendor_id=vendor.id, invoice_status='REQ').select_related('job')
-    print(f'VENDOR ID: {vendor.id}')
-    jobs = list(Job.objects.filter(cost_rel__in=costs).values('pk','job_name', 'job_code'))
+    requested_invoices = Cost.objects.filter(vendor_id=vendor.id, invoice_status='REQ').select_related('job')
+    jobs = list(Job.objects.filter(cost_rel__in=requested_invoices).values('pk','job_name', 'job_code'))
     jobs_json = json.dumps(jobs)
-    costs_json = serializers.serialize('json', costs)
-    for cost in costs:
-        print(cost)
-    print("Amt of costs: " + str(len(costs)))
+    invoices_json = serializers.serialize('json', requested_invoices)
+    for invoice in requested_invoices:
+        print(invoice)
     
-    if len(costs) == 0:
-        return HttpResponseRedirect(reverse('pipeline:no-invoices'))
+    context = {'requested_invoices':requested_invoices, 'invoices_json':json.dumps(invoices_json), 'jobs_json':jobs_json, 'vendor_id':vendor.id}
+    return render(request, 'pipeline/upload_invoice.html', context)
 
-    else:
-        context = {'costs':costs, 'costs_json':json.dumps(costs_json), 'jobs_json':jobs_json, 'vendor_id':vendor.id}
-        print(context)
-        return render(request, 'pipeline/upload_invoice.html', context)
-
-def upload_invoice_success(request):
-    html = "<html>Upload successful</html>"
-    return HttpResponse(html)
+def upload_invoice_success_landing_page(request):
+    return render(request, 'invoice_uploader/upload_invoice_success.html')
 
 def invoice_error(request):
     return render(request, 'pipeline/no_invoices.html')
-
-def RequestVendorInvoicesMultiple(request):
-
-    '''
-    Currently set up to send out emails, triggered by button press, to any vendors who have invoices that have
-    the 'READY' status. Then it sets the status of each of the requested invoices to 'REQ'.
-
-    '''
-    # Creates a list of vendors who have invoices ready to be requested, no dupes
-    vendors = set(Vendor.objects.filter(vendor_rel__invoice_status='READY'))
-    costCount = 0
-    vendorCount = 0
-
-    if settings.DEBUG:
-        domain_base = "localhost:8000"
-    else:
-        domain_base = "https://bwcat.tools"
-
-    # Returns the month 'number' with no leading zeroes
-    # For use in calendar.month_abbr'
-    monthNum = int(str(timezone.now()).split('-')[1])
-    for vendor in vendors:
-    #   if vendor.isCompany():
-    #       pass
-    #   if vendor.prefersJapanese():
-    #       pass
-        vendor_first_name = vendor.first_name
-        
-        # args for use in send_mail
-        test_recipient_list = 'joe@bwcatmusic.com'
-        # CHANGE TO vendor.email!!
-        if settings.DEBUG == True:
-            recipient_list=[test_recipient_list]
-        else:
-            recipient_list=[vendor.email]
-        costs = Cost.objects.filter(invoice_status='READY', vendor__full_name=vendor.full_name)
-        subject = f'BCWC invoice request - {calendar.month_abbr[monthNum]}'
-        from_email=None
-
-        # creates rich text and plaintext versions to be sent; rich text will be read by default
-        html_message = render_to_string("pipeline/invoice_request_email_template.html", context={'vendor_first_name':vendor_first_name, 'vendor':vendor, 'costs':costs, 'domain_base':domain_base})
-        with open(settings.TEMPLATE_DIR / "pipeline/invoice_request_email_template.html") as f:
-            message = strip_tags(f.read())
-        
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False, html_message=html_message)
-        # message.attach_alternative(html_template, "text/html")
-        costCount += len(costs)
-        vendorCount += 1
-        for cost in costs:
-            cost.invoice_status = 'REQ'
-            # cost.save()
-
-    messages.success(request, f'{costCount} invoices were requested from {vendorCount} vendors!')
-    
-    return redirect("pipeline:invoice-request-page")
 
 def RequestVendorInvoiceSingle(request, cost_id):
     # Creates a list of vendors who have invoices ready to be requested, no dupes
     vendor = Vendor.objects.get(vendor_rel__id=cost_id)
     cost = Cost.objects.get(id = cost_id)
-    print(vendor)
-    print(cost)
 
     if cost.invoice_status not in ["REQ", "REC", "REC2", "PAID", "NA"]:
         #   if vendor.isCompany():
         #       pass
         #   if vendor.prefersJapanese():
         #       pass
-        vendor_first_name = vendor.full_name.split(' ')[0]
+        if vendor.use_company_name:
+            vendor_name = vendor.familiar_name
+        else:
+            vendor_name = vendor.first_name
 
         # args for use in send_mail
-        test_recipient_list = 'joe@bwcatmusic.com'
-        # CHANGE TO vendor.email!!
-        if settings.DEBUG == True:
-            recipient_list = [test_recipient_list]
-        else:
-            recipient_list = [vendor.email]
+        recipient_list = [vendor.email] if not settings.DEBUG else ["joe@bwcatmusic.com"]
         subject = f'BCWC invoice request - {cost.PO_number} {cost.job.job_name}'
         from_email = None
 
         # creates rich text and plaintext versions to be sent; rich text will be read by default
-        html_message = render_to_string("pipeline/invoice_request_email_template.html", context={
-                                        'vendor_first_name': vendor_first_name, 'vendor': vendor, 'cost': cost, 'request':request})
-        with open(settings.TEMPLATE_DIR / "pipeline/invoice_request_email_template.html") as f:
+        html_message = render_to_string("invoice_uploader/invoice_request_email_template.html", context={
+                                        'vendor_name': vendor_name, 'vendor': vendor, 'cost': cost, 'request':request})
+        with open(settings.TEMPLATE_DIR / "invoice_uploader/invoice_request_email_template.html") as f:
             message = strip_tags(f.read())
 
         send_mail(subject, message, from_email, recipient_list,
@@ -596,10 +589,9 @@ def RequestVendorInvoiceSingle(request, cost_id):
         cost.save()
 
         messages.success(
-            request, f'The invoice for {cost.PO_number} was requested from {vendor.full_name}!'
+            request, f'The invoice for {cost.PO_number} was requested from {vendor.familiar_name}!'
             )
         
-        # return redirect("pipeline:cost-add", cost.job.id)
         return JsonResponse({"status":"success", "message":"success!"})
     else:
         #Return an error if the invoice has already been requested
@@ -689,7 +681,7 @@ def create_batch_payment_file(request):
             print(f"new parts: {parts}")
             return parts
 
-        csvfile = 'static/pipeline/Recipients-Batch-File.csv'
+        csvfile = 'static/pipeline/Recipients-Batch-File test.csv'
         try:
             with open(csvfile, newline='') as templateCSV:
                 reader = csv.reader(templateCSV)
@@ -727,6 +719,7 @@ def create_batch_payment_file(request):
                         print(f"approx_amount_in_JPY: {approx_amount_in_JPY}")
                         
                         if approx_amount_in_JPY > upper_limit_for_JPY:
+                            print("over the limit")
                             split_into = 2
                             within_limit = False
                             while not within_limit:
@@ -744,12 +737,16 @@ def create_batch_payment_file(request):
                                 row[amount_idx] = split_payments[i]
                                 row[source_currency_idx] = "JPY"
                                 row[amount_currency_idx] = row[target_currency_idx]
-                                row[payment_reference_idx] = f"{invoice.PO_number} ({i+1} of {len(split_payments)})"
+
+                                # Wanted to include "n of n" when payments are split into multiple parts,
+                                # but payments in USD have a char limit of 10, so I accommodate for that. 
+                                # Our PO numbers are limited to 10 characters.
+                                row[payment_reference_idx] = f"{invoice.PO_number}"
                                 writer.writerow(row)
                                 i += 1
 
                             invoice.invoice_status = "QUE"
-                            # invoice.save()
+                            invoice.save()
                             processing_status[invoice.PO_number] = { "status":"success", "message": f"Successfully processed as {split_into} payments!" }
 
                         else:
@@ -760,7 +757,7 @@ def create_batch_payment_file(request):
                             
                             writer.writerow(row)
                             invoice.invoice_status = "QUE"
-                            # invoice.save()
+                            invoice.save()
                             processing_status[invoice.PO_number] = { "status":"success", "message": "Successfully processed!" }
 
             for key in processing_status:
@@ -776,50 +773,45 @@ def create_batch_payment_file(request):
         
 def importClients(request):
     with open('static/pipeline/clients.csv', 'r') as myFile:
-        template_name = "pipeline/client_form.html"
         created_items = []
         not_created_items = []
         reader = csv.reader(myFile, delimiter=',')
         next(reader) # Skip the header row
         for column in reader:
-                friendly_name = column[0]
-                job_code_prefix = column[1]
-                proper_name = column[2]
-                proper_name_japanese = column[3]
-                notes = column[4]
-                if Client.objects.filter(friendly_name__iexact=friendly_name).exists():
-                    not_created_items.append(f'{column[0]} - {column[1]}')
-                    continue
-                else:
-                    try:
-                        # These lines were importing with invisble spaces, so
-                        # I used .strip() import them without the spaces
-                        temp,created = Client.objects.get_or_create(
-                                friendly_name = friendly_name.strip(),
-                                job_code_prefix = job_code_prefix.strip(),
-                                proper_name = proper_name.strip(),
-                                proper_name_japanese = proper_name_japanese.strip(),
-                                notes = notes.strip(),
-                                )
-                        temp.save()
-                        if created:
-                            created_items.append(f'{friendly_name} - {job_code_prefix}')
-                        elif not created:
-                            not_created_items.append(f'{friendly_name} - {job_code_prefix}')
-                        # elif not created:
-                        #   itemUpdated.append(f'{name} - {job_code_prefix}')
-                        # else:
-                        #   messages.warning.append(f'{name} - {job_code_prefix} !!! SOMETHING ELSE HAPPENED')
+            friendly_name = column[0]
+            job_code_prefix = column[1]
+            proper_name = column[2]
+            proper_name_japanese = column[3]
+            notes = column[4]
+            if Client.objects.filter(friendly_name__iexact=friendly_name).exists():
+                not_created_items.append(f'{column[0]} - {column[1]}')
+                continue
+            else:
+                try:
+                    # These lines were importing with invisble spaces, so
+                    # I used .strip() import them without the spaces
+                    temp,created = Client.objects.get_or_create(
+                            friendly_name = friendly_name.strip(),
+                            job_code_prefix = job_code_prefix.strip(),
+                            proper_name = proper_name.strip(),
+                            proper_name_japanese = proper_name_japanese.strip(),
+                            notes = notes.strip(),
+                            )
+                    temp.save()
+                    if created:
+                        created_items.append(f'{friendly_name} - {job_code_prefix}')
+                    elif not created:
+                        not_created_items.append(f'{friendly_name} - {job_code_prefix}')
 
-                    except IntegrityError as e:
-                        print(f'{friendly_name} - {job_code_prefix}: {e}')
-                        messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added.\n{e}")
-                    except NameError as n:
-                        print(f'{friendly_name} - {job_code_prefix}: {n}')
-                        messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added.\n{e}")
-                    except Exception as e:
-                        print(e)
-                        messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added - something bad happened! \n{e}")
+                except IntegrityError as e:
+                    print(f'{friendly_name} - {job_code_prefix}: {e}')
+                    messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added.\n{e}")
+                except NameError as n:
+                    print(f'{friendly_name} - {job_code_prefix}: {n}')
+                    messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added.\n{e}")
+                except Exception as e:
+                    print(e)
+                    messages.error(request, f"{friendly_name} - {job_code_prefix} wasn't added - something bad happened! \n{e}")
             
         if created_items:
             messages.success(request, f'{len(created_items)} clients were added successfully!')
@@ -833,7 +825,6 @@ def importClients(request):
 
 def importJobs(request):
     myFile = open('static/pipeline/jobs.csv', 'r')
-    # template_name = "pipeline/pipeline.html"
     created_items = []
     not_created_items = []
     def getClient(job_code):
@@ -851,7 +842,7 @@ def importJobs(request):
         column = line.split(',')
         if column[0] == "job_name":
             continue
-        job_name = column [0]
+        job_name = column[0]
         client = column[1]
         job_code = column[2]
         job_code_isFixed = column[3]
@@ -865,7 +856,7 @@ def importJobs(request):
         try:
             # These lines were importing with invisble spaces, so
             # I used .strip() import them without the spaces
-            temp,created = Job.objects.update_or_create(
+            obj,created = Job.objects.update_or_create(
                 job_name = job_name.strip(),
                 client = getClient(job_code),
                 job_code = job_code.strip(),
@@ -878,7 +869,7 @@ def importJobs(request):
                 personInCharge = personInCharge.strip(),
                 status = status.strip()
             )
-            temp.save()
+            obj.save()
             if created:
                 created_items.append(f'{job_name} - {client}')
             elif not created:
@@ -910,76 +901,79 @@ def importJobs(request):
     return redirect('pipeline:index')
 
 def importVendors(request):
-    myFile = open('static/pipeline/vendors.csv', 'r')
-    # template_name = "pipeline/pipeline.html"
-    created_items = []
-    not_created_items = []
-    def getClient(job_code):
-        if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
-            return Client.objects.get(job_code_prefix = job_code[:3])
-        elif Client.objects.filter(job_code_prefix = job_code[:2]).exists():
-            return Client.objects.get(job_code_prefix = job_code[:2])
-        elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
-            return Client.objects.get(job_code_prefix = job_code[:4])
-        elif Client.objects.filter(friendly_name__iexact=client).exists():
-            return Client.objects.get(friendly_name__iexact=client)
-        else:
-            return False
-    for line in myFile:
-        column = line.split(',')
-        if column[0] == "job_name":
-            continue
-        job_name = column [0]
-        client = column[1]
-        job_code = column[2]
-        job_code_isFixed = column[3]
-        isArchived = column[4]
-        year = column[5]
-        month = column[6]
-        job_type = column[7]
-        revenue = column[8]
-        personInCharge = column[9]
-        status = column[10]
-        try:
-            # These lines were importing with invisble spaces, so
-            # I used .strip() import them without the spaces
-            temp,created = Job.objects.update_or_create(
-                job_name = job_name.strip(),
-                client = getClient(job_code),
-                job_code = job_code.strip(),
-                job_code_isFixed = job_code_isFixed.strip(),
-                isArchived = isArchived.strip(),
-                year = year.strip(),
-                month = month.strip(),
-                job_type = job_type.strip(),
-                revenue = revenue,
-                personInCharge = personInCharge.strip(),
-                status = status.strip()
-            )
-            temp.save()
-            if created:
-                created_items.append(f'{job_name} - {client}')
-            elif not created:
-                not_created_items.append(f'{job_name} - {client}')
+    with open('static/pipeline/vendors.csv', 'r') as myFile:
+        created_items = []
+        not_created_items = []
+        reader = csv.reader(myFile, delimiter=',')
+        next(reader) # Skip the header row
+        for row in reader:
+            
+            first_name = row[0]
+            last_name = row[1]
+            vendor_code = row[2]
+            company_name = row[3]
+            use_company_name = True if row[4] == "TRUE" else False
+            email = None if row[5] == "" else row[5]
+            payment_id = row[6]
 
-        except IntegrityError as e:
-            print(f'{job_name} - {client}: {e}')
-            messages.error(request, f"{job_name} - {client} wasn't added.\n{e}")
-        except NameError as n:
-            print(f'{job_name} - {client}: {n}')
-            messages.error(request, f"{job_name} - {client} wasn't added.\n{e}")
-        except Exception as e:
-            messages.error(request, f"{job_name} - {client} wasn't added - something bad happened!")
-            print(e)
-        
-    if created_items:
-        messages.success(request, f'{len(created_items)} jobs were added successfully!')
+            familiar_name = ""
+            if use_company_name == True:
+                familiar_name = company_name
+            else:
+                familiar_name = " ".join([first_name, last_name]) if last_name else first_name
 
-    if not_created_items:
-        messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
+            # attributes = ["------------", first_name, last_name, vendor_code, company_name, use_company_name, email, payment_id, familiar_name, "------------"]
+            # for attr in attributes:
+            #     print(attr)
+            
+            if Vendor.objects.filter(first_name__iexact=first_name, last_name__iexact=last_name).exists():
+                not_created_items.append(f'{familiar_name} {email if email else ""}')
+                continue
+            
+            if Vendor.objects.filter(company_name__iexact=company_name, use_company_name=True).exists():
+                not_created_items.append(f'{familiar_name} {email if email else ""}')
+                continue
 
-    myFile.close()
-    return redirect('pipeline:index')
+            try:
+            # These lines can sometimes be imported with invisble spaces, so
+            # I used .strip() to mitigate
+                obj,created = Vendor.objects.get_or_create(
+                    first_name = first_name.strip() if first_name else None,
+                    last_name = last_name.strip() if last_name else None,
+                    vendor_code = vendor_code.strip(),
+                    company_name = company_name.strip() if company_name else None,
+                    use_company_name = use_company_name,
+                    email = email.strip() if email else None,
+                    payment_id = payment_id.strip() if payment_id else None,
+                    )
+                obj.save()
+                if created:
+                    created_items.append(f'{familiar_name} {email if email else ""}')
+                elif not created:
+                    not_created_items.append(f'{familiar_name} {email if email else ""}')
+                print(obj)
+
+            except IntegrityError as e:
+                print(f'{familiar_name} {email if email else "" }: {e}')
+                messages.error(request, f'{familiar_name} {email if email else ""} was not added.\n{e}')
+            except NameError as n:
+                print(f'{familiar_name} {email if email else ""}: {n}')
+                messages.error(request, f'{familiar_name} {email if email else ""} was not added.\n{e}')
+            except Exception as e:
+                print(e)
+                messages.error(request, f'{familiar_name} {email if email else ""} was not added - something bad happened! \n{e}')
+    
+        if created_items:
+            messages.success(request, f'{len(created_items)} vendors were added successfully!')
+            # for item in created_items:
+            #     messages.info(request, item)
+
+        if not_created_items:
+            messages.info(request, f'{len(not_created_items)} vendors were already in the database, so they were left alone. If you need to update vendor information, go to Vendors -> View Vendors and click the update link.')
+            # for item in not_created_items:
+            #     messages.info(request, item)
+
+    return redirect('pipeline:vendor-add')
 
 def CostDeleteView(request, cost_id):
     cost = Cost.objects.get(id=cost_id)
@@ -1040,19 +1034,17 @@ class CostCreateView(LoginRequiredMixin, CreateView):
             form = self.simple_add_vendor_form(request.POST)
             if form.is_valid():
                 newVendor = form.cleaned_data['addVendor']
-                currentJob.vendors.add(Vendor.objects.get(vendor_code=newVendor))
+                currentJob.vendors.add(Vendor.objects.get(pk=newVendor))
                 currentJob.save()
             else:
                 print(f'errors: {form.errors}')
 
         elif 'update' in request.POST:
             currentJob = Job.objects.get(pk=self.kwargs['pk'])
-            print(request.POST)
             vendors = Vendor.objects.filter(jobs_rel=currentJob.id)
             form_data_id = request.POST.get('cost_id')
             form_data_vendor = request.POST.get('vendor')
             form_data_status = request.POST.get('status')
-            # form_data_status = request.POST.get('status')
             cost = Cost.objects.get(id=form_data_id)
 
             if form_data_vendor:
@@ -1136,7 +1128,13 @@ class ClientListView(ListView):
 
 class VendorListView(ListView):
     model = Vendor
+    template_name = 'pipeline/vendor_list.html'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        sorted_vendors = sorted(queryset, key=lambda vendor: vendor.familiar_name)
+        return sorted_vendors
+    
 class VendorCreateView(SuccessMessageMixin, CreateView):
     model = Vendor
     fields = "__all__"

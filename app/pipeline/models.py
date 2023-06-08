@@ -28,50 +28,79 @@ PONumgen = PO_num_generator()
 class Vendor(models.Model):
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    first_name = models.CharField(max_length=30, null=True)
-    last_name = models.CharField(max_length=30, null=True)
-    vendor_code_prefix = models.CharField(max_length=4,)
-    vendor_code = models.CharField(max_length=8, unique=True, null=True, blank=True)
+    first_name = models.CharField(max_length=30, null=True, blank=True)
+    last_name = models.CharField(max_length=30, null=True, blank=True)
+    vendor_code = models.CharField(max_length=4, null=True, unique=True)
+    # vendor_code = models.CharField(max_length=8, unique=True, null=True, blank=True)
     kanji_name = models.CharField(max_length=10, blank=True)
     kana_name = models.CharField(max_length=12, blank=True)
     use_company_name = models.BooleanField(default=False)
-    company_name = models.CharField(max_length=20, blank=True, null=True)
+    company_name = models.CharField(max_length=50, blank=True, null=True)
     notes = models.TextField(max_length=300, blank=True)
     email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
     payment_id = models.IntegerField(unique=True, null=True, blank=True)
 
     @property
     def full_name(self):
-        return ' '.join([self.first_name, self.last_name])
-
-    def get_vendor_code(self, vendor_code_prefix):
-        vendors = Vendor.objects.all()
-        new_vendor_code_suffix = 1
-        for vendor in vendors:
-            this_vendor_code_suffix = int(vendor.vendor_code[-3::])
-            if this_vendor_code_suffix == new_vendor_code_suffix:
-                new_vendor_code_suffix = this_vendor_code_suffix + 1
+        '''
+        A simple concatenation of first and last name. 
+        Returns None if no name is defined (i.e. if only a company name exists)
+        '''
+        if self.first_name != None and self.last_name != None:
+            return ' '.join([self.first_name, self.last_name])
+        else:
+            return None
         
-        i = 0
-        while i < 10:
-            new_vendor_code = f"{vendor_code_prefix}{new_vendor_code_suffix:03d}"
-            if not Vendor.objects.filter(vendor_code = new_vendor_code).exists():
-                return new_vendor_code
-            else:
-                new_vendor_code_suffix += 1
-                i += 1
+    @property
+    def familiar_name(self):
+        '''
+        The name used throughout the app to refer to the vendor.
+        This is also the name that will be used in emails, if it's a company name.
+        If it's a human name, just their first name will be used.
+        '''
+        if not self.use_company_name:
+            return ' '.join([self.first_name, self.last_name]) if self.last_name else self.first_name
+        else:
+            return self.company_name
 
-    def save(self, *args, **kwargs):
-        if self.vendor_code is None:
-            self.vendor_code = self.get_vendor_code(self.vendor_code_prefix)
+    # def get_vendor_code(self, vendor_code_prefix):
+    #     vendors = Vendor.objects.all()
+    #     new_vendor_code_suffix = 1
+    #     for vendor in vendors:
+    #         this_vendor_code_suffix = int(vendor.vendor_code[-3::])
+    #         if this_vendor_code_suffix == new_vendor_code_suffix:
+    #             new_vendor_code_suffix = this_vendor_code_suffix + 1
+        
+    #     i = 0
+    #     while i < 10:
+    #         new_vendor_code = f"{vendor_code_prefix}{new_vendor_code_suffix:03d}"
+    #         if not Vendor.objects.filter(vendor_code = new_vendor_code).exists():
+    #             return new_vendor_code
+    #         else:
+    #             new_vendor_code_suffix += 1
+    #             i += 1
 
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.vendor_code is None:
+    #         self.vendor_code = self.get_vendor_code(self.vendor_code_prefix)
+
+    #     super().save(*args, **kwargs)
 
     class Meta:
         unique_together = (("first_name", "last_name"),)
+        constraints = [
+            models.CheckConstraint(
+                name="%(app_label)s_%(class)s_is_person_or_company",
+                check=(
+                    models.Q(first_name__isnull=True, company_name__isnull=False)
+                    | models.Q(first_name__isnull=False, company_name__isnull=True)
+                    | models.Q(first_name__isnull=False, company_name__isnull=False)
+                ),
+            )
+        ]
 
     def __str__(self):
-        return f'{self.full_name} - {self.vendor_code}'
+        return f'{self.familiar_name} - {self.vendor_code}'
 
 class Client(models.Model):
     friendly_name = models.CharField(max_length=100, unique=True)
@@ -143,7 +172,7 @@ class Cost(models.Model):
 
     notes = models.CharField(max_length=300, blank=True)
     job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name='cost_rel', null=True)
-    PO_number = models.CharField(max_length=15, null=True, default=None, editable = False)
+    PO_number = models.CharField(max_length=10, null=True, default=None, editable = False)
     PO_num_is_fixed = models.BooleanField(default=False)
     locked_exchange_rate = models.DecimalField(max_digits=10, decimal_places=3, default=None, null=True, blank=True)
     exchange_rate_locked_at = models.DateTimeField(default=None, null=True, blank=True)
@@ -178,7 +207,7 @@ class Cost(models.Model):
     def get_PO_number(self):
         '''
         Generate a unique Purchase Order number for a cost.
-        Example: JC01APL001
+        Example: JCOAPL0001
 
         '''
         po = ""
@@ -189,7 +218,7 @@ class Cost(models.Model):
                 if int(PO.PO_number[-3::]) > POCount:
                     POCount = int(PO.PO_number[-3::])
         POCount += 1
-        po = f'{self.vendor.vendor_code}{self.job.client.job_code_prefix}{POCount:03d}'
+        po = f'{self.vendor.vendor_code[:3]}{self.job.client.job_code_prefix[:3]}{POCount:04d}'
 
         return po
 
@@ -198,7 +227,6 @@ class Cost(models.Model):
             self.PO_number = self.get_PO_number()
             self.PO_num_is_fixed = True
         elif self.vendor and self.vendor.vendor_code not in self.PO_number[0:6]:
-            print("changing PO number")
             self.PO_number = self.get_PO_number()
 
         if self.exchange_rate_override:

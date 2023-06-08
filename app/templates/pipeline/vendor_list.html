@@ -3,14 +3,26 @@
 {% block title%}Vendors: {{ vendor.name }}{% endblock %}
 
 {% block body_block %}
-	
-<h1>Vendor list</h1>
-<ul>
-{% for vendor in object_list %}
-    <p></p><a href="{% url 'pipeline:vendors-detail' vendor.id %}"><strong>{{ vendor.full_name }}</strong><a>
-    ({{ vendor.unique_id }}) //  {{ vendor.email }}</p>
-{% empty %}
-    <li>placeholder</li>
-{% endfor %}
-</ul>
+<div class="container d-flex justify-content-center">
+   
+    <div class="col-8 ">
+         <h1 class="display-1 text-center">Vendor list</h1>
+        {% for vendor in object_list %}
+        <div class="container bg-secondary-subtle border border-dark border-1 rounded-1 m-3 p-2">
+            <h4><a href="{% url 'pipeline:vendors-detail' vendor.id %}"class="link-dark"><strong>{{ vendor.familiar_name }}</strong></a></h4>
+            <dl class="row">
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">{{ vendor.email }}</dd>
+                <dt class="col-sm-3">Invoice upload link</dt>
+                <dd class="col-sm-9"><a href="{{ request.scheme }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">Copy Link</a></dd>
+            </dl>
+            <p>Edit vendor details</p>
+        </div>
+        
+        
+        {% empty %}
+            <li>placeholder</li>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

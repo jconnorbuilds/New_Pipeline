@@ -70,13 +70,16 @@ DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 DEBUG = int(os.getenv("DEBUG", 0))
 
 print(f"debug: {DEBUG}")
+print(f"sql_engine: {os.getenv('SQL_ENGINE')}")
+print(f"sql_database: {os.getenv('SQL_DATABASE')}")
+print(f"sql_user: {os.getenv('SQL_USER')}")
+print(f"sql_host: {os.getenv('SQL_HOST')}")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
 # CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:1337"]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 
 # Application definition
 INSTALLED_APPS = [
@@ -86,11 +89,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.forms',
     'pipeline',
     # 'livereload',
     'django_bootstrap5',
     'widget_tweaks',
 ]
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

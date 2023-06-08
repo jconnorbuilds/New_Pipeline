@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
+{% load widget_tweaks %}
+{% load static %}
+{% block navbar %}
+{% endblock %}
+
+{% block body_block %}
+<div class="container">
+	<div class="d-flex justify-content-center invoice-upload-logo">
+		<img src="{% static 'pipeline/images/bwcat_logo_720x720.png' %}" alt="BCWC logo" width="155px">
+	</div>
+	<div class="p-2 col-9 justify-content-center container-fluid">
+        <div class="container-fluid justify-content-center">
+            <h3 class="display-3 text-center">Thank you!</h3>
+            <hr>
+            {% comment %} <p>Always a pleasure working with you.</p>
+            <p>We've received the following invoices:</p>
+            <div class="justify-content-center">
+                {% if successful_invoices %}
+                    <div class="col-4 my-3 p-3 text-bg-light border border-dark border-1 rounded-3">
+                    <ol>
+                    {% for invoice in successful_invoices %}
+                        <li class="mt-3 lh-sm">
+                            <strong>{{ invoice.job.job_name }}</strong>
+                            <br><small><strong>PO Number: {{ invoice.PO_number }}</small></strong>
+                            <br><small>For: {{ invoice.description }}</small>
+                            <br><small>Amount: {{ invoice.currency }}{{ invoice.amount }}</small>
+                        </li>
+                    {% empty %}
+                        <p>No invoices found!</p>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+                    </ol>
+                {% if unsuccessful_invoices %}
+                    <p>It looks like there was an error sending the following invoices:</p>
+                    {% for invoice in unsuccessful_invoices %}
+                        {{ invoice.job_name }}
+                    {% empty %}
+                    {% endfor %}
+                    <p>Please get in touch with us and we'll get it sorted</p>
+                {% endif %}
+            </div>
+            <p>We're sending you a confirmation email as well.</p> {% endcomment %}
+        </div>
+	</div>
+    <form>
+    </form>
+</div>
+{% endblock %}

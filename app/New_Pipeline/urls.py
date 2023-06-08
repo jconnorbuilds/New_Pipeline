@@ -21,5 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('pipeline/', include('pipeline.urls', namespace='pipeline')),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("invoice-uploader/<vendor_uuid>", views.invoice_upload_view, name="upload-invoice"),
+    path("invoice-uploader/thanks/", views.upload_invoice_success_landing_page, name="upload-thanks"),
+    path("invoice-uploader/send-email/", views.upload_invoice_confirmation_email, name="upload-confirmation-email"),
     path('', views.index, name='index'),
 ]

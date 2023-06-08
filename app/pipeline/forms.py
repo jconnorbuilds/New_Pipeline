@@ -36,12 +36,10 @@ class CostForm(ModelForm):
         fields = ['vendor','description','amount','currency','notes']
 
 class AddVendorToCostForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['addVendor'].choices = [('', 'Select vendor...')] + [(vendor.vendor_code, vendor.full_name) for vendor in Vendor.objects.all()]
+    sorted_vendors = sorted(Vendor.objects.all(), key=lambda vendor: vendor.familiar_name)
+    VENDOR_CHOICES = [('', 'Select vendor...')] + [(vendor.pk, vendor.familiar_name) for vendor in sorted_vendors]
 
-    addVendor = forms.ChoiceField(choices=[])
-    # cost_id = forms.IntegerField(widget=forms.HiddenInput())
+    addVendor = forms.ChoiceField(choices = VENDOR_CHOICES)
 
 
 class UpdateCostForm(forms.Form):

@@ -9,6 +9,8 @@ const slugify = str =>
 let hintWithInvoices = "Simply choose the matching job from the dropdown menu. When you've finished, click the Submit button below.";
 let hintWithNoInvoices = "Files will appear here once you've added them."
 
+var landingPageUrl = '/invoice-uploader/thanks/'
+
 var myDropzone;
 Dropzone.options.invoiceUploadForm = {
     autoProcessQueue: false,
@@ -23,8 +25,7 @@ Dropzone.options.invoiceUploadForm = {
     addRemoveLinks: true, 
     dictDefaultMessage: "Drop them here!",
     
-
-    // The setting up of the dropzone
+    // Set up the dropzone
     init: function() {
         myDropzone = this;
 
@@ -32,7 +33,6 @@ Dropzone.options.invoiceUploadForm = {
         // this.element.querySelector("button[type=submit]").addEventListener("click", function(e) {
         $("#invoice-upload-btn").on("click", function(e) { 
           // Make sure that the form isn't actually being sent.
-            console.log("i've been clicked")
             e.preventDefault();
             e.stopPropagation();
             var allSelected = checkAllJobsSelected();
@@ -48,7 +48,6 @@ Dropzone.options.invoiceUploadForm = {
                 console.log(`noDuplicates: ${noDuplicates}`)
                 console.log(`rejectedFiles: ${rejectedFiles}`)
             }
-            
         });
 
         // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
@@ -71,6 +70,8 @@ Dropzone.options.invoiceUploadForm = {
         this.on("successmultiple", function(files, response) {
           // Gets triggered when the files have successfully been sent.
           // Redirect user or notify of success.
+          window.location.replace('../invoice-uploader/send-email/')
+
         });
         this.on("errormultiple", function(files, response,) {
           // Gets triggered when there was an error sending the files.

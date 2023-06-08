@@ -1,10 +1,11 @@
+{% load l10n %}
 <select class="form-control-plaintext cost-vendor-select" name="vendor-select">
     <option value="0">Select Vendor</option>
     {% for vendor in vendors %}
         {% if vendor == selectedVendor %}
-            <option value={{ vendor.id }} selected>{{ vendor }}</option>
+            <option value={{ vendor.id|unlocalize }} selected>{{ vendor.familiar_name }}</option>
         {% else %}
-            <option value={{ vendor.id }}>{{ vendor }}</option>
+            <option value={{ vendor.id|unlocalize }}>{{ vendor.familiar_name }}</option>
         {% endif %}
     {% endfor %}
 </select>

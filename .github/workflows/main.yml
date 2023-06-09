@@ -50,8 +50,8 @@ jobs:
       - 
         name: Tag images
         run: |
-          docker tag npt_prod:local ${{ env.WEB_IMAGE }}:latest
-          docker tag npt_nginx_prod:local ${{ env.NGINX_IMAGE }}:latest
+          docker tag npt_prod:local ${{ env.WEB_IMAGE }}:v1
+          docker tag npt_nginx_prod:local ${{ env.NGINX_IMAGE }}:v1
       - 
         name: Push images
         run: |

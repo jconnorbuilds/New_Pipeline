@@ -36,11 +36,13 @@ class CostForm(ModelForm):
         fields = ['vendor','description','amount','currency','notes']
 
 class AddVendorToCostForm(forms.Form):
-    sorted_vendors = sorted(Vendor.objects.all(), key=lambda vendor: vendor.familiar_name)
-    VENDOR_CHOICES = [('', 'Select vendor...')] + [(vendor.pk, vendor.familiar_name) for vendor in sorted_vendors]
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        sorted_vendors = sorted(Vendor.objects.all(), key=lambda vendor: vendor.familiar_name)
+        VENDOR_CHOICES = [('', 'Select vendor...')] + [(vendor.pk, vendor.familiar_name) for vendor in sorted_vendors]
+        self.fields['addVendor'].choices = VENDOR_CHOICES
 
-    addVendor = forms.ChoiceField(choices = VENDOR_CHOICES)
-
+    addVendor = forms.ChoiceField(choices=[])
 
 class UpdateCostForm(forms.Form):
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), required=False, empty_label='Select vendor', widget=forms.Select(attrs={'class':'form-select'}))
@@ -55,12 +57,13 @@ class UpdateCostForm(forms.Form):
                                 ('NA','No Invoice')
                                 ))
     
-
+    
 
 class JobForm(ModelForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.fields['client'].empty_label = 'Select client'
+            self.fields['client'].queryset = Client.objects.order_by('friendly_name')
             # self.fields['personInCharge'].empty_label = '-PIC-'
 
     # job_date = forms.DateField(widget=forms.Select(choices=MONTH_CHOICES))

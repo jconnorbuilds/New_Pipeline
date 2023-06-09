@@ -49,7 +49,7 @@ jobs:
       -
         name: Build images
         run: |
-          docker compose -f docker-compose.prod.yml build
+          docker compose -f docker-compose.prod.yml up --build
       - 
         name: Tag images
         run: |

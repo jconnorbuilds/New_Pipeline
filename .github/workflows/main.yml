@@ -45,6 +45,7 @@ jobs:
       - 
         name: Build images
         run: |
+          docker compose -f docker-compose.prod.yml down
           docker compose -f docker-compose.prod.yml build
       - 
         name: Tag images

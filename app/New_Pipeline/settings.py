@@ -18,8 +18,6 @@ from dotenv import load_dotenv
 import boto3
 # from celery.schedules import crontab
 
-load_dotenv(".env.dev")
-
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
         messages.DEBUG: 'alert-secondary',
@@ -33,6 +31,10 @@ MESSAGE_TAGS = {
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
+
+dev_dotenv_path = BASE_DIR / '.env.dev'
+if dev_dotenv_path.exists():
+    load_dotenv(dev_dotenv_path)
 
 LINODE_STORAGE = boto3.client('s3', 
         aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),

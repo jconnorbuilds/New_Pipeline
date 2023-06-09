@@ -55,8 +55,8 @@ jobs:
       - 
         name: Push images
         run: |
-          docker push ${{ env.WEB_IMAGE }}
-          docker push ${{ env.NGINX_IMAGE }}
+          docker push ${{ env.WEB_IMAGE }}:v1
+          docker push ${{ env.NGINX_IMAGE }}:v1
 
   deploy:
     name: Deploy to Linode

@@ -98,7 +98,7 @@ jobs:
             cd /app
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-            docker pull $WEB_IMAGE
-            docker pull $NGINX_IMAGE
+            docker pull ${{ env.WEB_IMAGE }}:v1
+            docker pull ${{ env.NGINX_IMAGE }}:v1
             sudo docker compose -f docker-compose.prod.yml up -d
           ENDSSH

@@ -50,13 +50,13 @@ jobs:
       - 
         name: Tag images
         run: |
-          docker tag npt_prod:local ${{ env.WEB_IMAGE }}:v1
-          docker tag npt_nginx_prod:local ${{ env.NGINX_IMAGE }}:v1
+          docker tag npt_prod:local ${{ env.WEB_IMAGE }}:latest
+          docker tag npt_nginx_prod:local ${{ env.NGINX_IMAGE }}:latest
       - 
         name: Push images
         run: |
-          docker push ${{ env.WEB_IMAGE }}:v1
-          docker push ${{ env.NGINX_IMAGE }}:v1
+          docker push ${{ env.WEB_IMAGE }}:latest
+          docker push ${{ env.NGINX_IMAGE }}:latest
 
   deploy:
     name: Deploy to Linode
@@ -98,7 +98,7 @@ jobs:
             cd /app
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-            docker pull ${{ env.WEB_IMAGE }}:v1
-            docker pull ${{ env.NGINX_IMAGE }}:v1
+            docker pull $WEB_IMAGE
+            docker pull $NGINX_IMAGE
             sudo docker compose -f docker-compose.prod.yml up -d
           ENDSSH

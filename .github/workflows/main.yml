@@ -43,9 +43,8 @@ jobs:
           docker pull ${{ env.WEB_IMAGE }} || true
           docker pull ${{ env.NGINX_IMAGE }} || true
       - 
-        name: Remove and rebuild images
+        name: Build images
         run: |
-          docker compose -f docker-compose.prod.yml down -v
           docker compose -f docker-compose.prod.yml build
       - 
         name: Tag images
@@ -100,5 +99,6 @@ jobs:
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
+            sudo docker compose -f docker-compose.prod.yml down -v
             sudo docker compose -f docker-compose.prod.yml up -d --build
           ENDSSH

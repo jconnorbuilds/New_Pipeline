@@ -44,7 +44,7 @@ def get_forex_rates():
 
     return forex_rates_dict
 
-FOREX_RATES = None 
+FOREX_RATES = None
 
 def initialize_forex_rates():
     global FOREX_RATES

@@ -47,11 +47,6 @@ jobs:
         run: |
           docker compose -f docker-compose.prod.yml build
       - 
-        name: Run collectstatic
-        run: |
-          pwd
-          python3 manage.py collectstatic --noinput
-      - 
         name: Tag images
         run: |
           docker tag npt_prod:local ${{ env.WEB_IMAGE }}:latest

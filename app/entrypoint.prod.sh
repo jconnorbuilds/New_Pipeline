@@ -12,4 +12,10 @@ then
     
 fi
 
+# Apply database migrations
+python3 manage.py migrate
+
+# Collect static files
+python3 manage.py collectstatic --noinput
+
 exec "$@"

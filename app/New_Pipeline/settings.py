@@ -32,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
 # STATIC_DIR = BASE_DIR / 'static'
 
-dev_dotenv_path = BASE_DIR / '.env.dev'
+dev_dotenv_path = BASE_DIR / '../.env.dev'
 if dev_dotenv_path.exists():
     load_dotenv(dev_dotenv_path)
 
@@ -79,7 +79,7 @@ print(f"sql_host: {os.getenv('SQL_HOST')}")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] 139.162.99.184 .bwcat.tools".split(" ")
 # CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:1337"]
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

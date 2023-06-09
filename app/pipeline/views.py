@@ -33,7 +33,6 @@ import calendar
 import csv
 import requests
 
-
 class RedirectToPreviousMixin:
     default_redirect = '/'
 

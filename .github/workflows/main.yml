@@ -43,10 +43,13 @@ jobs:
           docker pull ${{ env.WEB_IMAGE }} || true
           docker pull ${{ env.NGINX_IMAGE }} || true
       - 
+        name: Remove old images
+        run: |
+          docker compose -f docker-compose.prod.yml down -v
+      -
         name: Build images
         run: |
-          docker compose -f docker-compose.prod.yml down
-          docker compose -f docker-compose.prod.yml build 
+          docker compose -f docker-compose.prod.yml build
       - 
         name: Tag images
         run: |

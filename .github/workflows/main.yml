@@ -49,13 +49,13 @@ jobs:
       - 
         name: Tag images
         run: |
-          docker tag npt_prod ${{ env.WEB_IMAGE }}:latest
-          docker tag npt_nginx_prod ${{ env.NGINX_IMAGE }}:latest
+          docker tag npt_prod:local ${{ env.WEB_IMAGE }}:latest
+          docker tag npt_nginx_prod:local ${{ env.NGINX_IMAGE }}:latest
       - 
         name: Push images
         run: |
-          docker push ${{ env.WEB_IMAGE }}:latest
-          docker push ${{ env.NGINX_IMAGE }}:latest
+          docker push ${{ env.WEB_IMAGE }}
+          docker push ${{ env.NGINX_IMAGE }}
 
   deploy:
     name: Deploy to Linode

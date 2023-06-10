@@ -49,8 +49,8 @@ jobs:
       - 
         name: Tag images
         run: |
-          docker tag ${{ env.WEB_IMAGE }} ${{ env.WEB_IMAGE }}:latest
-          docker tag ${{ env.NGINX_IMAGE }} ${{ env.NGINX_IMAGE }}:latest
+          docker tag npt_prod:latest ${{ env.WEB_IMAGE }}:latest
+          docker tag npt_prod:latest ${{ env.NGINX_IMAGE }}:latest
       - 
         name: Push images
         run: |
@@ -97,7 +97,6 @@ jobs:
             cd /app
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
-            docker pull $WEB_IMAGE
-            docker pull $NGINX_IMAGE
+
             sudo docker compose -f docker-compose.prod.yml up -d
           ENDSSH

@@ -3,6 +3,8 @@ version: '3.8'
 services:
   web:
     image: ghcr.io/phoenixudon/new_pipeline/web:latest
+    env_file:
+      - ./.env
 
   nginx:
     image: ghcr.io/phoenixudon/new_pipeline/nginx:latest

@@ -5,7 +5,7 @@ services:
     build:
       context: ./app 
       dockerfile: Dockerfile.prod
-    image: npt_prod:local
+    image: npt_prod
     command: gunicorn New_Pipeline.wsgi:application --bind 0.0.0.0:8000 --timeout=5 --threads=10
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -16,7 +16,7 @@ services:
       - ./.env
   nginx:
     build: ./nginx
-    image: npt_nginx_prod:local
+    image: npt_nginx_prod
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles

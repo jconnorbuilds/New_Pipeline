@@ -18,7 +18,7 @@ jobs:
         name: Add environment variables to .env
         run: |
           echo "DEBUG='0'" >> .env
-          echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.99.184 .bwcat.tools'" >> .env
+          echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools'" >> .env
           echo "SQL_ENGINE='django.db.backends.postgresql'" >> .env
           echo "DATABASE='postgres'" >> .env
           echo "SECRET_KEY='${{ secrets.SECRET_KEY }}'" >> .env
@@ -94,6 +94,7 @@ jobs:
         run: |
           scp  -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.LINODE_IP_ADDRESS }}:/app
           ssh -o StrictHostKeyChecking=no root@${{ secrets.LINODE_IP_ADDRESS }} << 'ENDSSH'
+            cd /app
             source .env
             docker login ghcr.io -u $NAMESPACE -p $PERSONAL_ACCESS_TOKEN
             docker pull $WEB_IMAGE

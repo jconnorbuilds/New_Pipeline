@@ -10,3 +10,5 @@ services:
     image: ghcr.io/phoenixudon/new_pipeline/nginx:latest
     env_file:
       - ./.env
+    ports:
+      - 80:80

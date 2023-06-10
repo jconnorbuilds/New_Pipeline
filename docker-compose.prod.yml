@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build:
-      context: ./
+      context: ./app
       dockerfile: Dockerfile.prod
     image: npt_prod:local
     command: gunicorn New_Pipeline.wsgi:application --bind 0.0.0.0:8000 --timeout=5 --threads=10

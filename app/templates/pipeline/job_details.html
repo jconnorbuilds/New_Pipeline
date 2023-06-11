@@ -7,7 +7,16 @@
     <h5 class="display-5">Job details</h5>
     
     <div class="container bg-body-secondary p-3">
-
+        {% if messages %}
+            {% for message in messages %}
+                <div class="col-2">
+                    <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
         <p><strong>Client:</strong> {{ job.client.friendly_name }}</p>
         <p><strong>Job code:</strong> {{ job.job_code }}</p>
         <p><strong>Revenue:</strong> ¥{{ job.revenue }}</p>
@@ -37,6 +46,10 @@
             <p><strong>Total cost: ¥{{job.total_cost}}</strong> // Profit ¥{{job.profit}}</strong> <em>({{job.profit_rate}}%)</em></p>
             <p><strong></p>
         
+        <div class="d-flex justify-content-center mx-auto">
+            <a href={% url 'pipeline:job-update' job_id %} class="btn btn-dark btn-sm col-auto col-lg-2 ">Update Job Details</a>
+            <a href={% url 'pipeline:job-delete' job_id %} class="btn btn-danger btn-sm col-auto col-lg-2 ">Delete Job</a>
+        </div>
     
         {% if job.relatedJobs.all %}
         <div class="container bg-body-tertiary p-3">

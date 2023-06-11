@@ -30,13 +30,13 @@ $(document).ready(function(){
         },
         columns: [
             { "data": "select", responsivePriority: 2 },
-            {"data": "id"},
+            { "data": "id" },
             { "data": "client_name", responsivePriority: 4 },
-            { "data": "job_name", responsivePriority: 1},
-            {"data": "job_code", },
+            { "data": "job_name", responsivePriority: 1 },
+            { "data": "job_code", },
             { "data": "revenue", responsivePriority: 3 },
             { "data": "total_cost", responsivePriority: 5 },
-            {"data": "profit_rate"},
+            { "data": "profit_rate"},
             {
                 "data": "job_date",
                 "render": function (data) {
@@ -48,7 +48,6 @@ $(document).ready(function(){
             },
             {"data": "job_type"},
             {"data": "status"},
-            {"data": "edit"},
         ],
         columnDefs: [
             {
@@ -58,7 +57,7 @@ $(document).ready(function(){
                 searchable: false,
             },
             {
-                targets: [0, 1, -1, -2],
+                targets: [0, 1, -1,],
                 orderable: false
             },
             {

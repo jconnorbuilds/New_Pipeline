@@ -98,7 +98,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'job_date': job.job_date,
                     'job_type': job.get_job_type_display(),
                     'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
-                    'edit': render_to_string('pipeline/job_edit_delete.html', {"job_id":job.id}),
                 }
                 return JsonResponse({"status": "success", "data":data})
             else:
@@ -129,7 +128,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'job_date': job.job_date,
                     'job_type': job.get_job_type_display(),
                     'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
-                    'edit': render_to_string('pipeline/job_edit_delete.html', {"job_id":job.id}),
                 }
             return JsonResponse({"status": "success", "data": data})
 
@@ -225,7 +223,6 @@ def pipeline_data(request, year=None, month=None):
             'job_date': job.job_date,
             'job_type': job.get_job_type_display(),
             'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options": Job.STATUS_CHOICES, "currentStatus": job.status}),
-            'edit': render_to_string('pipeline/job_edit_delete.html', {"job_id":job.id}),
         }
         for job in jobs
         ],
@@ -284,8 +281,13 @@ class VendorDetailView(LoginRequiredMixin, DetailView):
         return context
 
 class JobDetailView(DetailView):
-    template_name = "pipeline/jobs.html"
+    template_name = "pipeline/job_details.html"
     model = Job
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['job_id'] = self.kwargs['pk']
+        return context
 
 class InvoiceView(LoginRequiredMixin, TemplateView):
     # Will need to make more efficient for the long term
@@ -1077,12 +1079,19 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
         form.fields['locked_exchange_rate'].widget.attrs['disabled'] = 'true'
         return form
 
-class JobUpdateView(UpdateView):
+class JobUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Job
     fields = ['job_name','client','job_type','revenue','personInCharge','status','month','year','notes']
     template_name_suffix = '_update_form'
+    success_message= "Job updated!"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['job_id'] = self.kwargs['pk']
+        return context
+    
     def get_success_url(self):
-        return reverse_lazy('pipeline:index')
+        return reverse('pipeline:job-detail', kwargs={'pk':self.kwargs['pk']})
 
 class JobDeleteView(DeleteView):
     model = Job

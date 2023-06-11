@@ -20,7 +20,7 @@ from django.views.generic import TemplateView, ListView, DetailView, DeleteView,
 from django.views import View
 from .models import Job, Vendor, Cost, Client
 from .forms import CostForm, JobForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, UploadInvoiceForm, ClientForm
-from datetime import date, datetime
+from datetime import date
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
 import dropbox
@@ -31,7 +31,6 @@ from .utils import FOREX_RATES
 import json
 import calendar
 import csv
-import requests
 
 class RedirectToPreviousMixin:
     default_redirect = '/'
@@ -270,7 +269,7 @@ def cost_data(request, job_id):
     ]}
     return JsonResponse(data, safe=False,)
 
-class VendorDetailView(DetailView):
+class VendorDetailView(LoginRequiredMixin, DetailView):
     template_name = "pipeline/vendors.html"
     model = Vendor
     def get_context_data(self, **kwargs):
@@ -1089,7 +1088,7 @@ class JobDeleteView(DeleteView):
     model = Job
     success_url = reverse_lazy('pipeline:index')
 
-class ClientCreateView(SuccessMessageMixin, CreateView):
+class ClientCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Client
     fields = ["friendly_name", "job_code_prefix", "proper_name", "name_japanese", "proper_name_japanese", "paymentTerm", "notes"]
 
@@ -1097,10 +1096,10 @@ class ClientCreateView(SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('pipeline:client-add')
 
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
 
-class VendorListView(ListView):
+class VendorListView(LoginRequiredMixin, ListView):
     model = Vendor
     template_name = 'pipeline/vendor_list.html'
 
@@ -1109,7 +1108,7 @@ class VendorListView(ListView):
         sorted_vendors = sorted(queryset, key=lambda vendor: vendor.familiar_name)
         return sorted_vendors
     
-class VendorCreateView(SuccessMessageMixin, CreateView):
+class VendorCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Vendor
     fields = "__all__"
 

@@ -246,22 +246,6 @@
         <tbody>
           {% for job in jobs %}
           <tr>
-            {% comment %} <td><input type="checkbox" name="select" value="{{ job.pk }}" class="form-check-input"></input></td>
-            <td>{{ job.client.friendly_name }}</td>
-            <td><a href="{% url 'pipeline:job-detail' job.id %}">{{ job.job_name }}</a></td>
-            <td>{{ job.job_code }}</td>
-            <td>¥{{ job.revenue }}</td>
-            <td><a href="{% url 'pipeline:cost-add' job.id %}">¥{{ job.total_cost }}</a></td>
-            <td>{{ job.profit_rate|floatformat }}%</td>
-            <td>{{ job.job_date|date:"M Y" }}</td>
-            <td>{{ job.get_job_type_display }}</td>
-            <td>{{ job.get_status_display }}</td>
-            <td>
-              <div class="btn-group" role="group" aria-label="edit and delete buttons">
-                <button type="button" class="btn btn-dark btn-sm" ><a href="{% url 'pipeline:job-update' job.id %}" class="edit-del-btn-group"><i class="bi bi-wrench-adjustable-circle"></i></a></button>
-                <button type="button" class="btn btn-danger btn-sm"><a href="{% url 'pipeline:job-delete' job.id %}" class="edit-del-btn-group"><i class="bi bi-trash3-fill"></i></a></button>
-              </div>
-            </td> {% endcomment %}
           </tr>
           {% endfor %}
         </tbody>

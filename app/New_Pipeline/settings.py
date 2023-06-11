@@ -93,7 +93,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.forms',
     'pipeline',
-    # 'livereload',
     'django_bootstrap5',
     'widget_tweaks',
 ]

@@ -11,11 +11,14 @@ click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
 Django==4.2.1
+django-bootstrap5==23.3
+django-widget-tweaks==1.4.12
 dropbox==11.36.0
 gunicorn==20.1.0
 idna==3.4
 jmespath==1.0.1
 kombu==5.2.4
+livereload==2.6.3
 pip==23.0.1
 ply==3.11
 prompt-toolkit==3.0.38
@@ -30,6 +33,7 @@ setuptools==66.0.0
 six==1.16.0
 sqlparse==0.4.4
 stone==3.3.1
+tornado==6.3.2
 urllib3==1.26.15
 vine==5.0.0
 wcwidth==0.2.6

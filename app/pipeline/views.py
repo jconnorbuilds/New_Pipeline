@@ -32,6 +32,8 @@ import json
 import calendar
 import csv
 
+from typing import Any, List
+
 class RedirectToPreviousMixin:
     default_redirect = '/'
 
@@ -71,9 +73,35 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context['csv_export_form'] = self.csv_export_form
         context['bulk_actions'] = self.bulk_actions
         # context['jobs'] = Job.objects.all()
+        # TODO: Oliver - consider a constant here of these headers, and passing this in
         context['headers'] = ["", "ID", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
         return context
 
+    # would normally put what i expect the value types here rather than any. 
+    # If you go for dataclasses in the future, that'd be worth doing, eg. _set_job_month(self, job)->CheckedJob:
+    def _set_job_month(self, job)->Any: 
+        """
+        sets the job month for a job
+        * some note about what is required for a job to be passed into this*
+
+        Args:
+            checked_job (_type_): _description_
+
+        Returns:
+            Any: _description_
+        """
+        if job.month == '1':
+            job.month = '12'
+            job.year = str(int(job.year) - 1)
+            return job
+        job.month = str(int(job.month) - 1)
+        return job
+        
+    # TODO: Oliver - i'd use type hints, and ideally dataclasses here
+    # check out https://kobzol.github.io/rust/python/2023/05/20/writing-python-like-its-rust.html
+    # if you felt the need to define an AddJobPost dataclass you could use a singledispatchmethod to handle each case
+    # stacked if and elif statements can be a little awkward, and 
+    # you might be able to use these more strongly types classes in other helpful ways long term
     def post(self, request, *args, **kwargs):
         if 'addjob' in request.POST:
             job_form = self.form_class(request.POST)
@@ -85,7 +113,8 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 print(instance.job_date)
                 success_message="Job added!"
                 job = Job.objects.get(pk=instance.pk)
-
+                
+                # would move instantiating the data to a helper function
                 data = {
                     'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
                     'id': job.id,
@@ -132,6 +161,8 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
             return JsonResponse({"status": "success", "data": data})
 
         elif 'bulk-actions' in request.POST:
+            # definitely worth exploring helper functions or other approaches to avoid this nesting depth
+            # it looks like the 
             bulk_form = self.bulk_actions(request.POST)
             print(request.POST)
             checked_jobs = Job.objects.filter(id__in=request.POST.getlist('select'))
@@ -139,20 +170,12 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 action = bulk_form.cleaned_data["actions"]
                 if action == "NEXT":
                     for job in checked_jobs:
-                        if job.month == '12':
-                            job.month = '1'
-                            job.year = str(int(job.year) + 1)
-                        else:   
-                            job.month = str(int(job.month) + 1)
+                        job = self._set_job_month(job)
                         job.save()
                         print(f'this job is now a {job.month}/{job.year} job')
                 elif action == "PREVIOUS":
                     for job in checked_jobs:
-                        if job.month == '1':
-                            job.month = '12'
-                            job.year = str(int(job.year) - 1)
-                        else:   
-                            job.month = str(int(job.month) - 1)
+                        job = self._set_job_month(job)
                         job.save()
                         print(f'this job is now a {job.month}/{job.year} job')
                 elif action == "DELETE":
@@ -173,14 +196,17 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         print('nothing happened')
                 elif action == "UNRELATE":
                     i = 1
-                    while i < len(checked_jobs):
-                        if checked_jobs[i] in checked_jobs[0].relatedJobs.all():
+                    # progbably just wanna do the below, unless you're doing a true two pointer method 
+                    # (on the bus so links are less handy but leetcode has a pretty good series on two pointer method algorithms)
+                    # it also seems like your logic hinges on the first job in checked_jobs being some sort of static reference
+                    # just for clarity's sake, I would consider assigning that to a clear variable 
+                    # if that first index is treated differently than every other item in that list
+                    for i, job in enumerate(checked_jobs):
+                        if job in checked_jobs[0].relatedJobs.all():
                             checked_jobs[0].relatedJobs.remove(checked_jobs[i])
                             print('success!')
-                            i += 1
                         else:
                             print("jobs aren't related")
-                            i += 1
 
                 else:
                     print('hmmmmm')

@@ -1,12 +1,15 @@
+from dataclasses import dataclass
 from django.db import models, IntegrityError
 from django.conf import settings
 from datetime import date
 from django.urls import reverse
 from django.utils import timezone
+from functools import singledispatchmethod
 from .utils import FOREX_RATES
 from .currencies import currencies
 import uuid
 import requests
+from typing import NoReturn
 
 # Create your models here.
 def id_suffix_generator():
@@ -58,10 +61,11 @@ class Vendor(models.Model):
         This is also the name that will be used in emails, if it's a company name.
         If it's a human name, just their first name will be used.
         '''
-        if not self.use_company_name:
-            return ' '.join([self.first_name, self.last_name]) if self.last_name else self.first_name
-        else:
+        # reduce else usage when a return can suffice 
+        if self.company_name:
             return self.company_name
+        return ' '.join([self.first_name, self.last_name]) if self.last_name else self.first_name
+
 
     # def get_vendor_code(self, vendor_code_prefix):
     #     vendors = Vendor.objects.all()
@@ -154,7 +158,7 @@ class Cost(models.Model):
     description = models.CharField(max_length=30, blank=True)
     amount = models.IntegerField(null=True)
     
-    CURRENCIES = currencies
+    CURRENCIES = currencies #TODO: Oliver - i would provide a code comment or some sort of type hint describing that currencies is a Tuple[str, str]. Maybe there's a way that Django likes to do this
     currency = models.CharField(max_length=10, default='¥', choices=CURRENCIES)
     
     INVOICE_STATUS_CHOICES = (
@@ -180,7 +184,9 @@ class Cost(models.Model):
     # a flag to cue the save method to re-calculate the exchange rate based on a custom datetime
     exchange_rate_override = models.BooleanField(default=False)
     
-    def calculate_exchange_rate_overide(self, source_currency, exchange_rate_locked_at):
+    # TODO: Oliver - check out using type hints, especially to clarify return values
+    # https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html#functions
+    def calculate_exchange_rate_overide(self, source_currency, exchange_rate_locked_at)->float:
         '''
         Calculates the exchange rate based on a specific point in time.
         Useful for entering information for older jobs.
@@ -200,11 +206,11 @@ class Cost(models.Model):
         if response.status_code == 200:
             print(response.json()[0].get('rate'))
             return response.json()[0].get('rate')
-        else:
-            # need to update: make approximation and add warning message
-            return 1
+        
+        # need to update: make approximation and add warning message
+        return 1
 
-    def get_PO_number(self):
+    def get_PO_number(self)->NoReturn:
         '''
         Generate a unique Purchase Order number for a cost.
         Example: JCOAPL0001
@@ -239,7 +245,8 @@ class Cost(models.Model):
 
 class Job(models.Model):
 
-    # def get_absolute_url(self):
+    #TODO: Oliver - worth removing commented out stuff or putting a todo addressing future plans
+    # def get_absolute_url(self): 
     #   return reverse('pipeline:costsheet', kwargs={'job_code':self.job_code})
 
     def get_absolute_url(self):
@@ -290,19 +297,27 @@ class Job(models.Model):
         # the same client in the same month
         i = 1
 
-        while jc == '' and i <= 99:
+        while jc == '' and i < 32:
             if not Job.objects.filter(job_code = f'{prefix}{month:02d}{i:02d}{year}').exists():
                 jc = f'{prefix}{month:02d}{i:02d}{year}'
+                # TODO: Oliver - worth looking into the python logger instead of printing https://realpython.com/python-logging/
                 print(f'{prefix}{month:02d}{i:02d}{year} created')
                 return jc
             else:
                 print(f'{prefix}{month:02d}{i:02d}{year} exists, trying again')
                 i+= 1
-
-            if i > 99:
-                print('There is an issue with the job code logic')
-                break
-
+                
+        # TODO: Oliver - not entirely sure why what's happening here is happening, but here's what i gather:
+        #   - You're incrementing each day of the month to find if a job code exists for the day, and if it doesn't exist you're creating it.
+        # Not sure what's going on here exactly, but if you're iterating and the upper limit is determined by the day of month number,
+        # I'd make the limit closer to the upper limit for number of months, like in these changes
+        
+        # if that's all pretty far off, i'd suggest a more verbose docstring as well. 
+        # a great vs code extension is autoDocstring. It uses type hints very well in creating a template docstring
+        if jc == '':
+            # some error handling
+            print('There is an issue with the job code logic')
+            
     JOB_TYPE_CHOICES = [
         ('ORIGINAL', 'Original'),
         ('RENEWAL', 'Renewal'),
@@ -368,6 +383,11 @@ class Job(models.Model):
         all_costs = Cost.objects.filter(job__job_code = self.job_code)
         total = 0
         
+        
+        # TODO: Oliver - not sure what to expect from filter, but making sure you're aware of the "if" vs. "if is not none" distinctions https://stackoverflow.com/questions/7816363/if-a-vs-if-a-is-not-none
+        
+        # TODO: Oliver - I woas going to suggest considering using dataclass.dataclasses and using a singledispatchmethod to correctly handles these cases, but that might     
+
         if all_costs:
             for cost in all_costs:
                 print(f'{cost} - {cost.currency} {cost.amount}')

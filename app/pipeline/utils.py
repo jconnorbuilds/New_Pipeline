@@ -5,6 +5,7 @@ from django.core.cache import cache
 import requests
 
 def forExRate(source_currency):
+    print('forExRate is running')
     '''
     Calculates the foreign exchange rate via Wise's API
     '''
@@ -34,20 +35,23 @@ def forExRate(source_currency):
 def get_forex_rates():
     try:
         forex_rates_dict = cache.get('forex_rates')
+        print("got the forex cache")
     except Exception as e:
+        print("Couldn't get the cached dict")
         print(e)
 
-    try:
-        if not forex_rates_dict or forex_rates_dict.get("USD") == 1:
+    if not forex_rates_dict or forex_rates_dict.get("USD") == 1:
+        try:
             forex_rates_dict = {}
             for currency in currencies:
                 forex_rates_dict[currency[0]] = forExRate(currency[0])
             
-            cache.set('forex_rates', forex_rates_dict, timeout=60)
+            cache.set('forex_rates', forex_rates_dict, timeout=600)
+            print("set the forex cache")
 
-    except Exception as e:
-        print(e)
-        for currency in currencies:
-            forex_rates_dict[currency[0]] = forExRate(currency[0])
+        except Exception as e:
+            print(e)
+            for currency in currencies:
+                forex_rates_dict[currency[0]] = 1
 
     return forex_rates_dict

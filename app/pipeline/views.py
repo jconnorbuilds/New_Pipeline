@@ -25,7 +25,7 @@ from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
 import dropbox
 from dropbox.exceptions import ApiError, AuthError
-from .utils import FOREX_RATES
+from .utils import get_forex_rates
 
 # import boto3
 import json
@@ -246,6 +246,7 @@ def pipeline_data(request, year=None, month=None):
     return JsonResponse(data, safe=False,)
 
 def cost_data(request, job_id):
+    forex_rates = get_forex_rates()
     costs = Cost.objects.filter(job=job_id)
     vendors = Vendor.objects.filter(jobs_rel=job_id)
 
@@ -257,7 +258,7 @@ def cost_data(request, job_id):
 
     data = {"data": [
         {
-        "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
+        "amount_JPY": f'¥{round(cost.amount * forex_rates[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
         "amount_local": f'{cost.currency}{cost.amount}',
         "vendor": render_to_string("pipeline/costsheet/cost_table_vendor_select.html", context={"vendors": vendors.all(), "selectedVendor": cost.vendor}),
         "description":cost.description,
@@ -296,7 +297,8 @@ class JobDetailView(DetailView):
 
 class InvoiceView(LoginRequiredMixin, TemplateView):
     # Will need to make more efficient for the long term
-    print(FOREX_RATES)
+    forex_rates = get_forex_rates()
+    print(forex_rates)
     model = Cost
     template_name = "pipeline/invoices_list.html"
     costs = Cost.objects.all()
@@ -328,7 +330,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
         data = {
                 "select": render_to_string("pipeline/costsheet/checkbox.html", {"cost_id": cost.id}),
                 "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
-                "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
+                "amount_JPY": f'¥{round(cost.amount * self.forex_rates[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
                 "amount_local": f'{cost.currency}{cost.amount}',
                 "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
                 "job_name": cost.job.job_name,
@@ -347,7 +349,8 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
 def all_invoices_data(request):
     costs = Cost.objects.all()
     print(request.POST)
-    print(FOREX_RATES)
+    forex_rates=get_forex_rates()
+    print(forex_rates)
 
     status_options = Cost.INVOICE_STATUS_CHOICES
 
@@ -355,7 +358,7 @@ def all_invoices_data(request):
         {
             "select": render_to_string('pipeline/costsheet/checkbox.html', {"cost_id": cost.id}),
             "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
-            "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
+            "amount_JPY": f'¥{round(cost.amount * forex_rates[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
             "amount_local": f'{cost.currency}{cost.amount}',
             "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
             "job_name": cost.job.job_name,
@@ -656,6 +659,7 @@ def create_batch_payment_file(request):
     Each payment can be maximum 1m JPY, so anything over ¥950k is split into multiple payments.
     
     '''
+    forex_rates = get_forex_rates()
     if request.method == "POST":
         invoices = Cost.objects.filter(invoice_status__in=["REC", "REC2"])
         processing_status = {} # format: invoice PO number {status (success/error), message} 
@@ -709,7 +713,7 @@ def create_batch_payment_file(request):
                             continue
 
                         upper_limit_for_JPY = 950000
-                        approx_amount_in_JPY = invoice.amount * FOREX_RATES[row[target_currency_idx]]
+                        approx_amount_in_JPY = invoice.amount * forex_rates[row[target_currency_idx]]
                         print(f"approx_amount_in_JPY: {approx_amount_in_JPY}")
                         
                         if approx_amount_in_JPY > upper_limit_for_JPY:
@@ -976,6 +980,7 @@ class CostCreateView(LoginRequiredMixin, CreateView):
     simple_add_vendor_form = AddVendorToCostForm
     cost_form = CostForm
     update_cost_form = UpdateCostForm
+    forex_rates = get_forex_rates()
     
     # print(f"Team folder ID in here {dropbox_team_connect().team_team_folder_list().team_folders}")
     
@@ -1042,7 +1047,7 @@ class CostCreateView(LoginRequiredMixin, CreateView):
                     This will give a close approximation for the amount actually paid to the vendor.
                     I'm thinking we need to incorporate Wise payments more closely to get more accuracy.
                     '''
-                    cost.locked_exchange_rate = FOREX_RATES[cost.currency]
+                    cost.locked_exchange_rate = self.forex_rates[cost.currency]
                     cost.exchange_rate_locked_at = timezone.now()
 
             cost.save()
@@ -1050,7 +1055,7 @@ class CostCreateView(LoginRequiredMixin, CreateView):
             status_options = Cost.INVOICE_STATUS_CHOICES
 
             data = {
-                "amount_JPY": f'¥{round(cost.amount * FOREX_RATES[cost.currency]):,}',
+                "amount_JPY": f'¥{round(cost.amount * self.forex_rates[cost.currency]):,}',
                 "amount_local": f'{cost.currency}{cost.amount}',
                 "vendor": render_to_string("pipeline/costsheet/cost_table_vendor_select.html", context={"vendors": vendors.all(), "selectedVendor": cost.vendor}),
                 "description":cost.description,

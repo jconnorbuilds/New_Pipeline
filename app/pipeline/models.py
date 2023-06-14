@@ -3,7 +3,7 @@ from django.conf import settings
 from datetime import date
 from django.urls import reverse
 from django.utils import timezone
-from .utils import FOREX_RATES
+from .utils import get_forex_rates
 from .currencies import currencies
 import uuid
 import requests
@@ -238,7 +238,7 @@ class Cost(models.Model):
         return f'{self.job.job_name} ({self.job.job_code}) {self.currency}{self.amount} -- {self.vendor.vendor_code if self.vendor else ""}'
 
 class Job(models.Model):
-
+    forex_rates = get_forex_rates()
     # def get_absolute_url(self):
     #   return reverse('pipeline:costsheet', kwargs={'job_code':self.job_code})
 
@@ -387,7 +387,7 @@ class Job(models.Model):
                     total += round(cost.amount * cost.locked_exchange_rate)
                 else:
                     try:
-                        total += round(FOREX_RATES[cost.currency] * cost.amount)
+                        total += round(self.forex_rates[cost.currency] * cost.amount)
                     except:
                         total += (cost.amount * 10)
                         print('There was an error getting the exchange rate')

@@ -32,23 +32,33 @@ def forExRate(source_currency):
         return 1
     
 def get_forex_rates():
-    forex_rates_dict = cache.get('forex_rates')
-    # forex_rates_dict = {}
+    try:
+        forex_rates_dict = cache.get('forex_rates')
+    except Exception as e:
+        print(e)
 
-    if not forex_rates_dict or forex_rates_dict.get("USD") == 1:
-        forex_rates_dict = {}
+    try:
+        if not forex_rates_dict or forex_rates_dict.get("USD") == 1:
+            forex_rates_dict = {}
+            for currency in currencies:
+                forex_rates_dict[currency[0]] = forExRate(currency[0])
+            
+            cache.set('forex_rates', forex_rates_dict, timeout=60)
+            
+    except Exception as e:
+        print(e)
         for currency in currencies:
             forex_rates_dict[currency[0]] = forExRate(currency[0])
-        
-        cache.set('forex_rates', forex_rates_dict, timeout=3600)
 
     return forex_rates_dict
 
 FOREX_RATES = None
 
 def initialize_forex_rates():
+    print('initializing forex rates')
     global FOREX_RATES
     FOREX_RATES = get_forex_rates()
+    print(FOREX_RATES)
 
 # Only calling this here at the moment, but maybe it would make sense to call in views and models
 # so we're not relying on this global variable to be initialized on startup? Doesn't feel good

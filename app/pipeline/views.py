@@ -73,6 +73,10 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         # context['jobs'] = Job.objects.all()
         context['headers'] = ["", "ID", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
         return context
+    
+    def get_queryset(self):
+        queryset = Job.objects.filter(isDeleted=False)
+        return queryset
 
     def post(self, request, *args, **kwargs):
         if 'addjob' in request.POST:
@@ -80,10 +84,10 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
             if job_form.is_valid():
                 # Take in the revenue in terms of 万
                 job_form.instance.revenue = job_form.instance.revenue * 10000
+                job_form.instance.revenue.normalize()
                 instance = job_form.save()
                 print(instance)
                 print(instance.job_date)
-                success_message="Job added!"
                 job = Job.objects.get(pk=instance.pk)
 
                 data = {
@@ -155,16 +159,17 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                             job.month = str(int(job.month) - 1)
                         job.save()
                         print(f'this job is now a {job.month}/{job.year} job')
-                elif action == "DELETE":
+                elif action == "DEL":
                     i = 0
                     for job in checked_jobs:
-                        job.isDeleted = True;
+                        job.isDeleted = True
                         job.save()
                         i += 1
                     if i > 0:
-                        messages.error(request, f'{i} jobs were deleted. You can restore them from the admin panel.')
+                        messages.warning(request, f'{i} jobs were deleted. You can restore them from the admin panel.')
+                        print("deleted!")
                     else:
-                        messages.warning(request, 'No jobs were deleted.')
+                        messages.error(request, 'No jobs were deleted.')
                         print('No jobs were deleted.')
                 elif action == "RELATE":
                     if len(checked_jobs) > 1:
@@ -199,11 +204,11 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         return render(request, self.template_name, self.get_context_data())
 
 def pipeline_data(request, year=None, month=None):
-    jobs = Job.objects.all()
+    jobs = Job.objects.filter(isDeleted=False)
     # Calculate total revenue
-    total_revenue_ytd = Job.objects.filter(job_date__year=date.today().year).aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
+    total_revenue_ytd = Job.objects.filter(job_date__year=date.today().year, isDeleted=False).aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
     if year is not None and month is not None:
-        jobs = Job.objects.filter(job_date__month=month, job_date__year=year)
+        jobs = Job.objects.filter(job_date__month=month, job_date__year=year, isDeleted=False)
 
     total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
     total_revenue_monthly_actual = jobs.filter(

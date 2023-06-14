@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
+{% load normalize_decimal %}
 {% load static %}
 {% block body_block %}
 
@@ -53,7 +54,7 @@
             <div class="col-sm-6">
               <div class="input-group">
                 <span class="input-group-text" id="yen-addon">¥</span>
-                {% render_field job_form.revenue class+="form-control" help_text="revenue in ¥10k increments" %}
+                  {% render_field job_form.revenue class+="form-control" help_text="revenue in ¥10k increments" %}
                 <span class="input-group-text" id="man-addon">万</span>
               </div>
             </div>

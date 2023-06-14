@@ -56,14 +56,6 @@ DROPBOX_USER_ID = os.getenv("DROPBOX_USER_ID")
 # CELERY_TASK_SERIALIZER = 'json'
 # CELERY_TIMEZONE = 'Japan'
 
-# # Periodic tasks
-# CELERY_BEAT_SCHEDULE = {
-#     'get_forex_rates': {
-#         'task': 'pipeline.tasks.get_forex_rates',
-#         'schedule': crontab(minute=0, hour='*'),
-#     },
-# }
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 

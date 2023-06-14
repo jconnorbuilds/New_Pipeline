@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "DEBUG='0'" >> .env
           echo "SQL_ENGINE='django.db.backends.postgresql'" >> .env
-          echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.99.184 .bwcat.tools'" >> .env
+          echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools'" >> .env
           echo "DATABASE='postgres'" >> .env
           echo "SECRET_KEY='${{ secrets.SECRET_KEY }}'" >> .env
           echo "SQL_DATABASE='${{ secrets.SQL_DATABASE }}'" >> .env

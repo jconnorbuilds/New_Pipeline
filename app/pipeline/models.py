@@ -272,6 +272,16 @@ class Job(models.Model):
 
     def get_job_code(self):
         '''
+        Creates a job code in the following format:
+        {prefix}{month:02d}{i:02d}{year}
+
+        e.g.
+        APL06012023
+        prefix: APL
+        month: 06
+        iterator: 01 
+        year: 2023
+        
         This should only run once, so the logic runs in the overridden save() function
         Format abcMMnnYYYY
 

@@ -1081,7 +1081,7 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
 
 class JobUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Job
-    fields = ['job_name','client','job_type','revenue','personInCharge','status','month','year','notes']
+    fields = ['job_name','client', 'job_code', 'job_code_isFixed', 'job_type','revenue','personInCharge','status','month','year','notes']
     template_name_suffix = '_update_form'
     success_message= "Job updated!"
 

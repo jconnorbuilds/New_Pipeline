@@ -72,7 +72,7 @@ print(f"sql_host: {os.getenv('SQL_HOST')}")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools".split(" ")
-# CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:1337"]
+CSRF_TRUSTED_ORIGINS = "https://127.0.0.1" "https://bwcat.tools".split(" ")
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition

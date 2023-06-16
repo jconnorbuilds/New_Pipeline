@@ -1,4 +1,6 @@
 .DS_STORE
 .env*
 *.numbers
+docker-compose.yml
+docker-compose.local.yml
 **/__pycache__/

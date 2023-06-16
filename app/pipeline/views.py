@@ -84,7 +84,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
             if job_form.is_valid():
                 # Take in the revenue in terms of 万
                 job_form.instance.revenue = job_form.instance.revenue * 10000
-                job_form.instance.revenue.normalize()
                 instance = job_form.save()
                 print(instance)
                 print(instance.job_date)

@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from .utils import get_forex_rates
 from .currencies import currencies
+from decimal import Decimal
 import uuid
 import requests
 
@@ -153,13 +154,13 @@ class Cost(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vendor_rel')
     description = models.CharField(max_length=30, blank=True)
     amount = models.IntegerField(null=True)
+    # TODO: Add conversion to JPY
     
     CURRENCIES = currencies
     currency = models.CharField(max_length=10, default='¥', choices=CURRENCIES)
     
     INVOICE_STATUS_CHOICES = (
-        ('NR', 'Not ready to request'),
-        ('READY', 'Ready to request'),
+        ('NR', 'Not requested'),
         ('REQ', 'Requested'),
         ('REC', 'Received via upload'),
         ('REC2', 'Received (direct PDF/paper)'),
@@ -246,7 +247,7 @@ class Job(models.Model):
         return reverse('pipeline:job-detail', kwargs={"pk":self.pk})
     
     job_name = models.CharField(max_length=50)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, blank=False)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, blank=False, related_name='jobs_by_client')
     job_code = models.CharField(max_length=15, unique=True,)
     job_code_isFixed = models.BooleanField(default=False)
     job_code_isOverridden = models.BooleanField(default=False)
@@ -255,11 +256,10 @@ class Job(models.Model):
     isInvoiced = models.BooleanField(default=False)
     revenue = models.IntegerField()
     vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
-    # Who the invoice is paid to, if it differs from the client
-    paidTo = models.CharField(max_length=100, blank=True)
-    # If the client has a job code or special name for the invoice
-    invoiceName = models.CharField(max_length=100, blank=True)
+    invoice_recipient = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True) # Who the invoice is paid to, if it differs from the client
+    invoice_name = models.CharField(max_length=100, blank=True) # If the client has a job code or special name for the invoice
     relatedJobs = models.ManyToManyField("self", blank=True)
+    add_consumption_tax = models.BooleanField(default=True)
 
     # Separating out year and month separately because the day of the month doesn't matter
     # And this was the easiest way to take in and manipulate form data via select widgets
@@ -267,8 +267,7 @@ class Job(models.Model):
     month = models.CharField(max_length=2, editable=True, default=date.today().month)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    job_date = models.DateField(editable=False, null=True, default=timezone.now)
-
+    job_date = models.DateField(editable=False, null=True, default=timezone.now) # This is set in the save method
 
     def get_job_code(self):
         '''
@@ -291,27 +290,24 @@ class Job(models.Model):
         month = int(self.month)
         year = int(self.year)
         date = f"{year}-{month:02d}-01"
-        # Jobs by the same client in the same month
-        sameClientJobs = Job.objects.filter(job_date=date, client__job_code_prefix=prefix)
+        
+        sameClientJobs = Job.objects.filter(job_date=date, client__job_code_prefix=prefix) # Jobs from the same client in a particular month
         for i, job in enumerate(sameClientJobs):
             print(f"job {i}: {job}")
 
         # 'iterating' part of the code iterates based on the highest job number from
         # the same client in the same month
         i = 1
-
         while jc == '' and i <= 99:
             if not Job.objects.filter(job_code = f'{prefix}{month:02d}{i:02d}{year}').exists():
                 jc = f'{prefix}{month:02d}{i:02d}{year}'
-                print(f'{prefix}{month:02d}{i:02d}{year} created')
+                print(f'{prefix}{month:02d}{i:02d}{year} created') # TODO: move to logger
                 return jc
             else:
-                print(f'{prefix}{month:02d}{i:02d}{year} exists, trying again')
                 i+= 1
-
-            if i > 99:
-                print('There is an issue with the job code logic')
-                break
+        
+        if jc == '':
+            print("There was a problem with the job code logic") # TODO: move to logger
 
     JOB_TYPE_CHOICES = [
         ('ORIGINAL', 'Original'),
@@ -321,16 +317,15 @@ class Job(models.Model):
         ('MISC', 'Misc'),
         ('RETAINER', 'Retainer'),
         ]
+    
     job_type = models.CharField(
         max_length=15,
         choices=JOB_TYPE_CHOICES,
-        default='Original',
+        default='ORIGINAL',
         )
 
     notes = models.TextField(max_length=300, blank=True)
 
-    # PIC Choices
-    # Can these be taken from Users (in Admin)?
     ERIK = 'ER'
     JOE = 'JC'
     KENNY = 'KD'
@@ -338,6 +333,7 @@ class Job(models.Model):
     RYU = 'RI'
     SEIYA = 'SM'
     TIMO = 'TO'
+    KRIS = 'KR'
     PIC_CHOICES = [
         (None, 'Select PIC'),
         (ERIK, 'Erik Reiff'),
@@ -348,6 +344,7 @@ class Job(models.Model):
         (SEIYA, 'Seiya Matsumiya'),
         (TIMO, 'Timo Otsuki'),
     ]
+
     personInCharge = models.CharField(
         max_length=2,
         choices=PIC_CHOICES,
@@ -372,6 +369,22 @@ class Job(models.Model):
         )
 
     isDeleted = models.BooleanField(default=False)
+
+    @property
+    def consumption_tax(self):
+        '''
+        Returns the consumption tax amount and the tax-included revenue amount, based on a job's revenue.
+        
+        Returns:
+            (tuple): (consumption tax amt, tax-included revenue amount)
+        '''
+        consumption_tax_rate = Decimal('0.1')
+        if self.add_consumption_tax:
+            consumption_tax_amt = int((self.revenue * consumption_tax_rate).normalize())
+        else:
+            consumption_tax_amt = 0
+        
+        return (consumption_tax_amt, self.revenue + consumption_tax_amt)
 
     @property
     def total_cost(self):

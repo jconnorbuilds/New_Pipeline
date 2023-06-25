@@ -9,11 +9,13 @@ $(document).ready(function(){
     var avgMonthlyRevenueYtd = 0
     var totalRevenueMonthlyExp = 0
     var totalRevenueMonthlyAct = 0
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
 
     var jobTable = $('#job-table').DataTable({
         paging: false,
         responsive: true,
-        order: [[7, 'desc'],[3,'asc']],
+        order: [[8, 'desc'],[4,'asc']],
         orderClasses: false,
         rowId: 'id',
         language: {
@@ -29,9 +31,17 @@ $(document).ready(function(){
             }
         },
         columns: [
-            { "data": "select", responsivePriority: 2 },
-            { "data": "id" },
+            { "data": "select", responsivePriority: 2 }, 
+            { 
+                "data": "id",
+                "visible": false
+            },
             { "data": "client_name", responsivePriority: 4 },
+            {
+                 "data": "client_id",
+                 "name": "client_id",
+                 "visible": false
+            }, 
             { "data": "job_name", responsivePriority: 1 },
             { "data": "job_code", },
             { "data": "revenue", responsivePriority: 3 },
@@ -47,41 +57,48 @@ $(document).ready(function(){
                 }
             },
             {"data": "job_type"},
-            {"data": "status"},
+            {
+                "data": "status",
+                "name": "status"
+            },
+            {
+                "data": "invoice_info_completed",
+                "name": "invoice_info_completed",
+                "visible": false
+            }
         ],
         columnDefs: [
             {
-                targets: 0,
+                target: 0,
                 className: 'dt-center',
-                orderable: false,
                 searchable: false,
             },
             {
-                targets: [0, 1, -1,],
+                targets: [0, 1, -1, -2,],
                 orderable: false
             },
             {
-                target: 1,
-                visible: false
-            },
-            {
-                target: 3,
-                // render: $.fn.dataTable.render.ellipsis(20, true)
-            },
-            {
-                targets: 5,
+                targets: [6, 7],
                 className: 'dt-right'
             },
             {
-                targets: 6,
-                className: 'dt-right'
+                targets: [5, 6, 7],
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).addClass("font-monospace");
+                }
             },
+
         ],
-        rowCallback: function (row, data) {
-            if (data.status === "Finished") {
+        "rowCallback": function (row, data) {
+            var statusCell = $(row).find(".job-status-select")
+            var initialStatus = statusCell.val()
+            statusCell.attr("data-initial", initialStatus)
+            if (initialStatus === "FINISHED") {
                 $(row).addClass('job-finished');
-            } 
-        }
+            } else {
+                $(row).removeClass('job-finished');
+            }
+        },
     });
 
     let rangeCheckbox = $('#csv-export-use-range')
@@ -171,7 +188,6 @@ $(document).ready(function(){
 
     function getJobID() {
         if (typeof jobID !== "undefined") {
-            // console.log(jobID);
             return jobID;
         } else {
             return false;
@@ -206,8 +222,10 @@ $(document).ready(function(){
             {"data": "edit", "render": function(data, type, row){
                 return data;
             }}, 
-            
-            {"data": "id"},
+            {
+                "data": "id",
+                "visible": false
+            },
         ],
         columnDefs: [
             {
@@ -226,16 +244,7 @@ $(document).ready(function(){
                     $(td).css('padding-left', '10px')
                 }
             },
-
-            {
-                target: 8,
-                visible: false
-            }
         ],
-        // createdRow: function(row, data, dataIndex) {
-        //     var vendorColumnId = 'costsheet-vendor' + (dataIndex + 1);
-        //     $(row).find('.cost-vendor-select').attr('id', vendorColumnId);
-        // },
         rowCallback: function(row, data) {
             // This button disabling/enabling logic only works within the
             // rowCallbackfunction, and not within the createdRow function.
@@ -248,7 +257,7 @@ $(document).ready(function(){
                 $(row).find('.single-invoice-request-btn').prop('disabled', true)
 
             } else {
-                if (invoiceStatus === 'NR' || invoiceStatus === 'READY') {
+                if (invoiceStatus === 'NR') {
                     $(row).find('.single-invoice-request-btn').prop('disabled', false);
                 } else {
                     $(row).find('.single-invoice-request-btn').prop('disabled', true);
@@ -257,7 +266,7 @@ $(document).ready(function(){
         }
     });
 
-    $("#cost-table").on("change", ".cost-vendor-select, .cost-status-select", function() {
+    $("#cost-table").on("change", ".cost-vendor-select, .cost-status-select", function(event) {
         var formData = getCostUpdate(this);
         // var spinner = $("#add-job-spinner")
         event.preventDefault();
@@ -278,7 +287,6 @@ $(document).ready(function(){
             success: function (response) {
                 if (response.status === 'success') {
                     var newData = response.data
-                    console.log(newData)
                     // Use the #ID selector to target the new row and redraw with new data
                     costTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
 
@@ -341,7 +349,10 @@ $(document).ready(function(){
     });
 
     function getCostUpdate(selectElement) {
-        // get the element that changed, and pass that to formData along with the row ID
+        /*
+       * Returns a FormData object containing the value of the select element
+       * that was changed, to update the status or vendor of the Cost object in the db.
+       */
         var formData = new FormData();
         console.log(selectElement.className)
 
@@ -354,16 +365,15 @@ $(document).ready(function(){
         }
         formData.append("cost_id", $(selectElement).closest("tr").attr("id"));
         formData.append("update", true)
-
-        console.log(formData)
         return formData;
     }
 
     function getJobUpdate(selectElement) {
-        // get the element that changed, and pass that to formData along with the row ID
+        /*
+        * Returns a FormData object containing the value of the select element
+        * that was changed, to update the status of the Job object in the db.
+        */
         var formData = new FormData();
-        console.log(selectElement.className)
-
         if ($(selectElement).hasClass("job-status-select")) {
             formData.append("status", $(selectElement).val());
         } else {
@@ -371,19 +381,10 @@ $(document).ready(function(){
         }
         formData.append("job_id", $(selectElement).closest("tr").attr("id"));
         formData.append("update-job", true)
-
-        console.log(formData)
         return formData;
     }
 
-    $("#job-table").on("change", ".job-status-select", function () {
-        var formData = getJobUpdate(this);
-        // var spinner = $("#add-job-spinner")
-        // event.preventDefault();
-        // spinner.toggleClass('invisible')
-        // console.log(JSON.stringify(formData))
-
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    function jobTableAjaxCall(formData, successCallBack) {
         $.ajax({
             headers: { 'X-CSRFToken': csrftoken },
             type: "POST",
@@ -391,72 +392,56 @@ $(document).ready(function(){
             data: formData,
             processData: false, // prevents jQuery from processing the data
             contentType: false, // prevents jQuery from setting the Content-Type header
-            // beforeSend: function() {
-            //       spinner.removeClass('invisible');
-            // },
             success: function (response) {
                 if (response.status === 'success') {
                     var newData = response.data
-                    console.log(newData)
-                    // Use the #ID selector to target the new row and redraw with new data
-                    jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
-
-                    // $("table").append(response.html);
-                    // spinner.addClass('invisible');
-                    // $("#job-form").removeClass('was-validated')
-                    // $(".toast").each(function() {
-                    //     $(this).show()
-                    // });
-                    // var job = response.data;
-
-                    //         var toast = document.createElement("div");
-                    //         toast.classList.add('toast', 'position-fixed', 'bg-success-subtle', 'border-0', 'top-0', 'end-0');
-                    //         toast.setAttribute('role', 'alert');
-                    //         toast.setAttribute('aria-live', 'assertive');
-                    //         toast.setAttribute('aria-atomic', 'true');
-
-                    //         var jobDescriptor = formData['job_name'].toUpperCase() + " from " + $("#id_client option:selected").text();
-                    //         var header = document.createElement('div');
-                    //         header.classList.add('toast-header');
-                    //         header.innerHTML = `
-                    //             <i class="bi bi-check2-circle" class="rounded me-2"></i>
-                    //             <strong class="me-auto">Job added</strong>
-                    //             <small class="text-muted">Just now</small>
-                    //             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    //             `;
-                    //         var body = document.createElement('div');
-                    //         body.classList.add('toast-body');
-                    //         body.innerText = jobDescriptor;
-
-                    //         toast.appendChild(header);
-                    //         toast.appendChild(body);
-
-                    //         document.body.appendChild(toast);
-
-                    //         var toastElement = new bootstrap.Toast(toast);
-                    //         toastElement.show();
-                    //         setTimeout(function() {
-                    //             $(toastElement).fadeOut("fast", function() {
-                    //                 $(this).remove();
-                    //             });
-                    //         }, 1000);
-                    //         $("#job-form").get(0).reset();
-
-                    //     } else {
-                    //         console.log('it did not work')
-                    //         $("#job-form").addClass('was-validated');
-                    //         spinner.addClass('invisible');
-                    //     };
-                    // },
-                    // error: function(data) {
-                    //     alert('Form submission failed');
-                    //     spinner.addClass('invisible');
-                    // },
-
-                    // table.clear().rows.add(formData).draw();
+                    successCallBack(newData)
                 };
             }
         });
+    }
+
+    jobTable.on("change", ".job-status-select", function () {
+
+        var formData = getJobUpdate(this);
+        var statusSelectEl = $(this)
+        var selectedStatus = statusSelectEl.val();
+        var initialStatus = statusSelectEl.data("initial");
+        // console.log(initialStatus)
+        var rowID = $(this).closest("tr").attr("id")
+        const invoiceInfoCompleted = jobTable.cell('#' + rowID, 'invoice_info_completed:name').data()
+        const requiresInvoiceInfo = ["INVOICED","FINISHED"]
+        console.log(invoiceInfoCompleted)
+        
+        if (requiresInvoiceInfo.includes(selectedStatus) && invoiceInfoCompleted == false) {
+            const setInvoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
+            const clientID = parseInt(jobTable.cell('#' + rowID, 'client_id:name').data())
+            const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')        
+            const form = invoiceInfoModalEl.querySelector('#invoice-info-form')
+            const invoiceRecipientFieldDefault = form.querySelector('#id_invoice_recipient')
+            const hiddenJobIDField = form.querySelector('#id_job_id')
+            
+            invoiceRecipientFieldDefault.value = clientID
+            hiddenJobIDField.value = rowID
+            setInvoiceInfoModal.show()
+            
+            const cancelBtn = document.getElementById('set-invoice-info-cancel')
+            cancelBtn.addEventListener('click', function () {
+                statusSelectEl.val(initialStatus)
+            });
+
+            form.addEventListener('submit', function(event) {
+                jobTableAjaxCall(formData, function (newData) {
+                    jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
+                })
+            });
+
+        } else {
+            // # TODO: implement loading spinner?
+            jobTableAjaxCall(formData, function (newData) {
+                jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
+            });
+        };
     });
 
     var allInvoicesTable = $('#all-invoices-table').DataTable({
@@ -514,6 +499,13 @@ $(document).ready(function(){
                 orderable: false,
             },
             {
+                targets: [2, 3, 6, 9],
+                createdCell: function (td, cellData, rowData, row, col) {
+                    $(td).addClass("font-monospace");
+                }
+            },
+
+            {
                 target: 2,
                 className: "dt-right",
                 width: "80px",
@@ -561,7 +553,7 @@ $(document).ready(function(){
                 $(row).find('.single-invoice-request-btn').prop('disabled', true)
 
             } else {
-                if (invoiceStatus === 'NR' || invoiceStatus === 'READY') {
+                if (invoiceStatus === 'NR') {
                     $(row).find('.single-invoice-request-btn').prop('disabled', false);
                 } else {
                     $(row).find('.single-invoice-request-btn').prop('disabled', true)
@@ -730,7 +722,6 @@ $(document).ready(function(){
     var pipelineViewState = "monthly"
 
     function filterData(year, month) {
-        // var url = 'http://139.162.118.33:8000/pipeline/pipeline-data/';
         var url = '/pipeline/pipeline-data/';
         if (year !== undefined && month !== undefined) {
             url = url + year + '/' + month + '/';
@@ -811,18 +802,15 @@ $(document).ready(function(){
     });
 
 
-    // New Client form validation
     var clientForm = $('#new-client-form');
     var submitButton = clientForm.find('button[type="submit"]');
-    // Get the input fields
+
     var properNameInput = clientForm.find('input[name="proper_name"]');
     var properNameJapaneseInput = clientForm.find('input[name="proper_name_japanese"]');
 
-    // Listen for changes to the input fields
     properNameInput.on('input', validateInputs);
     properNameJapaneseInput.on('input', validateInputs);
 
-    // Disable the submit button by default
     submitButton.prop('disabled', true);
 
     // Validation function

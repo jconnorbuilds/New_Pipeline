@@ -6,10 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail, send_mass_mail
 from django.db import IntegrityError
 from django.db.models import Sum
-from django.forms import formset_factory, modelformset_factory, Textarea
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.template.loader import get_template, render_to_string
@@ -19,22 +19,20 @@ from django.utils.html import strip_tags
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
 from django.views import View
 from .models import Job, Vendor, Cost, Client
-from .forms import CostForm, JobForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, UploadInvoiceForm, ClientForm
+from .forms import CostForm, JobForm, JobImportForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, ClientForm, SetInvoiceInfoForm
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
 import dropbox
 from dropbox.exceptions import ApiError, AuthError
-from .utils import get_forex_rates
+from .utils import get_forex_rates, process_imported_jobs
 
-# import boto3
 import json
 import calendar
 import csv
 
 class RedirectToPreviousMixin:
     default_redirect = '/'
-
     def get(self, request, *args, **kwargs):
         request.session['previous_page'] = request.META.get(
             'HTTP_REFERER', self.default_redirect)
@@ -48,17 +46,13 @@ def index(request):
 
 def is_ajax(request):
     return request.headers.get('x-requested-with') == 'XMLHttpRequest'
-
-class LoginView(LoginView):
-    pass
     
 class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
-    # login_url = "/login/"
-    # redirect_field_name = "redirect_to"
     model = Job
     csv_export_form = PipelineCSVExportForm
     form_class = JobForm
     client_form_class = ClientForm
+    set_invoice_info_form_class = SetInvoiceInfoForm
     bulk_actions = PipelineBulkActionsForm
     template_name = "pipeline/pipeline.html"
     table_pagination = False
@@ -67,11 +61,12 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         client_id = self.request.GET.get('client_id')
         context['job_form'] = JobForm(initial={'client': client_id})
+        context['job_import_form'] = JobImportForm(initial={})
+        context['set_invoice_info_form'] = self.set_invoice_info_form_class
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
         context['bulk_actions'] = self.bulk_actions
-        # context['jobs'] = Job.objects.all()
-        context['headers'] = ["", "ID", "Client","Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", ""]
+        context['headers'] = ["", "ID", "Client", "Client ID", "Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", "Invoice Info Completed"]
         return context
     
     def get_queryset(self):
@@ -93,6 +88,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
                     'id': job.id,
                     'client_name': job.client.friendly_name,
+                    'client_id': job.client.id,
                     'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
                     'job_code': job.job_code,
                     'revenue': f'¥{job.revenue:,}',
@@ -101,12 +97,14 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'job_date': job.job_date,
                     'job_type': job.get_job_type_display(),
                     'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
+                    'invoice_info_completed': job.invoice_name != '',
                 }
                 return JsonResponse({"status": "success", "data":data})
             else:
                 for error in job_form.errors:
                     print(f'errors: {error}')
                 return JsonResponse({"status":"error"})
+
         elif 'update-job' in request.POST:
             job = Job.objects.get(id=request.POST.get('job_id'))
             print(request.POST)
@@ -123,6 +121,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
                     'id': job.id,
                     'client_name': job.client.friendly_name,
+                    'client_id': job.client.id,
                     'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
                     'job_code': job.job_code,
                     'revenue': f'¥{job.revenue:,}',
@@ -131,6 +130,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     'job_date': job.job_date,
                     'job_type': job.get_job_type_display(),
                     'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
+                    'invoice_info_completed': job.invoice_name != '',
                 }
             return JsonResponse({"status": "success", "data": data})
 
@@ -148,7 +148,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         else:   
                             job.month = str(int(job.month) + 1)
                         job.save()
-                        print(f'this job is now a {job.month}/{job.year} job')
                 elif action == "PREVIOUS":
                     for job in checked_jobs:
                         if job.month == '1':
@@ -157,7 +156,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         else:   
                             job.month = str(int(job.month) - 1)
                         job.save()
-                        print(f'this job is now a {job.month}/{job.year} job')
                 elif action == "DEL":
                     i = 0
                     for job in checked_jobs:
@@ -185,22 +183,50 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         else:
                             print("jobs aren't related")
                             i += 1
-
                 else:
-                    print('hmmmmm')
+                    return(HttpResponse("error")) #TODO: use a better error message
 
         elif 'new_client' in request.POST:
             form = self.client_form_class(request.POST)
             if form.is_valid():
                 instance = form.save()
                 return JsonResponse({"id":instance.id, "value":instance.friendly_name, "status": "success"})
-            else:
-                print("client add didn't work")
-                return JsonResponse({"errors":form.errors})
-        else:
-            print(f'post request contents: {request.POST}')
+            return JsonResponse({"errors":form.errors})
+        
+        elif "import-jobs" in request.POST:
+            if request.method == "POST": #TODO : I don't think this if statement is necessary? double check
+                form = JobImportForm(request.POST, request.FILES)
+                if form.is_valid():
+                    response = process_imported_jobs(request.FILES["file"])
+                    if response["valid_template"] == True:
+                        created_items = response["success_created"]
+                        not_created_items = response["success_not_created"]
+                        errors = response["error"]
+                        if created_items:
+                            messages.success(request, f'{len(created_items)} jobs were added successfully!')
 
+                        if not_created_items:
+                            messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
+
+                        for failed_job,message in errors.items():
+                            messages.error(request, f'{failed_job}:{message}')
+                    else:
+                        messages.error(request,f'{response["errors"]}')
+
+                else:
+                    context = self.get_context_data()
+                    context["job_import_form"] = form
+                    return render(request, self.template_name, context)
+        
+        elif "set-invoice-info" in request.POST:
+            job_id = request.POST.get('job_id')
+            job = Job.objects.get(id=job_id)
+            print(job_id)
+            form = self.set_invoice_info_form_class(request.POST, instance=job)
+            if form.is_valid():
+                invoice_info = form.save()
         return render(request, self.template_name, self.get_context_data())
+
 
 def pipeline_data(request, year=None, month=None):
     jobs = Job.objects.filter(isDeleted=False)
@@ -219,6 +245,7 @@ def pipeline_data(request, year=None, month=None):
             'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
             'id': job.id,
             'client_name': job.client.friendly_name,
+            'client_id': job.client.id,
             'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
             'job_code': job.job_code,
             'revenue': f'¥{job.revenue:,}',
@@ -227,6 +254,7 @@ def pipeline_data(request, year=None, month=None):
             'job_date': job.job_date,
             'job_type': job.get_job_type_display(),
             'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options": Job.STATUS_CHOICES, "currentStatus": job.status}),
+            'invoice_info_completed': job.invoice_name != '',
         }
         for job in jobs
         ],
@@ -559,10 +587,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
     cost = Cost.objects.get(id = cost_id)
 
     if cost.invoice_status not in ["REQ", "REC", "REC2", "PAID", "NA"]:
-        #   if vendor.isCompany():
-        #       pass
-        #   if vendor.prefersJapanese():
-        #       pass
+        # TODO: prepare a separate email for Japanese clients
         if vendor.use_company_name:
             vendor_name = vendor.familiar_name
         else:
@@ -817,79 +842,7 @@ def importClients(request):
             messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
 
     return redirect('pipeline:client-add')
-
-def importJobs(request):
-    myFile = open('static/pipeline/jobs.csv', 'r')
-    created_items = []
-    not_created_items = []
-    def getClient(job_code):
-        if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
-            return Client.objects.get(job_code_prefix = job_code[:3])
-        elif Client.objects.filter(job_code_prefix = job_code[:2]).exists():
-            return Client.objects.get(job_code_prefix = job_code[:2])
-        elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
-            return Client.objects.get(job_code_prefix = job_code[:4])
-        elif Client.objects.filter(friendly_name__iexact=client).exists():
-            return Client.objects.get(friendly_name__iexact=client)
-        else:
-            return False
-    for line in myFile:
-        column = line.split(',')
-        if column[0] == "job_name":
-            continue
-        job_name = column[0]
-        client = column[1]
-        job_code = column[2]
-        job_code_isFixed = column[3]
-        isArchived = column[4]
-        year = column[5]
-        month = column[6]
-        job_type = column[7]
-        revenue = column[8]
-        personInCharge = column[9]
-        status = column[10]
-        try:
-            # These lines were importing with invisble spaces, so
-            # I used .strip() import them without the spaces
-            obj,created = Job.objects.update_or_create(
-                job_name = job_name.strip(),
-                client = getClient(job_code),
-                job_code = job_code.strip(),
-                job_code_isFixed = job_code_isFixed.strip(),
-                isArchived = isArchived.strip(),
-                year = year.strip(),
-                month = month.strip(),
-                job_type = job_type.strip(),
-                revenue = revenue,
-                personInCharge = personInCharge.strip(),
-                status = status.strip()
-            )
-            obj.save()
-            if created:
-                created_items.append(f'{job_name} - {client}')
-            elif not created:
-                not_created_items.append(f'{job_name} - {client}')
-
-        except IntegrityError as e:
-            print(f'{job_name} - {client}: {e}')
-            messages.error(request, f"{job_name} - {client} wasn't added.\n{e}")
-        except NameError as n:
-            print(f'{job_name} - {client}: {n}')
-            messages.error(request, f"{job_name} - {client} wasn't added.\n{e}")
-        except Exception as e:
-            messages.error(request, f"{job_name} - {client} wasn't added - something bad happened!")
-            print(e)
-        
-    if created_items:
-        messages.success(request, f'{len(created_items)} jobs were added successfully!')
-
-    if not_created_items:
-        messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
-        # for item in not_created_items:
-        #   messages.info(request, item)
-
-    myFile.close()
-    return redirect('pipeline:index')
+    
 
 def importVendors(request):
     with open('static/pipeline/vendors.csv', 'r') as myFile:
@@ -1090,7 +1043,7 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
 
 class JobUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Job
-    fields = ['job_name','client', 'job_code', 'job_code_isFixed', 'job_type','revenue','personInCharge','status','month','year','notes']
+    fields = ['job_name','client', 'job_code', 'job_code_isFixed', 'job_type','revenue','personInCharge','month','year','notes','invoice_name','invoice_recipient']
     template_name_suffix = '_update_form'
     success_message= "Job updated!"
 

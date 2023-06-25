@@ -1,7 +1,5 @@
 :root {
   --bs-body-font-family: 'Roboto', 'sans-serif';
-  /* --fw-regular: 300; */
-  --fw-bold: 700;
 }
 
 html,
@@ -41,41 +39,66 @@ input::-webkit-inner-spin-button {
 }
 
 .dropzone .dz-preview .dz-error-message {
-    top: 150px !important;
-}
-
-.selected-row {
-  background-color: rgba(81, 208, 255, 0.2) !important;
+  top: 150px !important;
 }
 
 .job-finished {
-  background-color: rgba(0, 139, 74, 0.64) !important;
+  background-color: rgba(0, 176, 21, 0.126) !important;
 }
 
 .all-invoices-requested {
   background-color: rgba(226, 244, 62, 0.35) !important;
 }
 
-/*.invoice-upload-logo {
-  object-fit: scale-down;
-}*/
-/*.success {
-  background-color: var(--bs-success-bg-subtle);
-  color: var(--bs-success-text);
+.selected-row {
+  background-color: rgba(81, 208, 255, 0.2) !important;
 }
 
-.info {
-  background-color: var(--bs-success-bg-subtle);
-  color: var(--bs-success-text);
+.indent {
+  display: inline-block;
+  margin-left: 4ch;
 }
 
-.warning {
-  background-color: var(--bs-warning-bg-subtle);
-  color: var(--bs-warning-text);
+.job-details-w400 {
+  width: 400px;
 }
 
-.error {
-  background-color: var(--bs-danger-bg-subtle);
-  color: var(--bs-danger-text);
+.job-details-w300 {
+  width: 300px;
+}
 
-}*/
+.job-details-w600 {
+  width: 600px;
+}
+
+.job-details-item {
+  width: 60%;
+}
+
+.job-details-item-sm {
+  width: 40%;
+}
+
+.job-details-desc {
+  text-align: right;
+  width: 60%;
+  margin-bottom: 0px;
+}
+
+.job-details-desc-sm {
+  text-align: right;
+  width: 40%;
+  margin-bottom: 0px;
+}
+
+.job-details-amount {
+  font-family: 'Chivo Mono', monospace;
+  text-align: right;
+  margin-bottom: 0px;
+  font-size: .95em;
+  width: 40%;
+}
+
+.font-monospace {
+  font-family: 'Chivo Mono', monospace !important;
+}

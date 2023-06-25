@@ -1,4 +1,6 @@
 from django import forms
+# from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.forms import ModelForm, Textarea, formset_factory, formsets, renderers
 from django.db.models import Q
 from .models import Cost, Job, Vendor, Client
@@ -48,31 +50,39 @@ class UpdateCostForm(forms.Form):
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), required=False, empty_label='Select vendor', widget=forms.Select(attrs={'class':'form-select'}))
     cost = forms.ModelChoiceField(queryset=Cost.objects.all())
     invoice_status = forms.ChoiceField(required=False, widget=forms.Select(attrs={'class':'form-select'}), choices=(
-                                ('NR','Not ready to request'),
-                                ('READY','Ready to request'),
+                                ('NR','Not requested'),
                                 ('REQ','Requested'),
                                 ('REC','Received'),
                                 ('CHECK','Needs manual check'),
                                 ('PAID','Paid'),
                                 ('NA','No Invoice')
                                 ))
-    
-    
+
+class SetInvoiceInfoForm(ModelForm):
+    # invoice_recipient = forms.Select(widget=forms.Select)
+    # invoice_name = forms.CharField(max_length=100)
+    job_id = forms.IntegerField(widget=forms.HiddenInput)
+    class Meta:
+        model = Job
+        fields = [
+            'invoice_recipient',
+            'invoice_name']
 
 class JobForm(ModelForm):
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.fields['client'].empty_label = 'Select client'
             self.fields['client'].queryset = Client.objects.order_by('friendly_name')
-            # self.fields['personInCharge'].empty_label = '-PIC-'
 
-    # job_date = forms.DateField(widget=forms.Select(choices=MONTH_CHOICES))
     year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES), initial=date.today().year)
     month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES), initial=date.today().month)
 
     class Meta:
         model = Job
         fields = ['job_name','client','job_type','revenue','personInCharge','year','month']
+
+class JobImportForm(forms.Form):
+    file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['csv'])])
 
 class ClientForm(ModelForm):
     class Meta:

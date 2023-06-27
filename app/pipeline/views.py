@@ -90,7 +90,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
         elif 'update-job' in request.POST:
             job = Job.objects.get(id=request.POST.get('job_id'))
-            print(request.POST)
+            print(f'update-job post request {request.POST}')
             form_data_job_status = request.POST.get('status')
 
             if form_data_job_status:
@@ -105,7 +105,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
         elif 'bulk-actions' in request.POST:
             bulk_form = self.bulk_actions(request.POST)
-            print(request.POST)
             checked_jobs = Job.objects.filter(id__in=request.POST.getlist('select'))
             if bulk_form.is_valid():
                 action = bulk_form.cleaned_data["actions"]
@@ -187,15 +186,18 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     context["job_import_form"] = form
                     return render(request, self.template_name, context)
         
-        elif "set-invoice-info" in request.POST:
+        elif "set_invoice_info" in request.POST:
+            print(f'set invoice info post request {request.POST}')
             job_id = request.POST.get('job_id')
             job = Job.objects.get(id=job_id)
-            print(request.POST)
             print(job_id)
             form = self.set_invoice_info_form_class(request.POST, instance=job)
-            print(f'is job code fixed?{job.client} {job.job_code_isFixed}')
             if form.is_valid():
                 form.save()
+                return JsonResponse({"status":"success"})
+            
+        else:
+            print(f'what is going on {request.POST}')
         return render(request, self.template_name, self.get_context_data())
 
 

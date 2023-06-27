@@ -422,7 +422,6 @@ $(document).ready(function(){
             }
         });
     }
-
     $('#pipeline-new-client-btn').click(function() {
         openInvoiceInfoModal = false
     })
@@ -438,8 +437,7 @@ $(document).ready(function(){
     })
 
     jobTable.on("change", ".job-status-select", function () {
-
-        var formData = getJobUpdate(this);
+        var changedSelectFormData = getJobUpdate(this);
         var statusSelectEl = $(this)
         var selectedStatus = statusSelectEl.val();
         var initialStatus = statusSelectEl.data("initial");
@@ -451,10 +449,10 @@ $(document).ready(function(){
             openInvoiceInfoModal = true
             const clientID = parseInt(jobTable.cell('#' + rowID, 'client_id:name').data())
             const form = invoiceInfoModalEl.querySelector('#invoice-info-form')
-            const invoiceRecipientFieldDefault = form.querySelector('#id_invoice_recipient')
+            const invoiceRecipientField = form.querySelector('#id_invoice_recipient')
             const hiddenJobIDField = form.querySelector('#id_job_id')
             
-            invoiceRecipientFieldDefault.value = clientID
+            invoiceRecipientField.value = clientID
             hiddenJobIDField.value = rowID
             invoiceInfoModal.show()
 
@@ -466,18 +464,40 @@ $(document).ready(function(){
                 statusSelectEl.val(selectedStatus)
             });
 
-            invoiceInfoModalEl.addEventListener('hidden.bs.modal', revertStatus)
+            invoiceInfoModalEl.addEventListener('hide.bs.modal', revertStatus)
 
-            form.addEventListener('submit', function(event) {
-                invoiceInfoModalEl.removeEventListener('hidden.bs.modal', revertStatus)
-                jobTableAjaxCall(formData, function (newData) {
-                    jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
-                })
+            var nestedFormData = changedSelectFormData // TODO: Get a better understanding of why I needed to use FormData object
+            $(form).on('submit', function (event) {
+                event.preventDefault();
+                var invoiceFormData = new FormData();
+                invoiceFormData.append("invoice_recipient", invoiceRecipientField.value)
+                invoiceFormData.append("invoice_name", $("#id_invoice_name").val())
+                invoiceFormData.append("job_id", hiddenJobIDField.value)
+                invoiceFormData.append("set_invoice_info", true)
+
+                $.ajax({
+                    headers: { 'X-CSRFToken': csrftoken },
+                    type: "POST",
+                    url: "/pipeline/",
+                    processData: false,
+                    contentType: false,
+                    data: invoiceFormData,
+                    success: function (newRowData) {
+                        jobTableAjaxCall(nestedFormData, function (newRowData) {
+                        invoiceInfoModalEl.removeEventListener('hide.bs.modal', revertStatus)
+                        jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false)
+                        invoiceInfoModal.hide()
+                        })
+                    },
+                    error: function () {
+                        revertStatus()
+                    },
+                });
             });
 
         } else {
             // # TODO: implement loading spinner?
-            jobTableAjaxCall(formData, function (newData) {
+            jobTableAjaxCall(changedSelectFormData, function (newData) {
                 jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
             });
         };

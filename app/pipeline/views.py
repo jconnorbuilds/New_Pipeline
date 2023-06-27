@@ -187,17 +187,13 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     return render(request, self.template_name, context)
         
         elif "set_invoice_info" in request.POST:
-            print(f'set invoice info post request {request.POST}')
             job_id = request.POST.get('job_id')
             job = Job.objects.get(id=job_id)
-            print(job_id)
             form = self.set_invoice_info_form_class(request.POST, instance=job)
             if form.is_valid():
                 form.save()
                 return JsonResponse({"status":"success"})
-            
-        else:
-            print(f'what is going on {request.POST}')
+
         return render(request, self.template_name, self.get_context_data())
 
 

@@ -484,6 +484,7 @@ $(document).ready(function(){
                     data: invoiceFormData,
                     success: function (newRowData) {
                         jobTableAjaxCall(nestedFormData, function (newRowData) {
+                        console.log('update job has been called')
                         invoiceInfoModalEl.removeEventListener('hide.bs.modal', revertStatus)
                         jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false)
                         invoiceInfoModal.hide()

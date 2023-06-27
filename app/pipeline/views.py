@@ -25,7 +25,7 @@ from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
 import dropbox
 from dropbox.exceptions import ApiError, AuthError
-from .utils import get_forex_rates, process_imported_jobs
+from .utils import get_forex_rates, process_imported_jobs, get_job_data, get_invoice_status_data
 
 import json
 import calendar
@@ -61,7 +61,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         client_id = self.request.GET.get('client_id')
         context['job_form'] = JobForm(initial={'client': client_id})
-        context['job_import_form'] = JobImportForm(initial={})
+        context['job_import_form'] = JobImportForm()
         context['set_invoice_info_form'] = self.set_invoice_info_form_class
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
@@ -80,25 +80,8 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 # Take in the revenue in terms of 万
                 job_form.instance.revenue = job_form.instance.revenue * 10000
                 instance = job_form.save()
-                print(instance)
-                print(instance.job_date)
                 job = Job.objects.get(pk=instance.pk)
-
-                data = {
-                    'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
-                    'id': job.id,
-                    'client_name': job.client.friendly_name,
-                    'client_id': job.client.id,
-                    'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
-                    'job_code': job.job_code,
-                    'revenue': f'¥{job.revenue:,}',
-                    'total_cost': render_to_string('pipeline/job_total_cost.html', {"job_id":job.id, "job_total_cost":job.total_cost} ),
-                    'profit_rate': f'{job.profit_rate}%',
-                    'job_date': job.job_date,
-                    'job_type': job.get_job_type_display(),
-                    'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
-                    'invoice_info_completed': job.invoice_name != '',
-                }
+                data = get_job_data(job)
                 return JsonResponse({"status": "success", "data":data})
             else:
                 for error in job_form.errors:
@@ -117,21 +100,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 print("There was a problem getting the form data.")
             job.save()
 
-            data = {
-                    'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
-                    'id': job.id,
-                    'client_name': job.client.friendly_name,
-                    'client_id': job.client.id,
-                    'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
-                    'job_code': job.job_code,
-                    'revenue': f'¥{job.revenue:,}',
-                    'total_cost': render_to_string('pipeline/job_total_cost.html', {"job_id":job.id, "job_total_cost":job.total_cost} ),
-                    'profit_rate': f'{job.profit_rate}%',
-                    'job_date': job.job_date,
-                    'job_type': job.get_job_type_display(),
-                    'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
-                    'invoice_info_completed': job.invoice_name != '',
-                }
+            data = get_job_data(job)
             return JsonResponse({"status": "success", "data": data})
 
         elif 'bulk-actions' in request.POST:
@@ -163,7 +132,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         job.save()
                         i += 1
                     if i > 0:
-                        messages.warning(request, f'{i} jobs were deleted. You can restore them from the admin panel.')
+                        messages.warning(request, f'{i} jobs were deleted. They can be restored from the admin panel.')
                         print("deleted!")
                     else:
                         messages.error(request, 'No jobs were deleted.')
@@ -190,7 +159,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
             form = self.client_form_class(request.POST)
             if form.is_valid():
                 instance = form.save()
-                return JsonResponse({"id":instance.id, "value":instance.friendly_name, "status": "success"})
+                return JsonResponse({"id":instance.id, "value":instance.friendly_name, "prefix":instance.job_code_prefix, "status": "success"})
             return JsonResponse({"errors":form.errors})
         
         elif "import-jobs" in request.POST:
@@ -221,56 +190,44 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         elif "set-invoice-info" in request.POST:
             job_id = request.POST.get('job_id')
             job = Job.objects.get(id=job_id)
+            print(request.POST)
             print(job_id)
             form = self.set_invoice_info_form_class(request.POST, instance=job)
+            print(f'is job code fixed?{job.client} {job.job_code_isFixed}')
             if form.is_valid():
-                invoice_info = form.save()
+                form.save()
         return render(request, self.template_name, self.get_context_data())
 
 
 def pipeline_data(request, year=None, month=None):
     jobs = Job.objects.filter(isDeleted=False)
-    # Calculate total revenue
+    if year is not None and month is not None:
+        jobs = Job.objects.filter(job_date__month=month, job_date__year=year, isDeleted=False)
+
+    data = {
+        "data":[get_job_data(job) for job in jobs],
+        "invoice_status_data":[get_invoice_status_data(job) for job in jobs]
+    }
+    return JsonResponse(data, safe=False,)
+
+def revenue_display_data(request, year=None, month=None):
+    jobs = Job.objects.filter(isDeleted=False)
     total_revenue_ytd = Job.objects.filter(job_date__year=date.today().year, isDeleted=False).aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
     if year is not None and month is not None:
         jobs = Job.objects.filter(job_date__month=month, job_date__year=year, isDeleted=False)
 
     total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
     total_revenue_monthly_actual = jobs.filter(
-        status__in=["INVOICED","FINISHED","ARCHIVABLE","ARCHIVED"]).aggregate(
+        status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(
         total_revenue=Sum('revenue'))['total_revenue'] or 0
-
-    data = {"data":[
-        {
-            'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
-            'id': job.id,
-            'client_name': job.client.friendly_name,
-            'client_id': job.client.id,
-            'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
-            'job_code': job.job_code,
-            'revenue': f'¥{job.revenue:,}',
-            'total_cost': render_to_string('pipeline/job_total_cost.html', {"job_id":job.id, "job_total_cost":job.total_cost} ),
-            'profit_rate': f'{job.profit_rate}%',
-            'job_date': job.job_date,
-            'job_type': job.get_job_type_display(),
-            'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options": Job.STATUS_CHOICES, "currentStatus": job.status}),
-            'invoice_info_completed': job.invoice_name != '',
-        }
-        for job in jobs
-        ],
+    
+    data = {
         "total_revenue_ytd":f'¥{total_revenue_ytd:,}',
         "avg_monthly_revenue_ytd":f'¥{round(total_revenue_ytd/(date.today().month)):,}',
         "total_revenue_monthly_expected":f'¥{total_revenue_monthly_expected:,}',
         "total_revenue_monthly_actual":f'¥{total_revenue_monthly_actual:,}',
-        "invoice_info":[{
-            "all_invoices_requested":job.allVendorInvoicesRequested,
-            "all_invoices_received":job.allVendorInvoicesReceived,
-            "all_invoices_paid":job.allVendorInvoicesPaid,
-            }
-            for job in jobs
-        ]
     }
-    return JsonResponse(data, safe=False,)
+    return JsonResponse(data)
 
 def cost_data(request, job_id):
     forex_rates = get_forex_rates()
@@ -658,7 +615,7 @@ def jobs_csv_export(request):
         print(scope)
 
         expectedGrossRevenue = sum([job.revenue for job in scope])
-        actualGrossRevenue = sum([job.revenue for job in scope if job.status in ['FINISHED','ARCHIVABLE','ARCHIVED']])
+        actualGrossRevenue = sum([job.revenue for job in scope if job.status in ['FINISHED','ARCHIVED']])
 
         for job in scope:
             # Return date in format YYYY年MM月

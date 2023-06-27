@@ -59,14 +59,18 @@ class UpdateCostForm(forms.Form):
                                 ))
 
 class SetInvoiceInfoForm(ModelForm):
-    # invoice_recipient = forms.Select(widget=forms.Select)
-    # invoice_name = forms.CharField(max_length=100)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['invoice_recipient'].queryset = Client.objects.order_by('friendly_name')
+
     job_id = forms.IntegerField(widget=forms.HiddenInput)
     class Meta:
         model = Job
         fields = [
             'invoice_recipient',
-            'invoice_name']
+            'invoice_name'
+            ]
 
 class JobForm(ModelForm):
     def __init__(self, *args, **kwargs):

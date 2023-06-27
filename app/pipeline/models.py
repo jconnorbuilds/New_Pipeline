@@ -355,10 +355,9 @@ class Job(models.Model):
     STATUS_CHOICES = [
         ('LEAD', 'Lead'),
         ('ONGOING', 'Ongoing'),
-        ('INVOICED', 'Invoiced'),
+        ('INVOICED1', 'Completed & Invoiced'),
+        ('INVOICED2', 'Cancelled & Invoiced'),
         ('FINISHED', 'Finished'),
-        ('CANCELLED','Cancelled'),
-        ('ARCHIVABLE','To be Archived'),
         ('ARCHIVED', 'Archived'),
     ]
 
@@ -450,9 +449,21 @@ class Job(models.Model):
             return True
 
     def save(self, *args, **kwargs):
+        # Auto-generate the job code for the job
         if not self.job_code_isFixed:
+            print(self)
             self.job_code = self.get_job_code()
             self.job_code_isFixed = True
+
+        # Retainer jobs won't be invoiced, so we don't need to provide invoice information
+        # when finalizing jobs. Adding an invoice name will allow the job to be set to
+        # "Finished", "Archived", etc. without providing additional information.
+        if self.job_type == "RETAINER":
+            self.invoice_name = "No invoice"
+            self.invoice_recipient = None
+        elif self.job_type != "RETAINER" and self.invoice_name == "No invoice":
+            self.invoice_name = ""
+
         self.job_date = f'{self.year}-{int(self.month):02d}-01'
         super().save(*args, **kwargs)
 

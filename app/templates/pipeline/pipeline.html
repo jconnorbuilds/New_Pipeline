@@ -4,20 +4,20 @@
 {% load static %}
 {% block body_block %}
 
+{% if job_form.errors %}
 <div class="container">
-  <div id="pipeline-error-msgs">
-    <div class="col-4">
-        {% if job_form.errors %}
-          {% for error in job_form.errors %}
-          <p>{{ error }}</p>
-          {% endfor %}
-        {% endif %}
-    </div>
-    <div class="p-1 col-xl-6 mx-auto">
-    {% if messages %}
+  <div class="col-4 m-0">
+      {% for error in job_form.errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% if messages %}
+  <div class="p-1 col-xl-6 mx-auto">
       {% for message in messages %}
         <div class="container-fluid p-0">
-          <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+          <div class="alert {{ message.tags }} alert-dismissible" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               {# <span aria-hidden="True">&times;</span> #}
             </button>
@@ -25,11 +25,10 @@
           </div>
         </div>
       {% endfor %}
-    {% endif %}
-    </div>
   </div>
-    {# Fields area #}
-</div>
+{% endif %}
+
+{# Fields area #}
 <div class="container-auto bg-body-secondary p-4">
   <div class="container bg-body-tertiary rounded-3">
     <div class="row g-3 p-3 d-flex">
@@ -42,7 +41,7 @@
             <div class="col-sm-12">
               <div class="input-group">
                 {% render_field job_form.client class+="form-select" %}
-                <button class="btn btn-light" type="button" id="pipeline-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
+                <button class="btn btn-light rounded-end-2 border" type="button" id="pipeline-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
               </div>
             </div>
           </div>
@@ -114,15 +113,15 @@
   </div>
 </div>
 
-{# New Job modal #}
+{# New Client modal #}
 <div class="modal fade" id="new-client-modal" tabindex="-1" aria-labelledby="new-client-modal" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form id="new-client-form" method="post" data-url="{% url 'pipeline:index' %}">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+      <form id="new-client-form" method="post" action="{% url 'pipeline:index' %}">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
       <div class="modal-body">
         {% csrf_token %}
         <div class="row px-3 py-0 g-1">
@@ -146,11 +145,13 @@
             <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
             {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
           </div>
-          <div id="proper_name_help" class="form-text">The client name to be used for invoices. Enter one or the other.</div>
+          <div id="proper_name_help" class="form-text">
+            The client name to be used for invoices. Enter one or the other.
+          </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="new-client-modal-cancel-btn" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
         <button type="submit" class="btn btn-info submit" id="add-new-client-btn" name="new-client">Add Client</button>
         <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
           <span class="visually-hidden">Loading...</span>
@@ -162,7 +163,7 @@
 </div>
 
 {# Job table start #}
-<div class="p-4">
+<div class="p-lg-4 p-2">
   <form method="post" class="">
     {% csrf_token %}
     <div class="container-fluid bg-white rounded-2 shadow">
@@ -173,24 +174,22 @@
             <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button" style="white-space: nowrap;"><b>Viewing jobs by month</b></button>
           </div>
         </div>
-        <div class="monthly-item col-lg-6">
-          <div id="monthly-view-panel" class="wrapper  d-flex justify-content-center">
-            <div class="row d-flex align-items-baseline text-start flex-nowrap">
-              <div class="col-auto text-nowrap" >
-                <h6>Total billed (YTD): </h6>
-                <h6>Monthly average (YTD): </h6> 
-                <h5>Total billed this month (Expected): </h5>
-                <h5>Total billed this month (Actual): </h5>
-              </div>
-              <div class="col-auto mx-3 text-nowrap" style="text-align: right;">
-                <h6 id ="total-revenue-ytd"></h6>
-                <h6 id ="avg-revenue-ytd"></h6>
-                <h5 id="total-revenue-monthly-exp"></h5>
-                <h5 id="total-revenue-monthly-act"></h5> 
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="monthly-item p-0 col-lg-6">
+          <dl class="row pt-2 align-items-center mx-auto" style="width: 450px;">
+            <dt class="revenue-display-text">Total billed (YTD)</dt>
+            <dd id ="total-revenue-ytd" class="revenue-display-amount align-items-center"></dd>
+
+            <dt class="revenue-display-text">Monthly average (YTD)</dt>
+            <dd id="avg-revenue-ytd" class="revenue-display-amount"> {{ job.job_code }}</dd>
+            <hr class="col-6 m-3 mx-auto">
+
+            <dt class="revenue-display-text">Total billed this month (Expected)</dt>
+            <dd id="total-revenue-monthly-exp" class="revenue-display-amount"> {{ job.job_code }}</dd>
+
+            <dt class="revenue-display-text">Total billed this month (Actual)</dt>
+            <dd id="total-revenue-monthly-act" class="revenue-display-amount"> {{ job.job_code }}</dd>
+          </dl>
+        </div>  
       </div>
     </div>
     <div id="pipeline-date-select" class="container monthly-item">
@@ -218,20 +217,20 @@
       </div>
     </div>
 
-      <hr>
-      <div class="row d-flex align-items-baseline">
-        <div class="col-auto">
-          <h5 class="">Bulk actions</h5>
-        </div>
-        <div class="col-auto">
-          {{ bulk_actions.actions }}
-        </div>
-        <div class="col-auto">
-          <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
-        </div>
-      </div>
+    <hr>
     
     <div class="wrapper" style="min-height:550px;">
+      <div class="row d-flex align-items-baseline">
+      <div class="col-auto">
+        <h5 class="">Bulk actions</h5>
+      </div>
+      <div class="col-auto">
+        {{ bulk_actions.actions }}
+      </div>
+      <div class="col-auto">
+        <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
+      </div>
+    </div>
       <table id="job-table" class="hover compact dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
@@ -269,7 +268,7 @@
   </div>
 </div>
 
-{# Job Invoiced modal #}
+{# Modal for setting invoice details #}
 <div class="modal fade" id="set-job-invoice-info" tabindex="-1" aria-labelledby="new-client-modal" aria-hidden="false">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -280,14 +279,15 @@
       </div>
       <div class="modal-body">
         {% csrf_token %}
-          <div>
-            <label for="invoice_recipient" class="form-label small">Invoice Recipient</label>
+          <div class="input-group pb-3">
             {% render_field set_invoice_info_form.invoice_recipient class+="form-control" placeholder="change this" %}
+            <button class="btn btn-light rounded-end-2 border" type="button" id="set-invoice-modal-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
+            <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
           </div>
           <div>
-            <label for="invoice_name" class="form-label small">Invoice Name</label>
-            {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="change this" %}
-            <div id="prefix_help" class="form-text">The title for the invoice</div>
+            {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="Enter the invoice title" %}
+          </div>
+            <div id="invoice-title-help" class="form-text">The title on the invoice</div>
             {{ set_invoice_info_form.job_id }}
           </div>
       <div class="modal-footer">
@@ -301,5 +301,4 @@
     </div>
   </div>
 </div>
-
 {% endblock %}

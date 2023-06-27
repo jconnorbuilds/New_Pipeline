@@ -3,14 +3,14 @@ $(document).ready(function(){
     let date = new Date()
     let currentMonth = date.getMonth() + 1
     let currentYear = date.getFullYear()
-    // Initialise and set settings for the main Jobs table
-    var selectedDate = ""
+    let viewingMonth = currentMonth
+    let viewingYear = currentYear
     var totalRevenueYtd = 0
     var avgMonthlyRevenueYtd = 0
     var totalRevenueMonthlyExp = 0
     var totalRevenueMonthlyAct = 0
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
+    var openInvoiceInfoModal = false // flag to control whether or not the Invoice Info modal is reopened after the New Client modal closes
 
     var jobTable = $('#job-table').DataTable({
         paging: false,
@@ -22,11 +22,12 @@ $(document).ready(function(){
             searchPlaceholder: "Search jobs",
             search: "",
         },
+        drawCallback: function(settings) {
+            updateRevenueDisplay(viewingYear, viewingMonth)
+        },
         ajax: {
-            url: '/pipeline/pipeline-data/' + currentYear + '/' + currentMonth + '/',
+            url: '/pipeline/pipeline-data/' + viewingYear + '/' + viewingMonth + '/',
             dataSrc: function(json) {
-                updateRevenueDisplay(json)
-                console.log(json)
                 return json.data
             }
         },
@@ -56,7 +57,10 @@ $(document).ready(function(){
                     return year + "年" + month + "月";
                 }
             },
-            {"data": "job_type"},
+            {
+                "data": "job_type",
+                "name": "job_type"
+            },
             {
                 "data": "status",
                 "name": "status"
@@ -110,8 +114,6 @@ $(document).ready(function(){
             }
         else {
             console.log('nope')
-            // $('#thru-month').attr('disabled',true);
-            // $('#thru-year').attr('disabled',true);
             $('#thru-month').addClass('invisible');
             $('#thru-year').addClass('invisible');
             $('#thru-month').val($('#from-month').val()).change();
@@ -135,21 +137,44 @@ $(document).ready(function(){
             console.log('something happened in JS');
         }
     });
+
+    function updateRevenueDisplay(year, month) {
+        $.ajax({
+            headers: { 'X-CSRFToken': csrftoken },
+            type: "GET",
+            url: "/pipeline/revenue-data/" + year + '/' + month + '/',
+            processData: false, // prevents jQuery from processing the data
+            contentType: false, // prevents jQuery from setting the Content-Type header
+
+            success: function (response) {
+                totalRevenueYtd = response.total_revenue_ytd;
+                avgMonthlyRevenueYtd = response.avg_monthly_revenue_ytd;
+                totalRevenueMonthlyExp = response.total_revenue_monthly_expected;
+                totalRevenueMonthlyAct = response.total_revenue_monthly_actual;
+                $("#total-revenue-ytd").html(`${totalRevenueYtd}`)
+                $("#avg-revenue-ytd").html(`${avgMonthlyRevenueYtd}`)
+                $("#total-revenue-monthly-exp").html(`${totalRevenueMonthlyExp}`)
+                $("#total-revenue-monthly-act").html(`${totalRevenueMonthlyAct}`)
+            }
+        })
+    }
     
+    /*
+    * The following variables and functions control checkbox click-and-drag selection behavior
+    */
     var $firstSelectedBox;
     var $firstSelectedRow;
     var duringSelection = false;
 
     var mouseDown = 0;
 
-    document.body.onmousedown = function() {
+    document.body.onmousedown = function () {
         mouseDown = 1;
     }
-    document.body.onmouseup = function(){
+    document.body.onmouseup = function () {
         mouseDown = 0;
         duringSelection = false;
     }
-
     $('table').on('click', '.form-check-input', function(event) {
         if (!mouseDown) {
             var $box = $(this);
@@ -161,8 +186,6 @@ $(document).ready(function(){
 
     $('table').on('mousedown', '.form-check-input', function(event) {
         duringSelection = true;
-
-        // Store the first selected checkbox and row
         $firstSelectedBox = $(this);
         $firstSelectedRow = $(this).closest('tr'); 
         
@@ -180,8 +203,8 @@ $(document).ready(function(){
     });
 
     $('table').on('mousemove', function(event) {
+        // stops from accidentally highlighting text when dragging during click-and-drag selection
         if (mouseDown && duringSelection) {
-            // stop from highlighting text when dragging during multiple select
             event.preventDefault();
         }
     });
@@ -271,7 +294,6 @@ $(document).ready(function(){
         // var spinner = $("#add-job-spinner")
         event.preventDefault();
         // spinner.toggleClass('invisible')
-        // console.log(JSON.stringify(formData))
 
         const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $.ajax({
@@ -401,36 +423,53 @@ $(document).ready(function(){
         });
     }
 
+    $('#pipeline-new-client-btn').click(function() {
+        openInvoiceInfoModal = false
+    })
+
+    const newClientFormModalEl = document.querySelector('#new-client-modal')
+    const invoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
+    const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')
+    
+    newClientFormModalEl.addEventListener('hide.bs.modal', function() {
+        if (openInvoiceInfoModal === true) {
+            invoiceInfoModal.show()
+        }
+    })
+
     jobTable.on("change", ".job-status-select", function () {
 
         var formData = getJobUpdate(this);
         var statusSelectEl = $(this)
         var selectedStatus = statusSelectEl.val();
         var initialStatus = statusSelectEl.data("initial");
-        // console.log(initialStatus)
         var rowID = $(this).closest("tr").attr("id")
         const invoiceInfoCompleted = jobTable.cell('#' + rowID, 'invoice_info_completed:name').data()
-        const requiresInvoiceInfo = ["INVOICED","FINISHED"]
-        console.log(invoiceInfoCompleted)
-        
+        const requiresInvoiceInfo = ["INVOICED1", "INVOICED2", "FINISHED", "ARCHIVED"]
+
         if (requiresInvoiceInfo.includes(selectedStatus) && invoiceInfoCompleted == false) {
-            const setInvoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
+            openInvoiceInfoModal = true
             const clientID = parseInt(jobTable.cell('#' + rowID, 'client_id:name').data())
-            const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')        
             const form = invoiceInfoModalEl.querySelector('#invoice-info-form')
             const invoiceRecipientFieldDefault = form.querySelector('#id_invoice_recipient')
             const hiddenJobIDField = form.querySelector('#id_job_id')
             
             invoiceRecipientFieldDefault.value = clientID
             hiddenJobIDField.value = rowID
-            setInvoiceInfoModal.show()
-            
-            const cancelBtn = document.getElementById('set-invoice-info-cancel')
-            cancelBtn.addEventListener('click', function () {
+            invoiceInfoModal.show()
+
+            function revertStatus() {
                 statusSelectEl.val(initialStatus)
+            }
+
+            invoiceInfoModalEl.addEventListener('show.bs.modal', function () {
+                statusSelectEl.val(selectedStatus)
             });
 
+            invoiceInfoModalEl.addEventListener('hidden.bs.modal', revertStatus)
+
             form.addEventListener('submit', function(event) {
+                invoiceInfoModalEl.removeEventListener('hidden.bs.modal', revertStatus)
                 jobTableAjaxCall(formData, function (newData) {
                     jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
                 })
@@ -536,11 +575,6 @@ $(document).ready(function(){
             }
         ],
 
-        // createdRow: function (row, data, dataIndex) {
-        //     var vendorColumnId = 'costsheet-vendor' + (dataIndex + 1);
-        //     $(row).find('.cost-vendor-select').attr('id', vendorColumnId);
-            
-        // },
         rowCallback: function (row, data) {
             // This button disabling/enabling logic only works within the
             // rowCallbackfunction, and not within the createdRow function.
@@ -561,10 +595,6 @@ $(document).ready(function(){
             }
         }
     });
-
-    function submitCostUpdate(formData) {
-        
-    };
 
     $("#all-invoices-table").on("change", ".cost-vendor-select, .cost-status-select", function () {
         var formData = getCostUpdate(this);
@@ -650,15 +680,10 @@ $(document).ready(function(){
                     });
                     var job = response.data;
                     jobTable.row.add($(job)).draw();
-
-                    // update total billed this month
-                    // var totalBilledMonthlyExp = job.total_revenue_monthly_expected;
+                    // #TODO: replace the below with the updateRevenueDisplay function using the new data
                     var originalVal = parseInt($("#total-billed-monthly-exp").text().replace(/(¥|,)/g, ''));
-                    // console.log(`originalVal ${originalVal}`);
                     var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
-                    // console.log(`newVal ${job.revenue}`);
                     var resultVal = '¥' + (originalVal + newVal).toLocaleString();
-                    // console.log(resultVal);
                     $("#total-billed-monthly-exp").text(resultVal)
                     
                     var toast = document.createElement("div");
@@ -726,20 +751,8 @@ $(document).ready(function(){
         if (year !== undefined && month !== undefined) {
             url = url + year + '/' + month + '/';
         }
-        // using the callback function parameter of load() to display other variables on the page
-        jobTable.ajax.url(url).load(updateRevenueDisplay) 
-    }
-
-    function updateRevenueDisplay(data) {
-        // console.log("updating revenue")
-        totalRevenueYtd = data.total_revenue_ytd;
-        avgMonthlyRevenueYtd = data.avg_monthly_revenue_ytd;
-        totalRevenueMonthlyExp = data.total_revenue_monthly_expected;
-        totalRevenueMonthlyAct = data.total_revenue_monthly_actual;
-        $("#total-revenue-ytd").html(`${totalRevenueYtd}`)
-        $("#avg-revenue-ytd").html(`${avgMonthlyRevenueYtd}`)
-        $("#total-revenue-monthly-exp").html(`${totalRevenueMonthlyExp}`)
-        $("#total-revenue-monthly-act").html(`${totalRevenueMonthlyAct}`)
+        // jobTable.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
+        jobTable.ajax.url(url).load()
     }
     
     $(".toggle-view").click(function() {
@@ -763,44 +776,46 @@ $(document).ready(function(){
     });
 
     $("#pipeline-next").click(function() {
-        var month = parseInt(pipelineMonth.val());
-        var year = parseInt(pipelineYear.val());
-        if (month != 12) {
-           month ++;
+        viewingMonth = parseInt(pipelineMonth.val());
+        viewingYear = parseInt(pipelineYear.val());
+        if (viewingMonth != 12) {
+           viewingMonth ++;
            
-        } else if ((year + 1) > currentYear + 1) {
+        } else if ((viewingYear + 1) > currentYear + 1) {
             // add some error message?
         } else {
-            month = 1;
-            year++;
+            viewingMonth = 1;
+            viewingYear++;
         } 
-        pipelineMonth.val(month);
-        pipelineYear.val(year);
-        filterData(year, month);
+        pipelineMonth.val(viewingMonth);
+        pipelineYear.val(viewingYear);
+        filterData(viewingYear, viewingMonth);
     });
 
     $("#pipeline-prev").click(function() {
-        var month = parseInt(pipelineMonth.val());
-        var year = parseInt(pipelineYear.val());
-        if (month != 1) {
-           month --;
-        } else if ((year - 1) < filterEarliestYear) {
+        viewingMonth = parseInt(pipelineMonth.val());
+        viewingYear = parseInt(pipelineYear.val());
+        if (viewingMonth != 1) {
+           viewingMonth --;
+        } else if ((viewingYear - 1) < filterEarliestYear) {
             // add some error message?
         } else {
-            month = 12;
-            year--;
+            viewingMonth = 12;
+            viewingYear--;
         }
-        pipelineMonth.val(month);
-        pipelineYear.val(year);
-        filterData(year, month);
+        pipelineMonth.val(viewingMonth);
+        pipelineYear.val(viewingYear);
+        filterData(viewingYear, viewingMonth);
     });
 
     $("#pipeline-current").click(function() {
+        viewingMonth = currentMonth
+        viewingYear = currentYear
         pipelineYear.val(currentYear);
         pipelineMonth.val(currentMonth);
         filterData(currentYear, currentMonth);
+        // updateRevenueDisplay(viewingYear, viewingMonth)
     });
-
 
     var clientForm = $('#new-client-form');
     var submitButton = clientForm.find('button[type="submit"]');
@@ -813,9 +828,10 @@ $(document).ready(function(){
 
     submitButton.prop('disabled', true);
 
-    // Validation function
     function validateInputs() {
-        // Check if either field has a value
+        /*
+        * add docstring
+        */
         if (properNameInput.val() || properNameJapaneseInput.val()) {
             submitButton.prop('disabled', false);
         } else {
@@ -824,7 +840,7 @@ $(document).ready(function(){
     }
 
     //New Client form submission
-    $("#new-client-form").submit(function(event) {
+    $("#new-client-form").submit(function (event) {
         var spinner = $("#add-client-spinner")
         event.preventDefault();
         spinner.removeClass('invisible')
@@ -836,7 +852,6 @@ $(document).ready(function(){
             proper_name_japanese: $("#id_proper_name_japanese").val(),
             new_client: 'new ajax client add'
         };
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $.ajax({
             headers: {'X-CSRFToken': csrftoken },
             type: "POST",
@@ -848,16 +863,18 @@ $(document).ready(function(){
             success: function (response) {
                 if (response.status === 'success') {
                     spinner.addClass('invisible');
-                    $('#id_client').append($('<option></option>').val(response.id).text(response.value));
+                    $('#id_client').append($('<option></option>').val(response.id).text(`${response.value} - ${response.prefix}`));
                     $('#id_client').val(response.id);
-                    console.log("response: " + JSON.stringify(response))
+                    $('#id_invoice_recipient').append($('<option></option>').val(response.id).text(`${response.value} - ${response.prefix}`));
+                    $('#id_invoice_recipient').val(response.id);
                     $("#new-client-form").removeClass('was-validated')
                     $(".toast").each(function() {
                         $(this).show()
                     });
                     $('#new-client-modal').modal('toggle')
+                    $("#new-client-form")[0].reset()
 
-                    // instantiate toast for successful client creation
+                    // create and instantiate toast for successful client creation
                     var toast = document.createElement("div");
                     toast.classList.add('toast', 'position-fixed', 'bg-success-subtle', 'border-0', 'top-0', 'end-0');
                     toast.setAttribute('role', 'alert');
@@ -900,7 +917,6 @@ $(document).ready(function(){
                 alert('form not submitted')
                 $(this).addClass('was-validated');
                 spinner.addClass('invisible');
-                // alert('Form submission failed');
             },
         });
     });
@@ -960,7 +976,7 @@ $(document).ready(function(){
                 const errorToastBS = bootstrap.Toast.getOrCreateInstance(errorToast)
                 if (Object.keys(batchProcessSuccess).length > 0) {
                     successToastBS.show()
-                }
+                } 
 
                 if (Object.keys(batchProcessError).length > 0) {
                     errorToastBS.show()

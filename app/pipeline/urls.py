@@ -30,6 +30,8 @@ urlpatterns = [
 	path('process-uploaded-vendor-invoice/', views.process_uploaded_vendor_invoice, name="process-uploaded-vendor-invoice"),
 	path('pipeline-data/<int:year>/<int:month>/', views.pipeline_data, name="pipeline-data"),
 	path('pipeline-data/', views.pipeline_data, name="pipeline-data"),
+    path('revenue-data/<int:year>/<int:month>/', views.revenue_display_data, name="revenue-data"),
+	path('revenue-data/', views.revenue_display_data, name="revenue-data"),
     path('invoices/', views.InvoiceView.as_view(), name="invoices"),
     path('all-invoices-data/',views.all_invoices_data, name="all-invoices-data")
 

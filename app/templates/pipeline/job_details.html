@@ -86,7 +86,7 @@
             {% else %}
                 <p class="text-center">No costs associated with this job.</p>
             {% endif %}
-            {% if job.status in "INVOICED,FINISHED,ARCHIVED" %}
+            {% if job.status in "INVOICED1,INVOICED2,FINISHED,ARCHIVED" %}
                 <dl class="row job-details-w400 pt-2 align-items-center mx-auto">
                     <dt class="job-details-item-sm">Invoiced To</dt>
                     <dd class="job-details-desc">

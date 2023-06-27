@@ -1,5 +1,5 @@
 :root {
-  --bs-body-font-family: 'Roboto', 'sans-serif';
+  --bs-body-font-family: 'Chivo', 'sans-serif';
 }
 
 html,
@@ -67,8 +67,8 @@ input::-webkit-inner-spin-button {
   width: 300px;
 }
 
-.job-details-w600 {
-  width: 600px;
+.job-details-w500 {
+  width: 500px;
 }
 
 .job-details-item {
@@ -97,6 +97,19 @@ input::-webkit-inner-spin-button {
   margin-bottom: 0px;
   font-size: .95em;
   width: 40%;
+}
+
+.revenue-display-text {
+  font-size: 1em;
+  width: 70%;
+}
+
+.revenue-display-amount {
+  width: 30%;
+  text-align: right;
+  margin-bottom: 0px;
+  font-size: 1em;
+  font-family: 'Chivo Mono', monospace;
 }
 
 .font-monospace {

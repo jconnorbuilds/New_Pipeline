@@ -3,8 +3,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.db import IntegrityError
+from django.http import JsonResponse
 from django.shortcuts import redirect
-
+from django.template.loader import render_to_string
 
 import requests
 
@@ -66,6 +67,33 @@ def getClient(job_code, client):
         return Client.objects.get(friendly_name__iexact=client)
     else:
         return False
+    
+def get_job_data(job):
+    from .models import Job
+    response = {
+        'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
+        'id': job.id,
+        'client_name': job.client.friendly_name,
+        'client_id': job.client.id,
+        'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
+        'job_code': job.job_code,
+        'revenue': f'¥{job.revenue:,}',
+        'total_cost': render_to_string('pipeline/job_total_cost.html', {"job_id":job.id, "job_total_cost":job.total_cost} ),
+        'profit_rate': f'{job.profit_rate}%',
+        'job_date': job.job_date,
+        'job_type': job.get_job_type_display(),
+        'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
+        'invoice_info_completed': job.invoice_name != '',
+    }
+    return response
+
+def get_invoice_status_data(job):
+    response = {
+        "all_invoices_requested":job.allVendorInvoicesRequested,
+        "all_invoices_received":job.allVendorInvoicesReceived,
+        "all_invoices_paid":job.allVendorInvoicesPaid,
+    }
+    return response
 
 def process_imported_jobs(csv_file):
     from .models import Job

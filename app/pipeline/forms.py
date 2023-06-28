@@ -23,8 +23,8 @@ MONTH_CHOICES = [
     (12,'December'),
     ]
 
-#year_list is a tuple (int, int) of each year through the current year
-#YEAR_CHOICES is (int, str) of the same list, to avoid a comma in the select element
+# year_list is a tuple (int, int) of each year through the current year
+# YEAR_CHOICES is (int, str) of the same list, to avoid a comma in the select element
 year_list = [(year, year) for year in range(2018, date.today().year+1)]
 YEAR_CHOICES = [(y[0],(str(y[1]))) for y in year_list]
 DATE_CHOICES = []
@@ -49,14 +49,7 @@ class AddVendorToCostForm(forms.Form):
 class UpdateCostForm(forms.Form):
     vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), required=False, empty_label='Select vendor', widget=forms.Select(attrs={'class':'form-select'}))
     cost = forms.ModelChoiceField(queryset=Cost.objects.all())
-    invoice_status = forms.ChoiceField(required=False, widget=forms.Select(attrs={'class':'form-select'}), choices=(
-                                ('NR','Not requested'),
-                                ('REQ','Requested'),
-                                ('REC','Received'),
-                                ('CHECK','Needs manual check'),
-                                ('PAID','Paid'),
-                                ('NA','No Invoice')
-                                ))
+    invoice_status = forms.ChoiceField(required=False, widget=forms.Select(attrs={'class':'form-select'}), choices=Cost.INVOICE_STATUS_CHOICES)
 
 class SetInvoiceInfoForm(ModelForm):
 
@@ -83,7 +76,7 @@ class JobForm(ModelForm):
 
     class Meta:
         model = Job
-        fields = ['job_name','client','job_type','revenue','personInCharge','year','month']
+        fields = ['job_name','client','job_type','revenue','add_consumption_tax','personInCharge','year','month']
 
 class JobImportForm(forms.Form):
     file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['csv'])])

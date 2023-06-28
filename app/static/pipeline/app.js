@@ -677,6 +677,7 @@ $(document).ready(function(){
             client: $("#id_client").val(),
             job_type: $("#id_job_type").val(),
             revenue: $("#id_revenue").val(),
+            add_consumption_tax: $("#id_add_consumption_tax").val(),
             personInCharge: $("#id_personInCharge").val(),
             year: $("#id_year").val(),
             month: $("#id_month").val(),

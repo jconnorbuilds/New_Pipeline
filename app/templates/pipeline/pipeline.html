@@ -37,7 +37,7 @@
           {% csrf_token %}
           <h3>Add a job</h3>
           <hr>
-          <div class="row g-3 p-1">
+          <div class="row g-3 pb-3">
             <div class="col-sm-12">
               <div class="input-group">
                 {% render_field job_form.client class+="form-select" %}
@@ -45,7 +45,7 @@
               </div>
             </div>
           </div>
-          <div class="row g-3 p-1">
+          <div class="row g-3 pb-1">
             <div class="col-sm-6">
               {% render_field job_form.job_name class+="form-control" placeholder="Enter job name" %}
             </div>
@@ -54,6 +54,10 @@
                 <span class="input-group-text" id="yen-addon">¥</span>
                   {% render_field job_form.revenue class+="form-control" help_text="revenue in ¥10k increments" %}
                 <span class="input-group-text" id="man-addon">万</span>
+                <div class="input-group-text rounded-2 rounded-start-0">
+                  {% render_field job_form.add_consumption_tax class+="form-check-input mt-0" help_text="uncheck this to turn off consumption tax calculation (10%)." %}
+                </div>
+                <div id="add-consumption-tax-help" class="form-text">Uncheck the box to disable consumption tax calculation</div>
               </div>
             </div>
           </div>

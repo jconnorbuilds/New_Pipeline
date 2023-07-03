@@ -426,17 +426,19 @@ $(document).ready(function(){
         openInvoiceInfoModal = false
     })
 
-    const newClientFormModalEl = document.querySelector('#new-client-modal')
-    const invoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
-    const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')
     
-    newClientFormModalEl.addEventListener('hide.bs.modal', function() {
-        if (openInvoiceInfoModal === true) {
-            invoiceInfoModal.show()
-        }
-    })
 
     jobTable.on("change", ".job-status-select", function () {
+        const newClientFormModalEl = document.querySelector('#new-client-modal')
+        const invoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
+        const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')
+
+        newClientFormModalEl.addEventListener('hide.bs.modal', function () {
+            if (openInvoiceInfoModal === true) {
+                invoiceInfoModal.show()
+            }
+        })
+        
         var changedSelectFormData = getJobUpdate(this);
         var statusSelectEl = $(this)
         var selectedStatus = statusSelectEl.val();
@@ -483,12 +485,15 @@ $(document).ready(function(){
                     contentType: false,
                     data: invoiceFormData,
                     success: function (newRowData) {
+                        const invoiceInfoSavedToast = $("#invoice-set-success-toast")
+                        const invoiceInfoSavedToastBS = bootstrap.Toast.getOrCreateInstance(invoiceInfoSavedToast)
+
                         jobTableAjaxCall(nestedFormData, function (newRowData) {
-                        console.log('update job has been called')
-                        invoiceInfoModalEl.removeEventListener('hide.bs.modal', revertStatus)
-                        jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false)
-                        invoiceInfoModal.hide()
-                        })
+                            invoiceInfoModalEl.removeEventListener('hide.bs.modal', revertStatus)
+                            jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false)
+                            invoiceInfoModal.hide()
+                        });
+                        invoiceInfoSavedToastBS.show()
                     },
                     error: function () {
                         revertStatus()
@@ -643,7 +648,7 @@ $(document).ready(function(){
     });
 
     $('table').on("click", ".single-invoice-request-btn", function(event) {
-        // console.log($(this))
+        console.log($(this))
         event.preventDefault()
 
         var cost_id = $(this).attr('id').split('-').pop()
@@ -698,9 +703,9 @@ $(document).ready(function(){
                     // $("table").append(response.html);
                     spinner.addClass('invisible');
                     $("#job-form").removeClass('was-validated')
-                    $(".toast").each(function() {
-                        $(this).show()
-                    });
+                    // $(".toast").each(function() {
+                    //     $(this).show()
+                    // });
                     var job = response.data;
                     jobTable.row.add($(job)).draw();
                     // #TODO: replace the below with the updateRevenueDisplay function using the new data
@@ -710,7 +715,7 @@ $(document).ready(function(){
                     $("#total-billed-monthly-exp").text(resultVal)
                     
                     var toast = document.createElement("div");
-                    toast.classList.add('toast', 'position-fixed', 'bg-success-subtle', 'border-0', 'top-0', 'end-0');
+                    toast.classList.add('toast', 'position-fixed', 'bg-success-subtle', 'border-0', 'top-0', 'end-0',);
                     toast.setAttribute('role', 'alert');
                     toast.setAttribute('aria-live', 'assertive');
                     toast.setAttribute('aria-atomic', 'true');
@@ -1008,5 +1013,3 @@ $(document).ready(function(){
         })
     })
 });
-
-

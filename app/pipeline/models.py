@@ -32,7 +32,6 @@ class Vendor(models.Model):
     first_name = models.CharField(max_length=30, null=True, blank=True)
     last_name = models.CharField(max_length=30, null=True, blank=True)
     vendor_code = models.CharField(max_length=4, null=True, unique=True)
-    # vendor_code = models.CharField(max_length=8, unique=True, null=True, blank=True)
     kanji_name = models.CharField(max_length=10, blank=True)
     kana_name = models.CharField(max_length=12, blank=True)
     use_company_name = models.BooleanField(default=False)
@@ -64,28 +63,6 @@ class Vendor(models.Model):
         else:
             return self.company_name
 
-    # def get_vendor_code(self, vendor_code_prefix):
-    #     vendors = Vendor.objects.all()
-    #     new_vendor_code_suffix = 1
-    #     for vendor in vendors:
-    #         this_vendor_code_suffix = int(vendor.vendor_code[-3::])
-    #         if this_vendor_code_suffix == new_vendor_code_suffix:
-    #             new_vendor_code_suffix = this_vendor_code_suffix + 1
-        
-    #     i = 0
-    #     while i < 10:
-    #         new_vendor_code = f"{vendor_code_prefix}{new_vendor_code_suffix:03d}"
-    #         if not Vendor.objects.filter(vendor_code = new_vendor_code).exists():
-    #             return new_vendor_code
-    #         else:
-    #             new_vendor_code_suffix += 1
-    #             i += 1
-
-    # def save(self, *args, **kwargs):
-    #     if self.vendor_code is None:
-    #         self.vendor_code = self.get_vendor_code(self.vendor_code_prefix)
-
-    #     super().save(*args, **kwargs)
 
     class Meta:
         unique_together = (("first_name", "last_name"),)
@@ -310,10 +287,11 @@ class Job(models.Model):
             print("There was a problem with the job code logic") # TODO: move to logger
 
     JOB_TYPE_CHOICES = [
-        ('ORIGINAL', 'Original'),
+        ('ORIGINAL', 'Original Music'),
         ('RENEWAL', 'Renewal'),
         ('LIBRARY', 'Library'),
         ('LICENSING','Licensing'),
+        ('LOGO','Sound Logo'),
         ('MISC', 'Misc'),
         ('RETAINER', 'Retainer'),
         ]

@@ -5,6 +5,7 @@ on: [push]
 env:
   WEB_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web"
   NGINX_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx"
+  TAG: "v1.00"
 
 jobs:
   build:
@@ -17,6 +18,7 @@ jobs:
       - 
         name: Add environment variables to .env
         run: |
+          echo "TAG=" >> .env
           echo "DEBUG='0'" >> .env
           echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools'" >> .env
           echo "SQL_ENGINE='django.db.backends.postgresql'" >> .env
@@ -49,8 +51,8 @@ jobs:
       - 
         name: Tag images
         run: |
-          docker tag npt_prod:latest ${{ env.WEB_IMAGE }}:latest
-          docker tag npt_nginx_prod:latest ${{ env.NGINX_IMAGE }}:latest
+          docker tag npt_prod:latest ${{ env.WEB_IMAGE }}:${{ env.TAG }}
+          docker tag npt_nginx_prod:latest ${{ env.NGINX_IMAGE }}:${{ env.TAG }}
       - 
         name: Push images
         run: |
@@ -67,6 +69,7 @@ jobs:
       - name: Add environment variables to .env
         run: |
           echo "DEBUG='0'" >> .env
+          echo "TAG=${{ env.TAG }}" >> .env
           echo "SQL_ENGINE='django.db.backends.postgresql'" >> .env
           echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools'" >> .env
           echo "DATABASE='postgres'" >> .env

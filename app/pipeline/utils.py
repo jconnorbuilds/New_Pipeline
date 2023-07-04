@@ -55,16 +55,23 @@ def get_forex_rates():
 
     return forex_rates_dict
 
-def getClient(job_code, client_friendly_name):
+# def getClient(job_code, client_friendly_name):
+#     from .models import Client
+#     if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
+#         return Client.objects.get(job_code_prefix = job_code[:3])
+#     elif Client.objects.filter(job_code_prefix = job_code[:2]).exists():
+#         return Client.objects.get(job_code_prefix = job_code[:2])
+#     elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
+#         return Client.objects.get(job_code_prefix = job_code[:4])
+#     elif Client.objects.filter(friendly_name__iexact=client_friendly_name).exists():
+#         return Client.objects.get(friendly_name__iexact=client_friendly_name)
+#     else:
+#         return False
+
+def getClient(client_code):
     from .models import Client
-    if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
-        return Client.objects.get(job_code_prefix = job_code[:3])
-    elif Client.objects.filter(job_code_prefix = job_code[:2]).exists():
-        return Client.objects.get(job_code_prefix = job_code[:2])
-    elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
-        return Client.objects.get(job_code_prefix = job_code[:4])
-    elif Client.objects.filter(friendly_name__iexact=client_friendly_name).exists():
-        return Client.objects.get(friendly_name__iexact=client_friendly_name)
+    if Client.objects.filter(job_code_prefix = client_code).exists():
+        return Client.objects.get(job_code_prefix = client_code)
     else:
         return False
     
@@ -124,7 +131,7 @@ def process_imported_jobs(csv_file):
         if valid_template:
             print(i, "only print if valid")
             job_name = row[0]
-            client_friendly_name = row[1]
+            client_code = row[1]
             job_code = row[2]
             job_code_isFixed = row[3]
             invoice_name = row[4]
@@ -138,40 +145,44 @@ def process_imported_jobs(csv_file):
             personInCharge = row[12]
             status = row[13]
 
-            try:
-                # These lines were importing with invisble spaces, so
-                # I used .strip() import them without the spaces
-                j,created = Job.objects.update_or_create(
-                    job_name = job_name.strip(),
-                    client = getClient(job_code, client_friendly_name),
-                    job_code = job_code.strip(),
-                    job_code_isFixed = job_code_isFixed.strip(),
-                    invoice_name = invoice_name.strip(),
-                    invoice_recipient = getClient("xxx", invoice_recipient) if invoice_recipient else getClient("xxx", client_friendly_name),# TODO: This is a bad solution. Make this cleaner, easier to use
-                    isArchived = isArchived.strip(),
-                    year = year.strip(),
-                    month = month.strip(),
-                    job_type = job_type.strip(),
-                    revenue = revenue,
-                    add_consumption_tax = add_consumption_tax.strip(),
-                    personInCharge = personInCharge.strip(),
-                    status = status.strip()
-                )
-                j.save()
-                if created:
-                    success_created.append(j.job_name)
-                elif not created:
-                    success_not_created.append(j.job_name)
+            client = getClient(client_code.strip())
+            if client:
+                try:
+                    # These lines were importing with invisble spaces, so
+                    # I used .strip() import them without the spaces
+                    j,created = Job.objects.update_or_create(
+                        job_name = job_name.strip(),
+                        client = client,
+                        job_code = job_code.strip(),
+                        job_code_isFixed = job_code_isFixed.strip(),
+                        invoice_name = invoice_name.strip(),
+                        invoice_recipient = getClient(invoice_recipient) if invoice_recipient else client,# TODO: This is a bad solution. Make this cleaner, easier to use
+                        isArchived = isArchived.strip(),
+                        year = year.strip(),
+                        month = month.strip(),
+                        job_type = job_type.strip(),
+                        revenue = revenue,
+                        add_consumption_tax = add_consumption_tax.strip(),
+                        personInCharge = personInCharge.strip(),
+                        status = status.strip()
+                    )
+                    j.save()
+                    if created:
+                        success_created.append(j.job_name)
+                    elif not created:
+                        success_not_created.append(j.job_name)
 
-            except IntegrityError as e:
-                errors[f'{client_friendly_name} {job_code}'] = e
-                print("integrityerror", e)
-            except NameError as n:
-                errors[f'{client_friendly_name} {job_code}'] = n
-                print("nameerror", n)
-            except Exception as e:
-                errors[f'{client_friendly_name} {job_code}'] = e
-                print("otherexception", e)
+                except IntegrityError as e:
+                    errors[f'{job_code}'] = e
+                    print("integrityerror", e)
+                except NameError as n:
+                    errors[f'{job_code}'] = n
+                    print("nameerror", n)
+                except Exception as e:
+                    errors[f'{job_code}'] = e
+                    print("otherexception", e)
+            else:
+                errors['DATA ERROR'] = f'Could not parse the client "{client_code}". Make sure this client exists and that the code is being used in the import template.'
             
             # for item in not_created_items:
             #   messages.info(request, item)

@@ -133,7 +133,7 @@ class Cost(models.Model):
     amount = models.IntegerField(null=True)
     # TODO: Add conversion to JPY
     
-    CURRENCIES = currencies
+    CURRENCIES = currencies # tuple, format (USD,USD $)
     currency = models.CharField(max_length=10, default='¥', choices=CURRENCIES)
     
     INVOICE_STATUS_CHOICES = (

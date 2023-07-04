@@ -176,8 +176,8 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         if not_created_items:
                             messages.info(request, f'{len(not_created_items)} items were already in the database, so they were left alone.')
 
-                        for failed_job,message in errors.items():
-                            messages.error(request, f'{failed_job}:{message}')
+                        for err,message in errors.items():
+                            messages.error(request, f'{err}: {message}')
                     else:
                         messages.error(request,f'{response["errors"]}')
 

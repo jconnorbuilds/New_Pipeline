@@ -2,13 +2,15 @@ from django.contrib import admin
 from .models import Job, Vendor, Client, Cost
 # Register your models here.
 
-class VendorAdmin(admin.ModelAdmin):
-    # readonly_fields=('vendor_code', )
-	# prepopulated_fields = {"slug": ("unique_id",)}
-	pass
+# @admin.display(description="Job Date")
+# def job_date(obj):
+#     return f"{obj.year}年 {obj.month}月"
 
-admin.site.register(Job)
-admin.site.register(Vendor, VendorAdmin)
+class JobAdmin(admin.ModelAdmin):
+    list_display = ["job_name", "job_code", "job_date", "isDeleted"]
+
+admin.site.register(Job, JobAdmin)
+admin.site.register(Vendor)
 admin.site.register(Client)
 admin.site.register(Cost)
 

@@ -74,6 +74,13 @@ def getClient(client_code):
         return Client.objects.get(job_code_prefix = client_code)
     else:
         return False
+
+def getInvoiceRecipient(client, invoice_recipient):
+    from .models import Client
+    if invoice_recipient:
+        return getClient(invoice_recipient)
+    else:
+        return client
     
 def get_job_data(job):
     from .models import Job
@@ -107,12 +114,14 @@ def process_imported_jobs(csv_file):
     errors = {}
     success_created = []
     success_not_created = []
+    cant_update = {}
     valid_template = True
     
     response = {"valid_template":valid_template,
         "error":errors,
         "success_created":success_created, 
-        "success_not_created":success_not_created
+        "success_not_created":success_not_created,
+        "cant_update":cant_update,
         }
     f = csv_file.read().decode('utf-8').splitlines()
     for i,line in enumerate(f):
@@ -146,6 +155,7 @@ def process_imported_jobs(csv_file):
             status = row[13]
 
             client = getClient(client_code.strip())
+
             if client:
                 try:
                     # These lines were importing with invisble spaces, so
@@ -156,7 +166,7 @@ def process_imported_jobs(csv_file):
                         job_code = job_code.strip(),
                         job_code_isFixed = job_code_isFixed.strip(),
                         invoice_name = invoice_name.strip(),
-                        invoice_recipient = getClient(invoice_recipient) if invoice_recipient else client,# TODO: This is a bad solution. Make this cleaner, easier to use
+                        invoice_recipient = getInvoiceRecipient(client, invoice_recipient),# TODO: This is a bad solution. Make this cleaner, easier to use
                         isArchived = isArchived.strip(),
                         year = year.strip(),
                         month = month.strip(),
@@ -173,7 +183,10 @@ def process_imported_jobs(csv_file):
                         success_not_created.append(j.job_name)
 
                 except IntegrityError as e:
-                    errors[f'{job_code}'] = e
+                    if Job.objects.filter(job_code = job_code.strip()).exists():
+                        errors[f'{job_code}'] = "A job with that job code already exists, but differs from the info in the uploaded file. Support for updating via bulk upload coming soon."
+                    else:
+                        errors[f'{job_code}'] = e
                     print("integrityerror", e)
                 except NameError as n:
                     errors[f'{job_code}'] = n

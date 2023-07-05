@@ -170,6 +170,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         created_items = response["success_created"]
                         not_created_items = response["success_not_created"]
                         errors = response["error"]
+                        cant_update = response["cant_update"]
                         if created_items:
                             messages.success(request, f'{len(created_items)} jobs were added successfully!')
 
@@ -178,6 +179,9 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
                         for err,message in errors.items():
                             messages.error(request, f'{err}: {message}')
+
+                        for code,message in cant_update.items():
+                            messages.error(request, f'{code}: {message}')
                     else:
                         messages.error(request,f'{response["errors"]}')
 

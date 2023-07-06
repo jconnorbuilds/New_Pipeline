@@ -1002,7 +1002,7 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
 
 class JobUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Job
-    fields = ['job_name','client', 'job_code', 'job_code_isFixed', 'job_type','revenue','add_consumption_tax','personInCharge','month','year','notes','invoice_name','invoice_recipient']
+    fields = ['job_name','client', 'job_code', 'job_type','revenue','add_consumption_tax','personInCharge','month','year','notes','invoice_name','invoice_recipient']
     template_name_suffix = '_update_form'
     success_message= "Job updated!"
 
@@ -1013,6 +1013,11 @@ class JobUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     
     def get_success_url(self):
         return reverse('pipeline:job-detail', kwargs={'pk':self.kwargs['pk']})
+    
+    def form_valid(self, form):
+        if form.has_changed() and 'client' in form.changed_data:
+            form.instance.job_code_isFixed = False
+        return super().form_valid(form)
 
 class JobDeleteView(DeleteView):
     model = Job

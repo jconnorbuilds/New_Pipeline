@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    console.log('Ready!');
     let date = new Date()
     let currentMonth = date.getMonth() + 1
     let currentYear = date.getFullYear()
@@ -10,7 +9,9 @@ $(document).ready(function(){
     var totalRevenueMonthlyExp = 0
     var totalRevenueMonthlyAct = 0
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    var openInvoiceInfoModal = false // flag to control whether or not the Invoice Info modal is reopened after the New Client modal closes
+    var openInvoiceInfoModal = false // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page 
+    var depositDateRowID
+    var depositDateModal
 
     var jobTable = $('#job-table').DataTable({
         paging: false,
@@ -19,7 +20,7 @@ $(document).ready(function(){
         orderClasses: false,
         rowId: 'id',
         language: {
-            searchPlaceholder: "Search jobs",
+            searchPlaceholder: "ジョブを探す",
             search: "",
         },
         drawCallback: function(settings) {
@@ -66,6 +67,12 @@ $(document).ready(function(){
                 "name": "status"
             },
             {
+                "data": "deposit_date",
+                "name": "deposit_date",
+                "defaultContent": "---"
+            },
+
+            {
                 "data": "invoice_info_completed",
                 "name": "invoice_info_completed",
                 "visible": false
@@ -78,24 +85,35 @@ $(document).ready(function(){
                 searchable: false,
             },
             {
-                targets: [0, 1, -1, -2,],
+                targets: [0, 1, -1, -2, -3],
                 orderable: false
             },
             {
-                targets: [6, 7],
+                targets: [6, 7,],
                 className: 'dt-right'
             },
+            {
+                target: 12,
+                className: 'deposit-date'
+            },
+
             {
                 targets: [5, 6, 7],
                 createdCell: function (td, cellData, rowData, row, col) {
                     $(td).addClass("font-monospace");
                 }
             },
-
         ],
         "rowCallback": function (row, data) {
             var statusCell = $(row).find(".job-status-select")
             var initialStatus = statusCell.val()
+            var depositDateCell = $(row).find(".deposit-date")
+            if (["INVOICED1", "INVOICED2", "FINISHED"].includes(statusCell.val())) {
+                depositDateCell.removeClass("text-body-tertiary")
+            } else {
+                depositDateCell.addClass("text-body-tertiary")
+            }
+
             statusCell.attr("data-initial", initialStatus)
             if (initialStatus === "FINISHED") {
                 $(row).addClass('job-finished');
@@ -104,6 +122,30 @@ $(document).ready(function(){
             }
         },
     });
+
+    jobTable.on("click", "td.deposit-date", function () {
+        depositDateRowID = $(this).closest("tr").attr("id");
+        row = jobTable.row(`#${depositDateRowID}`).node()
+        jobStatus = $(row).find("select.job-status-select option:selected").val()
+
+        if (["INVOICED1", "INVOICED2", "FINISHED"].includes(jobStatus)) {
+            depositDateModal = new bootstrap.Modal(document.querySelector('#set-deposit-date'));
+            depositDateModal.show();
+        }
+    });
+
+    $("#deposit-date-form").on("submit", function (event) {
+        event.preventDefault()
+        var depositDateData = new FormData()
+        depositDateData.append("deposit_date", $("#id_deposit_date").val())
+        depositDateData.append("job_id", depositDateRowID)
+        depositDateData.append("set_deposit_date", true)
+        jobTableAjaxCall(depositDateData, function (newRowData) {
+            jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false);
+            depositDateModal.hide();
+            $("#deposit-date-form")[0].reset()
+        })
+    })
 
     let rangeCheckbox = $('#csv-export-use-range')
     rangeCheckbox.click(function(){
@@ -134,7 +176,6 @@ $(document).ready(function(){
         var forms = document.getElementsByTagName('form');
         for (var i = 0; i < forms.length; i++) {
             forms[i].submit();
-            console.log('something happened in JS');
         }
     });
 
@@ -223,7 +264,7 @@ $(document).ready(function(){
         order: [[0, 'asc']],
         orderClasses: false,
         language: {
-        searchPlaceholder: "Search costs",
+        searchPlaceholder: "コストを探す",
         search: "",
         },
         
@@ -295,7 +336,6 @@ $(document).ready(function(){
         event.preventDefault();
         // spinner.toggleClass('invisible')
 
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $.ajax({
             headers: { 'X-CSRFToken': csrftoken },
             type: "POST",
@@ -311,60 +351,6 @@ $(document).ready(function(){
                     var newData = response.data
                     // Use the #ID selector to target the new row and redraw with new data
                     costTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
-
-                    // $("table").append(response.html);
-                    // spinner.addClass('invisible');
-                    // $("#job-form").removeClass('was-validated')
-                    // $(".toast").each(function() {
-                    //     $(this).show()
-                    // });
-                    // var job = response.data;
-
-                    //         var toast = document.createElement("div");
-                    //         toast.classList.add('toast', 'position-fixed', 'bg-success-subtle', 'border-0', 'top-0', 'end-0');
-                    //         toast.setAttribute('role', 'alert');
-                    //         toast.setAttribute('aria-live', 'assertive');
-                    //         toast.setAttribute('aria-atomic', 'true');
-
-                    //         var jobDescriptor = formData['job_name'].toUpperCase() + " from " + $("#id_client option:selected").text();
-                    //         var header = document.createElement('div');
-                    //         header.classList.add('toast-header');
-                    //         header.innerHTML = `
-                    //             <i class="bi bi-check2-circle" class="rounded me-2"></i>
-                    //             <strong class="me-auto">Job added</strong>
-                    //             <small class="text-muted">Just now</small>
-                    //             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    //             `;
-                    //         var body = document.createElement('div');
-                    //         body.classList.add('toast-body');
-                    //         body.innerText = jobDescriptor;
-
-                    //         toast.appendChild(header);
-                    //         toast.appendChild(body);
-
-                    //         document.body.appendChild(toast);
-
-                    //         var toastElement = new bootstrap.Toast(toast);
-                    //         toastElement.show();
-                    //         setTimeout(function() {
-                    //             $(toastElement).fadeOut("fast", function() {
-                    //                 $(this).remove();
-                    //             });
-                    //         }, 1000);
-                    //         $("#job-form").get(0).reset();
-
-                    //     } else {
-                    //         console.log('it did not work')
-                    //         $("#job-form").addClass('was-validated');
-                    //         spinner.addClass('invisible');
-                    //     };
-                    // },
-                    // error: function(data) {
-                    //     alert('Form submission failed');
-                    //     spinner.addClass('invisible');
-                    // },
-
-                    // table.clear().rows.add(formData).draw();
                 };
             }
         });
@@ -426,9 +412,15 @@ $(document).ready(function(){
         openInvoiceInfoModal = false
     })
 
-    
-
     jobTable.on("change", ".job-status-select", function () {
+        /*
+        * When a user changes the job status via the status dropdown, if one of the 'finalizing' statuses is selected
+        * e.g. 'Completed & Invoiced', and the invoice data hasn't been added, a modal form opens so the information can be added.
+        * Otherwise, the status is simply updated. 
+        * 
+        * Additional logic is added to make a seamless transition between the invoice data modal and a separate modal for adding 
+        * a new client, in the case the invoice recipient is a client that isn't in the db yet.
+        */
         const newClientFormModalEl = document.querySelector('#new-client-modal')
         const invoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
         const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')
@@ -450,9 +442,9 @@ $(document).ready(function(){
         if (requiresInvoiceInfo.includes(selectedStatus) && invoiceInfoCompleted == false) {
             openInvoiceInfoModal = true
             const clientID = parseInt(jobTable.cell('#' + rowID, 'client_id:name').data())
-            const form = invoiceInfoModalEl.querySelector('#invoice-info-form')
-            const invoiceRecipientField = form.querySelector('#id_invoice_recipient')
-            const hiddenJobIDField = form.querySelector('#id_job_id')
+            const invoiceForm = invoiceInfoModalEl.querySelector('#invoice-info-form')
+            const invoiceRecipientField = invoiceForm.querySelector('#id_invoice_recipient')
+            const hiddenJobIDField = invoiceForm.querySelector('#id_job_id')
             
             invoiceRecipientField.value = clientID
             hiddenJobIDField.value = rowID
@@ -469,7 +461,7 @@ $(document).ready(function(){
             invoiceInfoModalEl.addEventListener('hide.bs.modal', revertStatus)
 
             var nestedFormData = changedSelectFormData // TODO: Get a better understanding of why I needed to use FormData object
-            $(form).on('submit', function (event) {
+            $(invoiceForm).on('submit', function (event) {
                 event.preventDefault();
                 var invoiceFormData = new FormData();
                 invoiceFormData.append("invoice_recipient", invoiceRecipientField.value)
@@ -519,7 +511,7 @@ $(document).ready(function(){
         order: [[4, 'asc'],[6, 'asc']],
         orderClasses: false,
         language: {
-            searchPlaceholder: "Search invoices",
+            searchPlaceholder: "コストを探す",
             search: "",
         },
         ajax: {
@@ -602,9 +594,8 @@ $(document).ready(function(){
         ],
 
         rowCallback: function (row, data) {
-            // This button disabling/enabling logic only works within the
+            // This button disabling/enabling logic only seems to work within the
             // rowCallbackfunction, and not within the createdRow function.
-            // At the time of writing this, I'm not totally sure why, but whatever
             var invoiceStatus = $(data.invoice_status).val()
             var hasVendor = (data.vendor != "");
 
@@ -624,7 +615,6 @@ $(document).ready(function(){
 
     $("#all-invoices-table").on("change", ".cost-vendor-select, .cost-status-select", function () {
         var formData = getCostUpdate(this);
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $("#batch-pay-csv-dl-btn").attr("disabled",false)
         $.ajax({
             headers: { 'X-CSRFToken': csrftoken },
@@ -653,7 +643,6 @@ $(document).ready(function(){
 
         var cost_id = $(this).attr('id').split('-').pop()
         console.log(cost_id)
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         var table = $(this).closest('table').DataTable();
             
         $.ajax({
@@ -689,7 +678,6 @@ $(document).ready(function(){
             addjob: 'addjob via ajax'
         };
         console.trace(formData.add_consumption_tax)
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $.ajax({
             headers: {'X-CSRFToken': csrftoken },
             type: "POST",
@@ -788,13 +776,13 @@ $(document).ready(function(){
             pipelineViewState = "all";
             $("#view-state").text(pipelineViewState);
             $(".monthly-item").slideUp("fast");
-            $(".toggle-view").html("<b>Viewing all jobs</b>")
+            $(".toggle-view").html("<b>月別で表示</b>")
             filterData(undefined, undefined);
         } else {
             pipelineViewState = "monthly";
             $("#view-state").text(pipelineViewState);
             $(".monthly-item").slideDown("fast");
-            $(".toggle-view").html("<b>Viewing jobs by month</b>")
+            $(".toggle-view").html("<b>全案件を表示</b>")
             filterData(pipelineYear.val(), pipelineMonth.val());
         }
     });
@@ -951,8 +939,6 @@ $(document).ready(function(){
 
     $("#batch-pay-csv-dl").on("submit", function(e) {
         e.preventDefault()
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        // $(this).find("button").attr("disabled", true);
         $.ajax({
             headers: { 'X-CSRFToken': csrftoken },
             type: "POST",

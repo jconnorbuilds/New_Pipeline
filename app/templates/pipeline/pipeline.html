@@ -33,7 +33,7 @@
   <div class="container bg-body-tertiary rounded-3">
     <div class="row g-3 p-3 d-flex">
       <div class="col-lg-12 col-xl-8 me-auto">
-        <form method="post" class="form-control shadow" id="job-form">
+        <form method="post" class="form-control p-3 shadow" id="job-form">
           {% csrf_token %}
           <h3>Add a job</h3>
           <hr>
@@ -174,22 +174,22 @@
         <div class="col-lg-6 text-lg-start text-center">
           <h1 class="display-1">Pipeline</h1>
           <div class="p-2">
-            <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button" style="white-space: nowrap;"><b>Viewing jobs by month</b></button>
+            <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button" style="white-space: nowrap;"><b>全案件を表示</b></button>
           </div>
         </div>
         <div class="monthly-item p-0 col-lg-6">
-          <dl class="row pt-2 align-items-center mx-auto" style="width: 450px;">
-            <dt class="revenue-display-text">Total billed (YTD)</dt>
+          <dl class="row pt-2 align-items-center mx-auto" style="width: 475px;">
+            <dt class="revenue-display-text">今年度　請求総額</dt>
             <dd id ="total-revenue-ytd" class="revenue-display-amount align-items-center"></dd>
 
-            <dt class="revenue-display-text">Monthly average (YTD)</dt>
+            <dt class="revenue-display-text">今年度　月平均</dt>
             <dd id="avg-revenue-ytd" class="revenue-display-amount"> {{ job.job_code }}</dd>
             <hr class="col-6 m-3 mx-auto">
 
-            <dt class="revenue-display-text">Total billed this month (Expected)</dt>
+            <dt class="revenue-display-text">表示の月　請求総額 (予定)</dt>
             <dd id="total-revenue-monthly-exp" class="revenue-display-amount"> {{ job.job_code }}</dd>
 
-            <dt class="revenue-display-text">Total billed this month (Actual)</dt>
+            <dt class="revenue-display-text">表示の月　請求総額 (実績)</dt>
             <dd id="total-revenue-monthly-act" class="revenue-display-amount"> {{ job.job_code }}</dd>
           </dl>
         </div>  
@@ -229,7 +229,7 @@
       </div>
       <div class="row d-flex justify-content-center">
         <button type="button" class="btn btn-dark" id="pipeline-prev" style="width: auto;"><<</button>
-        <button type="button" class="btn btn-dark" id="pipeline-current" style="width: auto;">current month</button>
+        <button type="button" class="btn btn-dark" id="pipeline-current" style="width: auto;">今月を表示</button>
         <button type="button" class="btn btn-dark" id="pipeline-next" style="width: auto;">>></button>
       </div>
     </div>
@@ -285,7 +285,7 @@
 </div>
 
 {# Modal for setting invoice details #}
-<div class="modal fade" id="set-job-invoice-info" tabindex="-1" aria-labelledby="new-client-modal" aria-hidden="false">
+<div class="modal fade" id="set-job-invoice-info" tabindex="-1" aria-labelledby="set-invoice-info-modal" aria-hidden="false">
   <div class="modal-dialog">
     <div class="modal-content">
       <form id="invoice-info-form" method="post" data-url="{% url 'pipeline:index' %}">
@@ -296,7 +296,7 @@
       <div class="modal-body">
         {% csrf_token %}
           <div class="input-group pb-3">
-            {% render_field set_invoice_info_form.invoice_recipient class+="form-control" placeholder="change this" %}
+            {% render_field set_invoice_info_form.invoice_recipient class+="form-control" %}
             <button class="btn btn-light rounded-end-2 border" type="button" id="set-invoice-modal-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
             <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
           </div>
@@ -317,4 +317,32 @@
     </div>
   </div>
 </div>
+{# Modal for setting deposit date #}
+<div class="modal fade" id="set-deposit-date" tabindex="-1" aria-labelledby="set-deposit-date-modal" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="deposit-date-form" method="post" data-url="{% url 'pipeline:index' %}">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Deposit date</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
+          {% render_field set_deposit_date_form.deposit_date  type="date" class="form-control" %}
+          <div id="deposit-date-help" class="form-text">The date we were paid for this job</div>
+            {{ set_deposit_date_form.job_id }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" id="set-deposit-date-cancel" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-info submit" id="set-deposit-date-submit" name="set-deposit-date">Ok</button>
+            <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

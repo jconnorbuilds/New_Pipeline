@@ -83,7 +83,7 @@ class Vendor(models.Model):
 class Client(models.Model):
     friendly_name = models.CharField(max_length=100, unique=True)
     proper_name = models.CharField(max_length=100, null=True, blank=True)
-    name_japanese = models.CharField(max_length=100, null= True, blank=True)
+    # name_japanese = models.CharField(max_length=100, null= True, blank=True) # likely don't need this anymore
     proper_name_japanese = models.CharField(max_length=100, blank=True)
     job_code_prefix = models.CharField(max_length=4, unique=True)
 
@@ -232,11 +232,14 @@ class Job(models.Model):
     isArchived = models.BooleanField(default=False)
     isInvoiced = models.BooleanField(default=False)
     revenue = models.IntegerField()
+    add_consumption_tax = models.BooleanField(default=True)
+    consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
+    revenue_incl_consumption_tax = models.IntegerField(null=True, editable=False)
     vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
     invoice_recipient = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True) # Who the invoice is paid to, if it differs from the client
     invoice_name = models.CharField(max_length=100, blank=True) # If the client has a job code or special name for the invoice
     relatedJobs = models.ManyToManyField("self", blank=True)
-    add_consumption_tax = models.BooleanField(default=True)
+    deposit_date = models.DateField(blank=True, null=True)
 
     # Separating out year and month because the day of the month doesn't matter
     # And this was the easiest way to take in and manipulate form data via select widgets
@@ -347,13 +350,12 @@ class Job(models.Model):
 
     isDeleted = models.BooleanField(default=False)
 
-    @property
-    def consumption_tax(self):
+    def get_consumption_tax_amt(self):
         '''
-        Returns the consumption tax amount and the tax-included revenue amount, based on a job's revenue.
+        Returns the consumption tax amount
         
         Returns:
-            (tuple): (consumption tax amt, tax-included revenue amount)
+            consumption tax amt
         '''
         consumption_tax_rate = Decimal('0.1')
         if self.add_consumption_tax:
@@ -361,7 +363,7 @@ class Job(models.Model):
         else:
             consumption_tax_amt = 0
         
-        return (consumption_tax_amt, self.revenue + consumption_tax_amt)
+        return consumption_tax_amt
 
     @property
     def total_cost(self):
@@ -370,7 +372,6 @@ class Job(models.Model):
         
         if all_costs:
             for cost in all_costs:
-                print(f'{cost} - {cost.currency} {cost.amount}')
                 if cost.currency == "JPY":
                     total += cost.amount
                 elif cost.invoice_status == "PAID":
@@ -380,20 +381,16 @@ class Job(models.Model):
                         total += round(self.forex_rates[cost.currency] * cost.amount)
                     except:
                         total += (cost.amount * 10)
-                        print('There was an error getting the exchange rate')
         return total
 
     @property
     def profit(self):
-        if self.revenue:
-            return self.revenue - self.total_cost
-        else:
-            return self.revenue
+        return self.revenue_incl_consumption_tax - self.total_cost
 
     @property
     def profit_rate(self):
         if self.revenue != 0:
-            profit_rate = round(((self.revenue - self.total_cost) / self.revenue)*100, 1)
+            profit_rate = round(((self.revenue_incl_consumption_tax - self.total_cost) / self.revenue_incl_consumption_tax)*100, 1)
             return profit_rate
         else:
             return 100
@@ -404,7 +401,6 @@ class Job(models.Model):
         for cost in costs:
             if cost.invoice_status not in ['REQ','REC','PAID']:
                 return False
-
         else:
             return True
 
@@ -437,6 +433,8 @@ class Job(models.Model):
             self.job_code_isFixed = False
 
         self.job_date = f'{self.year}-{int(self.month):02d}-01'
+        self.consumption_tax_amt = self.get_consumption_tax_amt()
+        self.revenue_incl_consumption_tax = self.get_consumption_tax_amt() + self.revenue
         super().save(*args, **kwargs)
 
     def __str__(self):

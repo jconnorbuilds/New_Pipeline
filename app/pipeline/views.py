@@ -9,7 +9,7 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail, send_mass_mail
 from django.db import IntegrityError
-from django.db.models import Sum
+from django.db.models import Sum, F, Q
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.template.loader import get_template, render_to_string
@@ -19,7 +19,7 @@ from django.utils.html import strip_tags
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
 from django.views import View
 from .models import Job, Vendor, Cost, Client
-from .forms import CostForm, JobForm, JobImportForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, ClientForm, SetInvoiceInfoForm
+from .forms import CostForm, JobForm, JobImportForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, ClientForm, SetInvoiceInfoForm, SetDepositDateForm
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
@@ -54,6 +54,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
     client_form_class = ClientForm
     set_invoice_info_form_class = SetInvoiceInfoForm
     bulk_actions = PipelineBulkActionsForm
+    set_deposit_date_form_class = SetDepositDateForm
     template_name = "pipeline/pipeline.html"
     table_pagination = False
 
@@ -63,10 +64,11 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context['job_form'] = JobForm(initial={'client': client_id})
         context['job_import_form'] = JobImportForm()
         context['set_invoice_info_form'] = self.set_invoice_info_form_class
+        context['set_deposit_date_form'] = self.set_deposit_date_form_class
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
         context['bulk_actions'] = self.bulk_actions
-        context['headers'] = ["", "ID", "Client", "Client ID", "Job Name", "Job Code", "Revenue", "Costs", "Profit Rate", "Job Date", "Type", "Status", "Invoice Info Completed"]
+        context['headers'] = ["", "ID", "クライアント名", "クライアントID", "案件名", "ジョブコード", "収入（税込）", "出費", "利益率", "請求期間", "種目", "ステータス", "入金日", "Invoice Info Completed"]
         return context
     
     def get_queryset(self):
@@ -197,9 +199,20 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
             if form.is_valid():
                 form.save()
                 return JsonResponse({"status":"success"})
+            
+        elif "set_deposit_date" in request.POST:
+            job_id = request.POST.get('job_id')
+            job = Job.objects.get(id=job_id)
+            print(request.POST)
+            form = self.set_deposit_date_form_class(request.POST, instance=job)
+            if form.is_valid():
+                form.save()
+                data = get_job_data(job)
+                return JsonResponse({"status":"success", "data": data})
+            else:
+                print(form.errors)
 
         return render(request, self.template_name, self.get_context_data())
-
 
 def pipeline_data(request, year=None, month=None):
     jobs = Job.objects.filter(isDeleted=False)
@@ -214,14 +227,23 @@ def pipeline_data(request, year=None, month=None):
 
 def revenue_display_data(request, year=None, month=None):
     jobs = Job.objects.filter(isDeleted=False)
-    total_revenue_ytd = Job.objects.filter(job_date__year=date.today().year, isDeleted=False).aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
     if year is not None and month is not None:
         jobs = Job.objects.filter(job_date__month=month, job_date__year=year, isDeleted=False)
+    jobs_from_current_year = Job.objects.filter(job_date__year=date.today().year, isDeleted=False)
 
-    total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue'))['total_revenue'] or 0
+    """
+    total revenue ytd 
+    aggregate revenue for each job
+    aggregate revenue * 0.1 for all jobs with add_consumption_tax == True
+    """
+
+    total_base_revenue_ytd = jobs_from_current_year.aggregate(total_base_revenue=Sum('revenue'))['total_base_revenue'] or 0
+    total_revenue_ytd = jobs_from_current_year.aggregate(total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue']
+    print(total_base_revenue_ytd)
+    total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue'] or 0
     total_revenue_monthly_actual = jobs.filter(
         status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(
-        total_revenue=Sum('revenue'))['total_revenue'] or 0
+        total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue'] or 0
     
     data = {
         "total_revenue_ytd":f'¥{total_revenue_ytd:,}',
@@ -892,18 +914,25 @@ class CostCreateView(LoginRequiredMixin, CreateView):
     cost_form = CostForm
     update_cost_form = UpdateCostForm
     forex_rates = get_forex_rates()
+
+    from .currencies import currencies
+    print(json.dumps(currencies))
+    print(json.dumps(forex_rates))
     
     # print(f"Team folder ID in here {dropbox_team_connect().team_team_folder_list().team_folders}")
     
     def get_context_data(self, **kwargs):
+        from .currencies import currencies
         context = super().get_context_data(**kwargs)
         self.object=None
         currentJob = Job.objects.get(pk=self.kwargs['pk'])
+        context['currencyList'] = json.dumps(currencies)
+        context['forexRates'] = json.dumps(self.forex_rates)
         current_url = self.request.build_absolute_uri()
         # update_cost_url = reverse('pipeline:update-cost', kwargs={'pk': my_cost.pk}) + \
         #     '?' + urlencode({'return_to': current_url})
         context['currentJob'] = currentJob
-        context['headers'] = ["Amt. (¥)", "Amt. (local)", "Vendor", "Description", "PO Number", "Invoice Status", "Request Invoice", "Edit", "ID"]
+        context['headers'] = ["金額(¥)", "金額(現地)", "ベンダー名", "作業の内容", "PO番号", "請求書ステータス", "", "編集", "ID"]
         context['simple_add_vendor_form'] = self.simple_add_vendor_form()
         context['update_cost_form'] = self.update_cost_form()
         context['cost_form'] = self.cost_form()

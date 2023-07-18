@@ -91,12 +91,13 @@ def get_job_data(job):
         'client_id': job.client.id,
         'job_name': render_to_string('pipeline/job_name.html', {"job_name":job.job_name, "job_id":job.id}),
         'job_code': job.job_code,
-        'revenue': f'¥{job.revenue:,}',
+        'revenue': f'¥{job.revenue_incl_consumption_tax:,}',
         'total_cost': render_to_string('pipeline/job_total_cost.html', {"job_id":job.id, "job_total_cost":job.total_cost} ),
         'profit_rate': f'{job.profit_rate}%',
         'job_date': job.job_date,
         'job_type': job.get_job_type_display(),
         'status': render_to_string('pipeline/jobs/pipeline_table_job_status_select.html', {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
+        'deposit_date': job.deposit_date,
         'invoice_info_completed': job.invoice_name != '',
     }
     return response

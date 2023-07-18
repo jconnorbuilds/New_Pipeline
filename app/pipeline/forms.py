@@ -52,7 +52,6 @@ class UpdateCostForm(forms.Form):
     invoice_status = forms.ChoiceField(required=False, widget=forms.Select(attrs={'class':'form-select'}), choices=Cost.INVOICE_STATUS_CHOICES)
 
 class SetInvoiceInfoForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['invoice_recipient'].queryset = Client.objects.order_by('friendly_name')
@@ -64,6 +63,23 @@ class SetInvoiceInfoForm(ModelForm):
             'invoice_recipient',
             'invoice_name'
             ]
+
+class SetDepositDateForm(ModelForm):
+
+    deposit_date = forms.DateField(widget=forms.DateInput())
+
+    job_id = forms.IntegerField(widget=forms.HiddenInput)
+    class Meta:
+        model = Job
+        fields = ['deposit_date']
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance')  # Get the object instance
+        initial = kwargs.get('initial', {})
+        print(kwargs)
+        # initial['deposit_date'] = instance.deposit_date if instance.deposit_date else '1999-01-01'
+        kwargs['initial'] = initial
+        super().__init__(*args, **kwargs)
 
 class JobForm(ModelForm):
     def __init__(self, *args, **kwargs):

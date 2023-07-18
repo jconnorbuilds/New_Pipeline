@@ -2,6 +2,7 @@
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
 {% load static %}
+{% load l10n %}
 
 {% block header %}
 {{ block.super }}
@@ -13,64 +14,75 @@
 {% block title %}COST SHEET{% endblock %}
 
 {% block body_block %}
-<div class="container">
-  <div class="container-fluid bg-body-secondary p-4">
-    <div class="container form-control shadow rounded-3">
-      <div class="row">
-        <div class="col-5 me-auto">
-          <h3>New cost</h3>
-          <hr>
-          <form method="post">
-            <div class="container m-3">
-              <div class="row">
-                <div class="col-auto">
-                  {% csrf_token %}
-                  {% render_field form.amount class+="form-control" placeholder="Amount" id="costsheet-form-amount" %}
-                  {% render_field form.currency class+="form-select" id="costsheet-form-currency" %}
-                  {% render_field form.description class+="form-control" placeholder="Description" id="costsheet-form-description" %}
-                </div>
-              </div>
-              <input type="submit" value="Add cost" name="add-cost" class="btn btn-dark my-3">
+<div class="container-fluid col-10">
+  <div class="bg-body-secondary rounded-3 p-4">
+    <div class="col-8 mx-auto">
+      <div class="form-control p-3 shadow rounded-3">
+        <h3>Add vendors</h3>
+        <hr>
+        {% for vendor in currentJob.vendors.all %}
+          <div class="row">
+            <div class="ps-3 col-6">
+              <p>{{ vendor }}</p>
+            </div>
+            <div class="col-2">
+              <a href="{% url 'pipeline:remove-vendor-from-job' currentJob.id vendor.id %}"><button type="button", name="remove-vendor-{{ vendor.id }}" id="costsheet-remove-vendor-btn" class="btn btn-danger btn-sm">remove</button></a>
             </div>
           </div>
-          </form>
-          <div class="col-5">
-            <h3>Vendors involved</h3>
-            <hr>
-            <div class="ps-3 flex-grow-1">
-              {% for vendor in currentJob.vendors.all %}
-                <div class="row">
-                  <div class="col-5">
-                    <p>{{ vendor }}</p>
-                  </div>
-                  <div class="col-2">
-                    <a href="{% url 'pipeline:remove-vendor-from-job' currentJob.id vendor.id %}"><button type="button", name="remove-vendor-{{ vendor.id }}" id="costsheet-remove-vendor-btn" class="btn btn-danger btn-sm">remove</button></a>
-                  </div>
+        {% endfor %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="row d-flex align-items-center">
+            <div class="col-6">
+              {% render_field simple_add_vendor_form.addVendor class+="form-select" %}
+            </div>
+            <div class="col-2">
+              <input type="submit" value="+" name="add-vendor" class="btn btn-sm btn-outline-dark">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="form-control p-3 shadow rounded-3">
+        <h3>New cost</h3>
+        <hr>
+        <div class="row">
+          <div class="col-6">
+            <form method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-8 pe-0">
+                  {% render_field form.amount class+="form-control border-end-0 rounded-end-0 border-bottom-0" placeholder="Amount" id="costsheet-form-amount" %}
                 </div>
-              {% endfor %}
-              <form method="post">
-                {% csrf_token %}
-                <div class="row d-flex align-items-center">
-                  <div class="col-5">
-                    {% render_field simple_add_vendor_form.addVendor class+="form-select" %}
-                  </div>
-                  <div class="col-2">
-                    <input type="submit" value="+" name="add-vendor" class="btn btn-sm btn-outline-dark">
-                  </div>
-                </div>
-              </form>
+                <div class="col-4 ps-0">
+                  {% render_field form.currency class+="form-select rounded-start-0 border-bottom-0" id="costsheet-form-currency" %}
+                </div>  
+              </div>
+              {% render_field form.description class+="form-control" placeholder="Description" id="costsheet-form-description" %}
+              <input type="submit" value="Add cost" name="add-cost" class="btn btn-dark mt-3">
+            </form>
+          </div>
+          <div class="currency-calculator mx-3 rounded-3 border border-1 shadow ms-auto col-5" id="currencyCalc">
+            <p class="align-middle m-1">ForEx Rate Quick Checker</p>
+            <div class="input-group mb-0">
+              <select class="form-select calc-select col-auto border-bottom-0" id="calcFrom">
+              </select>
+              <input type="number" class="form-control text-end font-monospace border-bottom-0" id="calcInput" placeholder="0">
+            </div>
+            <div class="input-group mb-3">
+              <select class="form-select calc-select col-auto" id="calcTo">
+              </select>
+              <input type="text" readonly class="font-monospace form-control text-end align-middle py-1" placeholder="0.00" id="calcResult"></input>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   <div class="container">
     <h3 class="display-3">cost sheet </h3>
     <hr>
-    <h6 class="display-6"> {{ currentJob.job_name }} </h6>
-    <h6> <small class="text-muted">Job Code: {{ currentJob.job_code }}</small></h6>
-  </div>
-  <div class="container p-2">
+    <h6 class="display-6"> {{ currentJob.job_name }}</h6>
+    <h6><small class="text-muted">ジョブコード: {{ currentJob.job_code }}</small></h6>
     <table id="cost-table" class="display compact dt-responsive nowrap" style="width:100%">
       <thead>
         <tr>
@@ -82,8 +94,73 @@
       <tbody>
       </tbody>
     </table>
-</div>
+  </div>
 <script>
+  {% localize off %}
   var jobID = {{ currentJob.id }};
+  {% endlocalize %}
+  
+  var currencyList = JSON.parse('{{ currencyList|escapejs }}')
+  var forexRates = JSON.parse('{{ forexRates|escapejs }}');
+  
+  const currencyCalc = document.querySelector("#currencyCalc");
+  const calcInput = document.querySelector("#calcInput");
+  const calcResult = document.querySelector("#calcResult")
+  const calcFrom = document.querySelector("#calcFrom")
+  const calcTo = document.querySelector("#calcTo")
+  var calcFromCurrency
+  var calcFromRate
+  var calcToCurrency
+  var calcToRate
+
+  const currencySelectors = currencyCalc.querySelectorAll("select")
+  
+  function initCurrencySelectors() {
+    var initialToCurrency = "EUR"
+    for (currency of currencyList) {
+      var fromOption = document.createElement('option')
+      fromOption.value = currency[0]
+      fromOption.innerHTML = currency[1]
+
+      var toOption = fromOption.cloneNode(true)
+      if (toOption.value === initialToCurrency) {
+        toOption.setAttribute('selected','selected')
+      }
+      currencyCalc.querySelector("#calcFrom").appendChild(fromOption)
+      currencyCalc.querySelector("#calcTo").appendChild(toOption)
+    }
+  
+    calcFromCurrency = calcFrom.value
+    calcToCurrency = calcTo.value
+    
+    calcFromRate = forexRates[calcFromCurrency]
+    calcToRate = forexRates[calcToCurrency]
+    console.log(calcFromRate)
+    console.log(calcToRate)
+  }
+
+  function separateThousands(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+  
+  initCurrencySelectors()
+
+  calcInput.addEventListener("input", function () {
+    var result = (calcInput.value * (calcFromRate/calcToRate)).toFixed(2)
+    calcResult.value = separateThousands(result)
+  });
+
+  for (let i = 0; i < currencySelectors.length; i++) {
+      currencySelectors[i].addEventListener("change", function () {
+        calcFromCurrency = calcFrom.value
+        calcToCurrency = calcTo.value
+        calcFromRate = forexRates[calcFromCurrency]
+        calcToRate = forexRates[calcToCurrency]
+        var result = (calcInput.value * (calcFromRate/calcToRate)).toFixed(2)
+        calcResult.value = separateThousands(result)
+      }); 
+  }
+
+
 </script>
 {% endblock %}

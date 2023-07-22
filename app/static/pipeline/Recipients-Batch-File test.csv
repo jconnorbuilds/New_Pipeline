@@ -1,6 +1,6 @@
 recipientId,name,recipientEmail,account,sourceCurrency,targetCurrency,amountCurrency,amount,paymentReference,addressCountryCode,addressCity,addressFirstLine,addressState,addressPostCode
-123456,Joe Connor,,8******57,,USD,,,,US,Astoria,28 48 38th Street,NY,11103
-987654,Seiya Matsumiya,,1*******51,,EUR,,,,US,Los Angeles,440 N West Lake Ave.,CA,90026
+376885535,Alex Laudani,,8******57,,USD,,,,US,Astoria,28 48 38th Street,NY,11103
+369001109,Spheres Music Inc,,1*******51,,USD,,,,US,Los Angeles,440 N West Lake Ave.,CA,90026
 365596431,Yaniv's Studio,yanivstudio3@gmail.com,9*******43,,USD,,,,US,Woodland Hills,22925 Calvert st.,CA,91367
 350891701,Ayumi Ueda,ayumusicook@gmail.com,00*******675,,USD,,,,,,,,
 349552183,"PLANNOVA CO., LTD. ",,*******879,,THB,,,,TH,Bangkok,1537 TOWN IN TOWN 3/1 SRIVARA RD.,,10310
@@ -140,3 +140,4 @@ recipientId,name,recipientEmail,account,sourceCurrency,targetCurrency,amountCurr
 45283424,Black Cat White Cat Music,aska@bwcatmusic.com,32*******097,,USD,,,,US,Topanga,1491 N Topanga Canyon Blvd.,CA,90290
 44689652,believe Sync,pete.beck@believedigital.com,******************1500,,USD,,,,GB,London,"Unit 5AB Union Court, 20-22 Union Rd, Clapham",,SW46JP
 34932428,Maxime Sokolinki,maxsokolinski@gmail.com,FR** **** **** **** **** ***8 G20,,EUR,,,,FR,Paris,25 Rue Popincourt,,75011
+111111111,Joe Connor,joe@bwcatmusic.com,8******12,,USD,,,,US,Holly Springs,604 Cayman Ave,NC,27540

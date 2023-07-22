@@ -566,6 +566,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
     # Creates a list of vendors who have invoices ready to be requested, no dupes
     vendor = Vendor.objects.get(vendor_rel__id=cost_id)
     cost = Cost.objects.get(id = cost_id)
+    protocol = "http" if not settings.DEBUG else "https"
 
     if cost.invoice_status not in ["REQ", "REC", "REC2", "PAID", "NA"]:
         # TODO: prepare a separate email for Japanese clients
@@ -581,7 +582,8 @@ def RequestVendorInvoiceSingle(request, cost_id):
 
         # creates rich text and plaintext versions to be sent; rich text will be read by default
         html_message = render_to_string("invoice_uploader/invoice_request_email_template.html", context={
-                                        'vendor_name': vendor_name, 'vendor': vendor, 'cost': cost, 'request':request})
+                                        'vendor_name': vendor_name, 'vendor': vendor, 'cost': cost, 'request':request, 'protocol':protocol})
+        print(request)
         with open(settings.TEMPLATE_DIR / "invoice_uploader/invoice_request_email_template.html") as f:
             message = strip_tags(f.read())
 
@@ -668,7 +670,7 @@ def create_batch_payment_file(request):
     if request.method == "POST":
         invoices = Cost.objects.filter(invoice_status__in=["REC", "REC2"])
         processing_status = {} # format: invoice PO number {status (success/error), message} 
-        
+        print(invoices)
         response = HttpResponse(
             content_type='text/csv',
             headers = {'Content-Disposition': 'attachment; filename = "WISE_BATCH_PAYMENT.csv"'},
@@ -1054,7 +1056,7 @@ class JobDeleteView(DeleteView):
 
 class ClientCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Client
-    fields = ["friendly_name", "job_code_prefix", "proper_name", "name_japanese", "proper_name_japanese", "paymentTerm", "notes"]
+    fields = ["friendly_name", "job_code_prefix", "proper_name", "proper_name_japanese", "paymentTerm", "notes"]
 
     success_message = "Client added!"
     def get_success_url(self):

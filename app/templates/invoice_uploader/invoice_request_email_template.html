@@ -30,7 +30,7 @@
 		</ul>
 		{% endfor %}
 	{% endif %}
-	<h4>Upload your invoices <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">HERE</a>!</h4>
+	<h4>Upload your invoices <a href="{{ protocol }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">HERE</a>!</h4>
 	<p>Open the page and simply drag and drop.</p>
 	
 	<p>We plan to pay you by the 25th of the following month upon receipt of invoice. If you have any questions or concerns, please reach out directly. Looking forward to working with you again! </p></br>

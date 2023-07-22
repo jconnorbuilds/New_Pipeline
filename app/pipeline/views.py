@@ -566,7 +566,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
     # Creates a list of vendors who have invoices ready to be requested, no dupes
     vendor = Vendor.objects.get(vendor_rel__id=cost_id)
     cost = Cost.objects.get(id = cost_id)
-    protocol = "http" if not settings.DEBUG else "https"
+    protocol = "http" if settings.DEBUG else "https"
 
     if cost.invoice_status not in ["REQ", "REC", "REC2", "PAID", "NA"]:
         # TODO: prepare a separate email for Japanese clients

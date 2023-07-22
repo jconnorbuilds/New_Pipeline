@@ -18,22 +18,23 @@ jobs:
       - 
         name: Add environment variables to .env
         run: |
-          echo "TAG=" >> .env
-          echo "DEBUG='0'" >> .env
-          echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools'" >> .env
-          echo "SQL_ENGINE='django.db.backends.postgresql'" >> .env
-          echo "DATABASE='postgres'" >> .env
-          echo "SECRET_KEY='${{ secrets.SECRET_KEY }}'" >> .env
-          echo "SQL_DATABASE='${{ secrets.SQL_DATABASE }}'" >> .env
-          echo "SQL_USER='${{ secrets.SQL_USER }}'" >> .env
-          echo "SQL_PASSWORD='${{ secrets.SQL_PASSWORD }}'" >> .env
-          echo "SQL_HOST='${{ secrets.SQL_HOST }}'" >> .env
-          echo "SQL_PORT='${{ secrets.SQL_PORT }}'" >> .env
+          echo "TAG=${{ env.TAG }}" >> .env
+          echo "DEBUG=0" >> .env
+          echo "DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools" >> .env
+          echo "SQL_ENGINE=django.db.backends.postgresql" >> .env
+          echo "DATABASE=postgres" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "SQL_DATABASE=${{ secrets.SQL_DATABASE }}" >> .env
+          echo "SQL_USER=${{ secrets.SQL_USER }}" >> .env
+          echo "SQL_PASSWORD=${{ secrets.SQL_PASSWORD }}" >> .env
+          echo "SQL_HOST=${{ secrets.SQL_HOST }}" >> .env
+          echo "SQL_PORT=${{ secrets.SQL_PORT }}" >> .env
       -
         name: Set environment variables
         run: |
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
           echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
+          echo "TAG=$(echo ${{env.TAG}} )" >> $GITHUB_ENV
       -
         name: Log in to GitHub Packages
         run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
@@ -51,13 +52,13 @@ jobs:
       - 
         name: Tag images
         run: |
-          docker tag npt_prod:latest ${{ env.WEB_IMAGE }}:latest
-          docker tag npt_nginx_prod:latest ${{ env.NGINX_IMAGE }}:latest
+          docker tag pipeline_prod:latest ${{ env.WEB_IMAGE }}:${{ env.TAG }}
+          docker tag pipeline_nginx_prod:latest ${{ env.NGINX_IMAGE }}:${{ env.TAG }}
       - 
         name: Push images
         run: |
-          docker push ${{ env.WEB_IMAGE }}:latest
-          docker push ${{ env.NGINX_IMAGE }}:latest
+          docker push ${{ env.WEB_IMAGE }}:${{ env.TAG }}
+          docker push ${{ env.NGINX_IMAGE }}:${{ env.TAG }}
 
   deploy:
     name: Deploy to Linode
@@ -68,7 +69,7 @@ jobs:
         uses: actions/checkout@v3.2.0
       - name: Add environment variables to .env
         run: |
-          echo "DEBUG='0'" >> .env
+          echo "DEBUG=0" >> .env
           echo "TAG=${{ env.TAG }}" >> .env
           echo "SQL_ENGINE='django.db.backends.postgresql'" >> .env
           echo "DJANGO_ALLOWED_HOSTS='localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools'" >> .env

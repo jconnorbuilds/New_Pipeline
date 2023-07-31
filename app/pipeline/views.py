@@ -1074,6 +1074,26 @@ class VendorListView(LoginRequiredMixin, ListView):
         sorted_vendors = sorted(queryset, key=lambda vendor: vendor.familiar_name)
         return sorted_vendors
     
+class VendorUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Vendor
+    template_name = 'pipeline/vendor_update.html'
+    fields = ["first_name", "last_name", "email", "vendor_code", "use_company_name", "company_name", "notes", "payment_id"]
+    success_message = "The details for %(familiar_name)s have been updated"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            familiar_name = self.object.familiar_name,
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pk"] = self.object.id
+        return context
+        
+    def get_success_url(self):
+        return reverse('pipeline:vendor-list')
+    
 class VendorCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Vendor
     fields = "__all__"

@@ -4,8 +4,19 @@
 
 {% block body_block %}
 <div class="container d-flex justify-content-center">
-   
-    <div class="col-8 ">
+    <div class="col-8">
+        <div class="container p-3">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="container-fluid p-0">
+                        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            {{ message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
          <h1 class="display-1 text-center">Vendor list</h1>
         {% for vendor in object_list %}
         <div class="container bg-secondary-subtle border border-dark border-1 rounded-1 m-3 p-2">
@@ -14,11 +25,10 @@
                 <dt class="col-sm-3">Email</dt>
                 <dd class="col-sm-9">{{ vendor.email }}</dd>
                 <dt class="col-sm-3">Invoice upload link</dt>
-                <dd class="col-sm-9"><a href="{{ request.scheme }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">Copy Link</a></dd>
+                <dd class="col-sm-9"><a href="{{ request.scheme }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">Invoice upload portal</a></dd>
             </dl>
-            <p>Edit vendor details</p>
+            <a href="{% url 'pipeline:vendor-update' vendor.id %}">Update vendor details</p>
         </div>
-        
         
         {% empty %}
             <li>placeholder</li>

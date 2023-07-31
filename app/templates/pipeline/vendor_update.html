@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+<div class="container p-3 d-flex justify-content-center">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-dark col-1-md " type="submit" value="Update">
+    </form>
+</div>
+{% endblock %}

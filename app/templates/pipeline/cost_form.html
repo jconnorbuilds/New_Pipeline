@@ -82,16 +82,16 @@
   <div class="container">
     <h3 class="display-3">cost sheet </h3>
     <hr>
-    <div class="row d-flex">
-      <div class="col-md-auto text-center ">
-        <h6 class="display-6"> {{ currentJob.job_name }}</h6>
+    <div class="row d-flex justify-content-md-between">
+      <div class="col-md-auto text-md-start text-center">
+        <h6 class="display-6 "> {{ currentJob.job_name }}</h6>
         <h6><small class="text-muted">ジョブコード: {{ currentJob.job_code }}</small></h6>
       </div>
-      <div class="col-md-auto ms-auto my-auto p-3 border-red">
-        <div class="text-end">
-        <h6 class="font-monospace">Revenue: ¥{{ currentJob.revenue_incl_consumption_tax }}</h6>
-        <h6 class="font-monospace">Total cost: ¥{{ currentJob.total_cost }}</h6>
-        <h6 class="font-monospace">Profit rate: {{ currentJob.profit_rate }}%</h6>
+      <div class="col-md-auto my-auto p-3">
+        <div class="text-md-end text-center">
+          <h6 class="font-monospace">Revenue: ¥{{ currentJob.revenue_incl_consumption_tax }}</h6>
+          <h6 class="font-monospace">Total cost: ¥{{ currentJob.total_cost }}</h6>
+          <h6 class="font-monospace">Profit rate: {{ currentJob.profit_rate }}%</h6>
         </div>
       </div>
     </div>

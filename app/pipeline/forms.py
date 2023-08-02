@@ -88,8 +88,12 @@ class JobForm(ModelForm):
             self.fields['client'].empty_label = 'Select client'
             self.fields['client'].queryset = Client.objects.order_by('friendly_name')
 
-    year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES), initial=timezone.now().year)
-    month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES), initial=timezone.now().month)
+            current_time = timezone.now()
+            self.fields['month'].initial = str(current_time.month)
+            self.fields['year'].initial = str(current_time.year)
+
+    year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES))
+    month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES))
 
     class Meta:
         model = Job

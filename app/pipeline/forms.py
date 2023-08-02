@@ -3,6 +3,7 @@ from django import forms
 from django.core.validators import FileExtensionValidator
 from django.forms import ModelForm, Textarea, formset_factory, formsets, renderers
 from django.db.models import Q
+from django.utils import timezone
 from .models import Cost, Job, Vendor, Client
 from datetime import date
 from datetime import date
@@ -87,8 +88,8 @@ class JobForm(ModelForm):
             self.fields['client'].empty_label = 'Select client'
             self.fields['client'].queryset = Client.objects.order_by('friendly_name')
 
-    year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES), initial=date.today().year)
-    month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES), initial=date.today().month)
+    year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES), initial=timezone.now().year)
+    month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES), initial=timezone.now().month)
 
     class Meta:
         model = Job

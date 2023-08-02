@@ -92,7 +92,6 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
         elif 'update-job' in request.POST:
             job = Job.objects.get(id=request.POST.get('job_id'))
-            print(f'update-job post request {request.POST}')
             form_data_job_status = request.POST.get('status')
 
             if form_data_job_status:
@@ -134,24 +133,18 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                         i += 1
                     if i > 0:
                         messages.warning(request, f'{i} jobs were deleted. They can be restored from the admin panel.')
-                        print("deleted!")
                     else:
                         messages.error(request, 'No jobs were deleted.')
-                        print('No jobs were deleted.')
                 elif action == "RELATE":
                     if len(checked_jobs) > 1:
                         checked_jobs[0].relatedJobs.set([job for job in checked_jobs[1::]])
-                    else:
-                        print('nothing happened')
                 elif action == "UNRELATE":
                     i = 1
                     while i < len(checked_jobs):
                         if checked_jobs[i] in checked_jobs[0].relatedJobs.all():
                             checked_jobs[0].relatedJobs.remove(checked_jobs[i])
-                            print('success!')
                             i += 1
                         else:
-                            print("jobs aren't related")
                             i += 1
                 else:
                     return(HttpResponse("error")) #TODO: use a better error message
@@ -239,7 +232,6 @@ def revenue_display_data(request, year=None, month=None):
 
     total_base_revenue_ytd = jobs_from_current_year.aggregate(total_base_revenue=Sum('revenue'))['total_base_revenue'] or 0
     total_revenue_ytd = jobs_from_current_year.aggregate(total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue']
-    print(total_base_revenue_ytd)
     total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue'] or 0
     total_revenue_monthly_actual = jobs.filter(
         status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(

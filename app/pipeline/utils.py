@@ -159,8 +159,7 @@ def process_imported_jobs(csv_file):
 
             if client:
                 try:
-                    # These lines were importing with invisble spaces, so
-                    # I used .strip() import them without the spaces
+                    # These lines were importing with invisble spaces, so I used .strip()
                     j,created = Job.objects.update_or_create(
                         job_name = job_name.strip(),
                         client = client,
@@ -172,7 +171,7 @@ def process_imported_jobs(csv_file):
                         year = year.strip(),
                         month = month.strip(),
                         job_type = job_type.strip(),
-                        revenue = revenue,
+                        revenue = int(revenue),
                         add_consumption_tax = add_consumption_tax.strip(),
                         personInCharge = personInCharge.strip(),
                         status = status.strip()

@@ -217,12 +217,12 @@ class Cost(models.Model):
 
 class Job(models.Model):
     forex_rates = get_forex_rates()
-    # def get_absolute_url(self):
-    #   return reverse('pipeline:costsheet', kwargs={'job_code':self.job_code})
 
     def get_absolute_url(self):
         return reverse('pipeline:job-detail', kwargs={"pk":self.pk})
     
+    created_at = models.DateTimeField(auto_now_add=True,)
+    updated_at = models.DateTimeField(auto_now=True,)
     job_name = models.CharField(max_length=50)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, blank=False, related_name='jobs_by_client')
     job_code = models.CharField(max_length=15, unique=True, blank=True, null=True) # In practicality, this field is required for not-deleted jobs. Logic is handled in the save method.
@@ -262,7 +262,6 @@ class Job(models.Model):
         year: 2023
         
         This should only run once, so the logic runs in the overridden save() function
-        Format abcMMnnYYYY
 
         '''
         jc = ''
@@ -275,7 +274,7 @@ class Job(models.Model):
         for i, job in enumerate(sameClientJobs):
             print(f"job {i}: {job}")
 
-        # 'iterating' part of the code iterates based on the highest job number from
+        # the 'iterating' part of the code iterates based on the highest job number from
         # the same client in the same month
         i = 1
         while jc == '' and i <= 99:

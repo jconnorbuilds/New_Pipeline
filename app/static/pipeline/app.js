@@ -13,6 +13,38 @@ $(document).ready(function(){
     var depositDateRowID
     var depositDateModal
 
+
+    DataTable.ext.order['dom-job-select'] = function (settings, col) {
+        return this.api()
+            .column(col, { order: 'index' })
+            .nodes()
+            .map(function (td, i) {
+                let el = td.querySelector('.job-status-select');
+                return el ? el.value : 0;
+            });
+    };
+
+    const invoiceStatusOrderMap = {
+        'NR': 0,
+        'REQ': 1,
+        'REC': 2,
+        'REC2': 3,
+        'ERR': 4,
+        'QUE': 5,
+        'PAID': 6,
+        'NA': 7,
+    };
+
+    DataTable.ext.order['dom-cost-select'] = function (settings, col) {
+        return this.api()
+            .column(col, { order: 'index' })
+            .nodes()
+            .map(function (td, i) {
+                let el = td.querySelector('.cost-status-select');
+                return el ? invoiceStatusOrderMap[el.value] : 0;
+            });
+    };
+
     var jobTable = $('#job-table').DataTable({
         paging: false,
         responsive: true,
@@ -64,7 +96,8 @@ $(document).ready(function(){
             },
             {
                 "data": "status",
-                "name": "status"
+                "name": "status",
+                orderDataType: "dom-job-select",
             },
             {
                 "data": "deposit_date",
@@ -85,7 +118,7 @@ $(document).ready(function(){
                 searchable: false,
             },
             {
-                targets: [0, 1, -1, -2, -3],
+                targets: [0, 1, -1, -2,],
                 orderable: false
             },
             {
@@ -279,7 +312,10 @@ $(document).ready(function(){
             {"data": "vendor"},
             {"data": "description"},
             {"data": "PO_number"},
-            {"data": "invoice_status"},
+            {
+                "data": "invoice_status",
+                orderDataType: "dom-cost-select",
+            },
             {"data": "request_invoice", "render": function (data, type, row) {
                 return data;
             }},
@@ -537,7 +573,10 @@ $(document).ready(function(){
             { "data": "vendor" },
             { "data": "description" },
             { "data": "PO_number" },
-            { "data": "invoice_status" },
+            {
+                 "data": "invoice_status",
+                orderDataType: "dom-cost-select",
+            },
             {
                 "data": "request_invoice", "render": function (data, type, row) {
                     return data;

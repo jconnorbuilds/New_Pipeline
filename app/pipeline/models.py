@@ -83,7 +83,6 @@ class Vendor(models.Model):
 class Client(models.Model):
     friendly_name = models.CharField(max_length=100, unique=True)
     proper_name = models.CharField(max_length=100, null=True, blank=True)
-    # name_japanese = models.CharField(max_length=100, null= True, blank=True) # likely don't need this anymore
     proper_name_japanese = models.CharField(max_length=100, blank=True)
     job_code_prefix = models.CharField(max_length=4, unique=True)
 

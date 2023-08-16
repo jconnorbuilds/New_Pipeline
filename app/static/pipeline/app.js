@@ -4,14 +4,15 @@ $(document).ready(function(){
     let currentYear = date.getFullYear()
     let viewingMonth = currentMonth
     let viewingYear = currentYear
-    var totalRevenueYtd = 0
-    var avgMonthlyRevenueYtd = 0
-    var totalRevenueMonthlyExp = 0
-    var totalRevenueMonthlyAct = 0
-    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    var openInvoiceInfoModal = false // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page 
-    var depositDateRowID
-    var depositDateModal
+    let totalRevenueYtd = 0
+    let avgMonthlyRevenueYtd = 0
+    let totalRevenueMonthlyExp = 0
+    let totalRevenueMonthlyAct = 0
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]') ? 
+        document.querySelector('[name=csrfmiddlewaretoken]').value : null;
+    let openInvoiceInfoModal = false // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page 
+    let depositDateRowID
+    let depositDateModal
 
 
     DataTable.ext.order['dom-job-select'] = function (settings, col) {

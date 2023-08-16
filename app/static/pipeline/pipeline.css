@@ -4,13 +4,12 @@
 
 html,
 body {
-  height: 100%;
+  height: 100vh;
   /* font-weight: var(--fw-regular); */
 }
 
 strong {
   font-weight: var(--fw-bold);
-  /* Use the "bold" font weight from the mapping */
 }
 
 .edit-del-btn-group {

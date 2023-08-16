@@ -275,6 +275,7 @@ def cost_data(request, job_id):
 class VendorDetailView(LoginRequiredMixin, DetailView):
     template_name = "pipeline/vendors.html"
     model = Vendor
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['costs'] = Cost.objects.filter(vendor__id=self.kwargs['pk'])
@@ -285,6 +286,20 @@ class VendorDetailView(LoginRequiredMixin, DetailView):
         context['jobs'] = Job.objects.filter(vendors__id=self.kwargs['pk'])
 
         return context
+    
+class ClientDetailView(LoginRequiredMixin, DetailView):
+    template_name = "pipeline/vendors.html"
+    model = Client
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['costs'] = Cost.objects.filter(vendor__id=self.kwargs['pk'])
+    #     print(self.kwargs['pk'])
+    #     currentJobs = Job.objects.filter(vendors__id = self.kwargs['pk'])
+    #     for job in currentJobs:
+    #         print(job)
+    #     context['jobs'] = Job.objects.filter(vendors__id=self.kwargs['pk'])
+    #     return context
 
 class JobDetailView(DetailView):
     template_name = "pipeline/job_details.html"
@@ -923,14 +938,11 @@ class CostCreateView(LoginRequiredMixin, CreateView):
         context['currencyList'] = json.dumps(currencies)
         context['forexRates'] = json.dumps(self.forex_rates)
         current_url = self.request.build_absolute_uri()
-        # update_cost_url = reverse('pipeline:update-cost', kwargs={'pk': my_cost.pk}) + \
-        #     '?' + urlencode({'return_to': current_url})
         context['currentJob'] = currentJob
         context['headers'] = ["金額(¥)", "金額(現地)", "ベンダー名", "作業の内容", "PO番号", "請求書ステータス", "", "編集", "ID"]
         context['simple_add_vendor_form'] = self.simple_add_vendor_form()
         context['update_cost_form'] = self.update_cost_form()
         context['cost_form'] = self.cost_form()
-        # context['update_cost_url'] = update_cost_url
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1002,19 +1014,11 @@ class CostCreateView(LoginRequiredMixin, CreateView):
             return JsonResponse({"status":"success", "data":data})
         
         return HttpResponseRedirect(self.request.path_info)
-        # return render(request, self.template_name, self.get_context_data(**kwargs))
-
 
 class CostUpdateView(RedirectToPreviousMixin, UpdateView):
     model = Cost
     fields = ['vendor','description','amount','currency','invoice_status','notes', 'locked_exchange_rate', 'exchange_rate_locked_at', 'exchange_rate_override']
     template_name_suffix = '_update_form'
-    # def get_success_url(self):
-    #     # return_to = self.request.GET.get('return_to', '/')
-    #     # Redirect the user back to the original page
-    #     # return redirect(return_to)
-    #     # else:
-    #     return reverse_lazy('pipeline:cost-add', kwargs={'pk': self.object.job.id})
     
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -1085,6 +1089,26 @@ class VendorUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         
     def get_success_url(self):
         return reverse('pipeline:vendor-list')
+    
+class ClientUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Client
+    template_name = 'pipeline/client_update.html'
+    fields = ["proper_name", "proper_name_japanese", "friendly_name", "job_code_prefix",]
+    success_message = "The details for %(friendly_name)s have been updated"
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            familiar_name = self.object.familiar_name,
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["pk"] = self.object.id
+        return context
+        
+    def get_success_url(self):
+        return reverse('pipeline:client-list')
     
 class VendorCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Vendor

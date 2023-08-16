@@ -13,7 +13,7 @@ def reverse_update_existing_objects(apps, schema_editor):
     obj = apps.get_model('pipeline', 'Job')
     for obj in Job.objects.all():
         obj.consumption_tax_amt = None
-        obj.revenue_incl_consumption_tax = None
+        obj.revenue_incl_tax = None
         obj.save()
 
 class Migration(migrations.Migration):

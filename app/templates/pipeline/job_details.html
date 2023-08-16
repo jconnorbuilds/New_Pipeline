@@ -111,14 +111,16 @@
                 <hr class="my-1" style="width: 50%; margin-left: 50%;">
                 <dl class="row mb-3">
                     <dt class="job-details-item">Total revenue (消費税込)</dt>
-                    <dd class="job-details-amount">¥{{ job.revenue_incl_consumption_tax }}&nbsp&nbsp&nbsp</dd>
+                    <dd class="job-details-amount">¥{{ job.revenue_incl_tax }}&nbsp&nbsp&nbsp</dd>
                 </dl>
                 <dl class="row mb-3">
                     <dt class="job-details-item">Total cost</dt>
                     <dd class="job-details-amount">¥{{job.total_cost}}&nbsp&nbsp&nbsp</dd>
                     <hr class="my-1" style="width: 50%; margin-left: 50%;">
                     <dt class="job-details-item">Profit (消費税込)</dt>
-                    <dd class="job-details-amount">¥{{job.profit}}&nbsp&nbsp&nbsp</em></dd>
+                    <dd class="job-details-amount">¥{{job.profit_incl_tax}}&nbsp&nbsp&nbsp</em></dd>
+                    <dt class="job-details-item">Profit (消費税抜)</dt>
+                    <dd class="job-details-amount">¥{{job.profit_excl_tax}}&nbsp&nbsp&nbsp</em></dd>
                     <dt class="job-details-item">Profit rate</dt>
                     <dd class="job-details-amount">{{job.profit_rate}}%</dd>
                 </dl>

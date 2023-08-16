@@ -234,7 +234,7 @@ class Job(models.Model):
     revenue = models.IntegerField()
     add_consumption_tax = models.BooleanField(default=True)
     consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
-    revenue_incl_consumption_tax = models.IntegerField(null=True, editable=False)
+    revenue_incl_tax = models.IntegerField(null=True, editable=False)
     vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
     invoice_recipient = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True) # Who the invoice is paid to, if it differs from the client
     invoice_name = models.CharField(max_length=100, blank=True) # If the client has a job code or special name for the invoice
@@ -383,17 +383,21 @@ class Job(models.Model):
         return total
 
     @property
-    def profit(self):
-        return self.revenue_incl_consumption_tax - self.total_cost
+    def profit_incl_tax(self):
+        return self.revenue_incl_tax - self.total_cost
+    
+    @property
+    def profit_excl_tax(self):
+        return self.revenue - self.total_cost
 
     @property
     def profit_rate(self):
         if self.revenue != 0:
-            profit_rate = round(((self.revenue_incl_consumption_tax - self.total_cost) / self.revenue_incl_consumption_tax)*100, 1)
+            profit_rate = round(((self.revenue - self.total_cost) / self.revenue)*100, 1)
             return profit_rate
         else:
-            return 100
-
+            return 100.0
+        
     @property
     def allVendorInvoicesRequested(self):
         costs = Cost.objects.filter(job_id=self.id)
@@ -433,7 +437,7 @@ class Job(models.Model):
 
         self.job_date = f'{self.year}-{int(self.month):02d}-01'
         self.consumption_tax_amt = self.get_consumption_tax_amt()
-        self.revenue_incl_consumption_tax = self.get_consumption_tax_amt() + self.revenue
+        self.revenue_incl_tax = self.get_consumption_tax_amt() + self.revenue
         super().save(*args, **kwargs)
 
     def __str__(self):

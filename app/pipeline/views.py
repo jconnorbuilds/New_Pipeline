@@ -68,7 +68,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
         context['bulk_actions'] = self.bulk_actions
-        context['headers'] = ["", "ID", "クライアント名", "クライアントID", "案件名", "ジョブコード", "収入（税込）", "出費", "利益率", "請求期間", "種目", "ステータス", "入金日", "Invoice Info Completed"]
+        context['headers'] = ["", "ID", "クライアント名", "クライアントID", "案件名", "ジョブコード", "収入（税込）", "出費", "利益率（税抜）", "請求期間", "種目", "ステータス", "入金日", "Invoice Info Completed"]
         return context
     
     def get_queryset(self):
@@ -231,11 +231,11 @@ def revenue_display_data(request, year=None, month=None):
     """
 
     total_base_revenue_ytd = jobs_from_current_year.aggregate(total_base_revenue=Sum('revenue'))['total_base_revenue'] or 0
-    total_revenue_ytd = jobs_from_current_year.aggregate(total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue']
-    total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue'] or 0
+    total_revenue_ytd = jobs_from_current_year.aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue']
+    total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
     total_revenue_monthly_actual = jobs.filter(
         status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(
-        total_revenue=Sum('revenue_incl_consumption_tax'))['total_revenue'] or 0
+        total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
     
     data = {
         "total_revenue_ytd":f'¥{total_revenue_ytd:,}',

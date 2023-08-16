@@ -11,7 +11,7 @@
 </style>
 {% endblock %}
 
-{% block title %}COST SHEET{% endblock %}
+{% block title %}Cost Sheet{% endblock %}
 
 {% block body_block %}
 <div class="container-fluid col-md-10">
@@ -89,7 +89,7 @@
       </div>
       <div class="col-md-auto my-auto p-3">
         <div class="text-md-end text-center">
-          <h6 class="font-monospace">Revenue: ¥{{ currentJob.revenue_incl_consumption_tax }}</h6>
+          <h6 class="font-monospace">Revenue (税抜): ¥{{ currentJob.revenue }}</h6>
           <h6 class="font-monospace">Total cost: ¥{{ currentJob.total_cost }}</h6>
           <h6 class="font-monospace">Profit rate: {{ currentJob.profit_rate }}%</h6>
         </div>

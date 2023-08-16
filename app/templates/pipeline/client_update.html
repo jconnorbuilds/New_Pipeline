@@ -4,65 +4,37 @@
 {% block title %}Edit Client{% endblock %}
 
 {% block body_block %}
-<div class="container d-flex justify-content-center">
-	<div class="col-6">
-		<h1 class="display-1 text-center">Add a vendor</h1>
-			{% if messages %}
-			<div class="container p-3">
-			{% for message in messages %}
-			<div class="container-fluid p-0">
-				<div class="alert {{ message.tags }} alert-dismissible" role="alert">
-					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-					{# <span aria-hidden="True">&times;</span> #}
-					</button>
-					{{ message }}
-				</div>
-			</div>
-			{% endfor %}
-			</div>
-			{% endif %}
-			
-		<form method="post" class="form-control shadow m-3 p-3">
-			{% csrf_token %}
-			<div class="p-3">
-				<p class="m-0">Vendor name</p>
-				<p class="text-muted mt-0"><small>This will be the name used in automated emails, and across the Pipeline.
-					For that reason, it's recommended to only enter a company name when we mainly treat the vendor as a company. 
-					For example if a vendor has an LLC, but is just one person who you communicate with directly, you should just use their name.
-				</small><p>
-				{% render_field form.first_name class+="form-control mb-2" placeholder="First Name" %}
-				{% render_field form.last_name class+="form-control mb-4" placeholder="Last Name" %}
-				{% render_field form.company_name class+="form-control mb-2" placeholder="Company name" %}
-				{% render_field form.use_company_name class+="form-check-input" %}
-				<label class="form-check-label" for="id_use_company_name">Use company name</label>
-				<div id="vendorCodeFormText" class="form-text mb-4 ms-3">
-					
-				</div>
-			
-			{% render_field form.email class+="form-control mb-2" placeholder="Email address" %}
-			</div>
-
-			<div class="p-3">
-				<p>Vendor simple identifier</p>
-				{% render_field form.vendor_code class+="form-control mb-2" placeholder="Vendor 2- or 3-digit code" %}
-				<div id="vendorCodeFormText" class="form-text">
-					This will be used as a simple identifier for each vendor for use in Purchase Order numbers, etc., and should be unique.
-				</div>
-			</div>
-			<div class="p-3">
-				<p>Payment ID</p>
-				{% render_field form.payment_id class+="form-control mb-2" placeholder="WISE recipient ID" %}
-				<div id="paymentIdFormText" class="form-text">
-					If you know this, fill it in. Otherwise it can be added from the admin panel later on. Needed for making the batch payment file.
-				</div>
-			</div>
-			<input type="submit" class="btn btn-dark" value="Save">
-		</form>
-			<br>
-			<div class="p-3">
-				<h3 class="">Bulk import</h3>
-				<a href="{% url 'pipeline:import-vendor' %}"><button type="button" id="import-client-csv-btn" class="m-3 btn btn-light">Import vendors</button></a>
-			</div>
-	</div>
+<div class="container">
+  <h1 class="display-3 text-center m-3">Update {{ client.friendly_name }}</h1>
+  <div class="container" style="width: 450px">
+      {% if messages %}
+      <div class="container p-3">
+      {% for message in messages %}
+      <div class="container-fluid p-0">
+        <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </button>
+          {{ message }}
+        </div>
+      </div>
+      {% endfor %}
+      </div>
+      {% endif %}
+      
+    <form method="post" class="form-control shadow p-3">
+      {% csrf_token %}
+      <div class="p-3">
+        <label class="form-label" for="id_friendly_name">Friendly name</label>
+        {% render_field form.friendly_name class+="form-control mb-2" placeholder="Friendly name" %}
+        <label class="form-label" for="id_proper_name">Proper name</label>
+        {% render_field form.proper_name class+="form-control mb-2" placeholder="Proper name" %}
+        <label class="form-label" for="id_proper_name_japanese">Proper name (日本語)</label>
+        {% render_field form.proper_name_japanese class+="form-control mb-2" placeholder="正式名称" %}
+        <label class="form-label" for="id_job_code_prefix">Client code (e.g. "APL")</label>
+        {% render_field form.job_code_prefix class+="form-control mb-2" %}
+      </div>
+      <input type="submit" class="btn btn-dark" value="Save">
+    </form>
+  </div>
 </div>
 {% endblock %}

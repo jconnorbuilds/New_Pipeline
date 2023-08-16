@@ -66,17 +66,23 @@ $(document).ready(function(){
             }
         },
         columns: [
-            { "data": "select", responsivePriority: 2 }, 
+            { "data": "select", responsivePriority: 2 },
             { 
                 "data": "id",
                 "visible": false
             },
-            { "data": "client_name", responsivePriority: 4 },
+            { 
+                "data": "client_name", 
+                responsivePriority: 4,
+                "render": function(data, type, row) {
+                    return '<a href="client-update/' + row.client_id + '" class="plain-link">' + data + '</a>';
+                }
+            },
             {
                  "data": "client_id",
                  "name": "client_id",
                  "visible": false
-            }, 
+            },
             { "data": "job_name", responsivePriority: 1 },
             { "data": "job_code", },
             { "data": "revenue", responsivePriority: 3 },
@@ -139,9 +145,10 @@ $(document).ready(function(){
             },
         ],
         "rowCallback": function (row, data) {
-            var statusCell = $(row).find(".job-status-select")
-            var initialStatus = statusCell.val()
-            var depositDateCell = $(row).find(".deposit-date")
+            const statusCell = $(row).find(".job-status-select")
+            const initialStatus = statusCell.val()
+            const depositDateCell = $(row).find(".deposit-date")
+
             if (["INVOICED1", "INVOICED2", "FINISHED"].includes(statusCell.val())) {
                 depositDateCell.removeClass("text-body-tertiary")
             } else {
@@ -154,6 +161,7 @@ $(document).ready(function(){
             } else {
                 $(row).removeClass('job-finished');
             }
+
         },
     });
 

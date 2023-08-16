@@ -55,19 +55,6 @@ def get_forex_rates():
 
     return forex_rates_dict
 
-# def getClient(job_code, client_friendly_name):
-#     from .models import Client
-#     if Client.objects.filter(job_code_prefix = job_code[:3]).exists():
-#         return Client.objects.get(job_code_prefix = job_code[:3])
-#     elif Client.objects.filter(job_code_prefix = job_code[:2]).exists():
-#         return Client.objects.get(job_code_prefix = job_code[:2])
-#     elif Client.objects.filter(job_code_prefix = job_code[:4]).exists():
-#         return Client.objects.get(job_code_prefix = job_code[:4])
-#     elif Client.objects.filter(friendly_name__iexact=client_friendly_name).exists():
-#         return Client.objects.get(friendly_name__iexact=client_friendly_name)
-#     else:
-#         return False
-
 def getClient(client_code):
     from .models import Client
     if Client.objects.filter(job_code_prefix = client_code).exists():

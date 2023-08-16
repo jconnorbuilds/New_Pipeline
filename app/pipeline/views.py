@@ -1099,7 +1099,7 @@ class ClientUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_success_message(self, cleaned_data):
         return self.success_message % dict(
             cleaned_data,
-            familiar_name = self.object.familiar_name,
+            familiar_name = self.object.friendly_name,
         )
     
     def get_context_data(self, **kwargs):

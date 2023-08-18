@@ -16,10 +16,11 @@
 	<div class=" d-flex justify-content-center invoice-upload-logo">
 		<img src="{% static 'pipeline/images/bwcat_logo_720x720.png' %}" alt="BCWC logo" width="155px">
 	</div>
-	<div class="p-2 col-9 justify-content-center container-fluid">
+	<div class="content-wrapper p-2 col-9 justify-content-center container-fluid">
 		<h3 class="display-3 text-center">Invoice Uploader</h3>
 		<hr>
-		<div class="container my-3 p-3 text-bg-light border border-dark border-1 rounded-3">
+		<div class="main-content">
+			<div class="container my-3 p-3 text-bg-light border border-dark border-1 rounded-3">
 			{% if requested_invoices %}
 				<h6>Send us your invoices for the following jobs:</h6>
 				<ol>
@@ -56,15 +57,17 @@
 					<div class="shadow rounded p-2" id="invoice-select-area" style="display: none;"></div>
 				</div>
 			</div>
-				<h5>Step 3: Click Submit:
-					<!-- tooltip is initialized on the span because I used to use it on the disabled button. Need to update-->
-					<span class="d-inline-block m-4" data-bs-toggle="tooltip" data-bs-placement="right"
-							data-bs-custom-class="invoice-submit-disabled-tooltip"
-							data-bs-title="👍">
-				<button type="submit" name="submit" id="invoice-upload-btn" class="btn btn-dark disabled">Submit!</button>
-			</span>
-			</h5>
+			<div class="dropzone-messages">
+				<div class="dropzone-error-messages bg-danger-subtle border border-danger p-3 border-3 rounded-3 m-3 d-none">
+				</div>
+			</div>
+			<h5 class="d-inline me-3">Step 3: Click Submit:</h5>
+			<button type="submit" name="submit" id="invoice-upload-btn" class="btn btn-dark disabled">Submit!</button>
+	
 		{% endif %} 
+
+		</div>
+		
 	</div>
 </div>
 <script>

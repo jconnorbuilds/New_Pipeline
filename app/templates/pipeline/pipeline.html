@@ -19,7 +19,7 @@
         <div class="container-fluid p-0">
           <div class="alert {{ message.tags }} alert-dismissible" role="alert">
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              {# <span aria-hidden="True">&times;</span> #}
+              <span aria-hidden="True">&times;</span>
             </button>
             {{ message }}
           </div>
@@ -57,7 +57,7 @@
                 <div class="input-group-text rounded-2 rounded-start-0">
                   {% render_field job_form.add_consumption_tax class+="form-check-input mt-0" help_text="uncheck this to turn off consumption tax calculation (10%)." %}
                 </div>
-                <div id="add-consumption-tax-help" class="form-text">Uncheck the box to disable consumption tax calculation</div>
+                <div id="add-consumption-tax-help" class="form-text">Uncheck the box when consumption tax doesn't apply</div>
               </div>
             </div>
           </div>

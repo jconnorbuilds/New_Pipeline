@@ -26,14 +26,13 @@ Dropzone.options.invoiceUploadForm = {
     // Set up the dropzone
     init: function() {
         myDropzone = this;
-
         // First change the button to actually tell Dropzone to process the queue.
         // this.element.querySelector("button[type=submit]").addEventListener("click", function(e) {
-        $("#invoice-upload-btn").on("click", function(e) { 
+        $("#invoice-upload-btn").on("click", (e) => { 
           // Make sure that the form isn't actually being sent.
             e.preventDefault();
             e.stopPropagation();
-            var allSelected = checkAllJobsSelected();
+            var allSelected = checkifAllJobsSelected();
             var noDuplicates = checkDuplicatesValidation();
             var rejectedFiles = myDropzone.getRejectedFiles.length;
             console.log(`allSelected: ${allSelected}`)
@@ -42,6 +41,7 @@ Dropzone.options.invoiceUploadForm = {
             if (allSelected && noDuplicates && !rejectedFiles) {
                 myDropzone.processQueue();
             } else {
+                // TODO: display helpful info on the screen instead of in the console
                 console.log(`allSelected: ${allSelected}`)
                 console.log(`noDuplicates: ${noDuplicates}`)
                 console.log(`rejectedFiles: ${rejectedFiles}`)
@@ -51,14 +51,13 @@ Dropzone.options.invoiceUploadForm = {
         // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
         // of the sending event because uploadMultiple is set to true.
         this.on("sendingmultiple", function(files, xhr, formData) {
-            // const formData = new FormData($("#invoice-upload-form")[0]);
             const invoices = {};
             $("select").each(function () {
                 const costId = $(this).val();
                 const fileName = $(this).data("file-name");
                 if (costId !== "0") {
                     invoices[costId] = fileName;
-                    }
+                };
             });
             formData.append("invoices", JSON.stringify(invoices))
           // Gets triggered when the form is actually being sent.
@@ -111,9 +110,8 @@ function validateFormsAndFiles() {
     It runs after every time a file is added, removed, or 
     a selection is made one of the dropdown menus.
     */
-
-    var noDuplicates = checkDuplicatesValidation();
-    var allSelected = checkAllJobsSelected();
+    let noDuplicates = checkDuplicatesValidation();
+    let allSelected = checkifAllJobsSelected();
 
     console.log(`Rejected Files: ${myDropzone.getRejectedFiles().length}`)
     console.log(`Queued Files: ${myDropzone.getQueuedFiles().length}`)
@@ -134,11 +132,11 @@ function validateFormsAndFiles() {
 };
 
 function checkDuplicatesValidation() {
-    var dupChecker = [];
-    var duplicates = []
+    let dupChecker = [];
+    let duplicates = []
 
     $('.invoice-select').each(function() {
-        var currentVal = $(this).val();
+        let currentVal = $(this).val();
         if (currentVal == "0") { 
             return;
         } else if (dupChecker.includes(currentVal)) {
@@ -146,10 +144,10 @@ function checkDuplicatesValidation() {
         } else {
             dupChecker.push(currentVal);
         }
-    })
+    });
 
     $('.invoice-select').each(function() {
-        var currentVal = $(this).val();
+        let currentVal = $(this).val();
         if (currentVal == "0") { 
             $(this).removeClass('is-valid');
             $(this).removeClass('is-invalid');
@@ -160,20 +158,17 @@ function checkDuplicatesValidation() {
             $(this).removeClass('is-invalid');
             $(this).addClass('is-valid');
         }
-    })
+    });
+
     console.log(`duplicates: ${duplicates}`)
-    if (duplicates.length === 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return duplicates.length === 0;
 };
 
-function checkAllJobsSelected() {
-    var allSelected = true;
+function checkifAllJobsSelected() {
+    let allSelected = true;
     $('.invoice-select').each(function() {
         console.log(`SELECTED VALUE: ${$(this).val()}`)
-        if ($(this).val() == "0") {
+        if ($(this).val() === "0") {
             allSelected = false;
             return false; // Exit the loop early if a zero value is found
       }
@@ -181,12 +176,26 @@ function checkAllJobsSelected() {
     return allSelected;
 };
 
+function removeDuplicates(dropzone, file) {
+    // If the name, size, and last modified date of the added file match an existing file, remove the file
+    let _i, _len;
+    for (_i = 0, _len = dropzone.files.length; _i < _len - 1; _i++) { // -1 to exclude current file
+        if (dropzone.files[_i].name === file.name &&
+            dropzone.files[_i].size === file.size &&
+            dropzone.files[_i].lastModified.toString() === file.lastModified.toString()) {
+            dropzone.removeFile(file);
+        }
+    };
+}
+
 $(document).ready(function(){
     console.log('Ready!');
 
-    // Dynamic dropdown menu generation logic.
-    // When a file is uploaded, a dropdown is generated with all 
-    // costs that are awaiting invoices that are available to that vendor.
+    /* 
+    Dynamic dropdown menu generation logic.
+    When a file is uploaded, a dropdown is generated with all 
+    costs that are awaiting invoices that are available to that vendor.
+    */
     let myDropzone = new Dropzone("#invoice-upload-form");
 
     const costs = JSON.parse(window.costsJson);
@@ -199,36 +208,28 @@ $(document).ready(function(){
             jobCode: job.job_code,
             jobName: job.job_name,
             display: job.job_code + " - (" + job.job_name + ")"
-        }
-    }
-    
+        };
+    };
+
     let formNum = 0;
-    let filenameList = []
+    let filenameList = [];
     myDropzone.on("addedfile", function(file) {
         formNum ++;
         $(".dz-message").hide();
-        // If the name, size, and last modified date of the newest file match an existing file, remove the file
+        console.log(this);
         if (this.files.length) {
-                var _i, _len;
-                for (_i = 0, _len = this.files.length; _i < _len - 1; _i++) // -1 to exclude current file
-                {
-                    if(this.files[_i].name === file.name && this.files[_i].size === file.size && this.files[_i].lastModified.toString() === file.lastModified.toString())
-                    {
-                        this.removeFile(file);
-                    }
-                }
-            }
-        var invoiceSelect = $(`
+            removeDuplicates(this, file)
+        };
+        let invoiceSelect = $(`
             <div class="input-group mb-3 invoice-select-row" id="${slugify(file.name)}-form">
                 <label for='invoice-select-${formNum}' class="input-group-text"><b>${file.name}</b></label>
                 <select class='form-select invoice-select' id='invoice-select-${formNum}' required></select>
             </div>`);
-        $("#invoice-select-area").append(invoiceSelect).show()
-        $("#invoice-hint").text(hintWithInvoices)
+        $("#invoice-select-area").append(invoiceSelect).show();
+        $("#invoice-hint").text(hintWithInvoices);
         invoiceSelect.find('select').append("<option value=0>Select job</option>")
             .attr("data-file-name", file.name);
         for (const cost of costs) {
-            console.log(`File added: ${file.name}`);
             if (cost.fields.vendor === window.vendorId) {
                 const option = $("<option></option>")
                 .val(cost.pk)

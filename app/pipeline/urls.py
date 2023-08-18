@@ -38,6 +38,5 @@ urlpatterns = [
 	path('revenue-data/', views.revenue_display_data, name="revenue-data"),
 	path('invoices/', views.InvoiceView.as_view(), name="invoices"),
 	path('all-invoices-data/',views.all_invoices_data, name="all-invoices-data")
-
 ]
 

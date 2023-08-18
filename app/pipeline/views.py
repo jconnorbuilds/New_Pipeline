@@ -424,7 +424,7 @@ def dropbox_upload_file(file_to_upload, dropbox_file_path):
         dbx = dropbox_connect()
         meta = dbx.with_path_root(
             #namespace_id of the root folder of the Team Space in dropbox (e.g. "Black Cat White Cat Dropbox")
-            #this MAY change when a new team member is added so we should really assign it programatically.
+            # TODO: this MAY change when a new team member is added so we should really assign it programatically.
             path_root=dropbox.common.PathRoot.namespace_id("9004345616")).files_upload(
                 f=file_to_upload.read(),
                 path=dropbox_file_path,

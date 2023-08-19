@@ -85,9 +85,20 @@ $(document).ready(function(){
             },
             { "data": "job_name", responsivePriority: 1 },
             { "data": "job_code", },
-            { "data": "revenue", responsivePriority: 3 },
-            { "data": "total_cost", responsivePriority: 5 },
-            { "data": "profit_rate"},
+            { 
+                "data": "revenue", 
+                responsivePriority: 3,
+                className: "pe-3"
+            },
+            { 
+                "data": "total_cost",
+                responsivePriority: 5,
+                className: "pe-4"
+            },
+            { 
+                "data": "profit_rate",
+                className: "ps-3"
+            },
             {
                 "data": "job_date",
                 "render": function (data) {

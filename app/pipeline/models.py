@@ -231,6 +231,7 @@ class Job(models.Model):
     isArchived = models.BooleanField(default=False)
     isInvoiced = models.BooleanField(default=False)
     revenue = models.IntegerField()
+    granular_revenue = models.BooleanField(default=False)
     add_consumption_tax = models.BooleanField(default=True)
     consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
     revenue_incl_tax = models.IntegerField(null=True, editable=False)

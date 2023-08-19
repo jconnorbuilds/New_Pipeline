@@ -718,6 +718,7 @@ $(document).ready(function(){
             job_name: $("#id_job_name").val(),
             client: $("#id_client").val(),
             job_type: $("#id_job_type").val(),
+            granular_revenue: $("#id_granular_revenue").val(),
             revenue: $("#id_revenue").val(),
             add_consumption_tax: $("#id_add_consumption_tax").prop('checked'),
             personInCharge: $("#id_personInCharge").val(),

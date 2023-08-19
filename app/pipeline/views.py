@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
 from django.core.exceptions import ValidationError
-from django.core.mail import send_mail, send_mass_mail
+from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Sum, F, Q
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse, HttpResponseServerError
@@ -43,9 +43,6 @@ class RedirectToPreviousMixin:
 
 def index(request):
     return redirect('pipeline:index')
-
-def is_ajax(request):
-    return request.headers.get('x-requested-with') == 'XMLHttpRequest'
     
 class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
     model = Job
@@ -79,8 +76,11 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         if 'addjob' in request.POST:
             job_form = self.form_class(request.POST)
             if job_form.is_valid():
+                print(job_form.cleaned_data)
                 # Take in the revenue in terms of 万
-                job_form.instance.revenue = job_form.instance.revenue * 10000
+                print(request.POST)
+                if not job_form.instance.granular_revenue:
+                    job_form.instance.revenue = job_form.instance.revenue * 10000
                 instance = job_form.save()
                 job = Job.objects.get(pk=instance.pk)
                 data = get_job_data(job)

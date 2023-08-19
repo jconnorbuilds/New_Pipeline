@@ -4,24 +4,25 @@ from django.core.validators import FileExtensionValidator
 from django.forms import ModelForm, Textarea, formset_factory, formsets, renderers
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from .models import Cost, Job, Vendor, Client
 from datetime import date
 from datetime import date
 import calendar
 
 MONTH_CHOICES = [
-    (1,'January'),
-    (2,'February'),
-    (3,'March'),
-    (4,'April'),
-    (5,'May'),
-    (6,'June'),
-    (7,'July'),
-    (8,'August'),
-    (9,'September'),
-    (10,'October'),
-    (11,'November'),
-    (12,'December'),
+    (1,_('January')),
+    (2,_('February')),
+    (3,_('March')),
+    (4,_('April')),
+    (5,_('May')),
+    (6,_('June')),
+    (7,_('July')),
+    (8,_('August')),
+    (9,_('September')),
+    (10,_('October')),
+    (11,_('November')),
+    (12,_('December')),
     ]
 
 # year_list is a tuple (int, int) of each year through the current year
@@ -94,10 +95,11 @@ class JobForm(ModelForm):
 
     year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES))
     month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES))
+    granular_revenue = forms.BooleanField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Job
-        fields = ['job_name','client','job_type','revenue','add_consumption_tax','personInCharge','year','month']
+        fields = ['job_name','client','job_type', 'granular_revenue', 'revenue', 'add_consumption_tax', 'personInCharge', 'year', 'month']
 
 class JobImportForm(forms.Form):
     file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['csv'])])

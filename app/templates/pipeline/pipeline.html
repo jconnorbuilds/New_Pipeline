@@ -41,27 +41,28 @@
             <div class="col-sm-12">
               <div class="input-group">
                 {% render_field job_form.client class+="form-select" %}
-                <button class="btn btn-light rounded-end-2 border" type="button" id="pipeline-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
+                <button class="btn btn-light rounded-end-2 border" type="button" id="pipeline-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">New Client</button>
               </div>
             </div>
           </div>
-          <div class="row g-3 pb-1">
-            <div class="col-sm-6">
+          <div class="row g-3 pb-3">
+            <div class="col-md-6">
               {% render_field job_form.job_name class+="form-control" placeholder="Enter job name" %}
             </div>
-            <div class="col-sm-6">
+            <div class="col-md-6">
               <div class="input-group">
-                <span class="input-group-text" id="yen-addon">¥</span>
-                  {% render_field job_form.revenue class+="form-control" help_text="revenue in ¥10k increments" %}
-                <span class="input-group-text" id="man-addon">万</span>
-                <div class="input-group-text rounded-2 rounded-start-0">
-                  {% render_field job_form.add_consumption_tax class+="form-check-input mt-0" help_text="uncheck this to turn off consumption tax calculation (10%)." %}
+                {% render_field job_form.revenue class+="form-control" placeholder="例）100" %}
+                <button class="btn btn-light border col-2 text-nowrap" type="button" data-bs-toggle="button" id="revenue-unit">万円</button>
+                <div class="input-group-text">
+                  {% render_field job_form.add_consumption_tax class+="form-check-input my-auto me-2"%}
+                  <label id="add-consumption-tax-help" class="form-check-label" for="id_add_consumption_tax">消費税</label>
                 </div>
-                <div id="add-consumption-tax-help" class="form-text">Uncheck the box when consumption tax doesn't apply</div>
-              </div>
+                </div>
+                {% render_field job_form.granular_revenue class+="form-check-input mt-0"%}
+              
             </div>
           </div>
-          <div class="row g-3 p-1">
+          <div class="row g-3 pb-3">
             <div class="col-sm-3">
               {% render_field job_form.job_type class+="form-select" %}
             </div>
@@ -74,14 +75,14 @@
             <div class="col-sm-3">
               {% render_field job_form.year class+="form-control" %}
             </div>
-            <div class='row g-3 p-1 align-items-center'>
-              <div class="col-auto">
-                <input type="submit" name="addjob" id="add-job-btn" value="Add Job" class="btn btn-dark">
-              </div>
-              <div class="col-auto p-0">
-                <div class="spinner-border spinner-border-sm invisible" role="status" id="add-job-spinner">
-                  <span class="visually-hidden">Loading...</span>
-                </div>
+          </div>
+          <div class='row align-items-center'>
+            <div class="col-auto">
+              <input type="submit" name="addjob" id="add-job-btn" value="Add Job" class="btn btn-dark">
+            </div>
+            <div class="col-auto p-0">
+              <div class="spinner-border spinner-border-sm invisible" role="status" id="add-job-spinner">
+                <span class="visually-hidden">Loading...</span>
               </div>
             </div>
           </div>
@@ -344,5 +345,27 @@
     </div>
   </div>
 </div>
+<script>
+
+  const revenueUnitToggle = document.querySelector('#revenue-unit');
+  revenueUnitToggle.addEventListener('click', (e) => {
+    const btn = e.currentTarget;
+    const unitToggleInput = document.querySelector('#id_granular_revenue')
+    const revenueInput = document.querySelector('#id_revenue')
+    console.log(unitToggleInput);
+    
+    if (btn.classList.contains('active')) {
+      btn.textContent = '円';
+      unitToggleInput.value = true;
+      revenueInput.setAttribute('placeholder', '例）420069')
+
+    } else {
+      btn.textContent = '万円';
+      unitToggleInput.value = false;
+      revenueInput.setAttribute('placeholder', '例）100')
+    }
+  });
+  
+</script>
 
 {% endblock %}

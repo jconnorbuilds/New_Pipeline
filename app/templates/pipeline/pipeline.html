@@ -210,28 +210,36 @@
         </div>
       </div>
     {% comment %} </div> {% endcomment %}
-    <div id="pipeline-date-select" class="container monthly-item">
-      <div class="row d-flex justify-content-center display-4">
-        <select class="form-control-plaintext" id="pipeline-year" style="width: auto;"></select>
-        <select class="form-control-plaintext" id="pipeline-month" style="width: auto;">
-          <option value="1">1月</option>
-          <option value="2">2月</option>
-          <option value="3">3月</option>
-          <option value="4">4月</option>
-          <option value="5">5月</option>
-          <option value="6">6月</option>
-          <option value="7">7月</option>
-          <option value="8">8月</option>
-          <option value="9">9月</option>
-          <option value="10">10月</option>
-          <option value="11">11月</option>
-          <option value="12">12月</option>
-        </select>
+    <div id="pipeline-date-select" class="justify-content-center">
+      <div class=" monthly-item d-flex flex-column align-items-center">
+        <div class="display-4">
+          <select class="form-control-plaintext d-inline" id="pipeline-year" style="width: auto;"></select>
+          <select class="form-control-plaintext d-inline" id="pipeline-month" style="width: auto;">
+            <option value="1">1月</option>
+            <option value="2">2月</option>
+            <option value="3">3月</option>
+            <option value="4">4月</option>
+            <option value="5">5月</option>
+            <option value="6">6月</option>
+            <option value="7">7月</option>
+            <option value="8">8月</option>
+            <option value="9">9月</option>
+            <option value="10">10月</option>
+            <option value="11">11月</option>
+            <option value="12">12月</option>
+          </select>
+        </div>
+        <div class="">
+          <button type="button" class="btn btn-dark" id="pipeline-prev" style="width: auto;"><<</button>
+          <button type="button" class="btn btn-dark" id="pipeline-current" style="width: auto;">今月を表示</button>
+          <button type="button" class="btn btn-dark" id="pipeline-next" style="width: auto;">>></button>
+        </div>
       </div>
-      <div class="row d-flex justify-content-center">
-        <button type="button" class="btn btn-dark" id="pipeline-prev" style="width: auto;"><<</button>
-        <button type="button" class="btn btn-dark" id="pipeline-current" style="width: auto;">今月を表示</button>
-        <button type="button" class="btn btn-dark" id="pipeline-next" style="width: auto;">>></button>
+      <div class="filter">
+        <input type="checkbox" class="unreceived">
+        <span>未回収のみ表示</span>
+        <input type="checkbox">
+        <span>Filter 2</span> 
       </div>
     </div>
 
@@ -347,24 +355,7 @@
 </div>
 <script>
 
-  const revenueUnitToggle = document.querySelector('#revenue-unit');
-  revenueUnitToggle.addEventListener('click', (e) => {
-    const btn = e.currentTarget;
-    const unitToggleInput = document.querySelector('#id_granular_revenue')
-    const revenueInput = document.querySelector('#id_revenue')
-    console.log(unitToggleInput);
-    
-    if (btn.classList.contains('active')) {
-      btn.textContent = '円';
-      unitToggleInput.value = true;
-      revenueInput.setAttribute('placeholder', '例）420069')
 
-    } else {
-      btn.textContent = '万円';
-      unitToggleInput.value = false;
-      revenueInput.setAttribute('placeholder', '例）100')
-    }
-  });
 </script>
 
 {% endblock %}

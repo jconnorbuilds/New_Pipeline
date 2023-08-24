@@ -178,22 +178,29 @@
             <button type="button" class="btn btn-dark toggle-view" data-bs-toggle="button" style="white-space: nowrap;"><b>全案件を表示</b></button>
           </div>
         </div>
-        <div class="monthly-item p-0 col-lg-6">
-          <dl class="row pt-2 align-items-center mx-auto" style="width: 475px;">
-            <dt class="revenue-display-text">今年度　請求総額</dt>
-            <dd id ="total-revenue-ytd" class="revenue-display-amount align-items-center"></dd>
+        <div class="p-0 col-lg-6">
+          <div>
+            <dl class="row mx-auto m-0" style="width: 475px;">
+              <dt class="revenue-display-text">今年度　請求総額</dt>
+              <dd id ="total-revenue-ytd" class="revenue-display-amount align-items-center"></dd>
 
-            <dt class="revenue-display-text">今年度　月平均</dt>
-            <dd id="avg-revenue-ytd" class="revenue-display-amount"> {{ job.job_code }}</dd>
-            <hr class="col-6 m-3 mx-auto">
-
-            <dt class="revenue-display-text">表示の月　請求総額 (予定)</dt>
-            <dd id="total-revenue-monthly-exp" class="revenue-display-amount"> {{ job.job_code }}</dd>
-
-            <dt class="revenue-display-text">表示の月　請求総額 (実績)</dt>
-            <dd id="total-revenue-monthly-act" class="revenue-display-amount"> {{ job.job_code }}</dd>
-          </dl>
-        </div>  
+              <dt class="revenue-display-text">今年度　月平均</dt>
+              <dd id="avg-revenue-ytd" class="revenue-display-amount"> {{ job.job_code }}</dd>
+            
+              <hr class="col-6 mt-3 mx-auto">
+              
+              <dt class="revenue-display-text expected">表示の月　請求総額 (予定)</dt>
+              <dd id="total-revenue-monthly-exp" class="revenue-display-amount"></dd>
+            </dl>
+          </div>
+          <div class="monthly-item">
+            <dl class="row mx-auto" style="width: 475px;">
+              <dt class="revenue-display-text actual">表示の月　請求総額 (実績)</dt>
+              <dd id="total-revenue-monthly-act" class="revenue-display-amount"> {{ job.job_code }}</dd>
+            </dl>
+          </div>  
+        </div>
+        
       </div>
     </div>
     {% comment %} <div aria-live="polite" aria-atomic="true" class="position-fixed-bottom"> {% endcomment %}
@@ -237,9 +244,9 @@
       </div>
       <div class="filter">
         <input type="checkbox" class="unreceived">
-        <span>未回収のみ表示</span>
-        <input type="checkbox">
-        <span>Filter 2</span> 
+        <span>未回収のみを表示</span>
+        {% comment %} <input type="checkbox">
+        <span>Filter 2</span>  {% endcomment %}
       </div>
     </div>
 

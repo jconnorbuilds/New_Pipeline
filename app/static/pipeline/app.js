@@ -1,5 +1,11 @@
 const unreceivedFilter = document.querySelector('input.unreceived');
 const revenueUnitToggle = document.querySelector('#revenue-unit');
+const totalExpectedRevenueDisplay = document.querySelector('#total-revenue-monthly-exp')
+const currentExpectedRevenueDisplayText = document.querySelector('.revenue-display-text.expected')
+const currentActualRevenueDisplayText = document.querySelector('.revenue-display-text.actual')
+let totalExpectedRevenueAmt = 0;
+let pipelineViewState = "monthly"
+
 revenueUnitToggle.addEventListener('click', (e) => {
   const btn = e.currentTarget;
   const unitToggleInput = document.querySelector('#id_granular_revenue')
@@ -16,6 +22,14 @@ revenueUnitToggle.addEventListener('click', (e) => {
     revenueInput.setAttribute('placeholder', '例）100')
   }
 });
+
+function setExpectedRevenueDisplayText() {
+  if (pipelineViewState !== "monthly" || unreceivedFilter.checked) {
+    currentExpectedRevenueDisplayText.textContent = "表示の案件　請求総額 (予定)";
+  } else {
+    currentExpectedRevenueDisplayText.textContent = "表示の月　請求総額 (予定)"
+  };
+}
 
 $(document).ready(function () {
   let date = new Date()
@@ -83,8 +97,13 @@ $(document).ready(function () {
       searchPlaceholder: "ジョブを探す",
       search: "",
     },
+    "preDrawCallback": function(settings) {
+      totalExpectedRevenueAmt = 0;
+    },
     "drawCallback": function (settings) {
+      setExpectedRevenueDisplayText();
       updateRevenueDisplay(viewingYear, viewingMonth)
+      totalExpectedRevenueDisplay.textContent = `¥${totalExpectedRevenueAmt.toLocaleString()}`;
     },
     ajax: {
       url: '/pipeline/pipeline-data/' + viewingYear + '/' + viewingMonth + '/',
@@ -115,7 +134,7 @@ $(document).ready(function () {
       {
         "data": "revenue",
         responsivePriority: 3,
-        className: "pe-3"
+        className: "pe-3 revenue-amt",
       },
       {
         "data": "total_cost",
@@ -194,17 +213,16 @@ $(document).ready(function () {
       }
 
       statusCell.attr("data-initial", initialStatus)
-      if (initialStatus === "FINISHED") {
-        $(row).addClass('job-finished');
-      } else {
-        $(row).removeClass('job-finished');
-      }
+      initialStatus === "FINISHED" ? $(row).addClass('job-finished') : $(row).removeClass('job-finished')
+      totalExpectedRevenueAmt += parseInt(data.revenue);
+
     },
     "createdRow": function (row, data, dataIndex) {
       // console.log(data.deposit_date)
       if (data.deposit_date === null) {
         row.classList.add('payment-unreceived')
       }
+      
     }
   });
 
@@ -277,10 +295,10 @@ $(document).ready(function () {
         avgMonthlyRevenueYtd = response.avg_monthly_revenue_ytd;
         totalRevenueMonthlyExp = response.total_revenue_monthly_expected;
         totalRevenueMonthlyAct = response.total_revenue_monthly_actual;
-        $("#total-revenue-ytd").html(`${totalRevenueYtd}`)
-        $("#avg-revenue-ytd").html(`${avgMonthlyRevenueYtd}`)
-        $("#total-revenue-monthly-exp").html(`${totalRevenueMonthlyExp}`)
-        $("#total-revenue-monthly-act").html(`${totalRevenueMonthlyAct}`)
+        $("#total-revenue-ytd").text(`${totalRevenueYtd}`)
+        $("#avg-revenue-ytd").text(`${avgMonthlyRevenueYtd}`)
+        // $("#total-revenue-monthly-exp").text(`${totalRevenueMonthlyExp}`)
+        $("#total-revenue-monthly-act").text(`${totalRevenueMonthlyAct}`)
       }
     })
   }
@@ -857,7 +875,6 @@ $(document).ready(function () {
 
   pipelineMonth.val(currentMonth);
   pipelineYear.val(currentYear);
-  var pipelineViewState = "monthly"
 
   function filterData(year, month) {
     var url = '/pipeline/pipeline-data/';
@@ -880,12 +897,14 @@ $(document).ready(function () {
       filterData(undefined, undefined);
     } else {
       pipelineViewState = "monthly";
+      currentExpectedRevenueDisplayText.textContent = '表示の案件　請求総額(予定)';
       $("#view-state").text(pipelineViewState);
       $("#pipeline-date-select .monthly-item").addClass("d-flex");
       $(".monthly-item").slideDown("fast");
       $(".toggle-view").html("<b>全案件を表示</b>")
       filterData(pipelineYear.val(), pipelineMonth.val());
-    }
+    };
+    setExpectedRevenueDisplayText();
   });
 
   $("#pipeline-month, #pipeline-year").change(function () {
@@ -1100,6 +1119,8 @@ $(document).ready(function () {
     })
   })
 
-  unreceivedFilter.addEventListener('change', () => jobTable.draw())
+  unreceivedFilter.addEventListener('change', () => {
+    jobTable.draw()
+  });
 
 });

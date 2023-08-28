@@ -41,8 +41,7 @@ $(document).ready(function () {
   let avgMonthlyRevenueYtd = 0
   let totalRevenueMonthlyExp = 0
   let totalRevenueMonthlyAct = 0
-  const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]') ?
-    document.querySelector('[name=csrfmiddlewaretoken]').value : null;
+
   let openInvoiceInfoModal = false // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page 
   let depositDateRowID
   let depositDateModal
@@ -59,26 +58,6 @@ $(document).ready(function () {
       });
   };
 
-  const invoiceStatusOrderMap = {
-    'NR': 0,
-    'REQ': 1,
-    'REC': 2,
-    'REC2': 3,
-    'ERR': 4,
-    'QUE': 5,
-    'PAID': 6,
-    'NA': 7,
-  };
-
-  DataTable.ext.order['dom-cost-select'] = function (settings, col) {
-    return this.api()
-      .column(col, { order: 'index' })
-      .nodes()
-      .map(function (td, i) {
-        let el = td.querySelector('.cost-status-select');
-        return el ? invoiceStatusOrderMap[el.value] : 0;
-      });
-  };
 
   DataTable.ext.search.push(function (settings, data, dataIndex) {
     if (unreceivedFilter.checked) {
@@ -112,16 +91,18 @@ $(document).ready(function () {
       }
     },
     columns: [
-      { "data": "select", responsivePriority: 2 },
+      {
+         "data": "select", 
+         "responsivePriority": 2, },
       {
         "data": "id",
         "visible": false
       },
       {
         "data": "client_name",
-        responsivePriority: 4,
+        "responsivePriority": 6,
         "render": function (data, type, row) {
-          return '<a href="client-update/' + row.client_id + '" class="plain-link">' + data + '</a>';
+          return '<a href="client-update/' + row.client_id + '">' + data + '</a>';
         }
       },
       {
@@ -129,21 +110,27 @@ $(document).ready(function () {
         "name": "client_id",
         "visible": false
       },
-      { "data": "job_name", responsivePriority: 1 },
+      { 
+        "data": "job_name",
+        "responsivePriority": 1 
+      },
       { "data": "job_code", },
       {
         "data": "revenue",
-        responsivePriority: 3,
-        className: "pe-3 revenue-amt",
+        "responsivePriority": 3,
+        "className": "pe-3 revenue-amt",
+        "render": function(data, type, row) {
+          return `¥${data.toLocaleString()}`
+        }
       },
       {
         "data": "total_cost",
-        responsivePriority: 5,
-        className: "pe-4"
+        "responsivePriority": 5,
+        "className": "pe-4"
       },
       {
         "data": "profit_rate",
-        className: "ps-3"
+        "className": "ps-3"
       },
       {
         "data": "job_date",
@@ -161,7 +148,8 @@ $(document).ready(function () {
       {
         "data": "status",
         "name": "status",
-        orderDataType: "dom-job-select",
+        "responsivePriority": 6,
+        "orderDataType": "dom-job-select",
       },
       {
         "data": "deposit_date",
@@ -175,28 +163,28 @@ $(document).ready(function () {
         "visible": false
       }
     ],
-    columnDefs: [
+    "columnDefs": [
       {
-        target: 0,
-        className: 'dt-center',
-        searchable: false,
+        "target": 0,
+        "className": 'dt-center',
+        "searchable": false,
       },
       {
-        targets: [0, 1, -1, -2,],
-        orderable: false
+        "targets": [0, 1, -1, -2,],
+        "orderable": false
       },
       {
-        targets: [6, 7,],
-        className: 'dt-right'
+        "targets": [6, 7,],
+        "className": 'dt-right'
       },
       {
-        target: 12,
-        className: 'deposit-date'
+        "target": 12,
+        "className": 'deposit-date'
       },
 
       {
-        targets: [5, 6, 7],
-        createdCell: function (td, cellData, rowData, row, col) {
+        "targets": [5, 6, 7],
+        "createdCell": function (td, cellData, rowData, row, col) {
           $(td).addClass("font-monospace");
         }
       },
@@ -248,17 +236,15 @@ $(document).ready(function () {
       depositDateModal.hide();
       $("#deposit-date-form")[0].reset()
     })
-  })
+  });
 
   let rangeCheckbox = $('#csv-export-use-range')
   rangeCheckbox.click(function () {
     if (rangeCheckbox.is(':checked')) {
-      console.log('checked')
       $('#thru-month').removeClass('invisible');
       $('#thru-year').removeClass('invisible');
     }
     else {
-      console.log('nope')
       $('#thru-month').addClass('invisible');
       $('#thru-year').addClass('invisible');
       $('#thru-month').val($('#from-month').val()).change();
@@ -303,189 +289,6 @@ $(document).ready(function () {
     })
   }
 
-  /*
-  * The following variables and functions control checkbox click-and-drag selection behavior
-  */
-  var $firstSelectedBox;
-  var $firstSelectedRow;
-  var duringSelection = false;
-
-  var mouseDown = 0;
-
-  document.body.onmousedown = function () {
-    mouseDown = 1;
-  }
-  document.body.onmouseup = function () {
-    mouseDown = 0;
-    duringSelection = false;
-  }
-  $('table').on('click', '.form-check-input', function (event) {
-    if (!mouseDown) {
-      var $box = $(this);
-      var $row = $box.closest('tr');
-      $box.prop('checked', !$firstSelectedBox.prop('checked'))
-      $row.toggleClass('selected-row', $box.prop('checked'))
-    }
-  });
-
-  $('table').on('mousedown', '.form-check-input', function (event) {
-    duringSelection = true;
-    $firstSelectedBox = $(this);
-    $firstSelectedRow = $(this).closest('tr');
-
-    $firstSelectedRow.toggleClass('selected-row')
-    $firstSelectedBox.prop('checked', !$firstSelectedBox.prop('checked'))
-  });
-
-  $('table').on('mouseenter', 'tr', function (event) {
-    if (mouseDown && duringSelection) {
-      var $row = $(this);
-      var $box = $row.find('.form-check-input');
-      $row.toggleClass('selected-row', $firstSelectedBox.prop('checked'))
-      $box.prop('checked', $firstSelectedBox.prop('checked'))
-    }
-  });
-
-  $('table').on('mousemove', function (event) {
-    // stops from accidentally highlighting text when dragging during click-and-drag selection
-    if (mouseDown && duringSelection) {
-      event.preventDefault();
-    }
-  });
-
-  function getJobID() {
-    if (typeof jobID !== "undefined") {
-      return jobID;
-    } else {
-      return false;
-    }
-  }
-
-  var costTable = $('#cost-table').DataTable({
-    paging: false,
-    responsive: true,
-    order: [[0, 'asc']],
-    orderClasses: false,
-    language: {
-      searchPlaceholder: "コストを探す",
-      search: "",
-    },
-
-    ajax: {
-      url: '/pipeline/cost-data/' + getJobID(),
-
-    },
-    rowId: 'id',
-    columns: [
-      { "data": "amount_JPY" },
-      { "data": "amount_local" },
-      { "data": "vendor" },
-      { "data": "description" },
-      { "data": "PO_number" },
-      {
-        "data": "invoice_status",
-        orderDataType: "dom-cost-select",
-      },
-      {
-        "data": "request_invoice", "render": function (data, type, row) {
-          return data;
-        }
-      },
-      {
-        "data": "edit", "render": function (data, type, row) {
-          return data;
-        }
-      },
-      {
-        "data": "id",
-        "visible": false
-      },
-    ],
-    columnDefs: [
-      {
-        target: 0,
-        className: 'dt-right',
-        width: "80px",
-        createdCell: function (td, cellData, rowData, row, col) {
-          $(td).css('padding-right', '10px')
-        }
-      },
-      {
-        target: 1,
-        className: 'dt-left',
-        width: "100px",
-        createdCell: function (td, cellData, rowData, row, col) {
-          $(td).css('padding-left', '10px')
-        }
-      },
-    ],
-    rowCallback: function (row, data) {
-      // This button disabling/enabling logic only works within the
-      // rowCallbackfunction, and not within the createdRow function.
-      // At the time of writing this, I'm not totally sure why, but whatever
-      var invoiceStatus = $(data.invoice_status).val()
-      var hasVendor = ($(data.vendor).val() !== "0");
-
-      if (hasVendor == false) {
-        $(row).find('.cost-status-select').hide();
-        $(row).find('.single-invoice-request-btn').prop('disabled', true)
-
-      } else {
-        if (invoiceStatus === 'NR') {
-          $(row).find('.single-invoice-request-btn').prop('disabled', false);
-        } else {
-          $(row).find('.single-invoice-request-btn').prop('disabled', true);
-        }
-      }
-    }
-  });
-
-  $("#cost-table").on("change", ".cost-vendor-select, .cost-status-select", function (event) {
-    var formData = getCostUpdate(this);
-    // var spinner = $("#add-job-spinner")
-    event.preventDefault();
-    // spinner.toggleClass('invisible')
-
-    $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
-      type: "POST",
-      url: "/pipeline/cost-add/" + getJobID() + '/',
-      data: formData,
-      processData: false, // prevents jQuery from processing the data
-      contentType: false, // prevents jQuery from setting the Content-Type header
-      // beforeSend: function() {
-      //       spinner.removeClass('invisible');
-      // },
-      success: function (response) {
-        if (response.status === 'success') {
-          var newData = response.data
-          // Use the #ID selector to target the new row and redraw with new data
-          costTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
-        };
-      }
-    });
-  });
-
-  function getCostUpdate(selectElement) {
-    /*
-   * Returns a FormData object containing the value of the select element
-   * that was changed, to update the status or vendor of the Cost object in the db.
-   */
-    var formData = new FormData();
-    console.log(selectElement.className)
-
-    if ($(selectElement).hasClass("cost-vendor-select")) {
-      formData.append("vendor", $(selectElement).val());
-    } else if ($(selectElement).hasClass("cost-status-select")) {
-      formData.append("status", $(selectElement).val());
-    } else {
-      alert("There was a problem getting the form data");
-    }
-    formData.append("cost_id", $(selectElement).closest("tr").attr("id"));
-    formData.append("update", true)
-    return formData;
-  }
-
   function getJobUpdate(selectElement) {
     /*
     * Returns a FormData object containing the value of the select element
@@ -518,6 +321,7 @@ $(document).ready(function () {
       }
     });
   }
+
   $('#pipeline-new-client-btn').click(function () {
     openInvoiceInfoModal = false
   })
@@ -611,170 +415,6 @@ $(document).ready(function () {
     };
   });
 
-  var allInvoicesTable = $('#all-invoices-table').DataTable({
-    paging: true,
-    pageLength: 50,
-    responsive: {
-      details: {
-        display: $.fn.dataTable.Responsive.display.childRow
-      }
-    },
-    order: [[4, 'asc'], [6, 'asc']],
-    orderClasses: false,
-    language: {
-      searchPlaceholder: "コストを探す",
-      search: "",
-    },
-    ajax: {
-      url: '/pipeline/all-invoices-data/',
-    },
-    rowId: 'id',
-    columns: [
-      { "data": "select", visible: false },
-      { "data": "costsheet_link", },
-      { "data": "amount_JPY" },
-      { "data": "amount_local", responsivePriority: 1 },
-      {
-        "data": "job_date",
-        "render": function (data) {
-          var date = new Date(data);
-          var year = date.getFullYear();
-          var month = date.getMonth() + 1;
-          return year + "年" + month + "月";
-        }
-      },
-      { "data": "job_name", responsivePriority: 1 },
-      { "data": "job_code" },
-      { "data": "vendor" },
-      { "data": "description" },
-      { "data": "PO_number" },
-      {
-        "data": "invoice_status",
-        orderDataType: "dom-cost-select",
-      },
-      {
-        "data": "request_invoice", "render": function (data, type, row) {
-          return data;
-        }
-      },
-      {
-        "data": "edit", "render": function (data, type, row) {
-          return data;
-        }
-      },
-      { "data": "id" },
-    ],
-    columnDefs: [
-      {
-        targets: [0, 1, -1, -2, -3],
-        orderable: false,
-      },
-      {
-        targets: [2, 3, 6, 9],
-        createdCell: function (td, cellData, rowData, row, col) {
-          $(td).addClass("font-monospace");
-        }
-      },
-
-      {
-        target: 2,
-        className: "dt-right",
-        width: "80px",
-        createdCell: function (td, cellData, rowData, row, col) {
-          $(td).css('padding-right', '10px')
-
-        }
-      },
-      {
-        target: 3,
-        className: "dt-left",
-        width: "100px",
-        createdCell: function (td, cellData, rowData, row, col) {
-          $(td).css('padding-left', '15px')
-        }
-      },
-      {
-        targets: 5,
-        render: $.fn.dataTable.render.ellipsis(25, true)
-      },
-      {
-        target: 8,
-        render: $.fn.dataTable.render.ellipsis(15)
-      },
-      {
-        target: 13,
-        visible: false
-      }
-    ],
-
-    rowCallback: function (row, data) {
-      // This button disabling/enabling logic only seems to work within the
-      // rowCallbackfunction, and not within the createdRow function.
-      var invoiceStatus = $(data.invoice_status).val()
-      var hasVendor = (data.vendor != "");
-
-      if (hasVendor == false) {
-        $(row).find('.cost-status-select').hide();
-        $(row).find('.single-invoice-request-btn').prop('disabled', true)
-
-      } else {
-        if (invoiceStatus === 'NR') {
-          $(row).find('.single-invoice-request-btn').prop('disabled', false);
-        } else {
-          $(row).find('.single-invoice-request-btn').prop('disabled', true)
-        }
-      }
-    }
-  });
-
-  $("#all-invoices-table").on("change", ".cost-vendor-select, .cost-status-select", function () {
-    var formData = getCostUpdate(this);
-    $("#batch-pay-csv-dl-btn").attr("disabled", false)
-    $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
-      type: "POST",
-      url: "/pipeline/invoices/",
-      data: formData,
-      processData: false, // prevents jQuery from processing the data
-      contentType: false, // prevents jQuery from setting the Content-Type header
-      // beforeSend: function() {
-      //       spinner.removeClass('invisible');
-      // },
-      success: function (response) {
-        if (response.status === 'success') {
-          var newData = response.data
-          // Use the #ID selector to target the new row and redraw with new data
-          allInvoicesTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
-          // allInvoicesTable.ajax.reload();
-        }
-      }
-    })
-  });
-
-  $('table').on("click", ".single-invoice-request-btn", function (event) {
-    console.log($(this))
-    event.preventDefault()
-
-    var cost_id = $(this).attr('id').split('-').pop()
-    console.log(cost_id)
-    var table = $(this).closest('table').DataTable();
-
-    $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
-      url: "/pipeline/request-single-invoice/" + cost_id + "/",
-      method: "POST",
-      success: function (data) {
-        alert(data.message)
-        // should really optimize this by getting all table data from a single endpoint
-        // so a single row can be reloaded
-        table.ajax.reload()
-      },
-      error: function (data) {
-        alert("There was an error. Try again, and if the error persists, request the invoice the old fashioned way")
-      }
-    })
-  })
-
   // Job form submission
   $("#job-form").submit(function (event) {
     var spinner = $("#add-job-spinner")
@@ -792,7 +432,7 @@ $(document).ready(function () {
       month: $("#id_month").val(),
       addjob: 'addjob via ajax'
     };
-    console.trace(formData.add_consumption_tax)
+
     $.ajax({
       headers: { 'X-CSRFToken': csrftoken },
       type: "POST",

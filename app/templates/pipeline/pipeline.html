@@ -2,6 +2,12 @@
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
 {% load static %}
+
+{% block header %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'pipeline/pipeline.js' %}" defer></script>
+{% endblock %}
+
 {% block body_block %}
 
 {% if job_form.errors %}
@@ -200,23 +206,20 @@
             </dl>
           </div>  
         </div>
-        
       </div>
     </div>
-    {% comment %} <div aria-live="polite" aria-atomic="true" class="position-fixed-bottom"> {% endcomment %}
-      <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="invoice-set-success-toast" class="toast bg-success-subtle" data-bs-delay="2000" role="alert" aria-live="assertive" aria-atomic="true">
-          <div class="toast-header">
-            <i class="bi bi-check2-circle" class="rounded me-2"></i>
-            <strong class="me-auto">Save successful</strong>
-            <small class="text-muted">Just now</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-          </div>
-          <div class="toast-body">Invoice info saved!
-          </div>
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+      <div id="invoice-set-success-toast" class="toast bg-success-subtle" data-bs-delay="2000" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <i class="bi bi-check2-circle" class="rounded me-2"></i>
+          <strong class="me-auto">Save successful</strong>
+          <small class="text-muted">Just now</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">Invoice info saved!
         </div>
       </div>
-    {% comment %} </div> {% endcomment %}
+    </div>
     <div id="pipeline-date-select" class="justify-content-center">
       <div class=" monthly-item d-flex flex-column align-items-center">
         <div class="display-4">
@@ -245,8 +248,6 @@
       <div class="filter">
         <input type="checkbox" class="unreceived">
         <span>未回収のみを表示</span>
-        {% comment %} <input type="checkbox">
-        <span>Filter 2</span>  {% endcomment %}
       </div>
     </div>
 

@@ -162,12 +162,12 @@ class PipelineBulkActionsForm(forms.Form):
                     ('RELATE', 'Relate jobs'),
                     ('UNRELATE', 'Unrelate jobs'),
                     ('DEL','Delete'),
-                ), attrs={
-                "class":"form-select",
-                "id":"pipeline-bulk-actions",
-                "aria-label":"Bulk actions",
-                }
-            ))
+                    ), attrs={
+                    "class":"form-select",
+                    "id":"pipeline-bulk-actions",
+                    "aria-label":"Bulk actions",
+                    }
+                ))
 
 class UploadInvoiceForm(forms.Form):
     '''

@@ -9,6 +9,7 @@
 <style type="text/css">
   a { text-decoration: none; }
 </style>
+<script type="text/javascript" src="{% static 'pipeline/costsheet.js' %}" defer></script>
 {% endblock %}
 
 {% block title %}Cost Sheet{% endblock %}
@@ -108,71 +109,13 @@
     </table>
   </div>
 <script>
-  {% localize off %}
-  var jobID = {{ currentJob.id }};
-  {% endlocalize %}
-  
-  var currencyList = JSON.parse('{{ currencyList|escapejs }}')
-  var forexRates = JSON.parse('{{ forexRates|escapejs }}');
-  
-  const currencyCalc = document.querySelector("#currencyCalc");
-  const calcInput = document.querySelector("#calcInput");
-  const calcResult = document.querySelector("#calcResult")
-  const calcFrom = document.querySelector("#calcFrom")
-  const calcTo = document.querySelector("#calcTo")
-  var calcFromCurrency
-  var calcFromRate
-  var calcToCurrency
-  var calcToRate
 
-  const currencySelectors = currencyCalc.querySelectorAll("select")
-  
-  function initCurrencySelectors() {
-    var initialToCurrency = "EUR"
-    for (currency of currencyList) {
-      var fromOption = document.createElement('option')
-      fromOption.value = currency[0]
-      fromOption.innerHTML = currency[1]
+{% localize off %}
+var jobID = {{ currentJob.id }};
+{% endlocalize %}
 
-      var toOption = fromOption.cloneNode(true)
-      if (toOption.value === initialToCurrency) {
-        toOption.setAttribute('selected','selected')
-      }
-      currencyCalc.querySelector("#calcFrom").appendChild(fromOption)
-      currencyCalc.querySelector("#calcTo").appendChild(toOption)
-    }
-  
-    calcFromCurrency = calcFrom.value
-    calcToCurrency = calcTo.value
-    
-    calcFromRate = forexRates[calcFromCurrency]
-    calcToRate = forexRates[calcToCurrency]
-    console.log(calcFromRate)
-    console.log(calcToRate)
-  }
-
-  function separateThousands(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-  
-  initCurrencySelectors()
-
-  calcInput.addEventListener("input", function () {
-    var result = (calcInput.value * (calcFromRate/calcToRate)).toFixed(2)
-    calcResult.value = separateThousands(result)
-  });
-
-  for (let i = 0; i < currencySelectors.length; i++) {
-      currencySelectors[i].addEventListener("change", function () {
-        calcFromCurrency = calcFrom.value
-        calcToCurrency = calcTo.value
-        calcFromRate = forexRates[calcFromCurrency]
-        calcToRate = forexRates[calcToCurrency]
-        var result = (calcInput.value * (calcFromRate/calcToRate)).toFixed(2)
-        calcResult.value = separateThousands(result)
-      }); 
-  }
-
+var currencyList = JSON.parse('{{ currencyList|escapejs }}');
+var forexRates = JSON.parse('{{ forexRates|escapejs }}');
 
 </script>
 {% endblock %}

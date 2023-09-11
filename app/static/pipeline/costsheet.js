@@ -63,15 +63,17 @@ for (let i = 0; i < currencySelectors.length; i++) {
 }
 
 const invoiceStatusOrderMap = {
-  'NR': 0,
-  'REQ': 1,
-  'REC': 2,
-  'REC2': 3,
-  'ERR': 4,
-  'QUE': 5,
-  'PAID': 6,
-  'NA': 7,
+  
+  'NR': 1,
+  'REQ': 2,
+  'REC': 3,
+  'REC2': 4,
+  'ERR': 5,
+  'QUE': 6,
+  'PAID': 7,
+  'NA': 8,
 };
+
 
 $(document).ready(function () {
 
@@ -81,7 +83,11 @@ $(document).ready(function () {
       .nodes()
       .map(function (td, i) {
         let el = td.querySelector('.cost-status-select');
-        return el ? invoiceStatusOrderMap[el.value] : 0;
+        if(el.getAttribute('style') === "display: none;") {
+          return 0;
+        } else {
+          return el ? invoiceStatusOrderMap[el.value] : 0;
+        }
       });
   };
 

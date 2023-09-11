@@ -6,4 +6,15 @@
     {{ form.as_p }}
     <input class="btn btn-success" type="submit" value="Update">
 </form>
+
+{% comment %} <script>
+    const currencySelect = document.querySelector('#id_currency');
+    const invoiceStatusSelect = document.querySelector('#id_invoice_status');
+    invoiceStatusSelect.addEventListener('change', (e) => {
+        let invoiceSelect = e.target;
+        invoiceSelect.value != 'PAID' 
+            ? currencySelect.removeAttribute('disabled')
+            : currencySelect.setAttribute('disabled', '')
+    });
+</script> {% endcomment %}
 {% endblock %}

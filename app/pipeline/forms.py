@@ -112,9 +112,7 @@ class ClientForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         proper_name = cleaned_data.get('proper_name')
-        print(f'proper name: {proper_name}')
         proper_name_japanese = cleaned_data.get('proper_name_japanese')
-        print(f'proper name JP: {proper_name_japanese}')
 
         if not proper_name and not proper_name_japanese:
             raise forms.ValidationError("At least one proper name field must be filled in.")

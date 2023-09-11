@@ -100,7 +100,7 @@ $(document).ready(function () {
       },
       {
         "data": "client_name",
-        "responsivePriority": 6,
+        "responsivePriority": 5,
         "render": function (data, type, row) {
           return '<a href="client-update/' + row.client_id + '">' + data + '</a>';
         }
@@ -125,7 +125,7 @@ $(document).ready(function () {
       },
       {
         "data": "total_cost",
-        "responsivePriority": 5,
+        "responsivePriority": 4,
         "className": "pe-4"
       },
       {

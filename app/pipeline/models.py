@@ -127,6 +127,8 @@ class Client(models.Model):
         ]
 
 class Cost(models.Model):
+    forex_rates = get_forex_rates()
+
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vendor_rel')
     description = models.CharField(max_length=30, blank=True)
     amount = models.IntegerField(null=True)
@@ -209,6 +211,10 @@ class Cost(models.Model):
         if self.exchange_rate_override:
             self.locked_exchange_rate = self.calculate_exchange_rate_overide(self.currency, self.exchange_rate_locked_at)
             self.exchange_rate_override = False
+        
+        if not self.locked_exchange_rate and self.invoice_status == "PAID":
+            self.locked_exchange_rate = self.forex_rates[self.currency]
+            self.exchange_rate_locked_at = timezone.now()
         super().save(*args, **kwargs)
 
     def __str__(self):

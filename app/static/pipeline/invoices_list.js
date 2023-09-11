@@ -1,4 +1,29 @@
+const invoiceStatusOrderMap = {
+  'NR': 1,
+  'REQ': 2,
+  'REC': 3,
+  'REC2': 4,
+  'ERR': 5,
+  'QUE': 6,
+  'PAID': 7,
+  'NA': 8,
+};
+
 $(document).ready(function () {
+  DataTable.ext.order['dom-cost-select'] = function (settings, col) {
+    return this.api()
+      .column(col, { order: 'index' })
+      .nodes()
+      .map(function (td, i) {
+        let el = td.querySelector('.cost-status-select');
+        if (el.getAttribute('style') === "display: none;") {
+          return 0;
+        } else {
+          return el ? invoiceStatusOrderMap[el.value] : 0;
+        }
+      });
+  };
+
   var allInvoicesTable = $('#all-invoices-table').DataTable({
     paging: true,
     pageLength: 50,
@@ -114,7 +139,24 @@ $(document).ready(function () {
       }
     }
   });
+  function getCostUpdate(selectElement) {
+    /*
+   * Returns a FormData object containing the value of the select element
+   * that was changed, to update the status or vendor of the Cost object in the db.
+   */
+    var formData = new FormData();
 
+    if ($(selectElement).hasClass("cost-vendor-select")) {
+      formData.append("vendor", $(selectElement).val());
+    } else if ($(selectElement).hasClass("cost-status-select")) {
+      formData.append("status", $(selectElement).val());
+    } else {
+      alert("There was a problem getting the form data");
+    }
+    formData.append("cost_id", $(selectElement).closest("tr").attr("id"));
+    formData.append("update", true)
+    return formData;
+  }
   allInvoicesTable.on("change", ".cost-vendor-select, .cost-status-select", function () {
     var formData = getCostUpdate(this);
     $("#batch-pay-csv-dl-btn").attr("disabled", false)
@@ -138,4 +180,5 @@ $(document).ready(function () {
       }
     })
   });
+  
 });

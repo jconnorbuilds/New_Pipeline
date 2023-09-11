@@ -990,7 +990,7 @@ class CostCreateView(LoginRequiredMixin, CreateView):
                 if form_data_status in ["PAID"]:
                     '''
                     This will give a close approximation for the amount actually paid to the vendor.
-                    I'm thinking we need to incorporate Wise payments more closely to get more accuracy.
+                    Payment amounts should ultimately be finalized by importing data from Wise.
                     '''
                     cost.locked_exchange_rate = self.forex_rates[cost.currency]
                     cost.exchange_rate_locked_at = timezone.now()
@@ -1022,7 +1022,7 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
         if self.get_object().invoice_status == "PAID":
-            form.fields['currency'].widget.attrs['disabled'] = 'true'
+            form.fields['currency'].widget.attrs['disabled'] = ''
         form.fields['locked_exchange_rate'].widget.attrs['disabled'] = 'true'
         return form
 

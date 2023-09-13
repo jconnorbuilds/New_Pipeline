@@ -13,25 +13,25 @@
 {% if job_form.errors %}
 <div class="container">
   <div class="col-4 m-0">
-      {% for error in job_form.errors %}
-        <p>{{ error }}</p>
-      {% endfor %}
+    {% for error in job_form.errors %}
+    <p>{{ error }}</p>
+    {% endfor %}
   </div>
 </div>
 {% endif %}
 {% if messages %}
-  <div class="p-1 col-xl-6 mx-auto">
-      {% for message in messages %}
-        <div class="container-fluid p-0">
-          <div class="alert {{ message.tags }} alert-dismissible" role="alert">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              <span aria-hidden="True">&times;</span>
-            </button>
-            {{ message }}
-          </div>
-        </div>
-      {% endfor %}
+<div class="p-1 col-xl-6 mx-auto">
+  {% for message in messages %}
+  <div class="container-fluid p-0">
+    <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <span aria-hidden="True">&times;</span>
+    </button>
+    {{ message }}
   </div>
+</div>
+{% endfor %}
+</div>
 {% endif %}
 
 {# Fields area #}
@@ -63,8 +63,8 @@
                   {% render_field job_form.add_consumption_tax class+="form-check-input my-auto me-2"%}
                   <label id="add-consumption-tax-help" class="form-check-label" for="id_add_consumption_tax">消費税</label>
                 </div>
-                </div>
-                {% render_field job_form.granular_revenue class+="form-check-input mt-0"%}
+              </div>
+              {% render_field job_form.granular_revenue class+="form-check-input mt-0"%}
               
             </div>
           </div>
@@ -100,16 +100,16 @@
             {% csrf_token %}
             <div class="row">
               <div class="col">
-              {{ csv_export_form.fromMonth }}
-              {{ csv_export_form.fromYear }}
-              {{ csv_export_form.useRange }}
-              <label for="csv-export-use-range">Multi-month report</label>
+                {{ csv_export_form.fromMonth }}
+                {{ csv_export_form.fromYear }}
+                {{ csv_export_form.useRange }}
+                <label for="csv-export-use-range">Multi-month report</label>
               </div>
             </div>
             <div class="row">
               <div class="col mb-3">
-              {{ csv_export_form.thruMonth|add_class:"invisible" }}
-              {{ csv_export_form.thruYear|add_class:"invisible"}}
+                {{ csv_export_form.thruMonth|add_class:"invisible" }}
+                {{ csv_export_form.thruYear|add_class:"invisible"}}
               </div>
             </div>
             <div class="row">
@@ -133,42 +133,42 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-      <div class="modal-body">
-        {% csrf_token %}
-        <div class="row px-3 py-0 g-1">
-          <div class="col-9">
-            <label for="id_friendly_name" class="form-label small">Client name</label>
-            {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
+        <div class="modal-body">
+          {% csrf_token %}
+          <div class="row px-3 py-0 g-1">
+            <div class="col-9">
+              <label for="id_friendly_name" class="form-label small">Client name</label>
+              {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
+            </div>
+            <div class="col-3">
+              <label for="id_job_code_prefix" class="form-label small">Prefix</label>
+              {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
+              <div id="prefix_help" class="form-text">2-4 characters</div>
+            </div>
           </div>
-          <div class="col-3">
-            <label for="id_job_code_prefix" class="form-label small">Prefix</label>
-            {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
-            <div id="prefix_help" class="form-text">2-4 characters</div>
+          <div class="row p-3 g-1">
+            <p class="p-0 g-0">Proper client name</p>
+            <div class="col-6 pt-0">
+              <label for="id_proper_name" class="form-label small pt-0">English</label>
+              {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. "%}
+            </div>
+            <div class="col-6">
+              <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
+              {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
+            </div>
+            <div id="proper_name_help" class="form-text">
+              The client name to be used for invoices. Enter one or the other.
+            </div>
           </div>
         </div>
-        <div class="row p-3 g-1">
-          <p class="p-0 g-0">Proper client name</p>
-          <div class="col-6 pt-0">
-            <label for="id_proper_name" class="form-label small pt-0">English</label>
-            {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. "%}
-          </div>
-          <div class="col-6">
-            <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
-            {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
-          </div>
-          <div id="proper_name_help" class="form-text">
-            The client name to be used for invoices. Enter one or the other.
+        <div class="modal-footer">
+          <button type="button" id="new-client-modal-cancel-btn" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-info submit" id="add-new-client-btn" name="new-client">Add Client</button>
+          <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
+            <span class="visually-hidden">Loading...</span>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="new-client-modal-cancel-btn" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-info submit" id="add-new-client-btn" name="new-client">Add Client</button>
-        <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    </form>
+      </form>
     </div>
   </div>
 </div>
@@ -189,10 +189,10 @@
             <dl class="row mx-auto m-0" style="width: 475px;">
               <dt class="revenue-display-text">今年度　請求総額</dt>
               <dd id ="total-revenue-ytd" class="revenue-display-amount align-items-center"></dd>
-
+              
               <dt class="revenue-display-text">今年度　月平均</dt>
               <dd id="avg-revenue-ytd" class="revenue-display-amount"> {{ job.job_code }}</dd>
-            
+              
               <hr class="col-6 mt-3 mx-auto">
               
               <dt class="revenue-display-text expected">表示の月　請求総額 (予定)</dt>
@@ -250,20 +250,20 @@
         <span>未回収のみを表示</span>
       </div>
     </div>
-
+    
     <hr>
     <div class="wrapper" style="min-height:550px;">
       <div class="row d-flex align-items-baseline">
-      <div class="col-auto">
-        <h5 class="">Bulk actions</h5>
+        <div class="col-auto">
+          <h5 class="">Bulk actions</h5>
+        </div>
+        <div class="col-auto">
+          {{ bulk_actions.actions }}
+        </div>
+        <div class="col-auto">
+          <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
+        </div>
       </div>
-      <div class="col-auto">
-        {{ bulk_actions.actions }}
-      </div>
-      <div class="col-auto">
-        <input type="submit" class="btn btn-dark" name="bulk-actions" id="pipeline-bulk-actions-submit" value="Go">
-      </div>
-    </div>
       <table id="job-table" class="hover compact dt-responsive nowrap" style="width:100%">
         <thead>
           <tr>
@@ -290,11 +290,11 @@
       </div>
       <div class="row col-2 ms-auto">
         {% if job_import_form.errors %}
-          {{ job_import_form.errors }}
+        {{ job_import_form.errors }}
         {% endif %}
         {% if job_import_form.non_field_errors %}
-          <p>non-field errors</p>
-          {{ job_import_form.non_field_errors }} 
+        <p>non-field errors</p>
+        {{ job_import_form.non_field_errors }} 
         {% endif %}
       </div>
     </form>
@@ -306,12 +306,12 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <form id="invoice-info-form" method="post" data-url="{% url 'pipeline:index' %}">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5">Invoice Details</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        {% csrf_token %}
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Invoice Details</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% csrf_token %}
           <div class="input-group pb-3">
             {% render_field set_invoice_info_form.invoice_recipient class+="form-control" %}
             <button class="btn btn-light rounded-end-2 border" type="button" id="set-invoice-modal-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
@@ -320,17 +320,17 @@
           <div>
             {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="Enter the invoice title" %}
           </div>
-            <div id="invoice-title-help" class="form-text">The title on the invoice</div>
-            {{ set_invoice_info_form.job_id }}
-          </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" id="set-invoice-info-cancel" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-info submit" id="set-invoice-info-submit" name="set-invoice-info">Ok</button>
-        <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
-          <span class="visually-hidden">Loading...</span>
+          <div id="invoice-title-help" class="form-text">The title on the invoice</div>
+          {{ set_invoice_info_form.job_id }}
         </div>
-      </div>
-    </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" id="set-invoice-info-cancel" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-info submit" id="set-invoice-info-submit" name="set-invoice-info">Ok</button>
+          <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -347,23 +347,23 @@
           {% csrf_token %}
           {% render_field set_deposit_date_form.deposit_date  type="date" class="form-control" %}
           <div id="deposit-date-help" class="form-text">The date we were paid for this job</div>
-            {{ set_deposit_date_form.job_id }}
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-light" id="set-deposit-date-cancel" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-info submit" id="set-deposit-date-submit" name="set-deposit-date">Ok</button>
-            <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
-              <span class="visually-hidden">Loading...</span>
-            </div>
+          {{ set_deposit_date_form.job_id }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" id="set-deposit-date-cancel" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-info submit" id="set-deposit-date-submit" name="set-deposit-date">Ok</button>
+          <div class="spinner-border spinner-border-sm invisible" role="status" id="add-client-spinner">
+            <span class="visually-hidden">Loading...</span>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
 </div>
+</div>
 <script>
-
-
+  
+  
 </script>
 
 {% endblock %}

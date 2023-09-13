@@ -44,7 +44,7 @@ class RedirectToPreviousMixin:
 def index(request):
     return redirect('pipeline:index')
     
-class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
+class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
     model = Job
     csv_export_form = PipelineCSVExportForm
     form_class = JobForm
@@ -73,23 +73,7 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         return queryset
 
     def post(self, request, *args, **kwargs):
-        if 'addjob' in request.POST:
-            job_form = self.form_class(request.POST)
-            if job_form.is_valid():
-                print(job_form.cleaned_data)
-                # Take in the revenue in terms of 万
-                if not job_form.instance.granular_revenue:
-                    job_form.instance.revenue = job_form.instance.revenue * 10000
-                instance = job_form.save()
-                job = Job.objects.get(pk=instance.pk)
-                data = get_job_data(job)
-                return JsonResponse({"status": "success", "data":data})
-            else:
-                for error in job_form.errors:
-                    print(f'errors: {error}')
-                return JsonResponse({"status":"error"})
-
-        elif 'update-job' in request.POST:
+        if 'update-job' in request.POST:
             job = Job.objects.get(id=request.POST.get('job_id'))
             form_data_job_status = request.POST.get('status')
 
@@ -206,6 +190,24 @@ class pipelineView(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
         return render(request, self.template_name, self.get_context_data())
 
+class AddJobView(PipelineViewBase):
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        job_form = JobForm(request.POST)
+        if job_form.is_valid():
+            print(job_form.cleaned_data)
+            # Take in the revenue in terms of 万
+            if not job_form.instance.granular_revenue:
+                job_form.instance.revenue = job_form.instance.revenue * 10000
+            instance = job_form.save()
+            job = Job.objects.get(pk=instance.pk)
+            data = get_job_data(job)
+            return JsonResponse({"status": "success", "data":data})
+        else:
+            for error in job_form.errors:
+                print(f'errors: {error}')
+            return JsonResponse({"status":"error"})
+    
 def pipeline_data(request, year=None, month=None):
     jobs = Job.objects.filter(isDeleted=False)
     if year is not None and month is not None:

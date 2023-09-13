@@ -39,6 +39,7 @@ class Vendor(models.Model):
     notes = models.TextField(max_length=300, blank=True)
     email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
     payment_id = models.IntegerField(unique=True, null=True, blank=True)
+    preferred_currency = models.CharField(max_length=3, null=True, blank=True)
 
     @property
     def full_name(self):
@@ -250,7 +251,7 @@ class Job(models.Model):
     # Separating out year and month because the day of the month doesn't matter
     # And this was the easiest way to take in and manipulate form data via select widgets
     year = models.CharField(max_length=4, editable=True, default=date.today().year)
-    month = models.CharField(max_length=2, editable=True, default=date.today().month)
+    month = models.CharField(max_length=2, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     job_date = models.DateField(editable=False, null=True, default=timezone.now) # This is set in the save method

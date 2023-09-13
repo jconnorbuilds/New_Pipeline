@@ -6,7 +6,8 @@ from .models import Job
 app_name = 'pipeline'
 
 urlpatterns = [
-	path('', views.pipelineView.as_view(), name="index"),
+	path('', views.PipelineViewBase.as_view(), name="index"),
+  path('job-add', views.AddJobView.as_view(), name="job-add"),
 	path('cost-add/<pk>/', views.CostCreateView.as_view(), name="cost-add"),
 	path('cost-data/<job_id>/', views.cost_data, name="cost-data"),
 	path('<cost_id>/delete-cost/', views.CostDeleteView, name="cost-delete"),
@@ -17,7 +18,6 @@ urlpatterns = [
 	path('jobs-csv-export/', views.jobs_csv_export, name="jobs-csv-export"),
 	path('prepare-batch-payment/', views.create_batch_payment_file, name="prepare-batch-payment"),
 	path('import-client/', views.importClients, name="import-client"),
-	# path('import-job/', views.import_jobs, name="import-job"),
 	path('import-vendor/', views.importVendors, name="import-vendor"),
 	path('request-single-invoice/<cost_id>/', views.RequestVendorInvoiceSingle, name="request-single-invoice"),
 	path('add-client/', views.ClientCreateView.as_view(), name="client-add"),

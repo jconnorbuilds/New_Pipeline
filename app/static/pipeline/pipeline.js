@@ -38,7 +38,7 @@ $(document).ready(function () {
   let viewingYear = currentYear
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page 
   let openInvoiceInfoModal = false 
-  let depositDateRowID
+  let currentRowID
   let depositDateModal
 
 
@@ -201,16 +201,26 @@ $(document).ready(function () {
       if (data.deposit_date === null) {
         row.classList.add('payment-unreceived')
       }
-      
     }
   });
 
   jobTable.on("click", "td.deposit-date", function () {
-    depositDateRowID = $(this).closest("tr").attr("id");
-    row = jobTable.row(`#${depositDateRowID}`).node()
+    currentRowID = $(this).closest("tr").attr("id");
+    row = jobTable.row(`#${currentRowID}`).node()
     jobStatus = $(row).find("select.job-status-select option:selected").val()
 
     if (["INVOICED1", "INVOICED2", "FINISHED"].includes(jobStatus)) {
+      depositDateModal = new bootstrap.Modal(document.querySelector('#set-deposit-date'));
+      depositDateModal.show();
+    }
+  });
+
+  jobTable.on("click", "td.select.job-status-select", function () {
+    currentRowID = $(this).closest("tr").attr("id");
+    row = jobTable.row(`#${currentRowID}`).node()
+    jobStatus = $(row).find("select.job-status-select option:selected").val()
+
+    if (["READYTOINV", "INVOICED1", "INVOICED2", "FINISHED"].includes(jobStatus)) {
       depositDateModal = new bootstrap.Modal(document.querySelector('#set-deposit-date'));
       depositDateModal.show();
     }
@@ -220,7 +230,7 @@ $(document).ready(function () {
     event.preventDefault()
     var depositDateData = new FormData()
     depositDateData.append("deposit_date", $("#id_deposit_date").val())
-    depositDateData.append("job_id", depositDateRowID)
+    depositDateData.append("job_id", currentRowID)
     depositDateData.append("set_deposit_date", true)
     jobTableAjaxCall(depositDateData, function (newRowData) {
       jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false);
@@ -343,8 +353,8 @@ $(document).ready(function () {
       openInvoiceInfoModal = true
       const clientID = parseInt(jobTable.cell('#' + rowID, 'client_id:name').data())
       const invoiceForm = invoiceInfoModalEl.querySelector('#invoice-info-form')
-      const invoiceRecipientField = invoiceForm.querySelector('#id_invoice_recipient')
-      const hiddenJobIDField = invoiceForm.querySelector('#id_job_id')
+      const invoiceRecipientField = invoiceForm.querySelector('#id_inv-invoice_recipient')
+      const hiddenJobIDField = invoiceForm.querySelector('#id_inv-job_id')
 
       invoiceRecipientField.value = clientID
       hiddenJobIDField.value = rowID
@@ -360,19 +370,21 @@ $(document).ready(function () {
 
       invoiceInfoModalEl.addEventListener('hide.bs.modal', revertStatus)
 
-      var nestedFormData = changedSelectFormData // TODO: Get a better understanding of why I needed to use FormData object
+      var nestedFormData = changedSelectFormData
       $(invoiceForm).on('submit', function (event) {
         event.preventDefault();
         var invoiceFormData = new FormData();
-        invoiceFormData.append("invoice_recipient", invoiceRecipientField.value)
-        invoiceFormData.append("invoice_name", $("#id_invoice_name").val())
-        invoiceFormData.append("job_id", hiddenJobIDField.value)
+        invoiceFormData.append("inv-invoice_recipient", invoiceRecipientField.value)
+        invoiceFormData.append("inv-invoice_name", $("#id_inv-invoice_name").val())
+        invoiceFormData.append("inv-job_id", hiddenJobIDField.value)
         invoiceFormData.append("set_invoice_info", true)
-
+        invoiceFormData.append("inv-year", $("#id_inv-year").val())
+        invoiceFormData.append("inv-month", $("#id_inv-month").val())
+        
         $.ajax({
           headers: { 'X-CSRFToken': csrftoken },
           type: "POST",
-          url: "/pipeline/",
+          url: "/pipeline/set-client-invoice-info/" + hiddenJobIDField.value + "/",
           processData: false,
           contentType: false,
           data: invoiceFormData,
@@ -414,8 +426,6 @@ $(document).ready(function () {
       revenue: $("#id_revenue").val(),
       add_consumption_tax: $("#id_add_consumption_tax").prop('checked'),
       personInCharge: $("#id_personInCharge").val(),
-      year: $("#id_year").val(),
-      month: $("#id_month").val(),
     };
 
     $.ajax({

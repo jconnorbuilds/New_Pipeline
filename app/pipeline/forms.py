@@ -54,17 +54,27 @@ class UpdateCostForm(forms.Form):
     invoice_status = forms.ChoiceField(required=False, widget=forms.Select(attrs={'class':'form-select'}), choices=Cost.INVOICE_STATUS_CHOICES)
 
 class SetInvoiceInfoForm(ModelForm):
+    prefix = "inv"
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['invoice_recipient'].queryset = Client.objects.order_by('friendly_name')
 
+        current_time = timezone.now()
+        self.fields['month'].initial = str(current_time.month)
+        self.fields['year'].initial = str(current_time.year)
+
+    year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES))
+    month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES))
     job_id = forms.IntegerField(widget=forms.HiddenInput)
+
     class Meta:
         model = Job
         fields = [
             'invoice_recipient',
-            'invoice_name'
-            ]
+            'invoice_name',
+            'year',
+            'month'
+        ]
 
 class SetDepositDateForm(ModelForm):
 
@@ -90,16 +100,12 @@ class JobForm(ModelForm):
             self.fields['client'].queryset = Client.objects.order_by('friendly_name')
 
             current_time = timezone.now()
-            self.fields['month'].initial = str(current_time.month)
-            self.fields['year'].initial = str(current_time.year)
 
-    year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES))
-    month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES))
     granular_revenue = forms.BooleanField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Job
-        fields = ['job_name','client','job_type', 'granular_revenue', 'revenue', 'add_consumption_tax', 'personInCharge', 'year', 'month']
+        fields = ['job_name','client','job_type', 'granular_revenue', 'revenue', 'add_consumption_tax', 'personInCharge',]
 
 class JobImportForm(forms.Form):
     file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['csv'])])

@@ -167,14 +167,6 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     context = self.get_context_data()
                     context["job_import_form"] = form
                     return render(request, self.template_name, context)
-        
-        elif "set_invoice_info" in request.POST:
-            job_id = request.POST.get('job_id')
-            job = Job.objects.get(id=job_id)
-            form = self.set_invoice_info_form_class(request.POST, instance=job)
-            if form.is_valid():
-                form.save()
-                return JsonResponse({"status":"success"})
             
         elif "set_deposit_date" in request.POST:
             job_id = request.POST.get('job_id')
@@ -192,7 +184,6 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
 
 class AddJobView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
-        print(request.POST)
         job_form = JobForm(request.POST)
         if job_form.is_valid():
             print(job_form.cleaned_data)
@@ -204,14 +195,36 @@ class AddJobView(PipelineViewBase):
             data = get_job_data(job)
             return JsonResponse({"status": "success", "data":data})
         else:
-            for error in job_form.errors:
-                print(f'errors: {error}')
             return JsonResponse({"status":"error"})
+        
+class SetInvoiceInfoView(PipelineViewBase):
+    def post(self, request, *args, **kwargs):
+        job_id = kwargs['pk']
+        job = Job.objects.get(id=job_id)
+        form = self.set_invoice_info_form_class(request.POST, instance=job)
+        if form.is_valid():
+            print('I am valid')
+            form.save()
+            return JsonResponse({"status":"success"})
+        else:
+            print(request.POST)
+            print(form.errors)
+            return JsonResponse({"status":"error"})
+
     
 def pipeline_data(request, year=None, month=None):
+    """
+    Returns data for jobs queried based on the date set on the pipeline.
+    All non-(soft)-deleted jobs from the set month and year will be returned,
+    and if the set date is the current month and year, then all ongoing jobs will also be returned.
+    """
+    today = timezone.now()
+
     jobs = Job.objects.filter(isDeleted=False)
-    if year is not None and month is not None:
-        jobs = Job.objects.filter(job_date__month=month, job_date__year=year, isDeleted=False)
+    if year == today.year and month == today.month:
+        jobs = jobs.filter(Q(job_date__month=month, job_date__year=year) | Q(job_date=None))
+    elif year != None and month != None:
+        jobs = jobs.filter(job_date__month=month, job_date__year=year)
 
     data = {
         "data":[get_job_data(job) for job in jobs],
@@ -220,9 +233,14 @@ def pipeline_data(request, year=None, month=None):
     return JsonResponse(data, safe=False,)
 
 def revenue_display_data(request, year=None, month=None):
+    today = timezone.now()
+
     jobs = Job.objects.filter(isDeleted=False)
-    if year is not None and month is not None:
-        jobs = Job.objects.filter(job_date__month=month, job_date__year=year, isDeleted=False)
+    if year == today.year and month == today.month:
+        jobs = jobs.filter(Q(job_date__month=month, job_date__year=year) | Q(job_date=None))
+    elif year != None and month != None:
+        jobs = jobs.filter(job_date__month=month, job_date__year=year)
+
     jobs_from_current_year = Job.objects.filter(job_date__year=date.today().year, isDeleted=False)
 
     """
@@ -235,7 +253,7 @@ def revenue_display_data(request, year=None, month=None):
     total_revenue_ytd = jobs_from_current_year.aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue']
     total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
     total_revenue_monthly_actual = jobs.filter(
-        status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(
+        status__in=["READYTOINV", "INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(
         total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
     
     data = {

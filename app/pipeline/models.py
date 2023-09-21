@@ -250,11 +250,9 @@ class Job(models.Model):
 
     # Separating out year and month because the day of the month doesn't matter
     # And this was the easiest way to take in and manipulate form data via select widgets
-    year = models.CharField(max_length=4, editable=True, default=date.today().year)
-    month = models.CharField(max_length=2, editable=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    job_date = models.DateField(editable=False, null=True, default=timezone.now) # This is set in the save method
+    year = models.CharField(max_length=4, editable=True, null=True, blank=True)
+    month = models.CharField(max_length=2, editable=True, null=True, blank=True)
+    job_date = models.DateField(editable=False, null=True) # This is set in the save method
 
     def get_job_code(self):
         '''
@@ -273,8 +271,8 @@ class Job(models.Model):
         '''
         jc = ''
         prefix = self.client.job_code_prefix
-        month = int(self.month)
-        year = int(self.year)
+        month = int(timezone.now().month)
+        year = int(timezone.now().year)
         date = f"{year}-{month:02d}-01"
         
         sameClientJobs = Job.objects.filter(job_date=date, client__job_code_prefix=prefix) # Jobs from the same client in a particular month
@@ -442,7 +440,8 @@ class Job(models.Model):
             self.job_code = None
             self.job_code_isFixed = False
 
-        self.job_date = f'{self.year}-{int(self.month):02d}-01'
+        
+        self.job_date = f'{self.year}-{int(self.month):02d}-01' if (self.year and self.month) else None
         self.consumption_tax_amt = self.get_consumption_tax_amt()
         self.revenue_incl_tax = self.get_consumption_tax_amt() + self.revenue
         super().save(*args, **kwargs)

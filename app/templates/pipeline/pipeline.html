@@ -312,15 +312,21 @@
         </div>
         <div class="modal-body">
           {% csrf_token %}
-          <div class="input-group pb-3">
+          <div class="input-group mb-3">
             {% render_field set_invoice_info_form.invoice_recipient class+="form-control" %}
             <button class="btn btn-light rounded-end-2 border" type="button" id="set-invoice-modal-new-client-btn" data-bs-toggle="modal" data-bs-target="#new-client-modal">Add New Client</button>
             <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
           </div>
-          <div>
+          <div class="mb-3">
             {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="Enter the invoice title" %}
+            <div id="invoice-title-help" class="form-text">The title on the invoice</div>
           </div>
-          <div id="invoice-title-help" class="form-text">The title on the invoice</div>
+          
+          <div class="input-group">
+            {% render_field set_invoice_info_form.year class+="form-control" %}
+            {% render_field set_invoice_info_form.month class+="form-control" %}
+          </div>
+          <div id="invoice-period-help" class="form-text mb-3">Period for invoicing the client (year / month)</div>
           {{ set_invoice_info_form.job_id }}
         </div>
         <div class="modal-footer">
@@ -334,6 +340,7 @@
     </div>
   </div>
 </div>
+
 {# Modal for setting deposit date #}
 <div class="modal fade" id="set-deposit-date" tabindex="-1" aria-labelledby="set-deposit-date-modal" aria-hidden="false">
   <div class="modal-dialog">
@@ -359,7 +366,6 @@
       </div>
     </form>
   </div>
-</div>
 </div>
 <script>
   

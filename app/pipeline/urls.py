@@ -8,6 +8,7 @@ app_name = 'pipeline'
 urlpatterns = [
 	path('', views.PipelineViewBase.as_view(), name="index"),
   path('job-add', views.AddJobView.as_view(), name="job-add"),
+  path('set-client-invoice-info/<pk>/', views.SetInvoiceInfoView.as_view(), name="set-client-invoice-info"),
 	path('cost-add/<pk>/', views.CostCreateView.as_view(), name="cost-add"),
 	path('cost-data/<job_id>/', views.cost_data, name="cost-data"),
 	path('<cost_id>/delete-cost/', views.CostDeleteView, name="cost-delete"),
@@ -39,4 +40,3 @@ urlpatterns = [
 	path('invoices/', views.InvoiceView.as_view(), name="invoices"),
 	path('all-invoices-data/',views.all_invoices_data, name="all-invoices-data")
 ]
-

@@ -88,10 +88,11 @@ def get_job_data(job):
         'job_date': job.job_date,
         'job_type': job.get_job_type_display(),
         'status': render_to_string(
-            'pipeline/jobs/pipeline_table_job_status_select.html', 
-            {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
+                    'pipeline/jobs/pipeline_table_job_status_select.html', 
+                    {"options":Job.STATUS_CHOICES, "currentStatus":job.status}),
         'deposit_date': job.deposit_date,
-        'invoice_info_completed': job.invoice_name != '',
+        'invoice_info_completed': job.invoice_name != '' and job.month != None and job.year != None,
+        'status_helper': job.status,
     }
     return response
 

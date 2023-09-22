@@ -8,6 +8,7 @@ app_name = 'pipeline'
 urlpatterns = [
 	path('', views.PipelineViewBase.as_view(), name="index"),
   path('job-add', views.AddJobView.as_view(), name="job-add"),
+  path('pl-job-update/<pk>/', views.PipelineJobUpdateView.as_view(), name="pipeline-update-job"),
   path('set-client-invoice-info/<pk>/', views.SetInvoiceInfoView.as_view(), name="set-client-invoice-info"),
 	path('cost-add/<pk>/', views.CostCreateView.as_view(), name="cost-add"),
 	path('cost-data/<job_id>/', views.cost_data, name="cost-data"),

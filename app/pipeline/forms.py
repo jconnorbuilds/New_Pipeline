@@ -66,6 +66,7 @@ class SetInvoiceInfoForm(ModelForm):
     year = forms.CharField(widget=forms.Select(choices=YEAR_CHOICES))
     month = forms.CharField(widget=forms.Select(choices=MONTH_CHOICES))
     job_id = forms.IntegerField(widget=forms.HiddenInput)
+    status = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
         model = Job
@@ -73,7 +74,8 @@ class SetInvoiceInfoForm(ModelForm):
             'invoice_recipient',
             'invoice_name',
             'year',
-            'month'
+            'month',
+            'status'
         ]
 
 class SetDepositDateForm(ModelForm):
@@ -99,13 +101,17 @@ class JobForm(ModelForm):
             self.fields['client'].empty_label = 'Select client'
             self.fields['client'].queryset = Client.objects.order_by('friendly_name')
 
-            current_time = timezone.now()
-
     granular_revenue = forms.BooleanField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = Job
         fields = ['job_name','client','job_type', 'granular_revenue', 'revenue', 'add_consumption_tax', 'personInCharge',]
+
+class PipelineJobUpdateForm(ModelForm):
+    class Meta:
+        model = Job
+        fields = ['status']
+    
 
 class JobImportForm(forms.Form):
     file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['csv'])])

@@ -244,7 +244,7 @@ class Job(models.Model):
     revenue_incl_tax = models.IntegerField(null=True, editable=False)
     vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
     invoice_recipient = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True) # Who the invoice is paid to, if it differs from the client
-    invoice_name = models.CharField(max_length=100, blank=True) # If the client has a job code or special name for the invoice
+    invoice_name = models.CharField(max_length=100, blank=True, null=True) # If the client has a job code or special name for the invoice
     relatedJobs = models.ManyToManyField("self", blank=True)
     deposit_date = models.DateField(blank=True, null=True)
 
@@ -292,6 +292,12 @@ class Job(models.Model):
         
         if jc == '':
             print("There was a problem with the job code logic") # TODO: move to logger
+    
+    def reset_month_year_date(self):
+        print('resetting month year and date')
+        self.month = None
+        self.year = None
+        self.job_date = None
 
     JOB_TYPE_CHOICES = [
         ('ORIGINAL', 'Original Music'),
@@ -338,10 +344,10 @@ class Job(models.Model):
 
     # STATUS
     STATUS_CHOICES = [
-        ('LEAD', 'Lead'),
         ('ONGOING', 'Ongoing'),
-        ('INVOICED1', 'Completed & Invoiced'),
-        ('INVOICED2', 'Cancelled & Invoiced'),
+        ('READYTOINV', 'Ready to Invoice'),
+        ('INVOICED1', 'Invoiced'),
+        ('INVOICED2', 'Invoiced (canc.)'),
         ('FINISHED', 'Finished'),
         ('ARCHIVED', 'Archived'),
     ]
@@ -440,7 +446,20 @@ class Job(models.Model):
             self.job_code = None
             self.job_code_isFixed = False
 
-        
+        # print(self.status)
+        # print(f'self.status in ongoing or readytoinv {self.status in ["ONGOING", "READYTOINV"]}')
+        # print(f'month and year pre if statement{self.month}, {self.year}')
+        print("SAVING")
+        print(f'job status: {self.status}')
+        if self.status in ["ONGOING", "READYTOINV"]:
+            print(f'JOB STATUS IS ONGOING OR READYTOINV {self.month}, {self.year}')
+            self.invoice_name = ""
+            self.invoice_recipient = None
+            if self.month != None and self.year != None:
+                self.reset_month_year_date()
+
+        # else: 
+            # print('in the else statement')
         self.job_date = f'{self.year}-{int(self.month):02d}-01' if (self.year and self.month) else None
         self.consumption_tax_amt = self.get_consumption_tax_amt()
         self.revenue_incl_tax = self.get_consumption_tax_amt() + self.revenue

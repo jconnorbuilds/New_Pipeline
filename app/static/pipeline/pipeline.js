@@ -1,10 +1,22 @@
 const unreceivedFilter = document.querySelector('input.unreceived');
+const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
+const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
+
 const revenueUnitToggle = document.querySelector('#revenue-unit');
 const totalExpectedRevenueDisplay = document.querySelector('#total-revenue-monthly-exp')
 const currentExpectedRevenueDisplay = document.querySelector('.revenue-display-text.expected')
 const currentActualRevenueDisplayText = document.querySelector('.revenue-display-text.actual')
 let totalExpectedRevenueAmt = 0;
-let pipelineViewState = "monthly"
+let pipelineViewState = "monthly";
+
+const jobStatusOrderMap = {
+  'ONGOING': '0_',
+  'READYTOINV': '1_',
+  'INVOICED1': '3_',
+  'INVOICED2': '4_',
+  'FINISHED': '5_',
+  'ARCHIVED': '6_',
+};
 
 revenueUnitToggle.addEventListener('click', (e) => {
   const btn = e.currentTarget;
@@ -47,14 +59,23 @@ $(document).ready(function () {
       .column(col, { order: 'index' })
       .nodes()
       .map(function (td, i) {
-        let el = td.querySelector('.job-status-select');
-        return el ? el.value : 0;
+        let status = td.querySelector('.job-status-select').value;
+        return status ? jobStatusOrderMap[status] : 0;
       });
   };
 
   DataTable.ext.search.push(function (settings, data, dataIndex) {
     if (unreceivedFilter.checked) {
-      return data[12] === "---"
+      if (toggleOngoingFilter.checked) {
+        return data[12] === "---" || ["ONGOING", "READYTOINV"].includes(data[14]);
+      }
+      return data[12] === "---" && !(["ONGOING", "READYTOINV"].includes(data[14]));
+    };
+    if (showOnlyOngoingFilter.checked) {
+      return ["ONGOING", "READYTOINV"].includes(data[14]);
+    };
+    if (!toggleOngoingFilter.checked) {
+      return !["ONGOING", "READYTOINV"].includes(data[14]);
     };
     return true;
   })
@@ -62,7 +83,11 @@ $(document).ready(function () {
   const jobTable = $('#job-table').DataTable({
     paging: false,
     responsive: true,
-    order: [[8, 'desc'], [4, 'asc']],
+    order: [
+      [11, 'asc'], 
+      [9, 'desc'], 
+      [4, 'asc'],
+    ],
     orderClasses: false,
     rowId: 'id',
     language: {
@@ -127,10 +152,13 @@ $(document).ready(function () {
       },
       {
         "data": "job_date",
-        "render": function (data) {
+        "className": "invoice-period",
+        "render": {
+          "display": function (data) {
           let date = new Date(data);
-          let {year, month} = {year: date.getFullYear(), month: date.getMonth() + 1};
-          return year + "年" + month + "月";
+          return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : "---";
+          },
+          "sort": function(data) {return data}
         }
       },
       {
@@ -152,7 +180,12 @@ $(document).ready(function () {
       {
         "data": "invoice_info_completed",
         "name": "invoice_info_completed",
-        "visible": false
+        "visible": false,
+      },
+      {
+        "data": "status_helper",
+        "name": "status_helper",
+        "visible": false,        
       }
     ],
     "columnDefs": [
@@ -162,7 +195,7 @@ $(document).ready(function () {
         "searchable": false,
       },
       {
-        "targets": [0, 1, -1, -2,],
+        "targets": [0, 1, -1, -2, -3],
         "orderable": false
       },
       {
@@ -173,7 +206,6 @@ $(document).ready(function () {
         "target": 12,
         "className": 'deposit-date'
       },
-
       {
         "targets": [5, 6, 7],
         "createdCell": function (td, cellData, rowData, row, col) {
@@ -193,11 +225,11 @@ $(document).ready(function () {
       }
 
       statusCell.attr("data-initial", initialStatus)
-      initialStatus === "FINISHED" ? $(row).addClass('job-finished') : $(row).removeClass('job-finished')
+      initialStatus === "FINISHED" ? $(row).addClass('job-finished') : $(row).removeClass('job-finished');
+      ["ONGOING", "READYTOINV"].includes(initialStatus) ? $(row).addClass('job-ongoing') : $(row).removeClass('job-ongoing')
       totalExpectedRevenueAmt += parseInt(data.revenue);
     },
     "createdRow": function (row, data, dataIndex) {
-      // console.log(data.deposit_date)
       if (data.deposit_date === null) {
         row.classList.add('payment-unreceived')
       }
@@ -209,18 +241,7 @@ $(document).ready(function () {
     row = jobTable.row(`#${currentRowID}`).node()
     jobStatus = $(row).find("select.job-status-select option:selected").val()
 
-    if (["INVOICED1", "INVOICED2", "FINISHED"].includes(jobStatus)) {
-      depositDateModal = new bootstrap.Modal(document.querySelector('#set-deposit-date'));
-      depositDateModal.show();
-    }
-  });
-
-  jobTable.on("click", "td.select.job-status-select", function () {
-    currentRowID = $(this).closest("tr").attr("id");
-    row = jobTable.row(`#${currentRowID}`).node()
-    jobStatus = $(row).find("select.job-status-select option:selected").val()
-
-    if (["READYTOINV", "INVOICED1", "INVOICED2", "FINISHED"].includes(jobStatus)) {
+    if (["INVOICED1", "INVOICED2", "FINISHED",].includes(jobStatus)) {
       depositDateModal = new bootstrap.Modal(document.querySelector('#set-deposit-date'));
       depositDateModal.show();
     }
@@ -288,7 +309,6 @@ $(document).ready(function () {
   function getJobUpdate(selectElement) {
     /*
     * Returns a FormData object containing the value of the select element
-    * that was changed, to update the status of the Job object in the db.
     */
     var formData = new FormData();
     if ($(selectElement).hasClass("job-status-select")) {
@@ -296,24 +316,31 @@ $(document).ready(function () {
     } else {
       alert("There was a problem getting the form data");
     }
-    formData.append("job_id", $(selectElement).closest("tr").attr("id"));
-    formData.append("update-job", true)
     return formData;
   }
 
-  function jobTableAjaxCall(formData, successCallBack) {
+  function jobTableAjaxCall(formData, url, successCallBack, errorCallBack) {
     $.ajax({
       headers: { 'X-CSRFToken': csrftoken },
       type: "POST",
-      url: "/pipeline/",
+      url: url,
       data: formData,
-      processData: false, // prevents jQuery from processing the data
-      contentType: false, // prevents jQuery from setting the Content-Type header
+      processData: false,
+      contentType: false,
       success: function (response) {
         if (response.status === 'success') {
           var newData = response.data
           successCallBack(newData)
-        };
+        } else {
+          console.log('Something happend - perhaps the form received bad data.')
+        }
+      },
+      error: function () {
+        if (typeof errorCallBack === 'function') {
+          errorCallBack();
+        } else {
+          console.log('Error occurred during the AJAX request');
+        }
       }
     });
   }
@@ -324,13 +351,16 @@ $(document).ready(function () {
 
   jobTable.on("change", ".job-status-select", function () {
     /*
-    * When a user changes the job status via the status dropdown, if one of the 'finalizing' statuses is selected
-    * e.g. 'Completed & Invoiced', and the invoice data hasn't been added, a modal form opens so the information can be added.
+    * When a user changes the job status via the status dropdown, if one 
+    * of the 'finalizing' statuses is selected e.g. 'Completed & Invoiced', 
+    * and the invoice data hasn't been added, a modal form opens so the information can be added.
     * Otherwise, the status is simply updated. 
     * 
-    * Additional logic is added to make a seamless transition between the invoice data modal and a separate modal for adding 
-    * a new client, in the case the invoice recipient is a client that isn't in the db yet.
+    * Additional logic is added to make a seamless transition between
+    * the invoice data modal and a separate modal for adding a new client, 
+    * in the case the invoice recipient is a client that isn't in the db yet.
     */
+
     const newClientFormModalEl = document.querySelector('#new-client-modal')
     const invoiceInfoModal = new bootstrap.Modal(document.getElementById('set-job-invoice-info'))
     const invoiceInfoModalEl = document.querySelector('#set-job-invoice-info')
@@ -360,6 +390,21 @@ $(document).ready(function () {
       hiddenJobIDField.value = rowID
       invoiceInfoModal.show()
 
+      function invoiceInfoSuccessCallback(newRowData) {
+        const invoiceInfoSavedToast = $("#invoice-set-success-toast")
+        const invoiceInfoSavedToastBS = bootstrap.Toast.getOrCreateInstance(invoiceInfoSavedToast)
+        invoiceInfoModalEl.removeEventListener('hide.bs.modal', revertStatus)
+        invoiceInfoModal.hide()
+        invoiceInfoSavedToastBS.show()
+
+        newDataInvoicePeriod = newRowData.job_date.split('-')
+        if (newDataInvoicePeriod[1] == currentMonth && newDataInvoicePeriod[0] == currentYear) {
+          jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw()
+        } else {
+          jobTable.row(`#${newRowData.id}`).remove().draw()
+        }
+      }
+
       function revertStatus() {
         statusSelectEl.val(initialStatus)
       }
@@ -373,42 +418,29 @@ $(document).ready(function () {
       var nestedFormData = changedSelectFormData
       $(invoiceForm).on('submit', function (event) {
         event.preventDefault();
-        var invoiceFormData = new FormData();
+        let invoiceFormData = new FormData();
         invoiceFormData.append("inv-invoice_recipient", invoiceRecipientField.value)
         invoiceFormData.append("inv-invoice_name", $("#id_inv-invoice_name").val())
         invoiceFormData.append("inv-job_id", hiddenJobIDField.value)
         invoiceFormData.append("set_invoice_info", true)
         invoiceFormData.append("inv-year", $("#id_inv-year").val())
         invoiceFormData.append("inv-month", $("#id_inv-month").val())
+        for (const entry of changedSelectFormData.entries()) {
+          invoiceFormData.append("inv-"+entry[0], entry[1]);
+        }
         
-        $.ajax({
-          headers: { 'X-CSRFToken': csrftoken },
-          type: "POST",
-          url: "/pipeline/set-client-invoice-info/" + hiddenJobIDField.value + "/",
-          processData: false,
-          contentType: false,
-          data: invoiceFormData,
-          success: function (newRowData) {
-            const invoiceInfoSavedToast = $("#invoice-set-success-toast")
-            const invoiceInfoSavedToastBS = bootstrap.Toast.getOrCreateInstance(invoiceInfoSavedToast)
-
-            jobTableAjaxCall(nestedFormData, function (newRowData) {
-              invoiceInfoModalEl.removeEventListener('hide.bs.modal', revertStatus)
-              jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false)
-              invoiceInfoModal.hide()
-            });
-            invoiceInfoSavedToastBS.show()
-          },
-          error: function () {
-            revertStatus()
-          },
-        });
+        let url = "/pipeline/set-client-invoice-info/" + hiddenJobIDField.value + "/"
+        jobTableAjaxCall(invoiceFormData, url, invoiceInfoSuccessCallback, revertStatus)
       });
 
     } else {
-      // # TODO: implement loading spinner?
-      jobTableAjaxCall(changedSelectFormData, function (newData) {
-        jobTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
+      let url = "/pipeline/pl-job-update/" + rowID + "/"
+      jobTableAjaxCall(changedSelectFormData, url, function (newRowData) {
+        if (viewingMonth == currentMonth && viewingYear == currentYear) {
+          jobTable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw()
+        } else {
+          jobTable.row(`#${newRowData.id}`).remove().draw()
+        }
       });
     };
   });
@@ -754,8 +786,8 @@ $(document).ready(function () {
     })
   })
 
-  unreceivedFilter.addEventListener('change', () => {
-    jobTable.draw()
-  });
+  unreceivedFilter.addEventListener('change', () => {jobTable.draw()})
+  showOnlyOngoingFilter.addEventListener('change', () => { jobTable.draw() })
+  toggleOngoingFilter.addEventListener('change', () => {jobTable.draw()})
 
 });

@@ -19,7 +19,7 @@ from django.utils.html import strip_tags
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
 from django.views import View
 from .models import Job, Vendor, Cost, Client
-from .forms import CostForm, JobForm, JobImportForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, ClientForm, SetInvoiceInfoForm, SetDepositDateForm
+from .forms import CostForm, JobForm, JobImportForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, ClientForm, SetInvoiceInfoForm, SetDepositDateForm, PipelineJobUpdateForm
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from urllib.parse import urlencode
@@ -65,7 +65,7 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         context['client_form'] = self.client_form_class
         context['csv_export_form'] = self.csv_export_form
         context['bulk_actions'] = self.bulk_actions
-        context['headers'] = ["", "ID", "クライアント名", "クライアントID", "案件名", "ジョブコード", "収入（税込）", "出費", "利益率（税抜）", "請求期間", "種目", "ステータス", "入金日", "Invoice Info Completed"]
+        context['headers'] = ["", "ID", "クライアント名", "クライアントID", "案件名", "ジョブコード", "収入（税込）", "出費", "利益率（税抜）", "請求期間", "種目", "ステータス", "入金日", "Invoice Info Completed", "status_helper"]
         return context
     
     def get_queryset(self):
@@ -73,41 +73,32 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
         return queryset
 
     def post(self, request, *args, **kwargs):
-        if 'update-job' in request.POST:
-            job = Job.objects.get(id=request.POST.get('job_id'))
-            form_data_job_status = request.POST.get('status')
-
-            if form_data_job_status:
-                print(form_data_job_status)
-                job.status = form_data_job_status
-            else:
-                print("There was a problem getting the form data.")
-            job.save()
-
-            data = get_job_data(job)
-            return JsonResponse({"status": "success", "data": data})
-
-        elif 'bulk-actions' in request.POST:
+        if 'bulk-actions' in request.POST:
+            # TODO: Clean up this mess
             bulk_form = self.bulk_actions(request.POST)
             checked_jobs = Job.objects.filter(id__in=request.POST.getlist('select'))
             if bulk_form.is_valid():
                 action = bulk_form.cleaned_data["actions"]
                 if action == "NEXT":
                     for job in checked_jobs:
-                        if job.month == '12':
-                            job.month = '1'
-                            job.year = str(int(job.year) + 1)
-                        else:   
-                            job.month = str(int(job.month) + 1)
-                        job.save()
+                        if job.month: 
+                            if job.month == '12':
+                                job.month = '1'
+                                job.year = str(int(job.year) + 1)
+                            else:   
+                                job.month = str(int(job.month) + 1)
+                                job.save()
+                        return HttpResponseRedirect("/pipeline/")
                 elif action == "PREVIOUS":
                     for job in checked_jobs:
-                        if job.month == '1':
-                            job.month = '12'
-                            job.year = str(int(job.year) - 1)
-                        else:   
-                            job.month = str(int(job.month) - 1)
-                        job.save()
+                        if job.month: 
+                            if job.month == '1':
+                                job.month = '12'
+                                job.year = str(int(job.year) - 1)
+                            else:   
+                                job.month = str(int(job.month) - 1)
+                            job.save()
+                        return HttpResponseRedirect("/pipeline/")
                 elif action == "DEL":
                     i = 0
                     for job in checked_jobs:
@@ -131,6 +122,7 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                             i += 1
                 else:
                     return(HttpResponse("error")) #TODO: use a better error message
+            return HttpResponseRedirect("/pipeline/")
 
         elif 'new_client' in request.POST:
             form = self.client_form_class(request.POST)
@@ -199,18 +191,29 @@ class AddJobView(PipelineViewBase):
         
 class SetInvoiceInfoView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
+        # print(request.POST)
         job_id = kwargs['pk']
         job = Job.objects.get(id=job_id)
-        form = self.set_invoice_info_form_class(request.POST, instance=job)
+        form = SetInvoiceInfoForm(request.POST, instance=job)
         if form.is_valid():
-            print('I am valid')
+            print(form)
             form.save()
-            return JsonResponse({"status":"success"})
+            return JsonResponse({"status":"success",  "data": get_job_data(job)})
         else:
-            print(request.POST)
             print(form.errors)
             return JsonResponse({"status":"error"})
-
+        
+class PipelineJobUpdateView(PipelineViewBase):      
+    def post(self, request, *args, **kwargs):
+        job = Job.objects.get(id=kwargs['pk'])
+        form = PipelineJobUpdateForm(request.POST, instance=job)
+        print(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({"status": "success", "data": get_job_data(job)})
+        else:
+            print(form.errors)
+            return JsonResponse({"status": "error"})
     
 def pipeline_data(request, year=None, month=None):
     """
@@ -233,6 +236,18 @@ def pipeline_data(request, year=None, month=None):
     return JsonResponse(data, safe=False,)
 
 def revenue_display_data(request, year=None, month=None):
+    """
+    Calculates the revenue displayed on the pipeline page.
+
+    variables
+    all_jobs_in_current_year: All jobs in the current fiscal year (Jan - Dec)
+    jobs_in_year_excl_this_month: All jobs in the current fiscal year excluding this month.
+                                  Used to calculate average monthly revenue
+    total_revenue_ytd: Sum of the revenue of all completed jobs year-to-date
+    total_revenue_for_monthly_avg: A sum of jobs_in_year_excl_this_month
+    total_revenue_monthly_expected: Revenue of all jobs in the current month + all ongoing jobs
+    total_revenue_monthly_actual: Revenue of all COMPLETED jobs in the current month
+    """
     today = timezone.now()
 
     jobs = Job.objects.filter(isDeleted=False)
@@ -241,24 +256,29 @@ def revenue_display_data(request, year=None, month=None):
     elif year != None and month != None:
         jobs = jobs.filter(job_date__month=month, job_date__year=year)
 
-    jobs_from_current_year = Job.objects.filter(job_date__year=date.today().year, isDeleted=False)
-
-    """
-    total revenue ytd 
-    aggregate revenue for each job
-    aggregate revenue * 0.1 for all jobs with add_consumption_tax == True
-    """
-
-    total_base_revenue_ytd = jobs_from_current_year.aggregate(total_base_revenue=Sum('revenue'))['total_base_revenue'] or 0
-    total_revenue_ytd = jobs_from_current_year.aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue']
-    total_revenue_monthly_expected = jobs.aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
-    total_revenue_monthly_actual = jobs.filter(
-        status__in=["READYTOINV", "INVOICED1","INVOICED2","FINISHED","ARCHIVED"]).aggregate(
-        total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
+    prev_month = today.month - 1 if today.month > 1 else 1
+    all_jobs_in_current_year = Job.objects.filter(
+        job_date__year=date.today().year, 
+        isDeleted=False)
     
+    jobs_in_year_excl_this_month = all_jobs_in_current_year.filter(
+        job_date__month__lt=date.today().month)
+
+    total_revenue_ytd = all_jobs_in_current_year.filter(
+        status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]
+        ).aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
+    total_revenue_for_monthly_avg = jobs_in_year_excl_this_month.filter(
+        status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]
+        ).aggregate(total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
+    total_revenue_monthly_expected = jobs.aggregate(
+        total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
+    total_revenue_monthly_actual = jobs.filter(
+        status__in=["INVOICED1","INVOICED2","FINISHED","ARCHIVED"]
+        ).aggregate( total_revenue=Sum('revenue_incl_tax'))['total_revenue'] or 0
+
     data = {
         "total_revenue_ytd":f'¥{total_revenue_ytd:,}',
-        "avg_monthly_revenue_ytd":f'¥{round(total_revenue_ytd/(date.today().month)):,}',
+        "avg_monthly_revenue_ytd":f'¥{round(total_revenue_for_monthly_avg/(prev_month)):,}',
         "total_revenue_monthly_expected":f'¥{total_revenue_monthly_expected:,}',
         "total_revenue_monthly_actual":f'¥{total_revenue_monthly_actual:,}',
     }
@@ -394,7 +414,7 @@ def all_invoices_data(request):
             "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
             "amount_JPY": f'¥{round(cost.amount * forex_rates[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
             "amount_local": f'{cost.currency}{cost.amount}',
-            "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
+            "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}' if cost.job.job_date else None,
             "job_name": cost.job.job_name,
             "job_code": cost.job.job_code,
             "vendor": cost.vendor.familiar_name if cost.vendor else "",

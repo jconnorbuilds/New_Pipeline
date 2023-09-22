@@ -12,6 +12,7 @@
 	<script src="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
 	<script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
 
+
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Chivo+Mono&family=Chivo:ital,wght@0,300;0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,300;0,400;0,900;1,400;1,900&display=swap" rel="stylesheet">
@@ -50,14 +51,6 @@
 	            <li><a class="dropdown-item" href="{% url 'pipeline:vendor-add' %}">Add Vendor</a></li>
 	            <li><a class="dropdown-item" href="{% url 'pipeline:vendor-list' %}">View Vendors</a></li>
 	           </ul>
-	        {% comment %} <li class="nav-item dropdown">
-	          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-	            Testing
-	          </a>
-	          <ul class="dropdown-menu">
-	            <li><a class="dropdown-item" href="{% url 'pipeline:upload-invoice' vendor_uuid="0b10cfbf-3c1e-4d88-94db-e79fc9bca074" %}">Invoice upload</a></li>
-	            <li><a class="dropdown-item" href="{% url 'pipeline:upload-invoice-success' %}">Invoice success</a></li>
-	          </ul> {% endcomment %}
 	        </li>
 	      </ul>
 	    </div>

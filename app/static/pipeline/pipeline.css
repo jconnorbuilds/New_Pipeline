@@ -51,8 +51,13 @@ input::-webkit-inner-spin-button {
   top: 150px !important;
 }
 
-.job-finished {
+/* tbody tr.job-finished { 
   background-color: rgba(0, 176, 21, 0.126) !important;
+} */
+
+tbody tr.job-ongoing { 
+  background-color: var(--bs-gray-200) !important;
+  background-color: rgba(218, 213, 255, 0.267) !important;
 }
 
 .all-invoices-requested {
@@ -66,6 +71,11 @@ input::-webkit-inner-spin-button {
 .indent {
   display: inline-block;
   margin-left: 4ch;
+}
+
+.display-filter > div {
+  display: inline-block;
+  margin: 10px 20px 0;
 }
 
 .job-details-w400 {

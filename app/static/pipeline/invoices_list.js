@@ -49,12 +49,14 @@ $(document).ready(function () {
       { "data": "amount_local", responsivePriority: 1 },
       {
         "data": "job_date",
-        "render": function (data) {
-          var date = new Date(data);
-          var year = date.getFullYear();
-          var month = date.getMonth() + 1;
-          return year + "年" + month + "月";
-        }
+        "className": "invoice-period",
+        "render": {
+          "display": function (data) {
+            let date = new Date(data);
+            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : "---";
+          },
+          "sort": function (data) { return data }
+        },
       },
       { "data": "job_name", responsivePriority: 1 },
       { "data": "job_code" },
@@ -66,12 +68,14 @@ $(document).ready(function () {
         orderDataType: "dom-cost-select",
       },
       {
-        "data": "request_invoice", "render": function (data, type, row) {
+        "data": "request_invoice",
+        "render": function (data, type, row) {
           return data;
         }
       },
       {
-        "data": "edit", "render": function (data, type, row) {
+        "data": "edit",
+        "render": function (data, type, row) {
           return data;
         }
       },

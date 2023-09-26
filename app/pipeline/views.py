@@ -404,7 +404,6 @@ def all_invoices_data(request):
     costs = Cost.objects.all()
     print(request.POST)
     forex_rates=get_forex_rates()
-    print(forex_rates)
 
     status_options = Cost.INVOICE_STATUS_CHOICES
 
@@ -414,7 +413,7 @@ def all_invoices_data(request):
             "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
             "amount_JPY": f'¥{round(cost.amount * forex_rates[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
             "amount_local": f'{cost.currency}{cost.amount}',
-            "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}' if cost.job.job_date else None,
+            "job_date": cost.job.job_date,
             "job_name": cost.job.job_name,
             "job_code": cost.job.job_code,
             "vendor": cost.vendor.familiar_name if cost.vendor else "",

@@ -9,8 +9,8 @@ const slugify = str =>
 let hintWithInvoices = "Simply choose the matching job from the dropdown menu. When you've finished, click the Submit button below.";
 let hintWithNoInvoices = "Files will appear here once you've added them."
 
-const dropzoneMessages = document.querySelector(".dropzone-messages");
-const dropzoneErrorMessages = document.querySelector(".dropzone-error-messages");
+const dropzoneMessages = document.querySelector(".dz-messages");
+const dropzoneErrorMessages = document.querySelector(".dz-error-messages");
 const pageTitle = document.querySelector(".content-wrapper h3");
 const contentWrapper = document.querySelector(".content-wrapper")
 
@@ -20,7 +20,14 @@ function clearDropzone() {
         $('#invoice-hint').text(hintWithNoInvoices);
         $('.dz-message').show();
     };
+    if (!myDropzone.files.length) {
+        dropzoneErrorMessages.classList.add("d-none")
+    }
 };
+
+function sanitizeFileName(file) {
+    return file.name.replace(/　/g, '');
+}
 
 var myDropzone;
 Dropzone.options.invoiceUploadForm = {
@@ -35,19 +42,20 @@ Dropzone.options.invoiceUploadForm = {
     acceptedFiles: ".pdf", 
     addRemoveLinks: true, 
     dictDefaultMessage: "Drop them here!",
+    renameFile: sanitizeFileName,
     
     // Set up the dropzone
     init: function() {
-        myDropzone = this;
+        dz = this;
         // First change the button to actually tell Dropzone to process the queue.
-        $("#invoice-upload-btn").on("click", (e) => { 
+        $("#invoice-upload-btn").on("click", function(e) { 
             e.preventDefault();
             e.stopPropagation();
             var allSelected = checkifAllJobsSelected();
             var noDuplicates = checkDuplicatesValidation();
-            var rejectedFiles = myDropzone.getRejectedFiles.length;
+            var rejectedFiles = dz.getRejectedFiles.length;
             if (allSelected && noDuplicates && !rejectedFiles) {
-                myDropzone.processQueue();
+                dz.processQueue();
             } else {
                 // TODO: display helpful info on the screen
             }
@@ -56,6 +64,7 @@ Dropzone.options.invoiceUploadForm = {
         // Listen to the sendingmultiple event. In this case, it's the sendingmultiple event instead
         // of the sending event because uploadMultiple is set to true.
         this.on("sendingmultiple", function(files, xhr, formData) {
+            // Gets triggered when the form is actually being sent.
             const invoices = {};
             $("select").each(function () {
                 const costId = $(this).val();
@@ -65,30 +74,29 @@ Dropzone.options.invoiceUploadForm = {
                 };
             });
             formData.append("invoices", JSON.stringify(invoices))
-          // Gets triggered when the form is actually being sent.
-          // Hide the success button or the complete form.
+            dropzoneErrorMessages.classList.add('d-none')
           
         });
         this.on("successmultiple", function(files, response) {
           // Gets triggered when the files have successfully been sent.
-          // Redirect user or notify of success.
+            dropzoneErrorMessages.classList.add('d-none');
             dropzoneMessages.textContent = "All looks good!";
-            dropzoneErrorMessages.classList.add('hidden');
             window.location.replace('../invoice-uploader/send-email/')
 
         });
         this.on("errormultiple", function(files, response) {
           // Gets triggered when there was an error sending the files.
-          // Maybe show form again, and notify user of error
-            dropzoneErrorMessages.textContent = response;
+            dropzoneErrorMessages.textContent = response.error ? response.error : response
+
             dropzoneErrorMessages.classList.remove('d-none')
-            if (myDropzone.getQueuedFiles().length === 0) clearDropzone();   
+            console.log(dz.files.length);
+            console.log(dz.files)
         });
 
         this.on("removedfile", function(file) {
-            $(`#${slugify(file.name)}-form`).remove();
+            $(`#${slugify(file.cleanName)}-form`).remove();
             validateFormsAndFiles()
-            if (myDropzone.getQueuedFiles().length == 0) clearDropzone();
+            if (!dz.files.length) clearDropzone();
         });
     }
 }
@@ -104,11 +112,6 @@ function validateFormsAndFiles() {
     */
     let noDuplicates = checkDuplicatesValidation();
     let allSelected = checkifAllJobsSelected();
-
-    console.log(`allSelected: ${allSelected}`)
-    console.log(`noDuplicates: ${noDuplicates}`)
-    console.log(`rejectedFiles length: ${myDropzone.getRejectedFiles().length}`)
-    console.log(`queuedFiles length: ${myDropzone.getQueuedFiles().length}`)
 
     if (
         myDropzone.getRejectedFiles().length === 0 && 
@@ -127,7 +130,7 @@ function validateFormsAndFiles() {
             $("#invoice-upload-btn").addClass('disabled');
             return false;
         };
-    console.log("queued files: ", getQueuedFiles())
+    console.log("queued files: ", myDropzone.getQueuedFiles())
     console.log("dropzone files: ", myDropzone.files)
 };
 
@@ -199,9 +202,9 @@ $(document).ready(function(){
     const costs = JSON.parse(window.costsJson);
     const jobs = window.jobsJson;
     const jobMap = {};
+    
 
     for (const job of jobs) {
-        // console.log(job)
         jobMap[job.pk] = {
             jobCode: job.job_code,
             jobName: job.job_name,
@@ -210,42 +213,61 @@ $(document).ready(function(){
     };
 
     let formNum = 0;
-    let filenameList = [];
     myDropzone.on("addedfile", function(file) {
         formNum ++;
+        file.cleanName = sanitizeFileName(file)
         $(".dz-message").hide();
-        console.log(this);
         if (this.files.length) {
             removeDuplicates(this, file)
         };
-        let invoiceSelect = $(`
-            <div class="input-group mb-3 invoice-select-row" id="${slugify(file.name)}-form">
-                <label for='invoice-select-${formNum}' class="input-group-text"><b>${file.name}</b></label>
-                <select class='form-select invoice-select' id='invoice-select-${formNum}' required></select>
-            </div>`
-            );
-        $("#invoice-select-area").append(invoiceSelect).show();
+
+        const invoiceSelectArea = document.querySelector('#invoice-select-area');
+        const selectInputGroup = document.createElement('div');
+        const labelEl = document.createElement('label');
+        const selectEl = document.createElement('select');
+        const emptyOption = document.createElement('option');
+
+        selectInputGroup.classList.add('input-group', 'mb-3', 'invoice-select-row');
+        selectInputGroup.setAttribute('id', `${slugify(file.cleanName)}-form`);
+
+        labelEl.classList.add('input-group-text');
+        labelEl.setAttribute('for', `invoice - select - ${formNum}`);
+        labelEl.appendChild(document.createTextNode(file.cleanName));
+
+        selectEl.classList.add('form-select', 'invoice-select');
+        selectEl.setAttribute('id', `invoice-select-${formNum}`)
+        selectEl.dataset.fileName = file.cleanName;
+
+        emptyOption.value = 0;
+        emptyOption.text = 'Select job';
+
         $("#invoice-hint").text(hintWithInvoices);
-        invoiceSelect.find('select').append("<option value=0>Select job</option>")
-            .attr("data-file-name", file.name);
+
+        selectEl.appendChild(emptyOption)
+        selectInputGroup.appendChild(labelEl);
+        selectInputGroup.appendChild(selectEl);
+
         for (const cost of costs) {
             if (cost.fields.vendor === window.vendorId) {
-                const option = $("<option></option>")
-                .val(cost.pk)
-                .text(`PO# ${cost.fields.PO_number} - Job details: ${cost.fields.description} for ${jobMap[cost.fields.job].jobName}`);
-                
-                if (file.name.includes(cost.fields.PO_number) || 
-                    file.name.includes(jobMap[cost.fields.job].jobCode)) {
-                    option.attr('selected', true);
+                const option = document.createElement('option');
+                option.value = cost.pk;
+                option.text = `PO# ${cost.fields.PO_number} - Job details: ${cost.fields.description} for ${jobMap[cost.fields.job].jobName}`
+
+                if (file.cleanName.includes(cost.fields.PO_number) || 
+                    file.cleanName.includes(jobMap[cost.fields.job].jobCode)) {
+                    option.setAttribute('selected', '');
                 }
-                invoiceSelect.find('select').append(option)
+                selectEl.append(option)
             }
             if ($(`#invoice-select-${formNum} :selected`).val() !== "0") {
                 $(`#invoice-select-${formNum}`).addClass('is-valid');
             }
         }
-        // waits 50ms after adding a file because for some reason dropzone thinks the file is
-        // rejected until the "accept" event occurs.
+
+        invoiceSelectArea.appendChild(selectInputGroup);
+        invoiceSelectArea.style.display = 'block';
+
+        // Seems like the file is considered rejected until the "accept" event occurs, so we wait.
         setTimeout(function() {
             validateFormsAndFiles();
           }, 50);

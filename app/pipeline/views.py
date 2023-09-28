@@ -22,7 +22,7 @@ from .models import Job, Vendor, Cost, Client
 from .forms import CostForm, JobForm, JobImportForm, PipelineCSVExportForm, PipelineBulkActionsForm, AddVendorToCostForm, UpdateCostForm, ClientForm, SetInvoiceInfoForm, SetDepositDateForm, PipelineJobUpdateForm
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from urllib.parse import urlencode
+from urllib.parse import urlencode, unquote
 import dropbox
 from dropbox.exceptions import ApiError, AuthError
 from .utils import get_forex_rates, process_imported_jobs, get_job_data, get_invoice_status_data
@@ -386,7 +386,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
                 "costsheet_link": f'<a href="{reverse("pipeline:cost-add", args=[cost.job.id])}">Cost Sheet</a>',
                 "amount_JPY": f'¥{round(cost.amount * self.forex_rates[cost.currency]):,}' if cost.invoice_status not in ["PAID"] else f'¥{round(cost.amount * cost.locked_exchange_rate):,}',
                 "amount_local": f'{cost.currency}{cost.amount}',
-                "job_date": f'{calendar.month_abbr[cost.job.job_date.month]} {cost.job.job_date.year}',
+                "job_date": cost.job.job_date,
                 "job_name": cost.job.job_name,
                 "job_code": cost.job.job_code,
                 "vendor": cost.vendor.familiar_name,
@@ -473,36 +473,34 @@ def dropbox_upload_file(file_to_upload, dropbox_file_path):
         print(f'Error uploading file to Dropbox: {e.error}')
 
 def process_uploaded_vendor_invoice(request):
-    print(f'FILES:{request.FILES}')
-    print(f'POST:{request.POST}')
+    # for i, uploaded_file in enumerate(request.FILES.values()):
+    #     print(f'FILE {i + 1}: {uploaded_file}')
+    # for i, uploaded_file in enumerate(json.loads(request.POST["invoices"]).values()):
+    #     print(uploaded_file)
 
     successful_invoices = []
     unsuccessful_invoices = []
+    err_500_message = "Oops, there was an error uploading your invoice. Please remove the files or refresh the page and try again. If the error persists, please email us at invoice@bwcatmusic.com - you can send us your invoice directly. We're working hard to make sure these errors don't happen, sorry for the trouble!",
 
     if request.POST and "invoices" in request.POST:
-        print("we've got invoices!")
 
         s3 = settings.LINODE_STORAGE
 
-        invoice_data = json.loads(request.POST['invoices'])
         file_dict = {}
-        
-
+        file_ids_and_filenames = json.loads(request.POST['invoices'])
         for file in request.FILES.values():
-            file_dict[file.name] = file
+            file_dict[unquote(file.name)] = file
 
-        for invoice_id, invoice_filename in invoice_data.items():
-            print(invoice_filename)
+        for invoice_id, invoice_filename in file_ids_and_filenames.items():
+            print(file_dict.keys())
             cost = Cost.objects.get(id=invoice_id)
-            bucket_name = "bcwc-files"
+            invoice_file = file_dict.get(invoice_filename, None)
             payment_month = timezone.now() + relativedelta(months=+1)
             date_folder_name = payment_month.strftime('%Y年%-m月')
             currency_folder_name = "_" + cost.currency
             file_extension = "." + invoice_filename.split('.')[-1]
-            invoice_file = file_dict.get(invoice_filename, None)
-
-            if invoice_file and invoice_file.size < 10 * 1024 * 1024:
-                if invoice_file.size < 10 * 1024 * 1024:
+            if invoice_file and invoice_file.size < 100 * 1024 * 1024:
+                if invoice_file.size < 100 * 1024 * 1024:
                     try:
                         invoice_folder = '/Financial/_ INVOICES/_VENDOR INVOICES' if not settings.DEBUG else '/Financial/TEST/_ INVOICES/_VENDOR INVOICES'
                         full_filepath = (invoice_folder + "/" + date_folder_name + "/" + currency_folder_name + "/" + cost.PO_number + file_extension)
@@ -512,20 +510,20 @@ def process_uploaded_vendor_invoice(request):
                         successful_invoices.append(cost)
                             
                     except Exception as e:
-                        print(e)
-                        # Maybe to get rid of Linode Object Storage we can just get the invoice as an email attachment
-                        s3.upload_fileobj(
-                            invoice_file, bucket_name,
-                            date_folder_name + "/" + cost.PO_number + file_extension)
                         cost.invoice_status = 'ERR'
                         cost.save()
                         unsuccessful_invoices.append(cost)
+                        return JsonResponse(
+                            {'error': err_500_message, 'status_code': 500}, status=500
+                            )
                 else:
-                    return JsonResponse({'error': 'File size must be less than 10 MB'})
+                    return JsonResponse({'error':
+                                        """File too large! Please limit files to 10MB or less.""",
+                                    'status_code': 413}, status=413)
             else:
-                return JsonResponse({'status':'error', 'message':'There was an error'})
-        
-        print(successful_invoices)
+                return JsonResponse({'error': err_500_message, 'status_code': 500}, status=500)
+    
+        print("Uploaded: ", successful_invoices)
         request.session['successful_invoices'] = json.dumps([cost.id for cost in successful_invoices])
         request.session['unsuccessful_invoices'] = json.dumps([cost.id for cost in unsuccessful_invoices])
         return HttpResponse('success')

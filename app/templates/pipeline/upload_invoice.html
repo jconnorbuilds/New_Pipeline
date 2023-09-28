@@ -45,9 +45,13 @@
 					<div class="dropzone-previews"></div>
 					{% csrf_token %}
 					<div class="fallback">
-					<input name="file" type="file" multiple />
-				</div>
+						<input name="file" type="file" multiple />
+					</div>
 				</form>
+			</div>
+			<div class="dz-messages">
+				<div class="dz-error-messages bg-danger-subtle border border-danger p-3 border-3 rounded-3 m-3 d-none">
+				</div>
 			</div>
 			<div class="container py-3" id="step-2-area">
 				<h5>Step 2: Select the job(s) that you're invoicing</h5>
@@ -55,10 +59,6 @@
 					<p><em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em></p>
 					<p id="invoice-hint">Files will appear here once you've added them.</p>
 					<div class="shadow rounded p-2" id="invoice-select-area" style="display: none;"></div>
-				</div>
-			</div>
-			<div class="dropzone-messages">
-				<div class="dropzone-error-messages bg-danger-subtle border border-danger p-3 border-3 rounded-3 m-3 d-none">
 				</div>
 			</div>
 			<h5 class="d-inline me-3">Step 3: Click Submit:</h5>

@@ -52,7 +52,6 @@ $(document).ready(function () {
         "className": "invoice-period",
         "render": {
           "display": function (data) {
-            console.log(data)
             let date = new Date(data);
             return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : "---";
           },

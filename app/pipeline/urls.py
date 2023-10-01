@@ -52,9 +52,9 @@ urlpatterns = [
     path('revenue-data/', views.revenue_display_data, name="revenue-data"),
     path('invoices/', views.InvoiceView.as_view(), name="invoices"),
     path('all-invoices-data/', views.all_invoices_data, name="all-invoices-data"),
-    path('api/vendors', views.VendorList.as_view()),
-    path('api/vendor-details/<pk>', views.VendorDetail.as_view()),
-    path('api/jobs', views.JobList.as_view()),
+    # path('api/vendors', views.VendorList.as_view()),
+    # path('api/vendor-details/<pk>', views.VendorDetail.as_view()),
+    # path('api/jobs', views.JobList.as_view()),
     # path('api/calculated-revenue/<int:year>/<int:month>', views.revenue_display_data),
     # path('api/calculated-revenue/', views.revenue_display_data,),
 

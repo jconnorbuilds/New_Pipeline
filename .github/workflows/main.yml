@@ -5,18 +5,16 @@ on: [push]
 env:
   WEB_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web"
   NGINX_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx"
-  TAG: "v1.19"
+  TAG: 'v1.20'
 
 jobs:
   build:
     name: Build Docker Images
     runs-on: ubuntu-latest
     steps:
-      - 
-        name: Checkout main
+      - name: Checkout main
         uses: actions/checkout@v3.2.0
-      - 
-        name: Add environment variables to .env
+      - name: Add environment variables to .env
         run: |
           echo "TAG='${{ env.TAG }}'" >> .env
           echo "DEBUG=0" >> .env
@@ -29,33 +27,27 @@ jobs:
           echo "SQL_PASSWORD='${{ secrets.SQL_PASSWORD }}'" >> .env
           echo "SQL_HOST='${{ secrets.SQL_HOST }}'" >> .env
           echo "SQL_PORT='${{ secrets.SQL_PORT }}'" >> .env
-      -
-        name: Set environment variables
+      - name: Set environment variables
         run: |
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
           echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
           echo "TAG=$(echo ${{env.TAG}} )" >> $GITHUB_ENV
-      -
-        name: Log in to GitHub Packages
+      - name: Log in to GitHub Packages
         run: echo ${PERSONAL_ACCESS_TOKEN} | docker login ghcr.io -u ${{ secrets.NAMESPACE }} --password-stdin
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - 
-        name: Pull images
+      - name: Pull images
         run: |
           docker pull ${{ env.WEB_IMAGE }} || true
           docker pull ${{ env.NGINX_IMAGE }} || true
-      - 
-        name: Build images
+      - name: Build images
         run: |
           docker compose -f docker-compose.ci.yml build
-      - 
-        name: Tag images
+      - name: Tag images
         run: |
           docker tag pipeline_prod:latest ${{ env.WEB_IMAGE }}:${{ env.TAG }}
           docker tag pipeline_nginx_prod:latest ${{ env.NGINX_IMAGE }}:${{ env.TAG }}
-      - 
-        name: Push images
+      - name: Push images
         run: |
           docker push ${{ env.WEB_IMAGE }}:${{ env.TAG }}
           docker push ${{ env.NGINX_IMAGE }}:${{ env.TAG }}

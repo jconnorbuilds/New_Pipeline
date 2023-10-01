@@ -20,12 +20,12 @@ import boto3
 
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
-        messages.DEBUG: 'alert-secondary',
-        messages.INFO: 'alert-info',
-        messages.SUCCESS: 'alert-success',
-        messages.WARNING: 'alert-warning',
-        messages.ERROR: 'alert-danger',
- }
+    messages.DEBUG: 'alert-secondary',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,11 +36,12 @@ dev_dotenv_path = BASE_DIR / '../.env.dev'
 if dev_dotenv_path.exists():
     load_dotenv(dev_dotenv_path)
 
-LINODE_STORAGE = boto3.client('s3', 
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
-        endpoint_url=os.getenv("ENDPOINT_URL")
-        )
+LINODE_STORAGE = boto3.client('s3',
+                              aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+                              aws_secret_access_key=os.getenv(
+                                  "AWS_SECRET_ACCESS_KEY"),
+                              endpoint_url=os.getenv("ENDPOINT_URL")
+                              )
 
 WISE_API_KEY = os.getenv("WISE_API_KEY")
 DROPBOX_REFRESH_TOKEN = os.getenv("DROPBOX_REFRESH_TOKEN")
@@ -60,7 +61,8 @@ print(f"sql_host: {os.getenv('SQL_HOST')}")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools".split(" ")
+ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools".split(
+    " ")
 CSRF_TRUSTED_ORIGINS = "https://bwcat.tools https://127.0.0.1".split(" ")
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -73,11 +75,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.forms',
+    'rest_framework',
     'pipeline',
     'django_bootstrap5',
     'widget_tweaks',
 ]
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+
+# REST_FRAMEWORK = {
+#     # Use Django's standard `django.contrib.auth` permissions,
+#     # or allow read-only access for unauthenticated users.
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ]
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -163,7 +174,7 @@ EMAIL_HOST_USER = 'invoice@bwcatmusic.com'
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_BACKEND= 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

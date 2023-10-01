@@ -10,21 +10,27 @@ import uuid
 import requests
 
 # Create your models here.
+
+
 def id_suffix_generator():
-        n = 1
-        while n < 9999:
-            yield (f"{n:03d}")
-            n += 1
+    n = 1
+    while n < 9999:
+        yield (f"{n:03d}")
+        n += 1
+
 
 next_vendor_code_suffix = id_suffix_generator()
 
+
 def PO_num_generator():
-        n = 1
-        while n < 9999:
-            yield (f"{n:03d}")
-            n += 1
+    n = 1
+    while n < 9999:
+        yield (f"{n:03d}")
+        n += 1
+
 
 PONumgen = PO_num_generator()
+
 
 class Vendor(models.Model):
 
@@ -37,7 +43,8 @@ class Vendor(models.Model):
     use_company_name = models.BooleanField(default=False)
     company_name = models.CharField(max_length=50, blank=True, null=True)
     notes = models.TextField(max_length=300, blank=True)
-    email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
+    email = models.EmailField(
+        max_length=100, blank=True, null=True, unique=True)
     payment_id = models.IntegerField(unique=True, null=True, blank=True)
     preferred_currency = models.CharField(max_length=3, null=True, blank=True)
 
@@ -51,7 +58,7 @@ class Vendor(models.Model):
             return ' '.join([self.first_name, self.last_name])
         else:
             return None
-        
+
     @property
     def familiar_name(self):
         '''
@@ -64,14 +71,14 @@ class Vendor(models.Model):
         else:
             return self.company_name
 
-
     class Meta:
         unique_together = (("first_name", "last_name"),)
         constraints = [
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_is_person_or_company",
                 check=(
-                    models.Q(first_name__isnull=True, company_name__isnull=False)
+                    models.Q(first_name__isnull=True,
+                             company_name__isnull=False)
                     | models.Q(first_name__isnull=False, company_name__isnull=True)
                     | models.Q(first_name__isnull=False, company_name__isnull=False)
                 ),
@@ -81,13 +88,14 @@ class Vendor(models.Model):
     def __str__(self):
         return f'{self.familiar_name} - {self.vendor_code}'
 
+
 class Client(models.Model):
     friendly_name = models.CharField(max_length=100, unique=True)
     proper_name = models.CharField(max_length=100, null=True, blank=True)
     proper_name_japanese = models.CharField(max_length=100, blank=True)
     job_code_prefix = models.CharField(max_length=4, unique=True)
 
-    # Payment Term 
+    # Payment Term
     NET30 = 'NET30'
     NET60 = 'NET60'
     NET90 = 'NET90'
@@ -107,9 +115,9 @@ class Client(models.Model):
     paymentTerm = models.CharField(
         max_length=7,
         choices=PAYMENT_TERM_CHOICES,
-        default = NONE,
+        default=NONE,
         null=True,
-        )
+    )
     notes = models.TextField(max_length=300, blank=True)
 
     def __str__(self):
@@ -120,24 +128,27 @@ class Client(models.Model):
             models.CheckConstraint(
                 name="%(app_label)s_%(class)s_has_proper_name",
                 check=(
-                    models.Q(proper_name__isnull=True, proper_name_japanese__isnull=False)
+                    models.Q(proper_name__isnull=True,
+                             proper_name_japanese__isnull=False)
                     | models.Q(proper_name__isnull=False, proper_name_japanese__isnull=True)
                     | models.Q(proper_name__isnull=False, proper_name_japanese__isnull=False)
                 ),
             )
         ]
 
+
 class Cost(models.Model):
     forex_rates = get_forex_rates()
 
-    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vendor_rel')
+    vendor = models.ForeignKey(
+        Vendor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vendor_rel')
     description = models.CharField(max_length=30, blank=True)
     amount = models.IntegerField(null=True)
     # TODO: Add conversion to JPY
-    
-    CURRENCIES = currencies # tuple, format (USD,USD $)
+
+    CURRENCIES = currencies  # tuple, format (USD,USD $)
     currency = models.CharField(max_length=10, default='¥', choices=CURRENCIES)
-    
+
     INVOICE_STATUS_CHOICES = (
         ('NR', 'Not requested'),
         ('REQ', 'Requested'),
@@ -148,18 +159,23 @@ class Cost(models.Model):
         ('PAID', 'Paid'),
         ('NA', 'No Invoice'),
     )
-    invoice_status = models.CharField(max_length=50, default='NR', choices=INVOICE_STATUS_CHOICES)
+    invoice_status = models.CharField(
+        max_length=50, default='NR', choices=INVOICE_STATUS_CHOICES)
 
     notes = models.CharField(max_length=300, blank=True)
-    job = models.ForeignKey('Job', on_delete=models.CASCADE, related_name='cost_rel', null=True)
-    PO_number = models.CharField(max_length=10, null=True, default=None, editable = False)
+    job = models.ForeignKey('Job', on_delete=models.CASCADE,
+                            related_name='cost_rel', null=True)
+    PO_number = models.CharField(
+        max_length=10, null=True, default=None, editable=False)
     PO_num_is_fixed = models.BooleanField(default=False)
-    locked_exchange_rate = models.DecimalField(max_digits=10, decimal_places=3, default=None, null=True, blank=True)
-    exchange_rate_locked_at = models.DateTimeField(default=None, null=True, blank=True)
-    
+    locked_exchange_rate = models.DecimalField(
+        max_digits=10, decimal_places=3, default=None, null=True, blank=True)
+    exchange_rate_locked_at = models.DateTimeField(
+        default=None, null=True, blank=True)
+
     # a flag to cue the save method to re-calculate the exchange rate based on a custom datetime
     exchange_rate_override = models.BooleanField(default=False)
-    
+
     def calculate_exchange_rate_overide(self, source_currency, exchange_rate_locked_at):
         '''
         Calculates the exchange rate based on a specific point in time.
@@ -172,10 +188,10 @@ class Cost(models.Model):
             'Content-Type': 'application/json'
         }
         params = {
-                'source': source_currency,
-                'target': target_currency,
-                'time': exchange_rate_locked_at.isoformat(),
-            }
+            'source': source_currency,
+            'target': target_currency,
+            'time': exchange_rate_locked_at.isoformat(),
+        }
         response = requests.get(url, headers=headers, params=params)
         if response.status_code == 200:
             print(response.json()[0].get('rate'))
@@ -192,7 +208,7 @@ class Cost(models.Model):
         '''
         po = ""
         POCount = 0
-        this_vendor_PO_count = Cost.objects.filter(vendor_id = self.vendor.id)
+        this_vendor_PO_count = Cost.objects.filter(vendor_id=self.vendor.id)
         for PO in this_vendor_PO_count:
             if PO.PO_number:
                 if int(PO.PO_number[-3::]) > POCount:
@@ -210,9 +226,10 @@ class Cost(models.Model):
             self.PO_number = self.get_PO_number()
 
         if self.exchange_rate_override:
-            self.locked_exchange_rate = self.calculate_exchange_rate_overide(self.currency, self.exchange_rate_locked_at)
+            self.locked_exchange_rate = self.calculate_exchange_rate_overide(
+                self.currency, self.exchange_rate_locked_at)
             self.exchange_rate_override = False
-        
+
         if not self.locked_exchange_rate and self.invoice_status == "PAID":
             self.locked_exchange_rate = self.forex_rates[self.currency]
             self.exchange_rate_locked_at = timezone.now()
@@ -221,17 +238,21 @@ class Cost(models.Model):
     def __str__(self):
         return f'{self.job.job_name} ({self.job.job_code}) {self.currency}{self.amount} -- {self.vendor.vendor_code if self.vendor else ""}'
 
+
 class Job(models.Model):
     forex_rates = get_forex_rates()
 
     def get_absolute_url(self):
-        return reverse('pipeline:job-detail', kwargs={"pk":self.pk})
-    
+        return reverse('pipeline:job-detail', kwargs={"pk": self.pk})
+
     created_at = models.DateTimeField(auto_now_add=True,)
     updated_at = models.DateTimeField(auto_now=True,)
     job_name = models.CharField(max_length=50)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, blank=False, related_name='jobs_by_client')
-    job_code = models.CharField(max_length=15, unique=True, blank=True, null=True) # In practicality, this field is required for not-deleted jobs. Logic is handled in the save method.
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, blank=False, related_name='jobs_by_client')
+    # In practicality, this field is required for not-deleted jobs. Logic is handled in the save method.
+    job_code = models.CharField(
+        max_length=15, unique=True, blank=True, null=True)
     job_code_isFixed = models.BooleanField(default=False)
     job_code_isOverridden = models.BooleanField(default=False)
     custom_job_code = models.CharField(max_length=15, null=True, blank=True)
@@ -240,19 +261,26 @@ class Job(models.Model):
     revenue = models.IntegerField()
     granular_revenue = models.BooleanField(default=False)
     add_consumption_tax = models.BooleanField(default=True)
-    consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
+    consumption_tax_amt = models.IntegerField(
+        null=True, blank=True, editable=True)
     revenue_incl_tax = models.IntegerField(null=True, editable=False)
-    vendors = models.ManyToManyField(Vendor, verbose_name='vendors involved', blank=True, related_name = 'jobs_rel')
-    invoice_recipient = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True) # Who the invoice is paid to, if it differs from the client
-    invoice_name = models.CharField(max_length=100, blank=True, null=True) # If the client has a job code or special name for the invoice
+    vendors = models.ManyToManyField(
+        Vendor, verbose_name='vendors involved', blank=True, related_name='jobs_rel')
+    # Who the invoice is paid to, if it differs from the client
+    invoice_recipient = models.ForeignKey(
+        Client, on_delete=models.CASCADE, null=True, blank=True)
+    # If the client has a job code or special name for the invoice
+    invoice_name = models.CharField(max_length=100, blank=True, null=True)
     relatedJobs = models.ManyToManyField("self", blank=True)
     deposit_date = models.DateField(blank=True, null=True)
 
     # Separating out year and month because the day of the month doesn't matter
     # And this was the easiest way to take in and manipulate form data via select widgets
     year = models.CharField(max_length=4, editable=True, null=True, blank=True)
-    month = models.CharField(max_length=2, editable=True, null=True, blank=True)
-    job_date = models.DateField(editable=False, null=True) # This is set in the save method
+    month = models.CharField(
+        max_length=2, editable=True, null=True, blank=True)
+    # This is set in the save method
+    job_date = models.DateField(editable=False, null=True)
 
     def get_job_code(self):
         '''
@@ -265,7 +293,7 @@ class Job(models.Model):
         month: 06
         iterator: 01 
         year: 2023
-        
+
         This should only run once, so the logic runs in the overridden save() function
 
         '''
@@ -274,8 +302,10 @@ class Job(models.Model):
         month = int(timezone.now().month)
         year = int(timezone.now().year)
         date = f"{year}-{month:02d}-01"
-        
-        sameClientJobs = Job.objects.filter(job_date=date, client__job_code_prefix=prefix) # Jobs from the same client in a particular month
+
+        # Jobs from the same client in a particular month
+        sameClientJobs = Job.objects.filter(
+            job_date=date, client__job_code_prefix=prefix)
         for i, job in enumerate(sameClientJobs):
             print(f"job {i}: {job}")
 
@@ -283,16 +313,18 @@ class Job(models.Model):
         # the same client in the same month
         i = 1
         while jc == '' and i <= 99:
-            if not Job.objects.filter(job_code = f'{prefix}{month:02d}{i:02d}{year}').exists():
+            if not Job.objects.filter(job_code=f'{prefix}{month:02d}{i:02d}{year}').exists():
                 jc = f'{prefix}{month:02d}{i:02d}{year}'
-                print(f'{prefix}{month:02d}{i:02d}{year} created') # TODO: move to logger
+                # TODO: move to logger
+                print(f'{prefix}{month:02d}{i:02d}{year} created')
                 return jc
             else:
-                i+= 1
-        
+                i += 1
+
         if jc == '':
-            print("There was a problem with the job code logic") # TODO: move to logger
-    
+            # TODO: move to logger
+            print("There was a problem with the job code logic")
+
     def reset_month_year_date(self):
         print('resetting month year and date')
         self.month = None
@@ -303,17 +335,17 @@ class Job(models.Model):
         ('ORIGINAL', 'Original Music'),
         ('RENEWAL', 'Renewal'),
         ('LIBRARY', 'Library'),
-        ('LICENSING','Licensing'),
-        ('LOGO','Sound Logo'),
+        ('LICENSING', 'Licensing'),
+        ('LOGO', 'Sound Logo'),
         ('MISC', 'Misc'),
         ('RETAINER', 'Retainer'),
-        ]
-    
+    ]
+
     job_type = models.CharField(
         max_length=15,
         choices=JOB_TYPE_CHOICES,
         default='ORIGINAL',
-        )
+    )
 
     notes = models.TextField(max_length=300, blank=True)
 
@@ -340,7 +372,7 @@ class Job(models.Model):
         max_length=2,
         choices=PIC_CHOICES,
         blank=False,
-        )
+    )
 
     # STATUS
     STATUS_CHOICES = [
@@ -352,34 +384,44 @@ class Job(models.Model):
         ('ARCHIVED', 'Archived'),
     ]
 
+    STATUS_CHOICES_JSON = {
+        'ONGOING': 'Ongoing',
+        'READYTOINV': 'Ready to Invoice',
+        'INVOICED1': 'Invoiced',
+        'INVOICED2': 'Invoiced (canc.)',
+        'FINISHED': 'Finished',
+        'ARCHIVED': 'Archived',
+    }
+
     status = models.CharField(
         max_length=14,
         choices=STATUS_CHOICES,
         default='ONGOING',
-        )
+    )
 
     isDeleted = models.BooleanField(default=False)
 
     def get_consumption_tax_amt(self):
         '''
         Returns the consumption tax amount
-        
+
         Returns:
             consumption tax amt
         '''
         consumption_tax_rate = Decimal('0.1')
         if self.add_consumption_tax:
-            consumption_tax_amt = int((self.revenue * consumption_tax_rate).normalize())
+            consumption_tax_amt = int(
+                (self.revenue * consumption_tax_rate).normalize())
         else:
             consumption_tax_amt = 0
-        
+
         return consumption_tax_amt
 
     @property
     def total_cost(self):
-        all_costs = Cost.objects.filter(job__job_code = self.job_code)
+        all_costs = Cost.objects.filter(job__job_code=self.job_code)
         total = 0
-        
+
         if all_costs:
             for cost in all_costs:
                 if cost.currency == "JPY":
@@ -388,7 +430,8 @@ class Job(models.Model):
                     total += round(cost.amount * cost.locked_exchange_rate)
                 else:
                     try:
-                        total += round(self.forex_rates[cost.currency] * cost.amount)
+                        total += round(self.forex_rates[cost.currency]
+                                       * cost.amount)
                     except:
                         total += (cost.amount * 10)
         return total
@@ -396,7 +439,7 @@ class Job(models.Model):
     @property
     def profit_incl_tax(self):
         return self.revenue_incl_tax - self.total_cost
-    
+
     @property
     def profit_excl_tax(self):
         return self.revenue - self.total_cost
@@ -404,16 +447,17 @@ class Job(models.Model):
     @property
     def profit_rate(self):
         if self.revenue != 0:
-            profit_rate = round(((self.revenue - self.total_cost) / self.revenue)*100, 1)
+            profit_rate = round(
+                ((self.revenue - self.total_cost) / self.revenue)*100, 1)
             return profit_rate
         else:
             return 100.0
-        
+
     @property
     def allVendorInvoicesRequested(self):
         costs = Cost.objects.filter(job_id=self.id)
         for cost in costs:
-            if cost.invoice_status not in ['REQ','REC','PAID']:
+            if cost.invoice_status not in ['REQ', 'REC', 'PAID']:
                 return False
         else:
             return True
@@ -422,7 +466,7 @@ class Job(models.Model):
     def allVendorInvoicesReceived(self):
         costs = Cost.objects.filter(job_id=self.id)
         for cost in costs:
-            if cost.invoice_status not in ['REC','PAID']:
+            if cost.invoice_status not in ['REC', 'PAID']:
                 return False
         else:
             return True
@@ -452,20 +496,20 @@ class Job(models.Model):
         print("SAVING")
         print(f'job status: {self.status}')
         if self.status in ["ONGOING", "READYTOINV"]:
-            print(f'JOB STATUS IS ONGOING OR READYTOINV {self.month}, {self.year}')
+            print(
+                f'JOB STATUS IS ONGOING OR READYTOINV {self.month}, {self.year}')
             self.invoice_name = ""
             self.invoice_recipient = None
             if self.month != None and self.year != None:
                 self.reset_month_year_date()
 
-        # else: 
+        # else:
             # print('in the else statement')
-        self.job_date = f'{self.year}-{int(self.month):02d}-01' if (self.year and self.month) else None
+        self.job_date = f'{self.year}-{int(self.month):02d}-01' if (
+            self.year and self.month) else None
         self.consumption_tax_amt = self.get_consumption_tax_amt()
         self.revenue_incl_tax = self.get_consumption_tax_amt() + self.revenue
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.job_name} - {self.job_code}'
-
-

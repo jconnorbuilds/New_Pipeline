@@ -156,11 +156,12 @@ $(document).ready(function () {
         className: 'px-4',
         responsivePriority: 4,
         render: function (data, type, row) {
-          return `<a href="/pipeline/cost-add/${row.id}/">¥${data}</a>`;
+          return `<a href="/pipeline/cost-add/${row.id}/">¥${data.toLocaleString()}</a>`;
         },
       },
       {
         data: 'profit_rate',
+        className: 'pe-4',
         width: '120px',
         render: function (data) {
           return `${data}%`;
@@ -237,7 +238,7 @@ $(document).ready(function () {
         searchable: false,
       },
       {
-        targets: [4, 5],
+        targets: [4, 5, 6],
         className: 'dt-right',
       },
       {

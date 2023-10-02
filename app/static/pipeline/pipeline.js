@@ -128,7 +128,6 @@ $(document).ready(function () {
         render: {
           display: function (data, type, row) {
             function truncate(string) {
-              console.log(string.length);
               return string.length > 20 ? string.substr(0, 15) + '...' : string;
             }
             return row.invoice_name
@@ -145,7 +144,7 @@ $(document).ready(function () {
       { data: 'job_code' },
       {
         data: 'revenue',
-        className: 'pe-3 revenue-amt',
+        className: 'pe-4 revenue-amt',
         responsivePriority: 3,
         render: function (data, type, row) {
           return `¥${data.toLocaleString()}`;
@@ -153,7 +152,7 @@ $(document).ready(function () {
       },
       {
         data: 'total_cost',
-        className: 'px-4',
+        className: 'pe-4',
         responsivePriority: 4,
         render: function (data, type, row) {
           return `<a href="/pipeline/cost-add/${row.id}/">¥${data.toLocaleString()}</a>`;

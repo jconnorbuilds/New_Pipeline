@@ -34,7 +34,6 @@ from urllib.parse import urlencode, unquote
 from .utils import get_forex_rates, process_imported_jobs, get_job_data, get_invoice_status_data
 
 import json
-import calendar
 import csv
 
 # @api_view(['GET', 'POST'])
@@ -111,22 +110,26 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 action = bulk_form.cleaned_data["actions"]
                 if action == "NEXT":
                     for job in checked_jobs:
-                        if job.month:
-                            if job.month == '12':
-                                job.month = '1'
-                                job.year = str(int(job.year) + 1)
+                        if job.invoice_month:
+                            if job.invoice_month == '12':
+                                job.invoice_month = '1'
+                                job.invoice_year = str(
+                                    int(job.invoice_year) + 1)
                             else:
-                                job.month = str(int(job.month) + 1)
+                                job.invoice_month = str(
+                                    int(job.invoice_month) + 1)
                                 job.save()
                         return HttpResponseRedirect("/pipeline/")
                 elif action == "PREVIOUS":
                     for job in checked_jobs:
-                        if job.month:
-                            if job.month == '1':
-                                job.month = '12'
-                                job.year = str(int(job.year) - 1)
+                        if job.invoice_month:
+                            if job.invoice_month == '1':
+                                job.invoice_month = '12'
+                                job.invoice_year = str(
+                                    int(job.invoice_year) - 1)
                             else:
-                                job.month = str(int(job.month) - 1)
+                                job.invoice_month = str(
+                                    int(job.invoice_month) - 1)
                             job.save()
                         return HttpResponseRedirect("/pipeline/")
                 elif action == "DEL":
@@ -278,7 +281,8 @@ def pipeline_data(request, year=None, month=None):
         jobs = jobs.filter(
             Q(job_date__month=month, job_date__year=year) | Q(job_date=None))
     elif year != None and month != None:
-        jobs = jobs.filter(job_date__month=month, job_date__year=year)
+        jobs = jobs.filter(job_date__month=month,
+                           job_date__year=year)
 
     data = {
         "data": [get_job_data(job) for job in jobs],
@@ -1179,7 +1183,7 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
 class JobUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Job
     fields = ['job_name', 'client', 'job_code', 'job_type', 'revenue', 'add_consumption_tax',
-              'personInCharge', 'month', 'year', 'notes', 'invoice_name', 'invoice_recipient']
+              'personInCharge', 'invoice_month', 'invoice_year', 'notes', 'invoice_name', 'invoice_recipient']
     template_name_suffix = '_update_form'
     success_message = "Job updated!"
 

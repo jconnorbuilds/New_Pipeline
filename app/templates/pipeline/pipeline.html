@@ -76,10 +76,10 @@
               {% render_field job_form.personInCharge class+="form-select" %}
             </div>
             <div class="col-sm-3">
-              {% render_field job_form.month class+="form-control" %}
+              {% render_field job_form.invoice_month class+="form-control" %}
             </div>
             <div class="col-sm-3">
-              {% render_field job_form.year class+="form-control" %}
+              {% render_field job_form.invoice_year class+="form-control" %}
             </div>
           </div>
           <div class='row align-items-center'>
@@ -333,8 +333,8 @@
           </div>
           
           <div class="input-group">
-            {% render_field set_invoice_info_form.year class+="form-control" %}
-            {% render_field set_invoice_info_form.month class+="form-control" %}
+            {% render_field set_invoice_info_form.invoice_year class+="form-control" %}
+            {% render_field set_invoice_info_form.invoice_month class+="form-control" %}
           </div>
           <div id="invoice-period-help" class="form-text mb-3">Period for invoicing the client (year / month)</div>
           {{ set_invoice_info_form.job_id }}

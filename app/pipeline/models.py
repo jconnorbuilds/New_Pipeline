@@ -1,4 +1,4 @@
-from django.db import models, IntegrityError
+from django.db import models
 from django.conf import settings
 from datetime import date
 from django.urls import reverse
@@ -7,29 +7,10 @@ from .utils import get_forex_rates
 from .currencies import currencies
 from decimal import Decimal
 import uuid
+
 import requests
 
 # Create your models here.
-
-
-def id_suffix_generator():
-    n = 1
-    while n < 9999:
-        yield (f"{n:03d}")
-        n += 1
-
-
-next_vendor_code_suffix = id_suffix_generator()
-
-
-def PO_num_generator():
-    n = 1
-    while n < 9999:
-        yield (f"{n:03d}")
-        n += 1
-
-
-PONumgen = PO_num_generator()
 
 
 class Vendor(models.Model):
@@ -253,7 +234,7 @@ class Job(models.Model):
     # In practicality, this field is required for not-deleted jobs. Logic is handled in the save method.
     job_code = models.CharField(
         max_length=15, unique=True, blank=True, null=True)
-    job_code_isFixed = models.BooleanField(default=False)
+    job_code_is_fixed = models.BooleanField(default=False)
     job_code_isOverridden = models.BooleanField(default=False)
     custom_job_code = models.CharField(max_length=15, null=True, blank=True)
     isArchived = models.BooleanField(default=False)
@@ -276,59 +257,58 @@ class Job(models.Model):
 
     # Separating out year and month because the day of the month doesn't matter
     # And this was the easiest way to take in and manipulate form data via select widgets
-    year = models.CharField(max_length=4, editable=True, null=True, blank=True)
-    month = models.CharField(
+    invoice_year = models.CharField(
+        max_length=4, editable=True, null=True, blank=True)
+    invoice_month = models.CharField(
         max_length=2, editable=True, null=True, blank=True)
     # This is set in the save method
     job_date = models.DateField(editable=False, null=True)
 
-    def get_job_code(self):
+    def set_job_code(self, prefix=None, year=None, month=None):
         '''
-        Creates a job code in the following format:
+        Create a job code in the following format:
         {prefix}{month:02d}{i:02d}{year}
 
-        e.g.
-        APL06012023
+        e.g. APL06012023:
         prefix: APL
         month: 06
-        iterator: 01 
+        i: 01 
         year: 2023
 
-        This should only run once, so the logic runs in the overridden save() function
+        params:
+        prefix: job code prefix
+        year: the year to be used in the job code
+        month: the month to be used in the job code
+        i: iterator for generating unique job codes
+        passable args are auto generated, so they default to None unles
 
+        This function will run in the save() method as long as job_code_is_fixed is False
         '''
+
         jc = ''
-        prefix = self.client.job_code_prefix
-        month = int(timezone.now().month)
-        year = int(timezone.now().year)
-        date = f"{year}-{month:02d}-01"
+        prefix = self.client.job_code_prefix if prefix is None else prefix
+        month = int(timezone.now().month) if month is None else month
+        year = int(timezone.now().year) if year is None else year
 
-        # Jobs from the same client in a particular month
-        sameClientJobs = Job.objects.filter(
-            job_date=date, client__job_code_prefix=prefix)
-        for i, job in enumerate(sameClientJobs):
-            print(f"job {i}: {job}")
-
-        # the 'iterating' part of the code iterates based on the highest job number from
-        # the same client in the same month
         i = 1
-        while jc == '' and i <= 99:
-            if not Job.objects.filter(job_code=f'{prefix}{month:02d}{i:02d}{year}').exists():
-                jc = f'{prefix}{month:02d}{i:02d}{year}'
+        while jc == '' and i <= 999:
+            if i > 99:
+                temp_jc = f'{prefix}{month:02d}{i}{year}'
+            temp_jc = f'{prefix}{month:02d}{i:02d}{year}'
+            if not Job.objects.filter(job_code=temp_jc).exists():
+                jc = temp_jc
                 # TODO: move to logger
-                print(f'{prefix}{month:02d}{i:02d}{year} created')
+                print(f'{jc} created')
                 return jc
             else:
                 i += 1
 
-        if jc == '':
-            # TODO: move to logger
-            print("There was a problem with the job code logic")
+        if i > 999:
+            raise ValueError("Job code is out of range!")
 
     def reset_month_year_date(self):
-        print('resetting month year and date')
-        self.month = None
-        self.year = None
+        self.invoice_month = None
+        self.invoice_year = None
         self.job_date = None
 
     JOB_TYPE_CHOICES = [
@@ -383,15 +363,6 @@ class Job(models.Model):
         ('FINISHED', 'Finished'),
         ('ARCHIVED', 'Archived'),
     ]
-
-    STATUS_CHOICES_JSON = {
-        'ONGOING': 'Ongoing',
-        'READYTOINV': 'Ready to Invoice',
-        'INVOICED1': 'Invoiced',
-        'INVOICED2': 'Invoiced (canc.)',
-        'FINISHED': 'Finished',
-        'ARCHIVED': 'Archived',
-    }
 
     status = models.CharField(
         max_length=14,
@@ -477,36 +448,25 @@ class Job(models.Model):
         for cost in costs:
             if cost.invoice_status not in ['PAID']:
                 return False
-        else:
-            return True
+        return True
 
     def save(self, *args, **kwargs):
-        # Auto-generate the job code for the job
-        if not self.job_code_isFixed:
-            self.job_code = self.get_job_code()
-            self.job_code_isFixed = True
+        # Auto-generate the job code
+        if not self.job_code_is_fixed:
+            self.job_code = self.set_job_code()
+            self.job_code_is_fixed = True
 
         if self.isDeleted:
             self.job_code = None
-            self.job_code_isFixed = False
+            self.job_code_is_fixed = False
 
-        # print(self.status)
-        # print(f'self.status in ongoing or readytoinv {self.status in ["ONGOING", "READYTOINV"]}')
-        # print(f'month and year pre if statement{self.month}, {self.year}')
-        print("SAVING")
-        print(f'job status: {self.status}')
         if self.status in ["ONGOING", "READYTOINV"]:
-            print(
-                f'JOB STATUS IS ONGOING OR READYTOINV {self.month}, {self.year}')
             self.invoice_name = ""
             self.invoice_recipient = None
-            if self.month != None and self.year != None:
+            if self.invoice_month != None and self.invoice_year != None:
                 self.reset_month_year_date()
-
-        # else:
-            # print('in the else statement')
-        self.job_date = f'{self.year}-{int(self.month):02d}-01' if (
-            self.year and self.month) else None
+        self.job_date = f'{self.invoice_year}-{int(self.invoice_month):02d}-01' if (
+            self.invoice_year and self.invoice_month) else None
         self.consumption_tax_amt = self.get_consumption_tax_amt()
         self.revenue_incl_tax = self.get_consumption_tax_amt() + self.revenue
         super().save(*args, **kwargs)

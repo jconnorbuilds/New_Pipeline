@@ -10,50 +10,44 @@ from django.template.loader import render_to_string
 import requests
 
 
-def forExRate(source_currency):
+def get_forex_rates():
     print('forExRate is running')
     '''
     Calculates the foreign exchange rate via Wise's API
     '''
-    url = 'https://api.wise.com/v1/rates/'
-    target_currency = 'JPY'
+    def create_cache_forex_dict(forex_rates_json):
+        target_currency = 'JPY'
+        currencies_subset = [currency[0] for currency in currencies]
+        forex_rates = {
+            obj['source']: obj['rate'] for obj in forex_rates_json if
+            obj['source'] in currencies_subset and obj['target'] == target_currency
+        } | {target_currency: 1}
+        cache.set('forex_rates', forex_rates, timeout=120)
+        print("RATES: ", forex_rates)
+        return forex_rates
 
-    headers = {
-        'Authorization': f'Bearer {settings.WISE_API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    params = {
-        'source': source_currency,
-        'target': target_currency
-    }
-    response = requests.get(url, headers=headers, params=params)
-    if response.status_code == 200:
-        return response.json()[0].get('rate')
+    forex_rates = cache.get('forex_rates', None)
+    if forex_rates:
+        return forex_rates
     else:
-        # return JsonResponse({'error':'Failed to retrieve exchange rate from Wise API.'})
-        # make approximation and add warning message
-        return 1
-
-
-def get_forex_rates():
-    try:
-        forex_rates_dict = cache.get('forex_rates', None)
-    except Exception as e:
-        print(e)
-
-    if not forex_rates_dict or forex_rates_dict.get("USD") == 1:
+        url = 'https://api.wise.com/v1/rates/'
+        headers = {'Authorization': f'Bearer {settings.WISE_API_KEY}', }
         try:
-            forex_rates_dict = {}
-            for currency in currencies:
-                forex_rates_dict[currency[0]] = forExRate(currency[0])
-            cache.set('forex_rates', forex_rates_dict, timeout=600)
-
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                forex_rates = create_cache_forex_dict(response.json())
+            else:
+                print(f'{response.status_code=}\n{response.errors=}')
+                for currency in currencies:
+                    forex_rates[currency[0]] = 1
         except Exception as e:
-            print(e)
+            print(f'{e=}')
+            # TODO: implement logging
+            forex_rates = {}
             for currency in currencies:
-                forex_rates_dict[currency[0]] = 1
+                forex_rates[currency[0]] = 1
 
-    return forex_rates_dict
+    return forex_rates
 
 
 def getClient(client_code):
@@ -75,7 +69,6 @@ def getInvoiceRecipient(client, invoice_recipient):
 def get_job_data(job):
     from .models import Job
     response = {
-        # 'select': render_to_string('pipeline/job_checkbox.html', {"job_id":job.id}),
         'select': job.id,
         'id': job.id,
         'client_name': job.client.friendly_name,
@@ -87,15 +80,12 @@ def get_job_data(job):
         'profit_rate': job.profit_rate,
         'job_date': job.job_date,
         'job_type': job.get_job_type_display(),
-        # 'status': render_to_string(
-        #     'pipeline/jobs/pipeline_table_job_status_select.html',
-        #     {"options": Job.STATUS_CHOICES, "currentStatus": job.status}),
         'status': job.status,
         'deposit_date': job.deposit_date,
         'invoice_info_completed': "",
         'invoice_name': job.invoice_name,
-        'month': job.month,
-        'year': job.year,
+        'invoice_month': job.invoice_month,
+        'invoice_year': job.invoice_year,
         'job_status_choices': Job.STATUS_CHOICES,
         'invoice_name': job.invoice_name,
     }

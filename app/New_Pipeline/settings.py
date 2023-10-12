@@ -30,7 +30,6 @@ MESSAGE_TAGS = {
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / 'templates'
-# STATIC_DIR = BASE_DIR / 'static'
 
 dev_dotenv_path = BASE_DIR / '../.env.dev'
 if dev_dotenv_path.exists():
@@ -79,6 +78,7 @@ INSTALLED_APPS = [
     'pipeline',
     'django_bootstrap5',
     'widget_tweaks',
+    'coverage'
 ]
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
@@ -133,13 +133,16 @@ CACHES = {
 # Use django-environ to parse the connection string
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("SQL_ENGINE", "django.db.backends.sqlite3"),
+        "ENGINE": os.getenv(
+            "SQL_ENGINE",
+            #   "django.db.backends.sqlite3"
+        ),
         "NAME": os.getenv("SQL_DATABASE", BASE_DIR / "db.sqlite3"),
         "USER": os.getenv("SQL_USER", "user"),
         "PASSWORD": os.getenv("SQL_PASSWORD", "password"),
         "HOST": os.getenv("SQL_HOST", "localhost"),
         "PORT": os.getenv("SQL_PORT", "5432"),
-    }
+    },
 }
 
 # If the flag as been set, configure to use proxy

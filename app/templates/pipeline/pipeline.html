@@ -247,16 +247,21 @@
       </div>
       <div class="display-filter">
         <div>
-          <input type="checkbox" class="toggle-ongoing" checked>
-          <span>進行中案件を表示</span>
+          
+          <input type="checkbox" class="toggle-ongoing" id="toggle-ongoing" checked>
+          <label for="toggle-ongoing">進行中案件を表示</label>
         </div>
         <div>
-          <input type="checkbox" class="only-ongoing" >
-          <span>進行中案件のみを表示</span>
+          <input type="checkbox"class="only-ongoing"  id="only-ongoing">
+          <label for="only-ongoing">進行中案件のみを表示</label>
         </div>
         <div>
-          <input type="checkbox" class="unreceived">
-          <span>未回収のみを表示</span>
+          <input type="checkbox" class="unreceived" id="toggle-unreceived">
+          <label for="toggle-unreceived">未回収の支払いのみを表示</label>
+        </div>
+        <div>
+          <input type="checkbox" class="toggle-outstanding" id="toggle-outstanding">
+          <label for="toggle-outstanding">請求書未受領・未払いの案件を表示</label>
         </div>
       </div>
     </div>

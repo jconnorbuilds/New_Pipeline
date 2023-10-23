@@ -1,5 +1,8 @@
 .DS_STORE
 .env*
+.prettierignore
+.vscode/*
+htmlcov
 *.numbers
 .vscode
 docker-compose.yml

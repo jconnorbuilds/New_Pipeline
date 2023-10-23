@@ -7,10 +7,7 @@ from .utils import get_forex_rates
 from .currencies import currencies
 from decimal import Decimal
 import uuid
-
 import requests
-
-# Create your models here.
 
 
 class Vendor(models.Model):

@@ -28,6 +28,8 @@
                 </dd>
                 <dt class="job-details-item-sm"> Job code</dt>
                 <dd class="job-details-desc"> {{ job.job_code }}</dd>
+                <dt class="job-details-item-sm"> Person in Charge</dt>
+                <dd class="job-details-desc"> {{ job.get_personInCharge_display }}</dd>
             </dl>
             <hr style="width: 50%; margin-left:25%;">
             <h3 class="text-center">{{ job.job_name }}</h3>
@@ -48,26 +50,26 @@
             {% if job.cost_rel.all %}
                     <p class="text-center"><b>Costs (<a href={% url 'pipeline:cost-add' job_id %}>cost sheet</a>)</b></p>
                     <dl class="job-details-w400 mx-auto">
-                        <ol class="">
+                        <ol>
                             {% for cost in job.cost_rel.all %}
-                            <div class="row mb-3">
-                                <dt class="job-details-item-sm">
-                                    <li>{{ cost.description }}</li>
-                                </dt>
-                                <dd class="job-details-desc">
+                              <div class="row mb-3">
+                                <p class="job-details-item-sm">
+                                  <li>{{ cost.description }}</li>
+                                </p>
+                                <p class="job-details-desc">
                                     <ul class="list-unstyled">
                                         <li>
-                                            {% if cost.vendor %}
-                                                {{ cost.vendor.familiar_name }}
-                                            {% else %}
-                                                Vendor unassigned
-                                            {% endif %}
+                                          {% if cost.vendor %}
+                                              {{ cost.vendor.familiar_name }}
+                                          {% else %}
+                                              Vendor unassigned
+                                          {% endif %}
                                         </li>
                                         <li>P.O. Number: {% if cost.PO_number %}{{ cost.PO_number }}{% else %} --- {% endif %}</li>
                                         <li>{{ cost.get_currency_display }}{{ cost.amount }}</li>
                                         <li>Invoice status: {{ cost.get_invoice_status_display }}</li>
                                     </ul>
-                                </dd>
+                                </p>
                             </div>
                             {% endfor %}
                         </ol>

@@ -977,7 +977,7 @@ $(document).ready(function () {
   });
 
   let filters = document.querySelectorAll('.display-filter input');
-  filters.forEach(
+  filters.forEach(() =>
     addEventListener('change', () => {
       jobTable.draw();
     })

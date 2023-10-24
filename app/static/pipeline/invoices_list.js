@@ -72,7 +72,9 @@ $(document).ready(function () {
         render: {
           display: function (data) {
             let date = new Date(data);
-            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
+            return data
+              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
+              : '---';
           },
           sort: function (data) {
             return data;
@@ -95,8 +97,7 @@ $(document).ready(function () {
             return data;
           },
           sort: function (data, type, row) {
-            console.log(row.vendor_code + data.slice(-4));
-            return row.vendor_code + data.slice(-4);
+            return data === null ? '' : row.vendor_code + data.slice(-4);
           },
         },
       },
@@ -108,13 +109,18 @@ $(document).ready(function () {
           display: function (data, type, row) {
             const STATUSES = row.invoice_status_choices;
             let selectEl = document.createElement('select');
-            selectEl.classList.add('form-control-plaintext', 'cost-status-select', 'p-0');
+            selectEl.classList.add(
+              'form-control-plaintext',
+              'cost-status-select',
+              'p-0'
+            );
             selectEl.setAttribute('name', 'invoice_status');
             for (const [_, status] of Object.entries(STATUSES)) {
               let optionEl = document.createElement('option');
               optionEl.value = status[0];
               optionEl.text = status[1];
-              if (status[0] === data) optionEl.setAttribute('selected', '');
+              if (status[0] === data)
+                optionEl.setAttribute('selected', '');
               selectEl.appendChild(optionEl);
             }
             return selectEl.outerHTML;
@@ -215,9 +221,13 @@ $(document).ready(function () {
         $(row).find('.single-invoice-request-btn').prop('disabled', true);
       } else {
         if (invoiceStatus === 'NR') {
-          $(row).find('.single-invoice-request-btn').prop('disabled', false);
+          $(row)
+            .find('.single-invoice-request-btn')
+            .prop('disabled', false);
         } else {
-          $(row).find('.single-invoice-request-btn').prop('disabled', true);
+          $(row)
+            .find('.single-invoice-request-btn')
+            .prop('disabled', true);
         }
       }
     },
@@ -241,27 +251,35 @@ $(document).ready(function () {
     return formData;
   }
 
-  allInvoicesTable.on('change', '.cost-vendor-select, .cost-status-select', function () {
-    var formData = getCostUpdate(this);
-    $('#batch-pay-csv-dl-btn').attr('disabled', false);
-    $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
-      type: 'POST',
-      url: '/pipeline/invoices/',
-      data: formData,
-      processData: false, // prevents jQuery from processing the data
-      contentType: false, // prevents jQuery from setting the Content-Type header
-      // beforeSend: function() {
-      //       spinner.removeClass('invisible');
-      // },
-      success: function (response) {
-        if (response.status === 'success') {
-          var newData = response.data;
-          // Use the #ID selector to target the new row and redraw with new data
-          allInvoicesTable.row(`#${newData.id}`).data(newData).invalidate().draw(false);
-          // allInvoicesTable.ajax.reload();
-        }
-      },
-    });
-  });
+  allInvoicesTable.on(
+    'change',
+    '.cost-vendor-select, .cost-status-select',
+    function () {
+      var formData = getCostUpdate(this);
+      $('#batch-pay-csv-dl-btn').attr('disabled', false);
+      $.ajax({
+        headers: { 'X-CSRFToken': csrftoken },
+        type: 'POST',
+        url: '/pipeline/invoices/',
+        data: formData,
+        processData: false, // prevents jQuery from processing the data
+        contentType: false, // prevents jQuery from setting the Content-Type header
+        // beforeSend: function() {
+        //       spinner.removeClass('invisible');
+        // },
+        success: function (response) {
+          if (response.status === 'success') {
+            var newData = response.data;
+            // Use the #ID selector to target the new row and redraw with new data
+            allInvoicesTable
+              .row(`#${newData.id}`)
+              .data(newData)
+              .invalidate()
+              .draw(false);
+            // allInvoicesTable.ajax.reload();
+          }
+        },
+      });
+    }
+  );
 });

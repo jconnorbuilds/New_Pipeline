@@ -238,3 +238,13 @@ def process_imported_jobs(csv_file):
             # for item in not_created_items:
             #   messages.info(request, item)
     return response
+
+
+def update_cost_addtl_row_data(cost):
+    if cost.vendor == None:
+        cost.PO_number = None
+        cost.PO_num_is_fixed = False
+        cost.invoice_status = "NR"
+        cost.pay_period = None
+
+    cost.save()

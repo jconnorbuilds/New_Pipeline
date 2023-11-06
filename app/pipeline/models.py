@@ -23,6 +23,7 @@ class Vendor(models.Model):
     email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
     payment_id = models.IntegerField(unique=True, null=True, blank=True)
     preferred_currency = models.CharField(max_length=3, null=True, blank=True)
+    jobs = models.ManyToManyField("Job")
 
     @property
     def full_name(self):
@@ -129,7 +130,7 @@ class Cost(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="vendor_rel",
+        related_name="costs_by_vendor",
     )
     description = models.CharField(max_length=30, blank=True)
     amount = models.IntegerField(null=True)
@@ -154,7 +155,7 @@ class Cost(models.Model):
 
     notes = models.CharField(max_length=300, blank=True)
     job = models.ForeignKey(
-        "Job", on_delete=models.CASCADE, related_name="cost_rel", null=True
+        "Job", on_delete=models.CASCADE, related_name="costs_of_job", null=True
     )
     PO_number = models.CharField(max_length=10, null=True, default=None, editable=False)
     PO_num_is_fixed = models.BooleanField(default=False)
@@ -210,7 +211,7 @@ class Cost(models.Model):
         return po
 
     def save(self, *args, **kwargs):
-        if self.vendor and not self.PO_num_is_fixed:
+        if self.vendor and not self.PO_number and not self.PO_num_is_fixed:
             self.PO_number = self.get_PO_number()
             self.PO_num_is_fixed = True
         elif self.vendor and self.vendor.vendor_code not in self.PO_number[0:6]:
@@ -260,7 +261,10 @@ class Job(models.Model):
     consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
     revenue_incl_tax = models.IntegerField(null=True, editable=False)
     vendors = models.ManyToManyField(
-        Vendor, verbose_name="vendors involved", blank=True, related_name="jobs_rel"
+        Vendor,
+        verbose_name="vendors involved",
+        blank=True,
+        related_name="jobs_with_vendor",
     )
     # Who the invoice is paid to, if it differs from the client
     invoice_recipient = models.ForeignKey(

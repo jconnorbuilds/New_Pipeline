@@ -240,7 +240,6 @@ const Invoices = (() => {
     }
 
     formData.cost_id = selectEl.closest('tr').getAttribute('id');
-    formData.update = true;
 
     return formData;
   };
@@ -249,7 +248,7 @@ const Invoices = (() => {
     $.ajax({
       headers: { 'X-CSRFToken': csrftoken },
       type: 'POST',
-      url: '/pipeline/invoices/', // <-- CREATE A NEW ENDPOINT TO PROCESS THIS REQUEST
+      url: '/pipeline/update-invoice-table-row',
       data: getUpdate(selectEl),
       dataType: 'json',
       success: (response) => {

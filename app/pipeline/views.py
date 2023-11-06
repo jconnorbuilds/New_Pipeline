@@ -62,6 +62,7 @@ from .utils import (
     get_job_data,
     get_invoice_status_data,
     get_invoice_data,
+    update_cost_addtl_row_data,
 )
 
 import json
@@ -352,7 +353,6 @@ def revenue_display_data(request, year=None, month=None):
     total_revenue_monthly_actual: Revenue of all COMPLETED jobs in the current month
     """
     today = timezone.now()
-    # print("current time: ", today)
 
     jobs = Job.objects.filter(isDeleted=False)
     if year == today.year and month == today.month:
@@ -405,7 +405,7 @@ def revenue_display_data(request, year=None, month=None):
 def cost_data(request, job_id):
     forex_rates = get_forex_rates()
     costs = Cost.objects.filter(job=job_id)
-    vendors = Vendor.objects.filter(jobs_rel=job_id)
+    vendors = Vendor.objects.filter(jobs_with_vendor=job_id)
 
     data = {"data": [get_invoice_data(cost, forex_rates, vendors) for cost in costs]}
 
@@ -472,13 +472,14 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
         context["pay_period_form"] = CostPayPeriodForm()
         return context
 
-    def post(self, request, *args, **kwargs):
-        print(request.POST)
+
+def update_invoice_table_row(request):
+    if request.POST:
         form_data_vendor = request.POST.get("vendor")
         form_data_status = request.POST.get("status")
         cost = Cost.objects.get(id=request.POST.get("cost_id"))
-        print(f"cost amount: {cost.amount}")
-        print(f"cost currency: {cost.currency}")
+        vendors = Vendor.objects.filter(jobs_with_vendor=cost.job.id)
+        forex_rates = get_forex_rates()
 
         if form_data_vendor:
             cost.vendor = (
@@ -491,9 +492,13 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
             cost.invoice_status = form_data_status
         cost.save()
 
+        update_cost_addtl_row_data(cost)
+
         return JsonResponse(
-            {"status": "success", "data": get_invoice_data(cost, self.forex_rates)},
-            safe=False,
+            {
+                "status": "success",
+                "data": get_invoice_data(cost, forex_rates, vendors),
+            },
         )
 
 
@@ -503,7 +508,6 @@ def all_invoices_data(request):
     data = {"data": [get_invoice_data(cost, forex_rates) for cost in costs]}
     return JsonResponse(
         data,
-        safe=False,
     )
 
 
@@ -720,7 +724,7 @@ def invoice_upload_view(request, vendor_uuid):
         vendor_id=vendor.id, invoice_status="REQ"
     ).select_related("job")
     jobs = list(
-        Job.objects.filter(cost_rel__in=requested_invoices).values(
+        Job.objects.filter(costs_of_job__in=requested_invoices).values(
             "pk", "job_name", "job_code"
         )
     )
@@ -748,7 +752,7 @@ def invoice_error(request):
 
 def RequestVendorInvoiceSingle(request, cost_id):
     # Creates a list of vendors who have invoices ready to be requested, no dupes
-    vendor = Vendor.objects.get(vendor_rel__id=cost_id)
+    vendor = Vendor.objects.get(costs_by_vendor__id=cost_id)
     cost = Cost.objects.get(id=cost_id)
     protocol = "http" if settings.DEBUG else "https"
     print(request.POST)
@@ -809,8 +813,6 @@ def RequestVendorInvoiceSingle(request, cost_id):
             f"The invoice for {cost.PO_number} was requested from {vendor.familiar_name}! \n It's scheduled to be paid around {cost.pay_period}.",
         )
 
-        # vendors = Vendor.objects.filter(jobs_rel=currentJob.id)
-
         return JsonResponse(
             {
                 "status": "success",
@@ -818,7 +820,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
                 "response": get_invoice_data(
                     cost,
                     get_forex_rates(),
-                    vendors=Vendor.objects.filter(jobs_rel=cost.job.id),
+                    vendors=Vendor.objects.filter(jobs_with_vendor=cost.job.id),
                 ),
             }
         )
@@ -1240,7 +1242,6 @@ class CostsheetViewBase(LoginRequiredMixin, CreateView):
         currentJob = Job.objects.get(pk=self.kwargs["pk"])
         context["currencyList"] = json.dumps(currencies)
         context["forexRates"] = json.dumps(self.forex_rates)
-        current_url = self.request.build_absolute_uri()
         context["currentJob"] = currentJob
         context["headers"] = [
             "金額(¥)",
@@ -1284,45 +1285,6 @@ class CostsheetViewBase(LoginRequiredMixin, CreateView):
                 currentJob.save()
             else:
                 print(f"errors: {form.errors}")
-
-        elif "update" in request.POST:
-            currentJob = Job.objects.get(pk=self.kwargs["pk"])
-            vendors = Vendor.objects.filter(jobs_rel=currentJob.id)
-            form_data_id = request.POST.get("cost_id")
-            form_data_vendor = request.POST.get("vendor")
-            form_data_status = request.POST.get("status")
-            cost = Cost.objects.get(id=form_data_id)
-
-            if form_data_vendor:
-                print(form_data_vendor)
-                if form_data_vendor != "0":
-                    cost.vendor = Vendor.objects.get(id=form_data_vendor)
-                else:
-                    cost.vendor = None
-                    cost.PO_number = ""
-
-            if form_data_status:
-                cost.invoice_status = form_data_status
-                if form_data_status in ["PAID"]:
-                    """
-                    This will give a close approximation for the amount actually paid to the vendor.
-                    Payment amounts should ultimately be finalized by importing data from Wise.
-                    """
-                    cost.locked_exchange_rate = self.forex_rates[cost.currency]
-                    cost.exchange_rate_locked_at = timezone.now()
-                elif form_data_status in ["NR"]:
-                    cost.pay_period = None
-
-            cost.save()
-
-            status_options = Cost.INVOICE_STATUS_CHOICES
-
-            return JsonResponse(
-                {
-                    "status": "success",
-                    "data": get_invoice_data(cost, self.forex_rates, vendors),
-                }
-            )
 
         return HttpResponseRedirect(self.request.path_info)
 

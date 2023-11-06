@@ -57,6 +57,11 @@ urlpatterns = [
         name="cost-update",
     ),
     path(
+        "update-invoice-table-row",
+        views.update_invoice_table_row,
+        name="update-invoice-table-row",
+    ),
+    path(
         "<pk>/delete-job/",
         views.JobDeleteView.as_view(),
         name="job-delete",

@@ -51,7 +51,7 @@
                     </div>
                     <hr style="width: 33.3%; margin-left: 33.3%;">
                 {% endif %}
-                {% if job.cost_rel.all %}
+                {% if job.costs_of_job.all %}
                     <p class="text-center">
                         <b>Costs (<a href={% url 'pipeline:cost-add' job_id %}>cost sheet</a>)</b>
                     </p>

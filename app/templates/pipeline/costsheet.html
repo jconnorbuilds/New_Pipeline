@@ -9,6 +9,9 @@
     <script type="text/javascript"
             src="{% static 'pipeline/costsheet.js' %}"
             defer></script>
+    <script type="text/javascript"
+            src="{% static 'pipeline/invoices_common.js' %}"
+            defer></script>
 {% endblock header %}
 {% block title %}
     Cost Sheet
@@ -123,6 +126,50 @@
         </thead>
     </table>
 </div>
+{% block pay_period_modal %}
+    <div class="modal fade"
+         id="pay-period-modal"
+         tabindex="-1"
+         aria-labelledby="pay-period-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="pay-period-form" method="post">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Custom Pay Period</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="col-9">
+                            <label for="id_pay_period" class="form-label small">New pay period for this invoice</label>
+                            {% render_field pay_period_form.pay_period class+="form-control" %}
+                        </div>
+                        {{ pay_period_form.cost_id }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                id="pay-period-modal-cancel-btn"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-primary submit"
+                                id="pay-period-btn"
+                                name="set-pay-period">Request invoice</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="pay-period-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock pay_period_modal %}
 <script>
 {% localize off %}
 var jobID = {{ currentJob.id }};

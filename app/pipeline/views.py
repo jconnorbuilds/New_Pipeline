@@ -43,6 +43,7 @@ from .forms import (
     SetInvoiceInfoForm,
     SetDepositDateForm,
     PipelineJobUpdateForm,
+    CostPayPeriodForm,
 )
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -301,7 +302,6 @@ class PipelineJobUpdateView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job = Job.objects.get(id=kwargs["pk"])
         form = PipelineJobUpdateForm(request.POST, instance=job)
-        print(request.POST)
         if form.is_valid():
             form.save()
             return JsonResponse({"status": "success", "data": get_job_data(job)})
@@ -341,7 +341,8 @@ def revenue_display_data(request, year=None, month=None):
     """
     Calculates the revenue displayed on the pipeline page.
 
-    variables
+    variables:
+
     all_jobs_in_current_year: All jobs in the current fiscal year (Jan - Dec)
     jobs_in_year_excl_this_month: All jobs in the current fiscal year excluding this month.
                                   Used to calculate average monthly revenue
@@ -406,10 +407,6 @@ def cost_data(request, job_id):
     costs = Cost.objects.filter(job=job_id)
     vendors = Vendor.objects.filter(jobs_rel=job_id)
 
-    for cost in costs:
-        print(cost.currency)
-        print(cost.invoice_status)
-
     data = {"data": [get_invoice_data(cost, forex_rates, vendors) for cost in costs]}
 
     return JsonResponse(
@@ -450,9 +447,7 @@ class JobDetailView(DetailView):
 
 
 class InvoiceView(LoginRequiredMixin, TemplateView):
-    # Will need to make more efficient for the long term
     forex_rates = get_forex_rates()
-    print(forex_rates)
     model = Cost
     template_name = "pipeline/invoices_list.html"
     costs = Cost.objects.all()
@@ -461,18 +456,20 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["headers"] = [
             "",
-            "Amt. (¥)",
-            "Amt.(local)",
-            "Job Date",
-            "Job",
-            "Job Code",
-            "Vendor",
-            "Description",
-            "PO Number",
-            "Invoice Status",
+            "金額 (¥)",
+            "金額(local)",
+            "請求期間",
+            "案件名",
+            "ジョブコード",
+            "作家",
+            "作業内容",
+            "PO番",
+            "請求書ステータス",
+            "支払予定期間",
             "",
-            "Edit",
+            # "Edit",
         ]
+        context["pay_period_form"] = CostPayPeriodForm()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -484,7 +481,11 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
         print(f"cost currency: {cost.currency}")
 
         if form_data_vendor:
-            cost.vendor = Vendor.objects.get(id=form_data_vendor)
+            cost.vendor = (
+                Vendor.objects.get(id=form_data_vendor)
+                if form_data_vendor != "0"
+                else None
+            )
 
         if form_data_status:
             cost.invoice_status = form_data_status
@@ -552,6 +553,7 @@ def dropbox_upload_file(file_to_upload, dropbox_file_path):
         return meta
 
     except dropbox.exceptions.ApiError as e:
+        # TODO: enable logging
         print(f"Error uploading file to Dropbox: {e.error}")
 
 
@@ -560,6 +562,16 @@ def process_uploaded_vendor_invoice(request):
     unsuccessful_invoices = []
     err_500_message = (
         "Oops, there was an error uploading your invoice. Please remove the files or refresh the page and try again. If the error persists, please email us at invoice@bwcatmusic.com - you can send us your invoice directly. We're working hard to make sure these errors don't happen, sorry for the trouble!",
+    )
+    print("TZ NOW ", timezone.now())
+    print("TZ NOW + RELDELTA ", (timezone.now() + relativedelta(months=+1)))
+    print("DATE TODAY ", date.today())
+    print("DATE TODAY + RELDELTA ", (date.today() + relativedelta(months=+1)))
+    print(
+        "FORMATTED: ", (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
+    )
+    print(
+        "DT FORMATTED: ", (date.today() + relativedelta(months=+1)).strftime("%Y年%-m月")
     )
 
     if request.POST and "invoices" in request.POST:
@@ -573,8 +585,12 @@ def process_uploaded_vendor_invoice(request):
         for invoice_id, invoice_filename in file_ids_and_filenames.items():
             cost = Cost.objects.get(id=invoice_id)
             invoice_file = file_dict.get(invoice_filename, None)
-            payment_month = timezone.now() + relativedelta(months=+1)
-            date_folder_name = payment_month.strftime("%Y年%-m月")
+            date_folder_name = (
+                cost.pay_period.strftime("%Y年%-m月")
+                if cost.pay_period
+                else (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
+            )
+            print("PAY PERIOD: ", cost.pay_period)
             currency_folder_name = "_" + cost.currency
             file_extension = "." + invoice_filename.split(".")[-1]
             if invoice_file and invoice_file.size < 100 * 1024 * 1024:
@@ -585,16 +601,8 @@ def process_uploaded_vendor_invoice(request):
                             if not settings.DEBUG
                             else "/Financial/TEST/_ INVOICES/_VENDOR INVOICES"
                         )
-                        full_filepath = (
-                            invoice_folder
-                            + "/"
-                            + date_folder_name
-                            + "/"
-                            + currency_folder_name
-                            + "/"
-                            + cost.PO_number
-                            + file_extension
-                        )
+                        full_filepath = f"{invoice_folder}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
+                        print("FILEPATH: ", full_filepath)
                         dropbox_upload_file(invoice_file, full_filepath)
                         cost.invoice_status = "REC"
                         cost.save()
@@ -743,6 +751,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
     vendor = Vendor.objects.get(vendor_rel__id=cost_id)
     cost = Cost.objects.get(id=cost_id)
     protocol = "http" if settings.DEBUG else "https"
+    print(request.POST)
 
     if cost.invoice_status not in ["REQ", "REC", "REC2", "PAID", "NA"]:
         # TODO: prepare a separate email for Japanese clients
@@ -769,7 +778,7 @@ def RequestVendorInvoiceSingle(request, cost_id):
                 "protocol": protocol,
             },
         )
-        print(request)
+
         with open(
             settings.TEMPLATE_DIR
             / "invoice_uploader/invoice_request_email_template.html"
@@ -784,15 +793,35 @@ def RequestVendorInvoiceSingle(request, cost_id):
             fail_silently=False,
             html_message=html_message,
         )
+        today = date.today()
+        rel_pay_period = request.POST.get("pay_period")
+        if rel_pay_period == "this":
+            cost.pay_period = today.strftime("%Y-%-m-25")
+        elif rel_pay_period == "next":
+            cost.pay_period = (today + relativedelta(months=1)).strftime("%Y-%-m-25")
+        elif rel_pay_period == "next-next":
+            cost.pay_period = (today + relativedelta(months=2)).strftime("%Y-%-m-25")
         cost.invoice_status = "REQ"
         cost.save()
 
         messages.success(
             request,
-            f"The invoice for {cost.PO_number} was requested from {vendor.familiar_name}!",
+            f"The invoice for {cost.PO_number} was requested from {vendor.familiar_name}! \n It's scheduled to be paid around {cost.pay_period}.",
         )
 
-        return JsonResponse({"status": "success", "message": "success!"})
+        # vendors = Vendor.objects.filter(jobs_rel=currentJob.id)
+
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": "success!",
+                "response": get_invoice_data(
+                    cost,
+                    get_forex_rates(),
+                    vendors=Vendor.objects.filter(jobs_rel=cost.job.id),
+                ),
+            }
+        )
     else:
         # Return an error if the invoice has already been requested
         # This could be more robust, right now it's based on the setting of the
@@ -1189,7 +1218,7 @@ def VendorRemoveFromJob(request, pk, job_id):
     return redirect("pipeline:cost-add", job_id)
 
 
-class CostCreateView(LoginRequiredMixin, CreateView):
+class CostsheetViewBase(LoginRequiredMixin, CreateView):
     model = Cost
     template_name_suffix = "sheet"
     fields = ["vendor", "description", "amount", "currency", "invoice_status", "notes"]
@@ -1220,6 +1249,7 @@ class CostCreateView(LoginRequiredMixin, CreateView):
             "作業の内容",
             "PO番号",
             "請求書ステータス",
+            "支払い期間",
             "",
             "編集",
             "ID",
@@ -1227,6 +1257,7 @@ class CostCreateView(LoginRequiredMixin, CreateView):
         context["simple_add_vendor_form"] = self.simple_add_vendor_form()
         context["update_cost_form"] = self.update_cost_form()
         context["cost_form"] = self.cost_form()
+        context["pay_period_form"] = CostPayPeriodForm()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1279,6 +1310,8 @@ class CostCreateView(LoginRequiredMixin, CreateView):
                     """
                     cost.locked_exchange_rate = self.forex_rates[cost.currency]
                     cost.exchange_rate_locked_at = timezone.now()
+                elif form_data_status in ["NR"]:
+                    cost.pay_period = None
 
             cost.save()
 
@@ -1306,6 +1339,7 @@ class CostUpdateView(RedirectToPreviousMixin, UpdateView):
         "locked_exchange_rate",
         "exchange_rate_locked_at",
         "exchange_rate_override",
+        "pay_period",
     ]
     template_name_suffix = "_update_form"
 

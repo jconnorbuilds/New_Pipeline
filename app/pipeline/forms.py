@@ -42,6 +42,26 @@ class CostForm(ModelForm):
         fields = ["vendor", "description", "amount", "currency", "notes"]
 
 
+class CostPayPeriodForm(forms.Form):
+    this_month = timezone.now()
+    next_month = timezone.now() + timezone.timedelta(days=30)
+    next_next_month = timezone.now() + timezone.timedelta(days=60)
+
+    cost_id = forms.IntegerField(widget=forms.HiddenInput)
+    pay_period = forms.ChoiceField(
+        required=False,
+        choices=[
+            ("this", f"This month ({this_month.strftime('%b')})"),
+            ("next", f"Next month ({next_month.strftime('%b')}, default)"),
+            ("next-next", f"In two months ({next_next_month.strftime('%b')})"),
+        ],
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["pay_period"].initial = "next"
+
+
 class AddVendorToCostForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,8 +132,6 @@ class SetDepositDateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         instance = kwargs.get("instance")  # Get the object instance
         initial = kwargs.get("initial", {})
-        print(kwargs)
-        # initial['deposit_date'] = instance.deposit_date if instance.deposit_date else '1999-01-01'
         kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 

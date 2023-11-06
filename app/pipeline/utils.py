@@ -128,6 +128,7 @@ def get_invoice_data(cost, forex_rates, vendors=None):
         "vendor_id": cost.vendor.id if cost.vendor else "0",
         "description": cost.description,
         "PO_number": cost.PO_number,
+        "pay_period": cost.pay_period,
         "invoice_status": cost.invoice_status,
         "invoice_status_choices": Cost.INVOICE_STATUS_CHOICES,
         "vendors_dict": {vendor.id: vendor.familiar_name for vendor in vendors}

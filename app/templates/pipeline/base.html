@@ -15,6 +15,7 @@
                   rel="stylesheet" />
             <script src="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
             <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
+            <script type="text/javascript" src="{% static 'pipeline/common.js' %}" defer></script>
         {% endblock header %}
         <title>
             {% block title %}
@@ -101,7 +102,6 @@
                 integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
                 crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/plug-ins/1.13.4/dataRender/ellipsis.js"></script>
-        <script type="text/javascript" src="{% static 'pipeline/common.js' %}"></script>
         <link rel="stylesheet" href="{% static 'pipeline/pipeline.css' %}">
     {% endblock footer %}
 </html>

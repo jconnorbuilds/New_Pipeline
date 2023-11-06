@@ -56,27 +56,9 @@ $(document).ready(function () {
     }
   });
 
-  $('table').on('click', '.single-invoice-request-btn', function (event) {
-    event.preventDefault();
-
-    var cost_id = $(this).attr('id').split('-').pop();
-    var table = $(this).closest('table').DataTable();
-
-    $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
-      url: '/pipeline/request-single-invoice/' + cost_id + '/',
-      method: 'POST',
-      success: function (data) {
-        alert(data.message);
-        // should really optimize this by getting all table data from a single endpoint
-        // so a single row can be reloaded
-        table.ajax.reload();
-      },
-      error: function (data) {
-        alert(
-          'There was an error. Try again, and if the error persists, request the invoice the old fashioned way'
-        );
-      },
-    });
+  $('table').on('click', '.inv-req-btn', function (e) {
+    e.preventDefault();
+    const costID = e.target.getAttribute('id').split('-').pop();
+    Invoices.request(costID, $(this).closest('table').DataTable());
   });
 });

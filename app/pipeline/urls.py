@@ -26,6 +26,11 @@ urlpatterns = [
         views.SetInvoiceInfoView.as_view(),
         name="set-client-invoice-info",
     ),
+    # path(
+    #     "cost-pay-period/<pk>/",
+    #     views.SetCostPayPeriod.as_view(),
+    #     name="set-cost-pay-period",
+    # ),
     path(
         "set-deposit-date/<pk>/",
         views.SetDepositDateView.as_view(),
@@ -33,7 +38,7 @@ urlpatterns = [
     ),
     path(
         "cost-add/<pk>/",
-        views.CostCreateView.as_view(),
+        views.CostsheetViewBase.as_view(),
         name="cost-add",
     ),
     path(

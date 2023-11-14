@@ -178,7 +178,7 @@ $(document).ready(function () {
     'change',
     '.cost-vendor-select, .cost-status-select',
     function () {
-      return Invoices.handleUpdate(this, costTable);
+      return Invoices.drawNewRow(this, costTable);
     }
   );
 

@@ -1,12 +1,7 @@
 from .currencies import currencies
 from django.conf import settings
-from django.contrib import messages
 from django.core.cache import cache
 from django.db import IntegrityError
-from django.http import JsonResponse
-from django.shortcuts import redirect
-from django.template.loader import render_to_string
-
 import requests
 
 
@@ -247,4 +242,11 @@ def update_cost_addtl_row_data(cost):
         cost.invoice_status = "NR"
         cost.pay_period = None
 
+    if cost.invoice_status == "NR":
+        cost.pay_period = None
+
     cost.save()
+
+
+def update_job_addtl_row_data(job):
+    pass

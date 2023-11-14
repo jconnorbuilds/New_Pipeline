@@ -244,7 +244,7 @@ const Invoices = (() => {
     return formData;
   };
 
-  const handleUpdate = (selectEl, table) => {
+  const drawNewRow = (selectEl, table) => {
     $.ajax({
       headers: { 'X-CSRFToken': csrftoken },
       type: 'POST',
@@ -267,6 +267,6 @@ const Invoices = (() => {
   return {
     request,
     getUpdate,
-    handleUpdate,
+    drawNewRow,
   };
 })();

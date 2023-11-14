@@ -51,47 +51,13 @@ function setExpectedRevenueDisplayText() {
 }
 
 $(document).ready(function () {
-  let date = new Date();
-  let currentMonth = date.getMonth() + 1;
-  let currentYear = date.getFullYear();
-  let viewingMonth = currentMonth;
-  let viewingYear = currentYear;
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page
-  let openInvoiceInfoModal = false;
+  let currentMonth = Pipeline.currentMonth;
+  let currentYear = Pipeline.currentYear;
+  let viewingMonth = Pipeline.viewingMonth;
+  let viewingYear = Pipeline.viewingYear;
   let currentRowID;
   let depositDateModal;
-
-  DataTable.ext.order['dom-job-select'] = function (settings, col) {
-    return this.api()
-      .column(col, { order: 'index' })
-      .nodes()
-      .map(function (td, i) {
-        let status = td.querySelector('.job-status-select').value;
-        return status ? jobStatusOrderMap[status] : 0;
-      });
-  };
-
-  DataTable.ext.search.push(function (settings, data, dataIndex) {
-    const unreceivedPayment = data[10] === '---';
-    const ongoing = ['ONGOING', 'READYTOINV'].includes(data[9]);
-    if (unreceivedFilter.checked) {
-      return toggleOngoingFilter.checked
-        ? unreceivedPayment || ongoing
-        : unreceivedPayment && !ongoing;
-    }
-    if (showOnlyOngoingFilter.checked) return ongoing;
-    if (!toggleOngoingFilter.checked) return !ongoing;
-
-    return true;
-  });
-
-  DataTable.ext.search.push(function (settings, data, dataIndex) {
-    const outstandingVendorPayment = data[13] === 'false' && +data[5] > 0;
-    if (showOutstandingPayments.checked) {
-      return outstandingVendorPayment ? true : false;
-    }
-    return true;
-  });
 
   const jobTable = $('#job-table').DataTable({
     paging: false,
@@ -107,10 +73,8 @@ $(document).ready(function () {
       searchPlaceholder: 'ジョブを探す',
       search: '',
     },
-    preDrawCallback: function (settings) {
-      totalExpectedRevenueAmt = 0;
-    },
-    drawCallback: function (settings) {
+    preDrawCallback: (settings) => (totalExpectedRevenueAmt = 0),
+    drawCallback: (settings) => {
       setExpectedRevenueDisplayText();
       updateRevenueDisplay(viewingYear, viewingMonth);
       totalExpectedRevenueDisplay.textContent = `¥${totalExpectedRevenueAmt.toLocaleString()}`;
@@ -122,44 +86,32 @@ $(document).ready(function () {
         '/' +
         viewingMonth +
         '/',
-      dataSrc: function (json) {
-        return json.data;
-      },
+      dataSrc: (json) => json.data,
     },
     columns: [
       {
         data: null,
         responsivePriority: 2,
-        render: function (data, type, row) {
-          return `<input type='checkbox' name='select' value=${row.id} class='form-check-input'>`;
-        },
+        render: (data, type, row) =>
+          `<input type='checkbox' name='select' value=${row.id} class='form-check-input'>`,
       },
       {
         data: 'client_name',
         responsivePriority: 5,
-        render: function (data, type, row) {
-          return `<a href="client-update/${row.client_id}">${data}</a>`;
-        },
+        render: (data, type, row) =>
+          `<a href="client-update/${row.client_id}">${data}</a>`,
       },
       {
         data: 'job_name',
         className: 'job-label',
         responsivePriority: 1,
         render: {
-          display: function (data, type, row) {
-            return row.invoice_name
-              ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(
-                  row.invoice_name,
-                  15
-                )}</a>`
-              : `<a href="/pipeline/${row.id}/job-detail/">${truncate(
-                  data,
-                  15
-                )}</a>`;
-          },
-          sort: function (data) {
-            return data;
-          },
+          // prettier-ignore
+          display: (data, type, row) =>
+            row.invoice_name
+              ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(row.invoice_name,15)}</a>`
+              : `<a href="/pipeline/${row.id}/job-detail/">${truncate(data, 15)}</a>`,
+          sort: (data) => data,
         },
       },
       { data: 'job_code' },
@@ -167,45 +119,36 @@ $(document).ready(function () {
         data: 'revenue',
         className: 'pe-4 revenue-amt',
         responsivePriority: 3,
-        render: function (data, type, row) {
-          return `¥${data.toLocaleString()}`;
-        },
+        render: (data, type, row) => `¥${data.toLocaleString()}`,
       },
       {
         data: 'total_cost',
         className: 'pe-4',
         responsivePriority: 4,
         render: {
-          display: function (data, type, row) {
+          display: (data, type, row) =>
             // prettier-ignore
-            return `<a href="/pipeline/cost-add/${row.id}/">¥${data.toLocaleString()}</a>`;
-          },
-          sort: function (data) {
-            return data;
-          },
+            `<a href="/pipeline/cost-add/${row.id}/">¥${data.toLocaleString()}</a>`,
+          sort: (data) => data,
         },
       },
       {
         data: 'profit_rate',
         className: 'pe-4',
         width: '120px',
-        render: function (data) {
-          return `${data}%`;
-        },
+        render: (data) => `${data}%`,
       },
       {
         data: 'job_date',
         className: 'invoice-period',
         render: {
-          display: function (data) {
+          display: (data) => {
             let date = new Date(data);
             return data
               ? `${date.getFullYear()}年${date.getMonth() + 1}月`
               : '---';
           },
-          sort: function (data) {
-            return data;
-          },
+          sort: (data) => data,
         },
       },
       {
@@ -217,28 +160,8 @@ $(document).ready(function () {
         name: 'status',
         responsivePriority: 6,
         render: {
-          display: function (data, type, row) {
-            const STATUSES = row.job_status_choices;
-            let selectEl = document.createElement('select');
-            selectEl.classList.add(
-              'form-control-plaintext',
-              'job-status-select'
-            );
-            selectEl.setAttribute('name', 'job_status');
-            for (const [_, status] of Object.entries(STATUSES)) {
-              let optionEl = document.createElement('option');
-              optionEl.value = status[0];
-              optionEl.text = status[1];
-              if (status[0] === data)
-                optionEl.setAttribute('selected', '');
-              selectEl.appendChild(optionEl);
-            }
-            return selectEl.outerHTML;
-          },
-          sort: function (data, type, row) {
-            console.log(type);
-            return data;
-          },
+          display: (data, type, row) =>
+            PipelineTable.renderInvoiceStatus(data, row),
         },
         orderDataType: 'dom-job-select',
       },
@@ -252,10 +175,9 @@ $(document).ready(function () {
       {
         data: 'invoice_info_completed',
         name: 'invoice_info_completed',
-        render: function (data, type, row) {
-          return row.invoice_name && row.month && row.year ? true : false;
-        },
         visible: false,
+        render: (data, type, row) =>
+          row.invoice_name && row.month && row.year ? true : false,
       },
       {
         data: 'client_id',
@@ -268,48 +190,18 @@ $(document).ready(function () {
       },
     ],
     columnDefs: [
-      {
-        target: 0,
-        className: 'dt-center',
-        searchable: false,
-      },
+      { target: 0, className: 'dt-center', searchable: false },
+      { targets: [4, 5, 6], className: 'dt-right' },
       {
         targets: [4, 5, 6],
-        className: 'dt-right',
-      },
-      {
-        targets: [4, 5, 6],
-        createdCell: function (td, cellData, rowData, row, col) {
-          $(td).addClass('font-monospace');
-        },
+        createdCell: (td, cellData, rowData, row, col) =>
+          $(td).addClass('font-monospace'),
       },
     ],
-    rowCallback: function (row, data) {
-      const statusCell = $(row).find('.job-status-select');
-      const initialStatus = statusCell.val();
-      const depositDateCell = $(row).find('.deposit-date');
-
-      if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(data.status)) {
-        row.classList.add('job-invoiced');
-      }
-
-      ['INVOICED1', 'INVOICED2', 'FINISHED'].includes(statusCell.val())
-        ? depositDateCell.removeClass('text-body-tertiary')
-        : depositDateCell.addClass('text-body-tertiary');
-
-      statusCell.attr('data-initial', initialStatus);
-      initialStatus === 'FINISHED'
-        ? $(row).addClass('job-finished')
-        : $(row).removeClass('job-finished');
-      ['ONGOING', 'READYTOINV'].includes(initialStatus)
-        ? $(row).addClass('job-ongoing')
-        : $(row).removeClass('job-ongoing');
-      totalExpectedRevenueAmt += parseInt(data.revenue);
-    },
-    createdRow: function (row, data, dataIndex) {
-      if (data.deposit_date === null) {
+    rowCallback: (row, data) => PipelineTable.rowCallback(row, data),
+    createdRow: (row, data, dataIndex) => {
+      if (data.deposit_date === null)
         row.classList.add('payment-unreceived');
-      }
     },
   });
 
@@ -344,7 +236,7 @@ $(document).ready(function () {
       depositDateModal.hide();
       $('#deposit-date-form')[0].reset();
     }
-    jobTableAjaxCall(depositDateData, url, successCallback);
+    PipelineTable.ajaxCall(depositDateData, url, successCallback);
   });
 
   let rangeCheckbox = $('#csv-export-use-range');
@@ -394,57 +286,7 @@ $(document).ready(function () {
     });
   }
 
-  function getJobUpdate(selectElement) {
-    /*
-     * Returns a FormData object containing the value of the select element
-     */
-    var formData = new FormData();
-    if ($(selectElement).hasClass('job-status-select')) {
-      formData.append('status', $(selectElement).val());
-    } else {
-      alert('There was a problem getting the form data');
-    }
-    return formData;
-  }
-
-  function jobTableAjaxCall(
-    formData,
-    url,
-    successCallBack,
-    errorCallBack
-  ) {
-    $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
-      type: 'POST',
-      url: url,
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function (response) {
-        if (response.status === 'success') {
-          var newData = response.data;
-          successCallBack(newData);
-        } else {
-          console.log(
-            'Something happend - perhaps the form received bad data.'
-          );
-        }
-      },
-      error: function () {
-        if (typeof errorCallBack === 'function') {
-          errorCallBack();
-        } else {
-          console.log('Error occurred during the AJAX request');
-        }
-      },
-    });
-  }
-
-  $('#pipeline-new-client-btn').click(function () {
-    openInvoiceInfoModal = false;
-  });
-
-  jobTable.on('change', '.job-status-select', function () {
+  jobTable.on('change', '.job-status-select', function (e) {
     /*
      * When a user changes the job status via the status dropdown, if one
      * of the 'finalizing' statuses is selected e.g. 'Completed & Invoiced',
@@ -456,151 +298,85 @@ $(document).ready(function () {
      * in the case the invoice recipient is a client that isn't in the db yet.
      */
 
-    const newClientFormModalEl = document.querySelector(
-      '#new-client-modal'
-    );
-    const invoiceInfoModal = new bootstrap.Modal(
-      document.getElementById('set-job-invoice-info')
-    );
-    const invoiceInfoModalEl = document.querySelector(
-      '#set-job-invoice-info'
-    );
+    const statusSelectEl = e.target;
+    const status = statusSelectEl.value;
+    const initialStatus = statusSelectEl.dataset.initial;
+    const rowID = statusSelectEl.closest('tr').getAttribute('id');
 
-    newClientFormModalEl.addEventListener('hide.bs.modal', function () {
-      if (openInvoiceInfoModal === true) {
-        invoiceInfoModal.show();
+    NewClientForm.el.addEventListener('hide.bs.modal', function () {
+      if (InvoiceInfo.getOpenModal() === true) {
+        InvoiceInfo.modal.show();
       }
     });
 
-    var changedSelectFormData = getJobUpdate(this);
-    var statusSelectEl = $(this);
-    var selectedStatus = statusSelectEl.val();
-    var initialStatus = statusSelectEl.data('initial');
-    var rowID = $(this).closest('tr').attr('id');
-    const invoiceInfoCompleted = JSON.parse(
-      jobTable.cell('#' + rowID, 'invoice_info_completed:name').node()
-        .textContent
-    );
-    const requiresInvoiceInfo = [
-      'INVOICED1',
-      'INVOICED2',
-      'FINISHED',
-      'ARCHIVED',
-    ];
-
+    // Can I make this more modular?
+    /* Checks the new status of the row and determines if the user needs to
+    / add information about the invoice. 
+    */
     if (
-      requiresInvoiceInfo.includes(selectedStatus) &&
-      invoiceInfoCompleted === false
+      InvoiceInfo.isRequired(status) &&
+      !InvoiceInfo.isCompleted(jobTable, rowID)
     ) {
-      openInvoiceInfoModal = true;
-      const clientID = parseInt(
-        jobTable.cell('#' + rowID, 'client_id:name').data()
-      );
-
-      const invoiceForm = invoiceInfoModalEl.querySelector(
-        '#invoice-info-form'
-      );
-      const invoiceRecipientField = invoiceForm.querySelector(
-        '#id_inv-invoice_recipient'
-      );
-      const hiddenJobIDField = invoiceForm.querySelector('#id_inv-job_id');
-
-      invoiceRecipientField.value = clientID;
-      hiddenJobIDField.value = rowID;
-      invoiceInfoModal.show();
-
-      function invoiceInfoSuccessCallback(newRowData) {
-        const invoiceInfoSavedToast = $('#invoice-set-success-toast');
-        const invoiceInfoSavedToastBS =
-          bootstrap.Toast.getOrCreateInstance(invoiceInfoSavedToast);
-        invoiceInfoModalEl.removeEventListener(
-          'hide.bs.modal',
-          revertStatus
-        );
-        invoiceInfoModal.hide();
-        invoiceInfoSavedToastBS.show();
-
-        newDataInvoicePeriod = newRowData.job_date.split('-');
-
-        newDataInvoicePeriod[1] == currentMonth &&
-        newDataInvoicePeriod[0] == currentYear
-          ? jobTable
-              .row(`#${newRowData.id}`)
-              .data(newRowData)
-              .invalidate()
-              .draw()
-          : jobTable.row(`#${newRowData.id}`).remove().draw();
-      }
-
-      function showSelectedStatus() {
-        statusSelectEl.val(selectedStatus);
-      }
-
-      function revertStatus() {
-        statusSelectEl.val(initialStatus);
-        invoiceInfoModalEl.removeEventListener(
-          'show.bs.modal',
-          showSelectedStatus
-        );
-      }
-
-      invoiceInfoModalEl.addEventListener(
+      InvoiceInfo.openModal;
+      InvoiceInfo.modalEl.addEventListener(
         'show.bs.modal',
-        showSelectedStatus
+        InvoiceInfo.createModalShowListener(statusSelectEl, status)
       );
-      invoiceInfoModalEl.addEventListener('hide.bs.modal', revertStatus);
 
-      $(invoiceForm).on('submit', function (event) {
-        event.preventDefault();
-        let invoiceFormData = new FormData();
-        invoiceFormData.append(
-          'inv-invoice_recipient',
-          invoiceRecipientField.value
-        );
-        invoiceFormData.append(
-          'inv-invoice_name',
-          $('#id_inv-invoice_name').val()
-        );
-        invoiceFormData.append('inv-job_id', hiddenJobIDField.value);
-        invoiceFormData.append(
-          'inv-invoice_year',
-          $('#id_inv-invoice_year').val()
-        );
-        invoiceFormData.append(
-          'inv-invoice_month',
-          $('#id_inv-invoice_month').val()
-        );
-        for (const entry of changedSelectFormData.entries()) {
-          invoiceFormData.append('inv-' + entry[0], entry[1]);
-        }
-        invoiceForm.reset();
-
-        let url =
-          '/pipeline/set-client-invoice-info/' +
-          hiddenJobIDField.value +
-          '/';
-        jobTableAjaxCall(
-          invoiceFormData,
-          url,
-          invoiceInfoSuccessCallback,
-          revertStatus
-        );
-      });
-    } else {
-      let url = '/pipeline/pl-job-update/' + rowID + '/';
-      jobTableAjaxCall(changedSelectFormData, url, function (newRowData) {
-        if (viewingMonth == currentMonth && viewingYear == currentYear) {
+      InvoiceInfo.modalEl.addEventListener(
+        'hide.bs.modal',
+        InvoiceInfo.createModalHideListener(
+          statusSelectEl,
+          initialStatus,
+          InvoiceInfo.modalEl,
           jobTable
-            .row(`#${newRowData.id}`)
-            .data(newRowData)
-            .invalidate()
-            .draw();
-        } else {
-          jobTable.row(`#${newRowData.id}`).remove().draw();
-        }
+        )
+      );
+      // if true, a modal form opens for the user to fill.
+      InvoiceInfo.setOpenModal(true);
+      InvoiceInfo.setInitialInfo(jobTable, rowID);
+      InvoiceInfo.modal.show();
+    } else {
+      // Otherwise, just send the new status to the db and update nrow
+      let url = '/pipeline/pl-job-update/' + rowID + '/';
+      $.ajax({
+        headers: { 'X-CSRFToken': csrftoken },
+        type: 'POST',
+        url: url,
+        data: { status: status },
+        dataTye: 'json',
+        success: (response) => {
+          if (response.status === 'success') {
+            PipelineTable.handleNewRowDraw(
+              InvoiceInfo.modal,
+              InvoiceInfo.modalEl,
+              jobTable,
+              response.data
+            );
+          } else {
+            console.log(response);
+            console.error(response.message);
+          }
+        },
+        error: (response) =>
+          PipelineTable.handleError(
+            statusSelectEl,
+            initialStatus,
+            response.message,
+            jobTable
+          ),
       });
     }
   });
+  // if (viewingMonth == currentMonth && viewingYear == currentYear) {
+  //   jobTable
+  //     .row(`#${newRowData.id}`)
+  //     .data(newRowData)
+  //     .invalidate()
+  //     .draw();
+  // } else {
+  //   jobTable.row(`#${newRowData.id}`).remove().draw();
+  // }
 
   // Job form submission
   $('#job-form').submit(function (event) {
@@ -721,6 +497,7 @@ $(document).ready(function () {
   }
 
   $('.toggle-view').click(function () {
+    console.log({ viewingMonth }, { currentMonth });
     if (pipelineViewState === 'monthly') {
       pipelineViewState = 'all';
       $('#view-state').text(pipelineViewState);

@@ -1,15 +1,11 @@
-from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
-from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db import IntegrityError
-from django.db.models import Sum, F, Q
+from django.db.models import Sum, Q
 from django.http import (
     JsonResponse,
     HttpResponseRedirect,
@@ -17,7 +13,7 @@ from django.http import (
     HttpResponseServerError,
 )
 from django.shortcuts import render, redirect
-from django.template.loader import get_template, render_to_string
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -29,7 +25,6 @@ from django.views.generic import (
     UpdateView,
     CreateView,
 )
-from django.views import View
 from .models import Job, Vendor, Cost, Client
 from .forms import (
     CostForm,
@@ -48,14 +43,11 @@ from .forms import (
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import dropbox
-from dropbox.exceptions import ApiError, AuthError
-from rest_framework import status, generics
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from dropbox.exceptions import AuthError
+from rest_framework import generics
 from rest_framework.renderers import TemplateHTMLRenderer
 from .serializers import VendorSerializer, JobSerializer
-from urllib.parse import urlencode, unquote
+from urllib.parse import unquote
 from .utils import (
     get_forex_rates,
     process_imported_jobs,
@@ -262,7 +254,6 @@ class AddJobView(PipelineViewBase):
         job_form = JobForm(request.POST)
         if job_form.is_valid():
             print(job_form.cleaned_data)
-            # Take in the revenue in terms of 万
             if not job_form.instance.granular_revenue:
                 job_form.instance.revenue = job_form.instance.revenue * 10000
             instance = job_form.save()
@@ -296,6 +287,8 @@ class SetDepositDateView(PipelineViewBase):
             form.save()
             return JsonResponse({"status": "success", "data": get_job_data(job)})
         else:
+            for error in form.errors:
+                print(error)
             return JsonResponse({"status": "error"})
 
 
@@ -303,12 +296,12 @@ class PipelineJobUpdateView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job = Job.objects.get(id=kwargs["pk"])
         form = PipelineJobUpdateForm(request.POST, instance=job)
+
         if form.is_valid():
             form.save()
             return JsonResponse({"status": "success", "data": get_job_data(job)})
         else:
-            print(form.errors)
-            return JsonResponse({"status": "error"})
+            return JsonResponse({"status": "error", "message": form.errors})
 
 
 def pipeline_data(request, year=None, month=None):

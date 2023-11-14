@@ -5,6 +5,9 @@
 {% block header %}
     {{ block.super }}
     <script type="text/javascript"
+            src="{% static 'pipeline/pipeline_functions.js' %}"
+            defer></script>
+    <script type="text/javascript"
             src="{% static 'pipeline/pipeline.js' %}"
             defer></script>
 {% endblock header %}

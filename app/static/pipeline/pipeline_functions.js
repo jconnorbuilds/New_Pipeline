@@ -4,6 +4,7 @@ const Pipeline = (() => {
   let currentYear = date.getFullYear();
   let viewingMonth = currentMonth;
   let viewingYear = currentYear;
+  let table;
 
   const newClientBtn = document.querySelector('#pipeline-new-client-btn');
   newClientBtn.addEventListener('click', () =>
@@ -51,10 +52,13 @@ const Pipeline = (() => {
     viewingMonth,
     viewingYear,
     displayErrorMessage,
+    table,
   };
 })();
 
-const PipelineTable = (() => {
+const PLTableFunctions = (() => {
+  let lastChangedSelectEl;
+  const getLastChangedSelectEl = () => lastChangedSelectEl;
   const renderInvoiceStatus = (data, row) => {
     const STATUSES = row.job_status_choices;
     let selectEl = document.createElement('select');
@@ -71,6 +75,52 @@ const PipelineTable = (() => {
     return selectEl.outerHTML;
   };
 
+  const handleSuccessResponse = (table) => (response) => {
+    response.status === 'success'
+      ? handleNewRowDraw(table, response.data)
+      : console.error(response.message);
+  };
+
+  const handleErrorResponse = (table) => (response) => {
+    handleError(response.message, table);
+  };
+
+  const handleStatusUpdate = (status, rowID) => {
+    let url = '/pipeline/pl-job-update/' + rowID + '/';
+    $.ajax({
+      headers: { 'X-CSRFToken': csrftoken },
+      type: 'post',
+      url: url,
+      data: { status: status },
+      dataType: 'json',
+      success: handleSuccessResponse(Pipeline.table),
+      error: handleErrorResponse(Pipeline.table),
+    });
+  };
+
+  const statusChangeListener = (e) => {
+    /*
+     * When a user changes the job status via the status dropdown, an
+     * invoice info form appears, or otherwise the status is simply updated.
+     */
+    const statusSelectEl = e.target;
+    const initialStatus = statusSelectEl.dataset.initial;
+    const status = statusSelectEl.value;
+    const rowID = statusSelectEl.closest('tr').getAttribute('id');
+    const table = $(e.target.closest('table')).DataTable();
+    lastChangedSelectEl = statusSelectEl;
+
+    NewClientForm.el.addEventListener('hide.bs.modal', function () {
+      if (InvoiceInfo.getOpenModal() === true) {
+        InvoiceInfo.modal.show();
+      }
+    });
+
+    InvoiceInfo.needsToDoInvoiceForm(status, table, rowID)
+      ? InvoiceInfo.openModal(status, initialStatus, table, rowID)
+      : handleStatusUpdate(status, rowID);
+  };
+
   const getUpdate = (selectEl) => {
     /*
      * Returns an object containing the value of the select element
@@ -85,29 +135,27 @@ const PipelineTable = (() => {
   const getClientID = (table, rowID) =>
     parseInt(table.cell(`#${rowID}`, 'client_id:name').data());
 
-  const drawNewRow = (table, newRowData) => {
-    table.row(`#${newRowData.id}`).data(newRowData).invalidate().draw();
-  };
+  const drawNewRow = (table, newRowData) =>
+    table
+      .row(`#${newRowData.id}`)
+      .data(newRowData)
+      .invalidate()
+      .draw(false);
 
-  const needsNewRow = () => {
-    return (
-      Pipeline.viewingMonth == Pipeline.currentMonth &&
-      Pipeline.viewingYear == Pipeline.currentYear
-    );
-  };
+  const needsNewRow = () =>
+    Pipeline.viewingMonth == Pipeline.currentMonth &&
+    Pipeline.viewingYear == Pipeline.currentYear;
 
-  const removeRow = (table, newRowData) => {
+  const removeRow = (table, newRowData) =>
     table.row(`#${newRowData.id}`).remove().draw();
-  };
 
-  const handleNewRowDraw = (modal, modalEl, table, newRowData) => {
+  const handleNewRowDraw = (table, newRowData) => {
     /* 
     Close the modal, show a success toast,
     and draw a new row in the table if it belongs on the current
     page.
 
     arguments: 
-    modal: the modal to be hidden 
     table: the job table
     newRowData: response data returned from the ajax call
     */
@@ -121,16 +169,16 @@ const PipelineTable = (() => {
       // consolidate into one viewingDate view
       newDataInvoicePeriod = newRowData.job_date.split('-');
       console.log(needsNewRow());
-      if (Pipeline.newDataInvoicePeriod) {
+      if (newDataInvoicePeriod) {
         needsNewRow()
           ? drawNewRow(table, newRowData)
           : removeRow(table, newRowData);
       }
     } else {
       console.log('else!');
-      PipelineTable.needsNewRow()
-        ? PipelineTable.drawNewRow(table, newRowData)
-        : PipelineTable.removeRow(table, newRowData);
+      needsNewRow()
+        ? drawNewRow(table, newRowData)
+        : removeRow(table, newRowData);
     }
   };
 
@@ -160,15 +208,18 @@ const PipelineTable = (() => {
   const showSelectedStatus = (selectEl, selectedStatus) =>
     (selectEl.value = selectedStatus);
 
-  const revertStatus = (selectEl, initStatus, table) => {
-    // console.log('INSIDE THE FUNC', initStatus);
-    // selectEl.value = initStatus;
+  const revertStatus = (table) => {
     table.ajax.reload();
+    // table
+    //   .row(`#${newRowData.id}`)
+    //   .data(newRowData)
+    //   .invalidate()
+    //   .draw(false);
   };
 
-  const handleError = (selectEl, initStatus, message, table) => {
+  const handleError = (message, table) => {
     console.error('error in the error handler');
-    revertStatus(selectEl, initStatus, table);
+    revertStatus(table);
     Pipeline.displayErrorMessage(message);
   };
 
@@ -213,9 +264,14 @@ const PipelineTable = (() => {
     revertStatus,
     needsNewRow,
     drawNewRow,
+    // updateRow,
     handleNewRowDraw,
     handleError,
     removeRow,
+    statusChangeListener,
+    getLastChangedSelectEl,
+    handleSuccessResponse,
+    handleErrorResponse,
   };
 })();
 
@@ -228,7 +284,7 @@ const NewClientForm = (() => {
 })();
 
 const InvoiceInfo = (() => {
-  let openModal = false;
+  let modalWillOpen = false;
   const modalEl = document.querySelector('#set-job-invoice-info');
   const modal = new bootstrap.Modal(modalEl);
   const form = modalEl.querySelector('#invoice-info-form');
@@ -236,116 +292,14 @@ const InvoiceInfo = (() => {
   let modalHideListener;
 
   const setOpenModal = (bool) => {
-    openModal = bool;
+    modalWillOpen = bool;
   };
   const getOpenModal = () => {
-    return openModal;
+    console.log(modalWillOpen);
+    return modalWillOpen;
   };
 
-  const handleModalHide = (selectEl, initStatus, modalEl, table) => {
-    console.log('inside MODAL HIDE handler', { initStatus });
-    PipelineTable.revertStatus(selectEl, initStatus, table);
-
-    modalEl.removeEventListener('show.bs.modal', modalShowListener);
-    modalEl.removeEventListener('hide.bs.modal', modalHideListener);
-  };
-
-  const handleModalShow = (selectEl, selectedStatus) => {
-    PipelineTable.showSelectedStatus(selectEl, selectedStatus);
-  };
-
-  const createModalShowListener = (selectEl, selectedStatus) => {
-    modalShowListener = wrappingFunction = () => {
-      handleModalShow(selectEl, selectedStatus);
-    };
-    return modalShowListener;
-  };
-
-  const createModalHideListener = (
-    selectEl,
-    initStatus,
-    modalEl,
-    table
-  ) => {
-    modalHideListener = wrappingFunction = () => {
-      handleModalHide(selectEl, initStatus, modalEl, table);
-    };
-    return modalHideListener;
-  };
-
-  // const getModalShowListener = () => {
-  //   return modalShowListener;
-  // };
-
-  // const getModalHideListener = () => {
-  //   return modalHideListener;
-  // };
-
-  const isRequired = (selectedStatus) => {
-    const requiredStatuses = [
-      'INVOICED1',
-      'INVOICED2',
-      'FINISHED',
-      'ARCHIVED',
-    ];
-    return requiredStatuses.includes(selectedStatus);
-  };
-
-  const isCompleted = (table, rowID) => {
-    return JSON.parse(
-      table.cell('#' + rowID, 'invoice_info_completed:name').node()
-        .textContent
-    );
-  };
-
-  const setInitialInfo = (table, rowID) => {
-    const invoiceRecipientField = form.querySelector(
-      '#id_inv-invoice_recipient'
-    );
-    const hiddenJobIDField = form.querySelector('#id_inv-job_id');
-
-    invoiceRecipientField.value = PipelineTable.getClientID(table, rowID);
-    hiddenJobIDField.value = rowID;
-  };
-
-  // const successCallbackB = (modal, table, newRowData) => {
-  //   /*
-  //   Close the modal, show a success toast,
-  //   and draw a new row in the table if it belongs on the current
-  //   page.
-
-  //   arguments:
-  //   modal: the modal to be hidden
-  //   table: the job table
-  //   newRowData: response data returned from the ajax call
-  //   */
-  //   const invoiceInfoSavedToast = bootstrap.Toast.getOrCreateInstance(
-  //     $('#invoice-set-success-toast')
-  //   );
-  //   modalEl.removeEventListener(
-  //     'hide.bs.modal',
-  //     PipelineTable.revertStatus
-  //   );
-  //   modal.hide();
-  //   invoiceInfoSavedToast.show();
-
-  //   // if (newRowData.job_date) {
-  //   //   newDataInvoicePeriod = newRowData.job_date.split('-');
-  //   //   if (Pipeline.newDataInvoicePeriod)
-
-  //   // Pipeline.viewingMonth == Pipeline.currentMonth &&
-  //   // Pipeline.viewingYear == Pipeline.currentYear
-  //   //   ? table.row(`#${newRowData.id}`).data(newRowData).invalidate().draw()
-  //   //   : table.row(`#${newRowData.id}`).remove().draw();
-  //   // } else {
-
-  //   //  }}
-  // };
-
-  const submitForm = (e, selectData) => {
-    e.preventDefault();
-    const selectEl = e.target;
-
+  function getFormData(selectEl) {
     const recipientField = document.querySelector(
       '#id_inv-invoice_recipient'
     );
@@ -360,41 +314,167 @@ const InvoiceInfo = (() => {
     formData['inv-job_id'] = jobIDField.value;
     formData['inv-invoice_year'] = yearField.value;
     formData['inv-invoice_month'] = monthField.value;
-    Object.entries(selectData).forEach(
+
+    Object.entries(PLTableFunctions.getUpdate(selectEl)).forEach(
       ([name, value]) => (formData['inv-' + name] = value)
     );
+    return { jobIDField, formData };
+  }
 
-    form.reset();
+  const submitForm = (selectEl) => (e) => {
+    e.preventDefault();
 
-    let url =
-      '/pipeline/set-client-invoice-info/' + jobIDField.value + '/';
-    Pipeline.ajaxCall(
-      formData,
-      url,
-      handleNewRowDraw,
-      () => PipelineTable.revertStatus(selectEl),
-      invoiceInfoModal,
-      jobTable
+    let { jobIDField, formData } = getFormData(selectEl);
+    const table = $(selectEl.closest('table')).DataTable();
+
+    $.ajax({
+      headers: { 'X-CSRFToken': csrftoken },
+      type: 'POST',
+      url: `/pipeline/set-client-invoice-info/${jobIDField.value}/`,
+      data: formData,
+      dataType: 'json',
+      success: (response) => {
+        modal.hide();
+        Pipeline.table.ajax.reload();
+        form.reset();
+      },
+      error: PLTableFunctions.handleErrorResponse(table),
+    });
+  };
+
+  const handleModalHide = () => {
+    Pipeline.table.ajax.reload();
+    modalEl.removeEventListener('show.bs.modal', modalShowListener);
+    modalEl.removeEventListener('hide.bs.modal', modalHideListener);
+  };
+
+  const handleModalShow = (selectEl, selectedStatus) => {
+    PLTableFunctions.showSelectedStatus(selectEl, selectedStatus);
+  };
+
+  const createModalShowListener = (selectEl, selectedStatus) => {
+    modalShowListener = wrappingFunction = () => {
+      handleModalShow(selectEl, selectedStatus);
+    };
+    return modalShowListener;
+  };
+
+  const createModalHideListener = () => {
+    modalHideListener = () => handleModalHide();
+    return modalHideListener;
+  };
+
+  const isRequired = (selectedStatus) => {
+    const requiredStatuses = [
+      'INVOICED1',
+      'INVOICED2',
+      'FINISHED',
+      'ARCHIVED',
+    ];
+    return requiredStatuses.includes(selectedStatus);
+  };
+
+  const isCompleted = (table, rowID) => {
+    let result = JSON.parse(
+      table.cell('#' + rowID, 'invoice_info_completed:name').node()
+        .textContent
+    );
+    console.log(result);
+    return result;
+  };
+
+  const needsToDoInvoiceForm = (selectedStatus, table, rowID) => {
+    return isRequired(selectedStatus) && !isCompleted(table, rowID);
+  };
+
+  const setInitialInfo = (table, rowID) => {
+    const invoiceRecipientField = form.querySelector(
+      '#id_inv-invoice_recipient'
+    );
+    const hiddenJobIDField = form.querySelector('#id_inv-job_id');
+
+    invoiceRecipientField.value = PLTableFunctions.getClientID(
+      table,
+      rowID
+    );
+    hiddenJobIDField.value = rowID;
+  };
+
+  const openModal = (selectEl, initStatus, table, rowID) => {
+    modalEl.addEventListener(
+      'show.bs.modal',
+      createModalShowListener(selectEl, selectEl.value)
     );
 
-    return formData;
+    modalEl.addEventListener('hide.bs.modal', createModalHideListener());
+
+    setOpenModal(true);
+    setInitialInfo(table, rowID);
+    modal.show();
   };
+
+  form.addEventListener('submit', (e) => {
+    submitForm(PLTableFunctions.getLastChangedSelectEl())(e);
+  });
 
   return {
     setOpenModal,
     getOpenModal,
     modalEl,
     modal,
-    isRequired,
-    isCompleted,
+    needsToDoInvoiceForm,
     form,
     setInitialInfo,
     handleModalHide,
     handleModalShow,
     createModalShowListener,
-    getModalShowListener,
     createModalHideListener,
-    // getModalHideListener,
     submitForm,
+    openModal,
+  };
+})();
+
+const DepositDate = (() => {
+  const form = document.querySelector('#deposit-date-form');
+  const modalEl = document.querySelector('#set-deposit-date');
+  const modal = new bootstrap.Modal(modalEl);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let depositDateData = {};
+    depositDateData['deposit_date'] = $('#id_deposit_date').val();
+    depositDateData['job_id'] = PLTableFunctions.currentRowID;
+    let url = `/pipeline/set-deposit-date/${PLTableFunctions.currentRowID}/`;
+
+    $('#deposit-date-form')[0].reset();
+
+    $.ajax({
+      headers: { 'X-CSRFToken': csrftoken },
+      type: 'post',
+      url: url,
+      data: depositDateData,
+      dataType: 'json',
+      success: PLTableFunctions.handleSuccessResponse(Pipeline.table),
+      error: PLTableFunctions.handleErrorResponse(Pipeline.table),
+    });
+  });
+
+  const getRowID = (e) => {
+    return e.target.closest('tr').getAttribute('id');
+  };
+
+  const handleModalShow = () => (e) => {
+    let rowID = getRowID(e);
+    // make a 'setRowID' function in PLTF?
+    PLTableFunctions.currentRowID = rowID;
+    let row = Pipeline.table.row(`#${rowID}`).node();
+    jobStatus = row.querySelector('.job-status-select').value;
+    if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(jobStatus)) {
+      modal.show();
+    }
+  };
+  return {
+    modal,
+    handleModalShow,
   };
 })();

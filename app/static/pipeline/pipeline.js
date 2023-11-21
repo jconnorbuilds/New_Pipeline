@@ -56,10 +56,9 @@ $(document).ready(function () {
   let currentYear = Pipeline.currentYear;
   let viewingMonth = Pipeline.viewingMonth;
   let viewingYear = Pipeline.viewingYear;
-  let currentRowID;
   let depositDateModal;
 
-  const jobTable = $('#job-table').DataTable({
+  Pipeline.table = $('#job-table').DataTable({
     paging: false,
     responsive: true,
     order: [
@@ -161,7 +160,7 @@ $(document).ready(function () {
         responsivePriority: 6,
         render: {
           display: (data, type, row) =>
-            PipelineTable.renderInvoiceStatus(data, row),
+            PLTableFunctions.renderInvoiceStatus(data, row),
         },
         orderDataType: 'dom-job-select',
       },
@@ -176,8 +175,11 @@ $(document).ready(function () {
         data: 'invoice_info_completed',
         name: 'invoice_info_completed',
         visible: false,
-        render: (data, type, row) =>
-          row.invoice_name && row.month && row.year ? true : false,
+        render: (data, type, row) => {
+          return row.invoice_name && row.invoice_month && row.invoice_year
+            ? true
+            : false;
+        },
       },
       {
         data: 'client_id',
@@ -198,46 +200,18 @@ $(document).ready(function () {
           $(td).addClass('font-monospace'),
       },
     ],
-    rowCallback: (row, data) => PipelineTable.rowCallback(row, data),
+    rowCallback: (row, data) => PLTableFunctions.rowCallback(row, data),
     createdRow: (row, data, dataIndex) => {
       if (data.deposit_date === null)
         row.classList.add('payment-unreceived');
     },
   });
 
-  jobTable.on('click', 'td.deposit-date', function () {
-    currentRowID = $(this).closest('tr').attr('id');
-    row = jobTable.row(`#${currentRowID}`).node();
-    jobStatus = $(row)
-      .find('select.job-status-select option:selected')
-      .val();
-
-    if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(jobStatus)) {
-      depositDateModal = new bootstrap.Modal(
-        document.querySelector('#set-deposit-date')
-      );
-      depositDateModal.show();
-    }
-  });
-
-  $('#deposit-date-form').on('submit', function (event) {
-    event.preventDefault();
-    var depositDateData = new FormData();
-    depositDateData.append('deposit_date', $('#id_deposit_date').val());
-    depositDateData.append('job_id', currentRowID);
-    depositDateData.append('set_deposit_date', true);
-    let url = `/pipeline/set-deposit-date/${currentRowID}/`;
-    function successCallback(newRowData) {
-      jobTable
-        .row(`#${newRowData.id}`)
-        .data(newRowData)
-        .invalidate()
-        .draw(false);
-      depositDateModal.hide();
-      $('#deposit-date-form')[0].reset();
-    }
-    PipelineTable.ajaxCall(depositDateData, url, successCallback);
-  });
+  Pipeline.table.on(
+    'click',
+    'td.deposit-date',
+    DepositDate.handleModalShow()
+  );
 
   let rangeCheckbox = $('#csv-export-use-range');
   rangeCheckbox.click(function () {
@@ -286,96 +260,20 @@ $(document).ready(function () {
     });
   }
 
-  jobTable.on('change', '.job-status-select', function (e) {
-    /*
-     * When a user changes the job status via the status dropdown, if one
-     * of the 'finalizing' statuses is selected e.g. 'Completed & Invoiced',
-     * and the invoice data hasn't been added, a modal form opens so the information can be added.
-     * Otherwise, the status is simply updated.
-     *
-     * Additional logic is added to make a seamless transition between
-     * the invoice data modal and a separate modal for adding a new client,
-     * in the case the invoice recipient is a client that isn't in the db yet.
-     */
+  Pipeline.table.on(
+    'change',
+    '.job-status-select',
+    PLTableFunctions.statusChangeListener
+  );
 
-    const statusSelectEl = e.target;
-    const status = statusSelectEl.value;
-    const initialStatus = statusSelectEl.dataset.initial;
-    const rowID = statusSelectEl.closest('tr').getAttribute('id');
-
-    NewClientForm.el.addEventListener('hide.bs.modal', function () {
-      if (InvoiceInfo.getOpenModal() === true) {
-        InvoiceInfo.modal.show();
-      }
-    });
-
-    // Can I make this more modular?
-    /* Checks the new status of the row and determines if the user needs to
-    / add information about the invoice. 
-    */
-    if (
-      InvoiceInfo.isRequired(status) &&
-      !InvoiceInfo.isCompleted(jobTable, rowID)
-    ) {
-      InvoiceInfo.openModal;
-      InvoiceInfo.modalEl.addEventListener(
-        'show.bs.modal',
-        InvoiceInfo.createModalShowListener(statusSelectEl, status)
-      );
-
-      InvoiceInfo.modalEl.addEventListener(
-        'hide.bs.modal',
-        InvoiceInfo.createModalHideListener(
-          statusSelectEl,
-          initialStatus,
-          InvoiceInfo.modalEl,
-          jobTable
-        )
-      );
-      // if true, a modal form opens for the user to fill.
-      InvoiceInfo.setOpenModal(true);
-      InvoiceInfo.setInitialInfo(jobTable, rowID);
-      InvoiceInfo.modal.show();
-    } else {
-      // Otherwise, just send the new status to the db and update nrow
-      let url = '/pipeline/pl-job-update/' + rowID + '/';
-      $.ajax({
-        headers: { 'X-CSRFToken': csrftoken },
-        type: 'POST',
-        url: url,
-        data: { status: status },
-        dataTye: 'json',
-        success: (response) => {
-          if (response.status === 'success') {
-            PipelineTable.handleNewRowDraw(
-              InvoiceInfo.modal,
-              InvoiceInfo.modalEl,
-              jobTable,
-              response.data
-            );
-          } else {
-            console.log(response);
-            console.error(response.message);
-          }
-        },
-        error: (response) =>
-          PipelineTable.handleError(
-            statusSelectEl,
-            initialStatus,
-            response.message,
-            jobTable
-          ),
-      });
-    }
-  });
   // if (viewingMonth == currentMonth && viewingYear == currentYear) {
-  //   jobTable
+  //   Pipeline.table
   //     .row(`#${newRowData.id}`)
   //     .data(newRowData)
   //     .invalidate()
   //     .draw();
   // } else {
-  //   jobTable.row(`#${newRowData.id}`).remove().draw();
+  //   Pipeline.table.row(`#${newRowData.id}`).remove().draw();
   // }
 
   // Job form submission
@@ -410,7 +308,7 @@ $(document).ready(function () {
           //     $(this).show()
           // });
           var job = response.data;
-          jobTable.row.add($(job)).draw();
+          Pipeline.table.row.add($(job)).draw();
           // #TODO: replace the below with the updateRevenueDisplay function using the new data
           // var originalVal = parseInt($("#total-billed-monthly-exp").text().replace(/(¥|,)/g, ''));
           // var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
@@ -492,8 +390,8 @@ $(document).ready(function () {
     if (year !== undefined && month !== undefined) {
       url = url + year + '/' + month + '/';
     }
-    // jobTable.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
-    jobTable.ajax.url(url).load();
+    // Pipeline.table.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
+    Pipeline.table.ajax.url(url).load();
   }
 
   $('.toggle-view').click(function () {
@@ -754,9 +652,10 @@ $(document).ready(function () {
   });
 
   let filters = document.querySelectorAll('.display-filter input');
-  filters.forEach(() =>
-    addEventListener('change', () => {
-      jobTable.draw();
+
+  filters.forEach((f) =>
+    f.addEventListener('change', () => {
+      Pipeline.table.draw();
     })
   );
 });

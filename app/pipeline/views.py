@@ -275,7 +275,7 @@ class SetInvoiceInfoView(PipelineViewBase):
             return JsonResponse({"status": "success", "data": get_job_data(job)})
         else:
             # TODO: make helpful error message
-            return JsonResponse({"status": "error"})
+            return JsonResponse({"status": "error", "message": form.errors})
 
 
 class SetDepositDateView(PipelineViewBase):
@@ -296,7 +296,7 @@ class PipelineJobUpdateView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job = Job.objects.get(id=kwargs["pk"])
         form = PipelineJobUpdateForm(request.POST, instance=job)
-
+        print(request.POST)
         if form.is_valid():
             form.save()
             return JsonResponse({"status": "success", "data": get_job_data(job)})

@@ -23,7 +23,7 @@ class Vendor(models.Model):
     email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
     payment_id = models.IntegerField(unique=True, null=True, blank=True)
     preferred_currency = models.CharField(max_length=3, null=True, blank=True)
-    jobs = models.ManyToManyField("Job")
+    jobs = models.ManyToManyField("Job", null=True, blank=True)
 
     @property
     def full_name(self):
@@ -263,8 +263,9 @@ class Job(models.Model):
     vendors = models.ManyToManyField(
         Vendor,
         verbose_name="vendors involved",
-        blank=True,
         related_name="jobs_with_vendor",
+        blank=True,
+        null=True,
     )
     # Who the invoice is paid to, if it differs from the client
     invoice_recipient = models.ForeignKey(

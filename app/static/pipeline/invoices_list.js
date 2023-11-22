@@ -51,7 +51,7 @@ $(document).ready(function () {
           sort: (data) => data,
         },
       },
-      { data: 'job_name', responsivePriority: 1 },
+      { data: 'job_name', responsivePriority: 2 },
       { data: 'job_code' },
       { data: 'vendor_name' },
       { data: 'description', render: (data) => truncate(data, 15) },
@@ -80,6 +80,7 @@ $(document).ready(function () {
       },
       {
         data: 'id',
+        responsivePriority: 3,
         render: (data) => InvoiceTable.renderRequestBtn(data),
       },
       {

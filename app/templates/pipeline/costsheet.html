@@ -145,6 +145,7 @@
                     <div class="modal-body">
                         {% csrf_token %}
                         <div class="col-9">
+                            <div class="invoice-desc mx-5"></div>
                             <label for="id_pay_period" class="form-label small">New pay period for this invoice</label>
                             {% render_field pay_period_form.pay_period class+="form-control" %}
                         </div>

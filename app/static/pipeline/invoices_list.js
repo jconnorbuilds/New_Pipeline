@@ -1,4 +1,22 @@
 $(document).ready(function () {
+  const statusFilters = document.querySelectorAll(
+    '.display-filter .status-filter'
+  );
+
+  DataTable.ext.search.push(function (settings, data, dataIndex) {
+    const status = data[9];
+    let selectedStatuses = [];
+    statusFilters.forEach((status) => {
+      if (status.checked)
+        selectedStatuses.push(status.value.toUpperCase());
+    });
+    console.log(selectedStatuses);
+    if (selectedStatuses.length > 0)
+      return selectedStatuses.includes(status) ? true : false;
+
+    return true;
+  });
+
   const allInvoicesTable = $('#all-invoices-table').DataTable({
     paging: true,
     pageLength: 50,
@@ -115,5 +133,13 @@ $(document).ready(function () {
 
   PayPeriod.form.addEventListener('submit', (e) =>
     PayPeriod.submitForm(e, allInvoicesTable)
+  );
+
+  let filters = document.querySelectorAll('.display-filter input');
+
+  filters.forEach((f) =>
+    f.addEventListener('change', () => {
+      allInvoicesTable.draw();
+    })
   );
 });

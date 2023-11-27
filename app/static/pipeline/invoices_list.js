@@ -10,7 +10,6 @@ $(document).ready(function () {
       if (status.checked)
         selectedStatuses.push(status.value.toUpperCase());
     });
-    console.log(selectedStatuses);
     if (selectedStatuses.length > 0)
       return selectedStatuses.includes(status) ? true : false;
 
@@ -105,9 +104,13 @@ $(document).ready(function () {
         data: 'id',
         visible: false,
       },
+      {
+        data: 'person_in_charge',
+        visible: false,
+      },
     ],
     columnDefs: [
-      { targets: [0, -1, -2], orderable: false },
+      { targets: [0, -2, -3], orderable: false },
       {
         targets: [1, 2, 5],
         createdCell: function (td, cellData, rowData, row, col) {

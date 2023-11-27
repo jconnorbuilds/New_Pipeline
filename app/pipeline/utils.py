@@ -129,6 +129,7 @@ def get_invoice_data(cost, forex_rates, vendors=None):
         "vendors_dict": {vendor.id: vendor.familiar_name for vendor in vendors}
         if vendors
         else None,
+        "person_in_charge": cost.job.get_personInCharge_display(),
     }
     return response
 

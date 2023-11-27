@@ -460,7 +460,8 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
             "請求書ステータス",
             "支払予定期間",
             "",
-            # "Edit",
+            "PIC",
+            "PIC",
         ]
         context["pay_period_form"] = CostPayPeriodForm()
         return context

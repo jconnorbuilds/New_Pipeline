@@ -1,14 +1,16 @@
 import { csrftoken as CSRFTOKEN, truncate, sharedJQueryFuncs } from './common.js';
 import * as Pipeline from './pipeline_functions.js';
 import {
+  currentMonth,
+  currentYear,
+  viewingMonth,
+  viewingYear,
+} from './pipeline_functions.js';
+import {
   handleModalShow as handleDepositDateModalShow,
   addFormSubmitListener as addDepositDateFormSubmitListener,
-} from './DepositDate.js';
+} from './deposit_date.js';
 import * as PLTableFunctions from './PLTableFunctions.js';
-
-addDepositDateFormSubmitListener();
-PLTableFunctions.createFilters();
-sharedJQueryFuncs();
 
 const revenueUnitToggle = document.querySelector('#revenue-unit');
 const totalExpectedRevenueDisplay = document.querySelector(
@@ -46,11 +48,10 @@ function setExpectedRevenueDisplayText() {
 }
 
 $(document).ready(function () {
+  addDepositDateFormSubmitListener();
+  PLTableFunctions.createFilters();
+  sharedJQueryFuncs();
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page
-  let currentMonth = Pipeline.currentMonth;
-  let currentYear = Pipeline.currentYear;
-  let viewingMonth = Pipeline.viewingMonth;
-  let viewingYear = Pipeline.viewingYear;
   let depositDateModal;
 
   const table = $('#job-table').DataTable({

@@ -120,7 +120,7 @@ export const InvoiceInfo = (() => {
   };
 
   const createModalShowListener = (selectEl, selectedStatus) => {
-    modalShowListener = wrappingFunction = () => {
+    modalShowListener = () => {
       handleModalShow(selectEl, selectedStatus);
     };
     return modalShowListener;
@@ -140,7 +140,6 @@ export const InvoiceInfo = (() => {
     let result = JSON.parse(
       table.cell('#' + rowID, 'invoice_info_completed:name').node().textContent
     );
-    console.log(result);
     return result;
   };
 
@@ -156,7 +155,7 @@ export const InvoiceInfo = (() => {
     hiddenJobIDField.value = rowID;
   };
 
-  const openModal = (selectEl, initStatus, table, rowID) => {
+  const openModal = (selectEl, table, rowID) => {
     modalEl.addEventListener(
       'show.bs.modal',
       createModalShowListener(selectEl, selectEl.value)

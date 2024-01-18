@@ -61,7 +61,7 @@ const statusChangeListener = (e) => {
   });
 
   InvoiceInfo.needsToDoInvoiceForm(status, table, rowID)
-    ? InvoiceInfo.openModal(status, initialStatus, table, rowID)
+    ? InvoiceInfo.openModal(statusSelectEl, table, rowID)
     : handleStatusUpdate(status, rowID);
 };
 
@@ -113,7 +113,6 @@ const handleNewRowDraw = (table, newRowData) => {
       needsNewRow() ? drawNewRow(table, newRowData) : removeRow(table, newRowData);
     }
   } else {
-    console.log('else!');
     needsNewRow() ? drawNewRow(table, newRowData) : removeRow(table, newRowData);
   }
 };
@@ -147,8 +146,15 @@ const rowCallback = (row, data) => {
   totalExpectedRevenueAmt += parseInt(data.revenue);
 };
 
-const showSelectedStatus = (selectEl, selectedStatus) =>
-  (selectEl.value = selectedStatus);
+/**
+ *
+ * @param {HTMLElement} selectEl
+ * @param {string} selectedStatus
+ * @returns
+ */
+const showSelectedStatus = (selectEl, selectedStatus) => {
+  selectEl.value = selectedStatus;
+};
 
 const revertStatus = (table) => {
   table.ajax.reload();

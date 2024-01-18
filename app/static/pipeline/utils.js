@@ -8,9 +8,13 @@ function separateThousandsOnInput(x) {
 }
 
 // Parses a thousands-separated number from str -> int
-
-const removeCommas = (number) => {
-  return parseInt(number.toString().replaceAll(',', ''));
+/**
+ *
+ * @param {string} numStr
+ * @returns {number}
+ */
+const removeCommas = (numStr) => {
+  return parseInt(numStr.replaceAll(',', ''));
 };
 
 /**

@@ -1,9 +1,14 @@
-const unreceivedFilter = document.querySelector('input.unreceived');
-const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
-const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
-const showOutstandingPayments = document.querySelector(
-  'input.toggle-outstanding'
-);
+import { csrftoken as CSRFTOKEN, truncate, sharedJQueryFuncs } from './common.js';
+import * as Pipeline from './pipeline_functions.js';
+import {
+  handleModalShow as handleDepositDateModalShow,
+  addFormSubmitListener as addDepositDateFormSubmitListener,
+} from './DepositDate.js';
+import * as PLTableFunctions from './PLTableFunctions.js';
+
+addDepositDateFormSubmitListener();
+PLTableFunctions.createFilters();
+sharedJQueryFuncs();
 
 const revenueUnitToggle = document.querySelector('#revenue-unit');
 const totalExpectedRevenueDisplay = document.querySelector(
@@ -15,17 +20,7 @@ const currentExpectedRevenueDisplay = document.querySelector(
 const currentActualRevenueDisplayText = document.querySelector(
   '.revenue-display-text.actual'
 );
-let totalExpectedRevenueAmt = 0;
 let pipelineViewState = 'monthly';
-
-const jobStatusOrderMap = {
-  ONGOING: '0_',
-  READYTOINV: '1_',
-  INVOICED1: '3_',
-  INVOICED2: '4_',
-  FINISHED: '5_',
-  ARCHIVED: '6_',
-};
 
 revenueUnitToggle.addEventListener('click', (e) => {
   const btn = e.currentTarget;
@@ -45,7 +40,7 @@ revenueUnitToggle.addEventListener('click', (e) => {
 
 function setExpectedRevenueDisplayText() {
   currentExpectedRevenueDisplay.textContent =
-    pipelineViewState !== 'monthly' || unreceivedFilter.checked
+    pipelineViewState !== 'monthly' || PLTableFunctions.unreceivedFilter.checked
       ? '表示の案件　請求総額 (予定)'
       : '表示の月　請求総額 (予定)';
 }
@@ -58,7 +53,7 @@ $(document).ready(function () {
   let viewingYear = Pipeline.viewingYear;
   let depositDateModal;
 
-  Pipeline.table = $('#job-table').DataTable({
+  const table = $('#job-table').DataTable({
     paging: false,
     responsive: true,
     order: [
@@ -72,19 +67,14 @@ $(document).ready(function () {
       searchPlaceholder: 'ジョブを探す',
       search: '',
     },
-    preDrawCallback: (settings) => (totalExpectedRevenueAmt = 0),
+    preDrawCallback: (settings) => PLTableFunctions.setTotalExpectedRevenueAmt(0),
     drawCallback: (settings) => {
       setExpectedRevenueDisplayText();
       updateRevenueDisplay(viewingYear, viewingMonth);
-      totalExpectedRevenueDisplay.textContent = `¥${totalExpectedRevenueAmt.toLocaleString()}`;
+      totalExpectedRevenueDisplay.textContent = `¥${PLTableFunctions.getTotalExpectedRevenueAmt().toLocaleString()}`;
     },
     ajax: {
-      url:
-        '/pipeline/pipeline-data/' +
-        viewingYear +
-        '/' +
-        viewingMonth +
-        '/',
+      url: '/pipeline/pipeline-data/' + viewingYear + '/' + viewingMonth + '/',
       dataSrc: (json) => json.data,
     },
     columns: [
@@ -143,9 +133,7 @@ $(document).ready(function () {
         render: {
           display: (data) => {
             let date = new Date(data);
-            return data
-              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
-              : '---';
+            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
           },
           sort: (data) => data,
         },
@@ -202,16 +190,11 @@ $(document).ready(function () {
     ],
     rowCallback: (row, data) => PLTableFunctions.rowCallback(row, data),
     createdRow: (row, data, dataIndex) => {
-      if (data.deposit_date === null)
-        row.classList.add('payment-unreceived');
+      if (data.deposit_date === null) row.classList.add('payment-unreceived');
     },
   });
 
-  Pipeline.table.on(
-    'click',
-    'td.deposit-date',
-    DepositDate.handleModalShow()
-  );
+  table.on('click', 'td.deposit-date', handleDepositDateModalShow());
 
   let rangeCheckbox = $('#csv-export-use-range');
   rangeCheckbox.click(function () {
@@ -244,7 +227,7 @@ $(document).ready(function () {
 
   function updateRevenueDisplay(year, month) {
     $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
+      headers: { 'X-CSRFToken': CSRFTOKEN },
       type: 'GET',
       url: '/pipeline/revenue-data/' + year + '/' + month + '/',
       processData: false, // prevents jQuery from processing the data
@@ -253,27 +236,21 @@ $(document).ready(function () {
       success: function (response) {
         $('#total-revenue-ytd').text(response.total_revenue_ytd);
         $('#avg-revenue-ytd').text(response.avg_monthly_revenue_ytd);
-        $('#total-revenue-monthly-act').text(
-          response.total_revenue_monthly_actual
-        );
+        $('#total-revenue-monthly-act').text(response.total_revenue_monthly_actual);
       },
     });
   }
 
-  Pipeline.table.on(
-    'change',
-    '.job-status-select',
-    PLTableFunctions.statusChangeListener
-  );
+  table.on('change', '.job-status-select', PLTableFunctions.statusChangeListener);
 
   // if (viewingMonth == currentMonth && viewingYear == currentYear) {
-  //   Pipeline.table
+  //   table
   //     .row(`#${newRowData.id}`)
   //     .data(newRowData)
   //     .invalidate()
   //     .draw();
   // } else {
-  //   Pipeline.table.row(`#${newRowData.id}`).remove().draw();
+  //   table.row(`#${newRowData.id}`).remove().draw();
   // }
 
   // Job form submission
@@ -292,7 +269,7 @@ $(document).ready(function () {
     };
 
     $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
+      headers: { 'X-CSRFToken': CSRFTOKEN },
       type: 'POST',
       url: '/pipeline/job-add',
       data: formData,
@@ -308,7 +285,7 @@ $(document).ready(function () {
           //     $(this).show()
           // });
           var job = response.data;
-          Pipeline.table.row.add($(job)).draw();
+          table.row.add($(job)).draw();
           // #TODO: replace the below with the updateRevenueDisplay function using the new data
           // var originalVal = parseInt($("#total-billed-monthly-exp").text().replace(/(¥|,)/g, ''));
           // var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
@@ -372,13 +349,10 @@ $(document).ready(function () {
 
   var pipelineMonth = $('#pipeline-month');
   var pipelineYear = $('#pipeline-year');
-  filterEarliestYear = 2021;
-
-  yearOption = filterEarliestYear;
+  let earliestYear = 2021;
+  let yearOption = earliestYear;
   while (yearOption <= currentYear + 1) {
-    pipelineYear.append(
-      `<option value="${yearOption}">${yearOption}年</option>`
-    );
+    pipelineYear.append(`<option value="${yearOption}">${yearOption}年</option>`);
     yearOption++;
   }
 
@@ -390,8 +364,8 @@ $(document).ready(function () {
     if (year !== undefined && month !== undefined) {
       url = url + year + '/' + month + '/';
     }
-    // Pipeline.table.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
-    Pipeline.table.ajax.url(url).load();
+    // table.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
+    table.ajax.url(url).load();
   }
 
   $('.toggle-view').click(function () {
@@ -407,8 +381,7 @@ $(document).ready(function () {
       filterData(undefined, undefined);
     } else {
       pipelineViewState = 'monthly';
-      currentExpectedRevenueDisplay.textContent =
-        '表示の案件　請求総額(予定)';
+      currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
       $('#view-state').text(pipelineViewState);
       $('#pipeline-date-select .monthly-item').addClass('d-flex');
       $('.monthly-item').slideDown('fast');
@@ -443,7 +416,7 @@ $(document).ready(function () {
     viewingYear = parseInt(pipelineYear.val());
     if (viewingMonth != 1) {
       viewingMonth--;
-    } else if (viewingYear - 1 < filterEarliestYear) {
+    } else if (viewingYear - 1 < earliestYear) {
       // add some error message?
     } else {
       viewingMonth = 12;
@@ -501,7 +474,7 @@ $(document).ready(function () {
       new_client: 'new ajax client add',
     };
     $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
+      headers: { 'X-CSRFToken': CSRFTOKEN },
       type: 'POST',
       url: '/pipeline/',
       data: formData,
@@ -586,7 +559,7 @@ $(document).ready(function () {
   $('#batch-pay-csv-dl').on('submit', function (e) {
     e.preventDefault();
     $.ajax({
-      headers: { 'X-CSRFToken': csrftoken },
+      headers: { 'X-CSRFToken': CSRFTOKEN },
       type: 'POST',
       url: '/pipeline/prepare-batch-payment/',
       data: '',
@@ -607,9 +580,7 @@ $(document).ready(function () {
         const successToast = document.getElementById(
           'payment-template-success-toast'
         );
-        const errorToast = document.getElementById(
-          'payment-template-error-toast'
-        );
+        const errorToast = document.getElementById('payment-template-error-toast');
         const successToastBody = successToast.querySelector('.toast-body');
         const errorToastBody = errorToast.querySelector('.toast-body');
 
@@ -636,10 +607,8 @@ $(document).ready(function () {
                         <li>${i}: ${batchProcessError[i].message}</li>
                         `;
         }
-        const successToastBS =
-          bootstrap.Toast.getOrCreateInstance(successToast);
-        const errorToastBS =
-          bootstrap.Toast.getOrCreateInstance(errorToast);
+        const successToastBS = bootstrap.Toast.getOrCreateInstance(successToast);
+        const errorToastBS = bootstrap.Toast.getOrCreateInstance(errorToast);
         if (Object.keys(batchProcessSuccess).length > 0) {
           successToastBS.show();
         }
@@ -655,7 +624,7 @@ $(document).ready(function () {
 
   filters.forEach((f) =>
     f.addEventListener('change', () => {
-      Pipeline.table.draw();
+      table.draw();
     })
   );
 });

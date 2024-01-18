@@ -15,7 +15,7 @@
                   rel="stylesheet" />
             <script src="https://cdn.datatables.net/v/dt/dt-1.13.4/r-2.4.1/datatables.min.js"></script>
             <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
-            <script type="text/javascript" src="{% static 'pipeline/common.js' %}" defer></script>
+            {% comment %} <script type="module" src="{% static 'pipeline/common.js' %}" defer></script> {% endcomment %}
         {% endblock header %}
         <title>
             {% block title %}

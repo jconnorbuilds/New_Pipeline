@@ -1,19 +1,19 @@
-const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
+export const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
   ? document.querySelector('[name=csrfmiddlewaretoken]').value
   : null;
 
-function truncate(string, length) {
+export function truncate(string, length) {
   return string.length > 20 ? string.substr(0, length) + '...' : string;
 }
 
-$(document).ready(function () {
+export function sharedJQueryFuncs() {
   /*
    * The following variables and functions control checkbox click-and-drag selection behavior
    */
-  var $firstSelectedBox;
-  var $firstSelectedRow;
-  var duringSelection = false;
-  var mouseDown = 0;
+  let $firstSelectedBox;
+  let $firstSelectedRow;
+  let duringSelection = false;
+  let mouseDown = 0;
 
   document.body.onmousedown = function () {
     mouseDown = 1;
@@ -61,4 +61,4 @@ $(document).ready(function () {
     const costID = e.target.getAttribute('id').split('-').pop();
     Invoices.request(costID, $(this).closest('table').DataTable());
   });
-});
+}

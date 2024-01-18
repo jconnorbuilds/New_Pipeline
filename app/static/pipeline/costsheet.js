@@ -1,3 +1,9 @@
+import * as PayPeriod from './pay_period.js';
+import * as InvoiceTable from './invoices_common.js';
+import { truncate } from './common.js';
+import * as Invoices from './invoices.js';
+import { Calculator } from './currency_calculator.js';
+
 function getJobID() {
   if (typeof jobID !== 'undefined') {
     return jobID;
@@ -5,66 +11,10 @@ function getJobID() {
     return false;
   }
 }
-
-const currencyCalc = document.querySelector('#currencyCalc');
-const calcInput = document.querySelector('#calcInput');
-const calcResult = document.querySelector('#calcResult');
-const calcFrom = document.querySelector('#calcFrom');
-const calcTo = document.querySelector('#calcTo');
-var calcFromCurrency;
-var calcFromRate;
-var calcToCurrency;
-var calcToRate;
-
-const currencySelectors = currencyCalc.querySelectorAll('select');
-
-function initCurrencySelectors() {
-  var initialToCurrency = 'EUR';
-  for (currency of currencyList) {
-    var fromOption = document.createElement('option');
-    fromOption.value = currency[0];
-    fromOption.innerHTML = currency[1];
-
-    var toOption = fromOption.cloneNode(true);
-    if (toOption.value === initialToCurrency) {
-      toOption.setAttribute('selected', 'selected');
-    }
-    currencyCalc.querySelector('#calcFrom').appendChild(fromOption);
-    currencyCalc.querySelector('#calcTo').appendChild(toOption);
-  }
-
-  calcFromCurrency = calcFrom.value;
-  calcToCurrency = calcTo.value;
-
-  calcFromRate = forexRates[calcFromCurrency];
-  calcToRate = forexRates[calcToCurrency];
-}
-
-function separateThousands(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-initCurrencySelectors();
-
-calcInput.addEventListener('input', function () {
-  var result = (calcInput.value * (calcFromRate / calcToRate)).toFixed(2);
-  calcResult.value = separateThousands(result);
-});
-
-for (let i = 0; i < currencySelectors.length; i++) {
-  currencySelectors[i].addEventListener('change', function () {
-    calcFromCurrency = calcFrom.value;
-    calcToCurrency = calcTo.value;
-    calcFromRate = forexRates[calcFromCurrency];
-    calcToRate = forexRates[calcToCurrency];
-    var result = (calcInput.value * (calcFromRate / calcToRate)).toFixed(
-      2
-    );
-    calcResult.value = separateThousands(result);
-  });
-}
+const currencyList = currencies; // currencies is declared globally in html template
 
 $(document).ready(function () {
+  Calculator.setup(currencyList);
   const costTable = $('#cost-table').DataTable({
     paging: false,
     responsive: true,
@@ -87,8 +37,7 @@ $(document).ready(function () {
         data: 'amount',
         responsivePriority: 1,
         render: {
-          display: (data, type, row) =>
-            InvoiceTable.renderAmount(data, row),
+          display: (data, type, row) => InvoiceTable.renderAmount(data, row),
           sort: (data) => data,
         },
       },
@@ -110,8 +59,7 @@ $(document).ready(function () {
         className: 'p-0',
         width: '210px',
         render: {
-          display: (data, type, row) =>
-            InvoiceTable.renderInvoiceStatus(data, row),
+          display: (data, type, row) => InvoiceTable.renderInvoiceStatus(data, row),
           sort: (data) => data,
         },
       },
@@ -174,13 +122,9 @@ $(document).ready(function () {
     rowCallback: (row, data) => InvoiceTable.rowCallback(row, data),
   });
 
-  costTable.on(
-    'change',
-    '.cost-vendor-select, .cost-status-select',
-    function () {
-      return Invoices.drawNewRow(this, costTable);
-    }
-  );
+  costTable.on('change', '.cost-vendor-select, .cost-status-select', function () {
+    return Invoices.drawNewRow(this, costTable);
+  });
 
   PayPeriod.form.addEventListener('submit', (e) =>
     PayPeriod.submitForm(e, costTable)

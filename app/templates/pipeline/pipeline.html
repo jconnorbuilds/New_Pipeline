@@ -4,12 +4,10 @@
 {% load static %}
 {% block header %}
     {{ block.super }}
-    <script type="text/javascript"
+    <script type="module"
             src="{% static 'pipeline/pipeline_functions.js' %}"
             defer></script>
-    <script type="text/javascript"
-            src="{% static 'pipeline/pipeline.js' %}"
-            defer></script>
+    <script type="module" src="{% static 'pipeline/pipeline.js' %}" defer></script>
 {% endblock header %}
 {% block body_block %}
     {% if job_form.errors %}

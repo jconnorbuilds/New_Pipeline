@@ -5,12 +5,7 @@
 {% block header %}
     {{ block.super }}
     <style type="text/css">a{ text-decoration: none; }</style>
-    <script type="text/javascript"
-            src="{% static 'pipeline/invoices_common.js' %}"
-            defer></script>
-    <script type="text/javascript"
-            src="{% static 'pipeline/invoices_list.js' %}"
-            defer></script>
+    <script type="module" src="{% static 'pipeline/invoices_list.js' %}" defer></script>
 {% endblock header %}
 {% block title %}
     All Invoices

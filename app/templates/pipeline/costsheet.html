@@ -6,12 +6,7 @@
 {% block header %}
     {{ block.super }}
     <style type="text/css">a { text-decoration: none; }</style>
-    <script type="text/javascript"
-            src="{% static 'pipeline/costsheet.js' %}"
-            defer></script>
-    <script type="text/javascript"
-            src="{% static 'pipeline/invoices_common.js' %}"
-            defer></script>
+    <script type="module" src="{% static 'pipeline/costsheet.js' %}" defer></script>
 {% endblock header %}
 {% block title %}
     Cost Sheet
@@ -79,7 +74,7 @@
                             <div class="input-group mb-0">
                                 <select class="form-select calc-select col-auto border-bottom-0"
                                         id="calcFrom"></select>
-                                <input type="number"
+                                <input type="text"
                                        class="form-control text-end font-monospace border-bottom-0"
                                        id="calcInput"
                                        placeholder="0">
@@ -176,7 +171,7 @@
 var jobID = {{ currentJob.id }};
 {% endlocalize %}
 
-var currencyList = JSON.parse('{{ currencyList|escapejs }}');
+var currencies = JSON.parse('{{ currencyList|escapejs }}');
 var forexRates = JSON.parse('{{ forexRates|escapejs }}');
 
 </script>

@@ -1,0 +1,26 @@
+{
+  "name": "npt",
+  "version": "1.0.0",
+  "description": "Simple project management and invoice tracking",
+  "private": true,
+  "scripts": {
+    "test": "echo \"tEsTiNg TeStInG\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jconnorbuilds/New_Pipeline.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jconnorbuilds/New_Pipeline/issues"
+  },
+  "homepage": "https://github.com/jconnorbuilds/New_Pipeline#readme",
+  "devDependencies": {
+    "datatables.net-bs5": "^1.13.8",
+    "datatables.net-responsive-bs5": "^2.5.0",
+    "jquery": "^3.7.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

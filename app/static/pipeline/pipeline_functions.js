@@ -1,3 +1,6 @@
+import './jquery-global.js';
+// import DataTable from '../../app/node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js';
+// import '../../app/node_modules/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js';
 import * as PLTableFunctions from './PLTableFunctions.js';
 import { csrftoken as CSRFTOKEN } from './common.js';
 
@@ -7,7 +10,9 @@ let currentYear = date.getFullYear();
 let viewingMonth = currentMonth;
 let viewingYear = currentYear;
 
-const newClientBtn = document.querySelector('#pipeline-new-client-btn');
+const newClientBtn = /** @type {!HTMLElement}*/ (
+  document.querySelector('#pipeline-new-client-btn')
+);
 newClientBtn.addEventListener('click', () => InvoiceInfo.setOpenModal(false));
 
 const ajaxCall = (formData, url, successCallback, handleError, modal, table) => {
@@ -19,7 +24,7 @@ const ajaxCall = (formData, url, successCallback, handleError, modal, table) => 
     dataType: 'json',
     success: (response) => {
       response.status === 'success'
-        ? successCallback(modal, table, (newRowData = response.data))
+        ? successCallback(modal, table, response.data)
         : console.error('Something happend - maybe the form received bad data.');
     },
     error: () => {
@@ -54,7 +59,9 @@ export const NewClientForm = (() => {
 
 export const InvoiceInfo = (() => {
   let modalWillOpen = false;
-  const modalEl = document.querySelector('#set-job-invoice-info');
+  const modalEl = /** @type {!HTMLElement} */ (
+    document.querySelector('#set-job-invoice-info')
+  );
   const modal = new bootstrap.Modal(modalEl);
   const form = modalEl.querySelector('#invoice-info-form');
   let modalShowListener;
@@ -68,12 +75,25 @@ export const InvoiceInfo = (() => {
     return modalWillOpen;
   };
 
+  /**
+   * @param {HTMLElement} selectEl
+   */
   function getFormData(selectEl) {
-    const recipientField = document.querySelector('#id_inv-invoice_recipient');
-    const nameField = document.querySelector('#id_inv-invoice_name');
-    const jobIDField = document.querySelector('#id_inv-job_id');
-    const yearField = document.querySelector('#id_inv-invoice_year');
-    const monthField = document.querySelector('#id_inv-invoice_month');
+    const recipientField = /** @type {!HTMLInputElement} */ (
+      document.querySelector('#id_inv-invoice_recipient')
+    );
+    const nameField = /** @type {!HTMLInputElement} */ (
+      document.querySelector('#id_inv-invoice_name')
+    );
+    const jobIDField = /** @type {!HTMLInputElement} */ (
+      document.querySelector('#id_inv-job_id')
+    );
+    const yearField = /** @type {!HTMLInputElement} */ (
+      document.querySelector('#id_inv-invoice_year')
+    );
+    const monthField = /** @type {!HTMLInputElement} */ (
+      document.querySelector('#id_inv-invoice_month')
+    );
 
     let formData = {};
     formData['inv-invoice_recipient'] = recipientField.value;
@@ -92,7 +112,7 @@ export const InvoiceInfo = (() => {
     e.preventDefault();
 
     let { jobIDField, formData } = getFormData(selectEl);
-    const table = $(selectEl.closest('table')).DataTable();
+    const table = new DataTable($(selectEl.closest('table')));
 
     $.ajax({
       headers: { 'X-CSRFToken': CSRFTOKEN },

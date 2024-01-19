@@ -1,11 +1,16 @@
+import './pipeline_functions.js';
+// import DataTable from '../../app/node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js';
+// import '../../app/node_modules/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js';
+import DataTable from 'datatables.net-bs5';
+
 import { csrftoken as CSRFTOKEN, truncate, sharedJQueryFuncs } from './common.js';
-import * as Pipeline from './pipeline_functions.js';
 import {
   currentMonth,
   currentYear,
   viewingMonth,
   viewingYear,
 } from './pipeline_functions.js';
+
 import {
   handleModalShow as handleDepositDateModalShow,
   addFormSubmitListener as addDepositDateFormSubmitListener,
@@ -25,17 +30,21 @@ const currentActualRevenueDisplayText = document.querySelector(
 let pipelineViewState = 'monthly';
 
 revenueUnitToggle.addEventListener('click', (e) => {
-  const btn = e.currentTarget;
-  const unitToggleInput = document.querySelector('#id_granular_revenue');
-  const revenueInput = document.querySelector('#id_revenue');
+  const btn = /** @type {!HTMLInputElement} */ (e.currentTarget);
+  const unitToggleInput = /** @type {!HTMLInputElement} */ (
+    document.querySelector('#id_granular_revenue')
+  );
+  const revenueInput = /** @type {!HTMLInputElement} */ (
+    document.querySelector('#id_revenue')
+  );
 
   if (btn.classList.contains('active')) {
     btn.textContent = '円';
-    unitToggleInput.value = true;
+    unitToggleInput.value = 'true';
     revenueInput.setAttribute('placeholder', '例）420069');
   } else {
     btn.textContent = '万円';
-    unitToggleInput.value = false;
+    unitToggleInput.value = 'false';
     revenueInput.setAttribute('placeholder', '例）100');
   }
 });
@@ -54,7 +63,7 @@ $(document).ready(function () {
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page
   let depositDateModal;
 
-  const table = $('#job-table').DataTable({
+  const table = new DataTable({
     paging: false,
     responsive: true,
     order: [
@@ -191,7 +200,7 @@ $(document).ready(function () {
     ],
     rowCallback: (row, data) => PLTableFunctions.rowCallback(row, data),
     createdRow: (row, data, dataIndex) => {
-      if (data.deposit_date === null) row.classList.add('payment-unreceived');
+      if (!data.deposit_date) row.classList.add('payment-unreceived');
     },
   });
 

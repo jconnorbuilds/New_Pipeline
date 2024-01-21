@@ -19,22 +19,26 @@ const handleModalHide = (modalEl, callback) => {
 const handleModalShow = (selectEl) => showSelectedStatus(selectEl, selectEl.value);
 
 const createModalShowListener = (selectEl) => {
-  modalShowListener = () => handleModalShow(selectEl, selectEl.value);
+  modalShowListener = () => handleModalShow(selectEl);
   return modalShowListener;
 };
 
-const createModalHideListener = (callback) => {
-  modalHideListener = () => handleModalHide(callback);
+const createModalHideListener = (modalEl, callback) => {
+  modalHideListener = () => handleModalHide(modalEl, callback);
   return modalHideListener;
 };
 
 export const openModal = (modal) => {
   const modalEl = modal._element;
+  console.log(getSelectedEl());
+  // modalEl.addEventListener(
+  //   'show.bs.modal',
+  //   createModalShowListener(getSelectedEl())
+  // );
   modalEl.addEventListener(
-    'show.bs.modal',
-    createModalShowListener(getSelectedEl())
+    'hide.bs.modal',
+    createModalHideListener(modalEl, () => true)
   );
-  modalEl.addEventListener('hide.bs.modal', createModalHideListener());
 
   setOpenModal(true);
   setInitialInfo();

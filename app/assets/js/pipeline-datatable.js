@@ -6,6 +6,8 @@ import {
   setExpectedRevenueDisplayText,
   updateRevenueDisplay,
   refreshRevenueDisplay,
+  setSelectedEl,
+  getSelectedEl,
 } from './pipeline-ui-funcs.js';
 import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
 import { truncate } from './common.js';
@@ -166,6 +168,10 @@ export function initTable() {
   tableEl.addEventListener('click', (e) =>
     PipelineDT.setCurrentRowID(e.target.closest('tr').getAttribute('id'))
   );
+  tableEl.addEventListener('input', (e) => {
+    setSelectedEl(e.target.closest('select'));
+    console.log(`The selected element: ${getSelectedEl()}`);
+  });
   return table;
 }
 

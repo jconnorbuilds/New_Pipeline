@@ -1,6 +1,5 @@
 import { getTotalExpectedRevenueAmt, unreceivedFilter } from './PLTableFunctions.js';
 import { getViewType } from './pipeline-state.js';
-import { viewingYear, viewingMonth } from './pipeline_functions.js';
 import { csrftoken as CSRFTOKEN } from './common.js';
 import * as State from './pipeline-state.js';
 

@@ -11,10 +11,8 @@ const modal = (selector) => {
     openModal(modal);
   };
 
-  const isRequired = (selectedStatus) => {
-    const requiredStatuses = ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'];
-    return requiredStatuses.includes(selectedStatus);
-  };
+  const isRequired = (selectedStatus) =>
+    ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'].includes(selectedStatus);
 
   const isCompleted = (datatable, rowID) => {
     let result = JSON.parse(

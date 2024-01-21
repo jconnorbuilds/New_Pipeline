@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<head><script defer src="../../static/main-pipeline-bundle.js"></script></head><!DOCTYPE html>
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
 {% load static %}
 {% block header %}
     {{ block.super }}
     {% comment %} <script type="module" src="{% static 'pipeline/pipeline_functions.js' %}" defer></script> {% endcomment %}
-    <script src="main.js"></script>
+    <script src="{% static 'main-pipeline-bundle.js' %}" defer></script>
 {% endblock header %}
 {% block body_block %}
     {% if job_form.errors %}

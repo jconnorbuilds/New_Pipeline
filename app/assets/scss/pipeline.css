@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono&family=Chivo:wght@200;400;700&display=swap');
+
+:root {
+  --bs-body-font-family: 'Chivo', 'Roboto', 'sans-serif';
+}
+
+html,
+body {
+  height: 100vh;
+  /* font-weight: var(--fw-regular); */
+}
+
+strong {
+  font-weight: var(--fw-bold);
+}
+
+.edit-del-btn-group {
+  color: inherit;
+}
+
+td a {
+  text-decoration: none;
+  color: inherit;
+}
+
+tr:hover a {
+  text-decoration: underline;
+  color:#0d6efd;
+}
+
+tr:hover a:hover {
+  text-decoration: underline;
+  color: #0da5fd;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.single-invoice-request-btn {
+  white-space: nowrap;
+}
+
+.dropzone .dz-preview .dz-progress {
+ top: 70% !important;
+ background: rgba(255,255,255,25%) !important;
+}
+
+.dropzone .dz-preview .dz-error-message {
+  top: 150px !important;
+}
+
+/* tbody tr.job-finished { 
+  background-color: rgba(0, 176, 21, 0.126) !important;
+} */
+
+tbody tr.job-invoiced .job-label {
+  font-style: italic !important; 
+  font-weight: 200 !important;
+}
+
+tbody tr.job-ongoing { 
+  background-color: var(--bs-gray-200) !important;
+  background-color: rgba(218, 213, 255, 0.267) !important;
+}
+
+.all-invoices-requested {
+  background-color: rgba(226, 244, 62, 0.35) !important;
+}
+
+.selected-row {
+  background-color: rgba(81, 208, 255, 0.2) !important;
+}
+
+.indent {
+  display: inline-block;
+  margin-left: 4ch;
+}
+
+.display-filter > div {
+  display: inline-block;
+  margin: 10px 20px 0;
+}
+
+.job-details-w400 {
+  width: 400px;
+}
+
+.job-details-w300 {
+  width: 300px;
+}
+
+.job-details-w600 {
+  width: 600px;
+}
+
+.job-details-item {
+  width: 60%;
+}
+
+.job-details-item-sm {
+  width: 40%;
+}
+
+.job-details-desc {
+  text-align: right;
+  width: 60%;
+  margin-bottom: 0px;
+}
+
+.job-details-desc-sm {
+  text-align: right;
+  width: 40%;
+  margin-bottom: 0px;
+}
+
+.job-details-amount {
+  font-family: 'Chivo Mono', monospace;
+  text-align: right;
+  margin-bottom: 0px;
+  font-size: .95em;
+  width: 40%;
+}
+
+.revenue-display-text {
+  font-size: 1em;
+  width: 70%;
+
+
+}
+
+.revenue-display-amount {
+  width: 30%;
+  text-align: right;
+  margin-bottom: 0px;
+  font-size: 1em;
+  font-family: 'Chivo Mono', monospace;
+}
+
+.font-monospace {
+  font-family: 'Chivo Mono', monospace !important;
+}
+
+td .inv-req-btn li {
+  cursor: pointer;
+}

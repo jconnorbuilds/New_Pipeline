@@ -28,4 +28,29 @@ const removeCommas = (numStr) => {
 const getFXRates = (srcCurrency, trgtCurrency) => {
   return [forexRates[srcCurrency], forexRates[trgtCurrency]];
 };
-export { separateThousands, separateThousandsOnInput, removeCommas, getFXRates };
+
+const theDate = () => new Date();
+
+const currentDate = () => {
+  const date = theDate();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  return [year, month];
+};
+
+const thisYear = () => theDate().getFullYear();
+const thisMonth = () => theDate().getMonth() + 1;
+
+const dates = {
+  currentDate,
+  thisYear,
+  thisMonth,
+};
+
+export {
+  separateThousands,
+  separateThousandsOnInput,
+  removeCommas,
+  getFXRates,
+  dates,
+};

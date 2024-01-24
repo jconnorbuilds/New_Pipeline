@@ -1,45 +1,48 @@
-import { handleSuccessResponse, handleErrorResponse } from './PLTableFunctions.js';
+import { updateTable, handleAjaxError } from './pipeline-dt-funcs.js';
 import * as bootstrap from 'bootstrap';
 import { setInitialInfo } from './invoice_info_modal.js';
-import { getRowID } from './pipeline-datatable.js';
+import { PipelineDT, getRowID } from './pipeline-dt.js';
+import { csrftoken as CSRFTOKEN } from './common.js';
 
 const form = document.querySelector('#deposit-date-form');
 const modalEl = document.querySelector('#set-deposit-date');
 const modal = new bootstrap.Modal(modalEl);
 
 /** @type {number} */
-let currentRowID;
+let rowID;
 
 const handleModalShow = () => (e) => {
-  let rowID = getRowID(e);
-  currentRowID = rowID;
-  let row = Pipeline.table.row(`#${rowID}`).node();
-  jobStatus = row.querySelector('.job-status-select').value;
+  rowID = PipelineDT.getCurrentRowID(e);
+  const row = PipelineDT.getTable().row(`#${rowID}`).node();
+  console.log(row);
+  const jobStatus = row.querySelector('.job-status-select').value;
+  console.log(jobStatus);
   if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(jobStatus)) {
     modal.show();
   }
 };
 
-function addFormSubmitListener() {
+const addFormSubmitListener = () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     let depositDateData = {};
     depositDateData['deposit_date'] = $('#id_deposit_date').val();
-    depositDateData['job_id'] = currentRowID;
-    let url = `/pipeline/set-deposit-date/${currentRowID}/`;
-
-    $('#deposit-date-form')[0].reset();
-
+    depositDateData['job_id'] = rowID;
     $.ajax({
       headers: { 'X-CSRFToken': CSRFTOKEN },
       type: 'post',
-      url: url,
+      url: `/pipeline/set-deposit-date/${rowID}/`,
       data: depositDateData,
       dataType: 'json',
-      success: handleSuccessResponse(),
-      error: handleErrorResponse(),
+      success: (response) => {
+        console.log('success?');
+        updateTable(PipelineDT.getTable())(response);
+        form.reset();
+        modal.hide();
+      },
+      error: (response) => handleAjaxError(PipelineDT.getTable())(response),
     });
   });
-}
+};
 
 export { handleModalShow, addFormSubmitListener };

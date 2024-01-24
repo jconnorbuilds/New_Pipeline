@@ -54,11 +54,11 @@ const renderAmountJPY = (data) => '¥' + data.toLocaleString();
 
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.invoice_status_choices;
-  let selectEl = document.createElement('select');
+  const selectEl = document.createElement('select');
   selectEl.classList.add('form-control-plaintext', 'cost-status-select', 'p-0');
   selectEl.setAttribute('name', 'invoice_status');
   for (const [_, status] of Object.entries(STATUSES)) {
-    let optionEl = document.createElement('option');
+    const optionEl = document.createElement('option');
     optionEl.value = status[0];
     optionEl.text = status[1];
     if (status[0] === data) optionEl.setAttribute('selected', '');

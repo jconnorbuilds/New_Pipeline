@@ -1,34 +1,37 @@
-import * as PLTableFunctions from './PLTableFunctions.js';
-import { createModal, form } from './modals-ui.js';
+import * as PLTableFunctions from './pipeline-dt-funcs.js';
+import { createModal } from './modals-ui.js';
 import { openModal } from './modals-ui.js';
-import { PipelineDT } from './pipeline-datatable.js';
+import { PipelineDT } from './pipeline-dt.js';
+import { csrftoken as CSRFTOKEN } from './common.js';
 
 export let modalWillOpen = false;
 
+const form = document.querySelector('#invoice-info-form');
+const formSubmitListener = () =>
+  form.addEventListener('submit', (e) =>
+    submitForm(PLTableFunctions.getLastChangedSelectEl())(e)
+  );
+
 const modal = (selector) => {
-  const [modal, el] = createModal(selector);
+  const [modal, el] = createModal(selector, [formSubmitListener]);
   const open = () => {
     openModal(modal);
   };
+  const hide = () => modal.hide();
 
   const isRequired = (selectedStatus) =>
     ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'].includes(selectedStatus);
 
-  const isCompleted = (datatable, rowID) => {
-    let result = JSON.parse(
+  const isCompleted = (datatable, rowID) =>
+    JSON.parse(
       datatable.cell('#' + rowID, 'invoice_info_completed:name').node().textContent
     );
-    return result;
-  };
 
-  const formRequiresCompletion = (selectedStatus) => {
-    return (
-      isRequired(selectedStatus) &&
-      !isCompleted(PipelineDT.getTable(), PipelineDT.getCurrentRowID())
-    );
-  };
+  const formRequiresCompletion = (selectedStatus) =>
+    isRequired(selectedStatus) &&
+    !isCompleted(PipelineDT.getTable(), PipelineDT.getCurrentRowID());
 
-  return { el, modal, open, formRequiresCompletion };
+  return { el, modal, open, hide, formRequiresCompletion };
 };
 
 export const InvoiceInfoModal = modal('#set-job-invoice-info');
@@ -76,12 +79,12 @@ export const submitForm = (selectEl) => (e) => {
     url: `/pipeline/set-client-invoice-info/${jobIDField.value}/`,
     data: formData,
     dataType: 'json',
-    success: (response) => {
-      modal.hide();
-      Pipeline.table.ajax.reload();
+    success: () => {
+      InvoiceInfoModal.hide();
+      PipelineDT.getTable().ajax.reload();
       form.reset();
     },
-    error: PLTableFunctions.handleErrorResponse(table),
+    error: PLTableFunctions.handleAjaxError(PipelineDT.getTable()),
   });
 };
 

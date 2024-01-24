@@ -1,5 +1,5 @@
 import { csrftoken as CSRFTOKEN } from './common.js';
-import { drawNewRow } from './pipeline-ui-funcs.js';
+import { drawNewRow } from './pipeline.js';
 const request = (costID, table, costPayPeriod = 'next') => {
   // requests the client invoice
   $.ajax({

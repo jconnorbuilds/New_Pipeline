@@ -1,12 +1,11 @@
 import { setInitialInfo } from './invoice_info_modal.js';
 import { setOpenModal } from './invoice_info_modal.js';
-import { showSelectedStatus } from './PLTableFunctions.js';
+import { showSelectedStatus } from './pipeline-dt-funcs.js';
 import * as bootstrap from 'bootstrap';
-import { getSelectedEl } from './pipeline-ui-funcs.js';
-import { PipelineDT } from './pipeline-datatable.js';
+import { getSelectedEl } from './pipeline.js';
+import { PipelineDT } from './pipeline-dt.js';
 import { InvoiceInfoModal } from './invoice_info_modal.js';
 
-export const form = document.querySelector('#invoice-info-form');
 let modalShowListener;
 let modalHideListener;
 
@@ -45,16 +44,15 @@ export const openModal = (modal) => {
   modal.show();
 };
 
-form.addEventListener('submit', (e) => {
-  submitForm(PLTableFunctions.getLastChangedSelectEl())(e);
-});
-
-export function createModal(selector) {
+export function createModal(selector, eventListenerCallbackFns) {
   const modalEl = document.querySelector(selector);
   const modal = new bootstrap.Modal(modalEl);
   console.assert(
     modalEl,
     `No elements with selector "${selector}". Check for typos? `
   );
+
+  eventListenerCallbackFns.forEach((fn) => fn());
+
   return [modal, modalEl];
 }

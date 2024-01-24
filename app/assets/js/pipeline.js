@@ -1,31 +1,29 @@
 'use strict';
-
-import './pipeline_functions.js';
-import $ from 'jquery';
-// export for others scripts to use
-window.$ = $;
 import '../../assets/scss/styles.scss';
 import '../../assets/scss/pipeline.css';
+import * as plDataFunks from './pipeline_funcs.js';
+import $ from 'jquery';
+window.$ = $;
+
+import * as State from './pipeline-state.js';
+import { dates } from './utils.js';
+import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
 import * as bootstrap from 'bootstrap';
-
 import { csrftoken as CSRFTOKEN, sharedJQueryFuncs } from './common.js';
+import { initCSVExporter } from './csv-export.js';
+import { addFormSubmitListener as addDepositDateFormSubmitListener } from './deposit_date.js';
+import * as PLTableFunctions from './pipeline-dt-funcs.js';
 import {
-  currentMonth,
-  currentYear,
-  viewingMonth,
-  viewingYear,
-} from './pipeline_functions.js';
+  getTotalExpectedRevenueAmt,
+  unreceivedFilter,
+} from './pipeline-dt-funcs.js';
+import { PipelineDT } from './pipeline-dt.js';
 
-import {
-  handleModalShow as handleDepositDateModalShow,
-  addFormSubmitListener as addDepositDateFormSubmitListener,
-} from './deposit_date.js';
-import * as PLTableFunctions from './PLTableFunctions.js';
-import { initTable } from './pipeline-datatable.js';
-import { getViewType, setViewType } from './pipeline-state.js';
-
+console.log('pipeline js was run');
 const revenueUnitToggle = document.querySelector('#revenue-unit');
 revenueUnitToggle.addEventListener('click', (e) => {
+  // Set data
+  // Set UI
   const btn = /** @type {!HTMLInputElement} */ (e.currentTarget);
   const unitToggleInput = /** @type {!HTMLInputElement} */ (
     document.querySelector('#id_granular_revenue')
@@ -45,53 +43,87 @@ revenueUnitToggle.addEventListener('click', (e) => {
   }
 });
 
+let [currentYear, currentMonth] = dates.currentDate();
+let currentlySelectedEl;
+export const getSelectedEl = () => currentlySelectedEl;
+export const setSelectedEl = (el) => (currentlySelectedEl = el);
+
+export const totalExpectedRevenueDisplay = document.querySelector(
+  '#total-revenue-monthly-exp'
+);
+export const currentExpectedRevenueDisplay = document.querySelector(
+  '.revenue-display-text.expected'
+);
+export const currentActualRevenueDisplayText = document.querySelector(
+  '.revenue-display-text.actual'
+);
+
+export const drawNewRow = (datatable, newRowData) =>
+  datatable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false);
+
+export const removeRow = (datatable, newRowData) =>
+  datatable.row(`#${newRowData.id}`).remove().draw();
+
+export function refreshRevenueDisplay() {
+  setExpectedRevenueDisplayText();
+  updateRevenueDisplay(...State.getViewDate());
+  totalExpectedRevenueDisplay.textContent = `¥${getTotalExpectedRevenueAmt().toLocaleString()}`;
+}
+
+export function setExpectedRevenueDisplayText() {
+  currentExpectedRevenueDisplay.textContent =
+    State.getViewType() !== 'monthly' || unreceivedFilter.checked
+      ? '表示の案件　請求総額 (予定)'
+      : '表示の月　請求総額 (予定)';
+}
+
+export function createNewEl(tag, clsList, attrDict, textContent) {
+  let newEl = document.createElement(tag);
+
+  clsList.forEach((cls) => newEl.classList.add(cls));
+  Object.entries(attrDict).forEach(([attrName, attrVal]) => {
+    newEl.setAttribute(attrName, attrVal);
+  });
+  newEl.textContent = textContent;
+
+  return newEl;
+}
+
+export function updateRevenueDisplay(year, month) {
+  $.ajax({
+    headers: { 'X-CSRFToken': CSRFTOKEN },
+    type: 'GET',
+    url: '/pipeline/revenue-data/' + year + '/' + month + '/',
+    processData: false, // prevents jQuery from processing the data
+    contentType: false, // prevents jQuery from setting the Content-Type header
+
+    success: function (response) {
+      $('#total-revenue-ytd').text(response.total_revenue_ytd);
+      $('#avg-revenue-ytd').text(response.avg_monthly_revenue_ytd);
+      $('#total-revenue-monthly-act').text(response.total_revenue_monthly_actual);
+    },
+  });
+}
+
+let table = PipelineDT.getTable();
 $(document).ready(function () {
+  $(table).DataTable();
+
   addDepositDateFormSubmitListener();
   PLTableFunctions.createFilters();
   sharedJQueryFuncs();
-  initTable();
 
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page
   let depositDateModal;
 
-  let rangeCheckbox = $('#csv-export-use-range');
-  rangeCheckbox.click(function () {
-    if (rangeCheckbox.is(':checked')) {
-      $('#thru-month').removeClass('invisible');
-      $('#thru-year').removeClass('invisible');
-    } else {
-      $('#thru-month').addClass('invisible');
-      $('#thru-year').addClass('invisible');
-      $('#thru-month').val($('#from-month').val()).change();
-      $('#thru-year').val($('#from-year').val()).change();
-    }
-  });
-  $('#from-month').change(function () {
-    if (rangeCheckbox.is(':not(:checked)')) {
-      $('#thru-month').val($('#from-month').val()).change();
-    }
-  });
-  $('#from-year').change(function () {
-    if (rangeCheckbox.is(':not(:checked)')) {
-      $('#thru-year').val($('#from-year').val()).change();
-    }
-  });
+  initCSVExporter();
+
   $('.update-cost-table').click(function () {
-    var forms = document.getElementsByTagName('form');
-    for (var i = 0; i < forms.length; i++) {
+    const forms = document.getElementsByTagName('form');
+    for (const i = 0; i < forms.length; i++) {
       forms[i].submit();
     }
   });
-
-  // if (viewingMonth == currentMonth && viewingYear == currentYear) {
-  //   table
-  //     .row(`#${newRowData.id}`)
-  //     .data(newRowData)
-  //     .invalidate()
-  //     .draw();
-  // } else {
-  //   table.row(`#${newRowData.id}`).remove().draw();
-  // }
 
   // Job form submission
   $('#job-form').submit(function (event) {
@@ -131,7 +163,6 @@ $(document).ready(function () {
           // var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
           // var resultVal = '¥' + (originalVal + newVal).toLocaleString();
           // $("#total-billed-monthly-exp").text(resultVal)
-
           var toast = document.createElement('div');
           toast.classList.add(
             'toast',
@@ -187,17 +218,18 @@ $(document).ready(function () {
     });
   });
 
-  var pipelineMonth = $('#pipeline-month');
-  var pipelineYear = $('#pipeline-year');
-  let earliestYear = 2021;
-  let yearOption = earliestYear;
-  while (yearOption <= currentYear + 1) {
-    pipelineYear.append(`<option value="${yearOption}">${yearOption}年</option>`);
-    yearOption++;
-  }
+  // var pipelineMonthOld = $('#pipeline-month');
+  // var pipelineYeaOld = $('#pipeline-year');
+  const pipelineMonth = document.querySelector('#pipeline-month');
+  const pipelineYear = document.querySelector('#pipeline-year');
+  let { currentMonth, currentYear } = dates.currentDate();
+  pipelineMonth.value = currentMonth;
+  pipelineYear.value = currentYear;
 
-  pipelineMonth.val(currentMonth);
-  pipelineYear.val(currentYear);
+  for (let year = 2021; year <= currentYear + 1; year++)
+    pipelineYear.appendChild(
+      createNewEl('option', [], { value: year }, `${year}年`)
+    );
 
   function filterData(year, month) {
     var url = '/pipeline/pipeline-data/';
@@ -209,10 +241,9 @@ $(document).ready(function () {
   }
 
   $('.toggle-view').click(function () {
-    console.log({ viewingMonth }, { currentMonth });
-    if (getViewType() === 'monthly') {
-      setViewType('all');
-      $('#view-state').text(getViewType());
+    if (State.getViewType() === 'monthly') {
+      State.setViewType('all');
+      $('#view-state').text(State.getViewType());
       $('.monthly-item').slideUp('fast', function () {
         $('#pipeline-date-select .monthly-item').removeClass('d-flex');
       });
@@ -220,53 +251,57 @@ $(document).ready(function () {
       $('.toggle-view').html('<b>月別で表示</b>');
       filterData(undefined, undefined);
     } else {
-      setViewType('monthly');
+      State.setViewType('monthly');
       currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
-      $('#view-state').text(getViewType());
+      $('#view-state').text(State.getViewType());
       $('#pipeline-date-select .monthly-item').addClass('d-flex');
       $('.monthly-item').slideDown('fast');
       $('.toggle-view').html('<b>全案件を表示</b>');
-      filterData(pipelineYear.val(), pipelineMonth.val());
+      filterData(pipelineYear.value, pipelineMonth.value);
     }
     setExpectedRevenueDisplayText();
   });
 
   $('#pipeline-month, #pipeline-year').change(function () {
-    filterData(pipelineYear.val(), pipelineMonth.val());
+    filterData(pipelineYear.value, pipelineMonth.value);
   });
 
-  $('#pipeline-next').click(function () {
-    viewingMonth = parseInt(pipelineMonth.val());
-    viewingYear = parseInt(pipelineYear.val());
-    if (viewingMonth != 12) {
-      viewingMonth++;
-    } else if (viewingYear + 1 > currentYear + 1) {
-      // add some error message?
+  const plNextMonthBtn = document.querySelector('#pipeline-next');
+  const plPrevMonthBtn = document.querySelector('#pipeline-prev');
+
+  plNextMonthBtn.addEventListener('click', () => {
+    // set UI
+    setViewMonth(parseInt(pipelineMonth.value));
+    setViewYear(parseInt(pipelineYear.value));
+    let { viewYear, viewMonth } = State.getViewDate();
+    if (viewMonth != 12) {
+      viewMonth++;
     } else {
-      viewingMonth = 1;
-      viewingYear++;
+      viewMonth = 1;
+      viewYear++;
     }
-    pipelineMonth.val(viewingMonth);
-    pipelineYear.val(viewingYear);
-    filterData(viewingYear, viewingMonth);
+    pipelineMonth.value = viewingMonth;
+    pipelineYear.value = viewingYear;
+
+    // set Data
+    filterData(viewYear, viewMonth);
   });
 
-  $('#pipeline-prev').click(function () {
-    viewingMonth = parseInt(pipelineMonth.val());
-    viewingYear = parseInt(pipelineYear.val());
-    if (viewingMonth != 1) {
-      viewingMonth--;
-    } else if (viewingYear - 1 < earliestYear) {
-      // add some error message?
-    } else {
-      viewingMonth = 12;
-      viewingYear--;
-    }
-    pipelineMonth.val(viewingMonth);
-    pipelineYear.val(viewingYear);
-    filterData(viewingYear, viewingMonth);
-  });
-
+  // $('#pipeline-prev').click(function () {
+  //   viewingMonth = parseInt(pipelineMonth.value);
+  //   viewingYear = parseInt(pipelineYear.value);
+  //   if (viewingMonth != 1) {
+  //     viewingMonth--;
+  //   } else if (viewingYear - 1 < earliestYear) {
+  //     // add some error message?
+  //   } else {
+  //     viewingMonth = 12;
+  //     viewingYear--;
+  //   }
+  //   pipelineMonth.val(viewingMonth);
+  //   pipelineYear.val(viewingYear);
+  //   filterData(viewingYear, viewingMonth);
+  // });
   $('#pipeline-current').click(function () {
     viewingMonth = currentMonth;
     viewingYear = currentYear;

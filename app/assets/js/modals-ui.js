@@ -3,40 +3,36 @@ import { setOpenModal } from './invoice_info_modal.js';
 import { showSelectedStatus } from './pipeline-dt-funcs.js';
 import * as bootstrap from 'bootstrap';
 import { getSelectedEl } from './pipeline.js';
-import { PipelineDT } from './pipeline-dt.js';
+import { plTable } from './pipeline-dt.js';
 import { InvoiceInfoModal } from './invoice_info_modal.js';
 
-let modalShowListener;
-let modalHideListener;
+let modalShowHandler;
+let modalHideHandler;
 
-const handleModalHide = (modalEl, callback) => {
-  modalEl.removeEventListener('show.bs.modal', modalShowListener);
-  modalEl.removeEventListener('hide.bs.modal', modalHideListener);
-  callback();
+const handleModalHide = (modalEl) => {
+  modalEl.removeEventListener('show.bs.modal', modalShowHandler);
+  modalEl.removeEventListener('hide.bs.modal', modalHideHandler);
+  plTable.refresh();
 };
 
 const handleModalShow = (selectEl) => showSelectedStatus(selectEl, selectEl.value);
 
-const createModalShowListener = (selectEl) => {
-  modalShowListener = () => handleModalShow(selectEl);
-  return modalShowListener;
+const createModalShowHandler = (selectEl) => {
+  modalShowHandler = () => handleModalShow(selectEl);
+  return modalShowHandler;
 };
 
-const createModalHideListener = (modalEl, callback) => {
-  modalHideListener = () => handleModalHide(modalEl, callback);
-  return modalHideListener;
+const createModalHideHandler = (modalEl) => {
+  modalHideHandler = () => handleModalHide(modalEl);
+  return modalHideHandler;
 };
 
 export const openModal = (modal) => {
   const modalEl = modal._element;
-  console.log(getSelectedEl());
-  // modalEl.addEventListener(
-  //   'show.bs.modal',
-  //   createModalShowListener(getSelectedEl())
-  // );
+  modalEl.addEventListener('show.bs.modal', createModalShowHandler(getSelectedEl()));
   modalEl.addEventListener(
     'hide.bs.modal',
-    createModalHideListener(modalEl, () => true)
+    createModalHideHandler(modalEl, () => true)
   );
 
   setOpenModal(true);
@@ -44,15 +40,16 @@ export const openModal = (modal) => {
   modal.show();
 };
 
-export function createModal(selector, eventListenerCallbackFns) {
+export function createModal(selector, eventHandlerFns) {
   const modalEl = document.querySelector(selector);
   const modal = new bootstrap.Modal(modalEl);
+
   console.assert(
     modalEl,
     `No elements with selector "${selector}". Check for typos? `
   );
 
-  eventListenerCallbackFns.forEach((fn) => fn());
+  eventHandlerFns.forEach((fn) => fn());
 
   return [modal, modalEl];
 }

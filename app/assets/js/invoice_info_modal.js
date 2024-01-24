@@ -1,23 +1,27 @@
 import * as PLTableFunctions from './pipeline-dt-funcs.js';
 import { createModal } from './modals-ui.js';
 import { openModal } from './modals-ui.js';
-import { PipelineDT } from './pipeline-dt.js';
+import { plTable } from './pipeline-dt.js';
 import { csrftoken as CSRFTOKEN } from './common.js';
 
 export let modalWillOpen = false;
 
 const form = document.querySelector('#invoice-info-form');
-const formSubmitListener = () =>
+const formSubmitHandler = () =>
   form.addEventListener('submit', (e) =>
     submitForm(PLTableFunctions.getLastChangedSelectEl())(e)
   );
 
 const modal = (selector) => {
-  const [modal, el] = createModal(selector, [formSubmitListener]);
+  const [modal, el] = createModal(selector, [formSubmitHandler]);
   const open = () => {
     openModal(modal);
   };
-  const hide = () => modal.hide();
+  const hide = () => {
+    plTable.refresh();
+    modal.hide();
+    form.reset();
+  };
 
   const isRequired = (selectedStatus) =>
     ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'].includes(selectedStatus);
@@ -29,9 +33,9 @@ const modal = (selector) => {
 
   const formRequiresCompletion = (selectedStatus) =>
     isRequired(selectedStatus) &&
-    !isCompleted(PipelineDT.getTable(), PipelineDT.getCurrentRowID());
+    !isCompleted(plTable.getTable(), plTable.getCurrentRowID());
 
-  return { el, modal, open, hide, formRequiresCompletion };
+  return { el, open, hide, formRequiresCompletion };
 };
 
 export const InvoiceInfoModal = modal('#set-job-invoice-info');
@@ -81,10 +85,10 @@ export const submitForm = (selectEl) => (e) => {
     dataType: 'json',
     success: () => {
       InvoiceInfoModal.hide();
-      PipelineDT.getTable().ajax.reload();
+      plTable.getTable().ajax.reload();
       form.reset();
     },
-    error: PLTableFunctions.handleAjaxError(PipelineDT.getTable()),
+    error: PLTableFunctions.handleAjaxError(plTable.getTable()),
   });
 };
 
@@ -99,6 +103,6 @@ export const setInitialInfo = () => {
   const invoiceRecipientField = form.querySelector('#id_inv-invoice_recipient');
   const hiddenJobIDField = form.querySelector('#id_inv-job_id');
 
-  invoiceRecipientField.value = PipelineDT.getClientID();
-  hiddenJobIDField.value = PipelineDT.getCurrentRowID();
+  invoiceRecipientField.value = plTable.getClientID();
+  hiddenJobIDField.value = plTable.getCurrentRowID();
 };

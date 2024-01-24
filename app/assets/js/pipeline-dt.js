@@ -1,5 +1,4 @@
 import $ from 'jquery';
-// window.$ = $;
 import DataTable from 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
 import * as State from './pipeline-state.js';
@@ -176,26 +175,25 @@ export function initTable() {
   return table;
 }
 
-const dtClass = () => {
+const datatableUtils = () => {
   let currentRowID;
 
   const getTable = () => table || initTable();
   const setCurrentRowID = (id) => (currentRowID = id);
   const getCurrentRowID = () => currentRowID;
-
   const getClientID = () =>
     parseInt(table.cell(`#${currentRowID}`, 'client_id:name').data());
+  const refresh = () => {
+    table.ajax.reload();
+  };
 
   return {
     setCurrentRowID,
     getCurrentRowID,
     getClientID,
     getTable,
+    refresh,
   };
 };
 
-export const PipelineDT = dtClass();
-
-// export const getRowID = (e) => {
-//   return e.target.closest('tr').getAttribute('id');
-// };
+export const plTable = datatableUtils();

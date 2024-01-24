@@ -17,7 +17,7 @@ import {
   getTotalExpectedRevenueAmt,
   unreceivedFilter,
 } from './pipeline-dt-funcs.js';
-import { PipelineDT } from './pipeline-dt.js';
+import { plTable } from './pipeline-dt.js';
 
 console.log('pipeline js was run');
 const revenueUnitToggle = document.querySelector('#revenue-unit');
@@ -105,7 +105,7 @@ export function updateRevenueDisplay(year, month) {
   });
 }
 
-let table = PipelineDT.getTable();
+let table = plTable.getTable();
 $(document).ready(function () {
   $(table).DataTable();
 

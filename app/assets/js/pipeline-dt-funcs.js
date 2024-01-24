@@ -3,14 +3,14 @@ import { NewClientForm } from './pipeline_funcs.js';
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import { getOpenModal, InvoiceInfoModal } from './invoice_info_modal.js';
-import { PipelineDT } from './pipeline-dt.js';
+import { plTable } from './pipeline-dt.js';
 import * as State from './pipeline-state.js';
 import * as bootstrap from 'bootstrap';
 import { drawNewRow, removeRow } from './pipeline.js';
 
 let lastChangedSelectEl;
 
-const updateCurrentRowID = (id) => PipelineDT.setCurrentRowID(id);
+const updateCurrentRowID = (id) => plTable.setCurrentRowID(id);
 
 const getLastChangedSelectEl = () => lastChangedSelectEl;
 const renderInvoiceStatus = (data, row) => {
@@ -47,21 +47,19 @@ const handleStatusUpdate = (status, rowID) => {
     url: '/pipeline/pl-job-update/' + rowID + '/',
     data: { status: status },
     dataType: 'json',
-    success: updateTable(PipelineDT.getTable()),
-    error: handleAjaxError(PipelineDT.getTable()),
+    success: (response) => updateTable(plTable.getTable())(response),
+    error: (response) => handleAjaxError(plTable.getTable())(response),
   });
 };
 
-const statusChangeListener = (e) => {
+const statusChangeHandler = (e) => {
   /*
    * When a user changes the job status via the status dropdown, an
    * invoice info form appears, or otherwise the status is simply updated.
    */
   const statusSelectEl = e.target;
-  const initialStatus = statusSelectEl.dataset.initial;
   const status = statusSelectEl.value;
   const rowID = statusSelectEl.closest('tr').getAttribute('id');
-  const table = new DataTable.Api(statusSelectEl.closest('table'));
   lastChangedSelectEl = statusSelectEl;
 
   NewClientForm.el.addEventListener('hide.bs.modal', function () {
@@ -99,25 +97,14 @@ const handleNewRowDraw = (table, newRowData) => {
   );
 
   if (newRowData.job_date) {
-    // TODO: 'edge' case - needs to draw new rows even on all-jobs view.
-    // Should set up a cleaner way to handle viewingMonth+Year, maybe
-    // consolidate into one viewingDate view
     const newDataInvoicePeriod = newRowData.job_date.split('-');
     if (newDataInvoicePeriod) {
-      console.log('has newDataInvoicePeriod');
-      console.log(table);
-      console.log(newRowData);
       State.checkForNeedsNewRow()
         ? drawNewRow(table, newRowData)
-        : removeRow(table, newRowData);
+        : plTable.refresh();
     }
   } else {
-    console.log('doesnt have it');
-    console.log(table);
-    console.log(newRowData);
-    State.checkForNeedsNewRow()
-      ? drawNewRow(table, newRowData)
-      : removeRow(table, newRowData);
+    State.checkForNeedsNewRow() ? drawNewRow(table, newRowData) : plTable.refresh();
   }
 };
 
@@ -165,7 +152,7 @@ const revertStatus = (table) => {
 };
 
 const handleError = (message, table) => {
-  revertStatus(table);
+  plTable.reload();
   Pipeline.displayErrorMessage(message);
 };
 
@@ -221,10 +208,9 @@ export {
   getUpdate,
   rowCallback,
   showSelectedStatus,
-  revertStatus,
   handleNewRowDraw,
   handleError,
-  statusChangeListener,
+  statusChangeHandler as statusChangeListener,
   getLastChangedSelectEl,
   updateTable,
   handleAjaxError,

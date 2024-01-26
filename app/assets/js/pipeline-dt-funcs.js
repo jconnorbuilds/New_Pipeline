@@ -1,18 +1,24 @@
-import { csrftoken as CSRFTOKEN } from './common.js';
-import { NewClientForm } from './pipeline_funcs.js';
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-import { getOpenModal, InvoiceInfoModal } from './invoice_info_modal.js';
+import * as bootstrap from 'bootstrap';
+import { csrftoken as CSRFTOKEN, truncate } from './common.js';
+import { NewClientForm } from './pipeline_funcs.js';
+import { getOpenModal, invoiceInfoModal } from './invoice_info_modal.js';
 import { plTable } from './pipeline-dt.js';
 import * as State from './pipeline-state.js';
-import * as bootstrap from 'bootstrap';
-import { drawNewRow, removeRow } from './pipeline.js';
+import { drawNewRow } from './pipeline-dt-ui-funcs.js';
+import {
+  getTotalExpectedRevenueAmt,
+  refreshRevenueDisplay,
+  setTotalExpectedRevenueAmt,
+  totalExpectedRevenueAmt,
+} from './pipeline-ui-funcs.js';
 
-let lastChangedSelectEl;
+import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
+
+export const table = plTable.getTable();
 
 const updateCurrentRowID = (id) => plTable.setCurrentRowID(id);
-
-const getLastChangedSelectEl = () => lastChangedSelectEl;
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.job_status_choices;
   let selectEl = document.createElement('select');
@@ -29,15 +35,15 @@ const renderInvoiceStatus = (data, row) => {
   return selectEl.outerHTML;
 };
 
-const updateTable = (table) => (response) => {
+const updateTable = (response) => {
   response.status === 'success'
-    ? handleNewRowDraw(table, response.data)
+    ? handleNewRowDraw(response.data)
     : console.error(response.message);
 };
 
-const handleAjaxError = (table) => (response) => {
+const handleAjaxError = (response) => {
   console.log('nothing going on');
-  handleError(response.message, table);
+  handleError(response.message);
 };
 
 const handleStatusUpdate = (status, rowID) => {
@@ -47,8 +53,8 @@ const handleStatusUpdate = (status, rowID) => {
     url: '/pipeline/pl-job-update/' + rowID + '/',
     data: { status: status },
     dataType: 'json',
-    success: (response) => updateTable(plTable.getTable())(response),
-    error: (response) => handleAjaxError(plTable.getTable())(response),
+    success: (response) => updateTable(response),
+    error: (response) => handleAjaxError(response),
   });
 };
 
@@ -59,27 +65,16 @@ const statusChangeHandler = (e) => {
    */
   const statusSelectEl = e.target;
   const status = statusSelectEl.value;
-  const rowID = statusSelectEl.closest('tr').getAttribute('id');
-  lastChangedSelectEl = statusSelectEl;
+  const rowID = plTable.getCurrentRowID();
+  plTable.keepTrackOfCurrentStatus(status);
 
   NewClientForm.el.addEventListener('hide.bs.modal', function () {
-    if (getOpenModal()) invoiceInfoModal.show();
+    if (getOpenModal()) invoiceInfoModal.open();
   });
 
-  InvoiceInfoModal.formRequiresCompletion(status)
-    ? InvoiceInfoModal.open()
+  invoiceInfoModal.formRequiresCompletion(status)
+    ? invoiceInfoModal.open()
     : handleStatusUpdate(status, rowID);
-};
-
-const getUpdate = (selectEl) => {
-  /*
-   * Returns an object containing the value of the select element
-   */
-  var formData = {};
-  selectEl.classList.contains('job-status-select')
-    ? (formData.status = selectEl.value)
-    : console.error('There was a problem getting the form data');
-  return formData;
 };
 
 const handleNewRowDraw = (table, newRowData) => {
@@ -99,20 +94,12 @@ const handleNewRowDraw = (table, newRowData) => {
   if (newRowData.job_date) {
     const newDataInvoicePeriod = newRowData.job_date.split('-');
     if (newDataInvoicePeriod) {
-      State.checkForNeedsNewRow()
-        ? drawNewRow(table, newRowData)
-        : plTable.refresh();
+      State.checkForNeedsNewRow() ? drawNewRow(newRowData) : plTable.refresh();
     }
   } else {
-    State.checkForNeedsNewRow() ? drawNewRow(table, newRowData) : plTable.refresh();
+    State.checkForNeedsNewRow() ? drawNewRow(newRowData) : plTable.refresh();
   }
 };
-
-let totalExpectedRevenueAmt = 0;
-
-const setTotalExpectedRevenueAmt = (value) => (totalExpectedRevenueAmt = value);
-
-const getTotalExpectedRevenueAmt = () => totalExpectedRevenueAmt;
 
 const rowCallback = (row, data) => {
   const statusCell = $(row).find('.job-status-select');
@@ -134,7 +121,7 @@ const rowCallback = (row, data) => {
   ['ONGOING', 'READYTOINV'].includes(initialStatus)
     ? $(row).addClass('job-ongoing')
     : $(row).removeClass('job-ongoing');
-  totalExpectedRevenueAmt += parseInt(data.revenue);
+  setTotalExpectedRevenueAmt(getTotalExpectedRevenueAmt() + parseInt(data.revenue));
 };
 
 /**
@@ -156,67 +143,26 @@ const handleError = (message, table) => {
   Pipeline.displayErrorMessage(message);
 };
 
-const unreceivedFilter = document.querySelector('input.unreceived');
-const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
-const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
-const showOutstandingPayments = document.querySelector('input.toggle-outstanding');
-
-function createFilters() {
-  const jobStatusOrderMap = {
-    ONGOING: '0_',
-    READYTOINV: '1_',
-    INVOICED1: '3_',
-    INVOICED2: '4_',
-    FINISHED: '5_',
-    ARCHIVED: '6_',
-  };
-
-  DataTable.ext.order['dom-job-select'] = function (settings, col) {
-    return this.api()
-      .column(col, { order: 'index' })
-      .nodes()
-      .map(function (td, i) {
-        let status = td.querySelector('.job-status-select').value;
-        return status ? jobStatusOrderMap[status] : 0;
-      });
-  };
-  DataTable.ext.search.push(function (settings, data, dataIndex) {
-    const unreceivedPayment = data[10] === '---';
-    const ongoing = ['ONGOING', 'READYTOINV'].includes(data[9]);
-    if (unreceivedFilter.checked) {
-      return toggleOngoingFilter.checked
-        ? unreceivedPayment || ongoing
-        : unreceivedPayment && !ongoing;
-    }
-    if (showOnlyOngoingFilter.checked) return ongoing;
-    if (!toggleOngoingFilter.checked) return !ongoing;
-
-    return true;
+export const setupTableEventHandlers = (table) => {
+  table.addEventListener('click', (e) => {
+    let id = e.target.closest('tr').getAttribute('id');
+    updateCurrentRowID(id);
   });
-
-  DataTable.ext.search.push(function (settings, data, dataIndex) {
-    const outstandingVendorPayment = data[13] === 'false' && +data[5] > 0;
-    if (showOutstandingPayments.checked) {
-      return outstandingVendorPayment ? true : false;
-    }
-    return true;
+  table.addEventListener('input', (e) => {
+    plTable.setCurrentSelectEl(e.target.closest('select'));
   });
-}
+  table.on('click', 'td.deposit-date', handleDepositDateModalShow());
+  table.on('change', '.job-status-select', statusChangeHandler);
+};
 
 export {
   renderInvoiceStatus,
-  getUpdate,
   rowCallback,
   showSelectedStatus,
   handleNewRowDraw,
   handleError,
-  statusChangeHandler as statusChangeListener,
-  getLastChangedSelectEl,
+  statusChangeHandler,
   updateTable,
   handleAjaxError,
-  getTotalExpectedRevenueAmt,
-  setTotalExpectedRevenueAmt,
-  createFilters,
-  unreceivedFilter,
   updateCurrentRowID,
 };

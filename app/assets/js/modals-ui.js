@@ -1,10 +1,10 @@
+import * as bootstrap from 'bootstrap';
 import { setInitialInfo } from './invoice_info_modal.js';
 import { setOpenModal } from './invoice_info_modal.js';
 import { showSelectedStatus } from './pipeline-dt-funcs.js';
-import * as bootstrap from 'bootstrap';
 import { getSelectedEl } from './pipeline.js';
 import { plTable } from './pipeline-dt.js';
-import { InvoiceInfoModal } from './invoice_info_modal.js';
+import { invoiceInfoModal } from './invoice_info_modal.js';
 
 let modalShowHandler;
 let modalHideHandler;

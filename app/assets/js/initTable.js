@@ -1,24 +1,13 @@
 import $ from 'jquery';
-import 'datatables.net-responsive-bs5';
-import DataTable from 'datatables.net-responsive-bs5';
-import * as State from './pipeline-state.js';
-import { updateRevenueDisplay } from './pipeline_funcs.js';
-import { truncate } from './common.js';
+import DataTable from 'datatables.net-bs5';
 import { setTotalExpectedRevenueAmt } from './pipeline-ui-funcs.js';
-import {
-  refreshRevenueDisplay,
-  setExpectedRevenueDisplayText,
-} from './pipeline-ui-funcs.js';
-import {
-  renderInvoiceStatus,
-  updateCurrentRowID,
-  rowCallback,
-} from './pipeline-dt-funcs.js';
-import { statusChangeHandler } from './pipeline-dt-ui-funcs.js';
+import * as State from './pipeline-state.js';
+import * as plFuncs from './pipeline-dt-funcs.js';
+import { setSelectedEl } from './pipeline.js';
+import { refreshRevenueDisplay } from './pipeline-ui-funcs.js';
 import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
-
-export let table;
-export let tableEl;
+import { truncate } from './common.js';
+import { table, tableEl } from './pipeline-dt.js';
 
 export function initTable() {
   if (!table) {
@@ -68,8 +57,8 @@ export function initTable() {
           render: {
             // prettier-ignore
             display: (data, type, row) => row.invoice_name
-                ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(row.invoice_name, 15)}</a>`
-                : `<a href="/pipeline/${row.id}/job-detail/">${truncate(data, 15)}</a>`,
+              ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(row.invoice_name, 15)}</a>`
+              : `<a href="/pipeline/${row.id}/job-detail/">${truncate(data, 15)}</a>`,
             sort: (data) => data,
           },
         },
@@ -119,7 +108,7 @@ export function initTable() {
           name: 'status',
           responsivePriority: 6,
           render: {
-            display: (data, type, row) => renderInvoiceStatus(data, row),
+            display: (data, type, row) => plFuncs.renderInvoiceStatus(data, row),
           },
           orderDataType: 'dom-job-select',
         },
@@ -160,46 +149,21 @@ export function initTable() {
         },
       ],
 
-      rowCallback: (row, data) => rowCallback(row, data),
+      rowCallback: (row, data) => plFuncs.rowCallback(row, data),
       createdRow: (row, data, dataIndex) => {
         if (!data.deposit_date) row.classList.add('payment-unreceived');
       },
     });
   }
+  tableEl.addEventListener('click', (e) => {
+    let id = e.target.closest('tr').getAttribute('id');
+    plFuncs.updateCurrentRowID(id);
+  });
+  tableEl.addEventListener('input', (e) => {
+    setSelectedEl(e.target.closest('select'));
+  });
+  table.on('click', 'td.deposit-date', handleDepositDateModalShow());
+  table.on('change', '.job-status-select', plFuncs.statusChangeHandler);
+
   return table;
 }
-
-const datatableUtils = () => {
-  let currentRowID;
-  let selectedStatus;
-  let currentSelectEl;
-
-  const getTable = () => table || initTable();
-  const setCurrentRowID = (id) => (currentRowID = id);
-  const getCurrentRowID = () => currentRowID;
-  const getClientID = () =>
-    parseInt(table.cell(`#${currentRowID}`, 'client_id:name').data());
-  const refresh = () => {
-    table.ajax.reload();
-  };
-  const keepTrackOfCurrentStatus = (status) => {
-    selectedStatus = status;
-  };
-  const getStatus = () => selectedStatus;
-  const setCurrentSelectEl = (selectEl) => (currentSelectEl = selectEl);
-  const getCurrentSelectEl = () => currentSelectEl;
-
-  return {
-    setCurrentRowID,
-    getCurrentRowID,
-    setCurrentSelectEl,
-    getCurrentSelectEl,
-    getClientID,
-    keepTrackOfCurrentStatus,
-    getStatus,
-    getTable,
-    refresh,
-  };
-};
-
-export const plTable = datatableUtils();

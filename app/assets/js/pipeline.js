@@ -1,116 +1,39 @@
 'use strict';
+
 import '../../assets/scss/styles.scss';
 import '../../assets/scss/pipeline.css';
-import * as plDataFunks from './pipeline_funcs.js';
 import $ from 'jquery';
 window.$ = $;
-
-import * as State from './pipeline-state.js';
-import { dates } from './utils.js';
-import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
 import * as bootstrap from 'bootstrap';
+import * as State from './pipeline-state.js';
 import { csrftoken as CSRFTOKEN, sharedJQueryFuncs } from './common.js';
+import { dates } from './utils.js';
 import { initCSVExporter } from './csv-export.js';
 import { addFormSubmitListener as addDepositDateFormSubmitListener } from './deposit_date.js';
-import * as PLTableFunctions from './pipeline-dt-funcs.js';
-import {
-  getTotalExpectedRevenueAmt,
-  unreceivedFilter,
-} from './pipeline-dt-funcs.js';
 import { plTable } from './pipeline-dt.js';
+import {
+  currentExpectedRevenueDisplay,
+  setExpectedRevenueDisplayText,
+  createFilters,
+  revenueToggleHandler,
+} from './pipeline-ui-funcs';
+import { createNewEl } from './utils';
 
-console.log('pipeline js was run');
-const revenueUnitToggle = document.querySelector('#revenue-unit');
-revenueUnitToggle.addEventListener('click', (e) => {
-  // Set data
-  // Set UI
-  const btn = /** @type {!HTMLInputElement} */ (e.currentTarget);
-  const unitToggleInput = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_granular_revenue')
-  );
-  const revenueInput = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_revenue')
-  );
+document
+  .querySelector('#revenue-unit')
+  .addEventListener('click', revenueToggleHandler);
 
-  if (btn.classList.contains('active')) {
-    btn.textContent = '円';
-    unitToggleInput.value = 'true';
-    revenueInput.setAttribute('placeholder', '例）420069');
-  } else {
-    btn.textContent = '万円';
-    unitToggleInput.value = 'false';
-    revenueInput.setAttribute('placeholder', '例）100');
-  }
-});
-
-let [currentYear, currentMonth] = dates.currentDate();
 let currentlySelectedEl;
 export const getSelectedEl = () => currentlySelectedEl;
 export const setSelectedEl = (el) => (currentlySelectedEl = el);
 
-export const totalExpectedRevenueDisplay = document.querySelector(
-  '#total-revenue-monthly-exp'
-);
-export const currentExpectedRevenueDisplay = document.querySelector(
-  '.revenue-display-text.expected'
-);
-export const currentActualRevenueDisplayText = document.querySelector(
-  '.revenue-display-text.actual'
-);
-
-export const drawNewRow = (datatable, newRowData) =>
-  datatable.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false);
-
-export const removeRow = (datatable, newRowData) =>
-  datatable.row(`#${newRowData.id}`).remove().draw();
-
-export function refreshRevenueDisplay() {
-  setExpectedRevenueDisplayText();
-  updateRevenueDisplay(...State.getViewDate());
-  totalExpectedRevenueDisplay.textContent = `¥${getTotalExpectedRevenueAmt().toLocaleString()}`;
-}
-
-export function setExpectedRevenueDisplayText() {
-  currentExpectedRevenueDisplay.textContent =
-    State.getViewType() !== 'monthly' || unreceivedFilter.checked
-      ? '表示の案件　請求総額 (予定)'
-      : '表示の月　請求総額 (予定)';
-}
-
-export function createNewEl(tag, clsList, attrDict, textContent) {
-  let newEl = document.createElement(tag);
-
-  clsList.forEach((cls) => newEl.classList.add(cls));
-  Object.entries(attrDict).forEach(([attrName, attrVal]) => {
-    newEl.setAttribute(attrName, attrVal);
-  });
-  newEl.textContent = textContent;
-
-  return newEl;
-}
-
-export function updateRevenueDisplay(year, month) {
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'GET',
-    url: '/pipeline/revenue-data/' + year + '/' + month + '/',
-    processData: false, // prevents jQuery from processing the data
-    contentType: false, // prevents jQuery from setting the Content-Type header
-
-    success: function (response) {
-      $('#total-revenue-ytd').text(response.total_revenue_ytd);
-      $('#avg-revenue-ytd').text(response.avg_monthly_revenue_ytd);
-      $('#total-revenue-monthly-act').text(response.total_revenue_monthly_actual);
-    },
-  });
-}
-
-let table = plTable.getTable();
+let table;
 $(document).ready(function () {
+  table = plTable.getTable();
   $(table).DataTable();
 
   addDepositDateFormSubmitListener();
-  PLTableFunctions.createFilters();
+  createFilters();
   sharedJQueryFuncs();
 
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page

@@ -1,10 +1,11 @@
 import { updateTable, handleAjaxError } from './pipeline-dt-funcs.js';
 import * as bootstrap from 'bootstrap';
-import { setInitialInfo } from './invoice_info_modal.js';
-import { plTable, getRowID } from './pipeline-dt.js';
+import { plTable } from './pipeline-dt.js';
 import { csrftoken as CSRFTOKEN } from './common.js';
 
-const form = document.querySelector('#deposit-date-form');
+const form = /**@type {HTMLFormElement} */ (
+  document.querySelector('#deposit-date-form')
+);
 const modalEl = document.querySelector('#set-deposit-date');
 const modal = new bootstrap.Modal(modalEl);
 
@@ -12,7 +13,7 @@ const modal = new bootstrap.Modal(modalEl);
 let rowID;
 
 const handleModalShow = () => (e) => {
-  rowID = plTable.getCurrentRowID(e);
+  rowID = plTable.getCurrentRowID();
   const row = plTable.getTable().row(`#${rowID}`).node();
   const jobStatus = row.querySelector('.job-status-select').value;
   if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(jobStatus)) {
@@ -33,11 +34,11 @@ const addFormSubmitListener = () => {
       data: depositDateData,
       dataType: 'json',
       success: (response) => {
-        updateTable(plTable.getTable())(response);
+        updateTable(response);
         form.reset();
         modal.hide();
       },
-      error: (response) => handleAjaxError(plTable.getTable())(response),
+      error: (response) => handleAjaxError(response),
     });
   });
 };

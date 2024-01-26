@@ -1,5 +1,5 @@
+import $ from 'jquery';
 import { csrftoken as CSRFTOKEN } from './common.js';
-import * as InvoiceInfo from './invoice_info_modal.js';
 import { setOpenModal } from './invoice_info_modal.js';
 
 const newClientBtn = /** @type {!HTMLElement}*/ (
@@ -40,3 +40,17 @@ const NewClientForm = (() => {
 })();
 
 export { newClientBtn, ajaxCall, displayErrorMessage, NewClientForm };
+export function updateRevenueDisplay(year, month) {
+  $.ajax({
+    headers: { 'X-CSRFToken': CSRFTOKEN },
+    type: 'GET',
+    url: '/pipeline/revenue-data/' + year + '/' + month + '/',
+    processData: false, // prevents jQuery from processing the data
+    contentType: false, // prevents jQuery from setting the Content-Type header
+    success: function (response) {
+      $('#total-revenue-ytd').text(response.total_revenue_ytd);
+      $('#avg-revenue-ytd').text(response.avg_monthly_revenue_ytd);
+      $('#total-revenue-monthly-act').text(response.total_revenue_monthly_actual);
+    },
+  });
+}

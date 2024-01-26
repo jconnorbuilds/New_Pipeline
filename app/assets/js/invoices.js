@@ -1,5 +1,4 @@
 import { csrftoken as CSRFTOKEN } from './common.js';
-import { drawNewRow } from './pipeline.js';
 const request = (costID, table, costPayPeriod = 'next') => {
   // requests the client invoice
   $.ajax({
@@ -42,7 +41,7 @@ const getNewRowData = (selectEl, table) => {
     headers: { 'X-CSRFToken': CSRFTOKEN },
     type: 'POST',
     url: '/pipeline/update-invoice-table-row',
-    data: getUpdate(selectEl),
+    data: selectEl.value,
     dataType: 'json',
     success: (response) => getNewRowData(table, response.data),
   });

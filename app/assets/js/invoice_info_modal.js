@@ -6,11 +6,15 @@ import { csrftoken as CSRFTOKEN } from './common.js';
 
 export let modalWillOpen = false;
 
-const form = document.querySelector('#invoice-info-form');
-const formSubmitHandler = () =>
-  form.addEventListener('submit', (e) =>
-    submitForm(PLTableFunctions.getLastChangedSelectEl())(e)
-  );
+const form = /**@type {HTMLFormElement} */ (
+  document.querySelector('#invoice-info-form')
+);
+const formSubmitHandler = () => {
+  form.addEventListener('submit', (e) => {
+    console.log('THE STATUS IS ', plTable.getStatus());
+    submitForm(plTable.getStatus())(e);
+  });
+};
 
 const modal = (selector) => {
   const [modal, el] = createModal(selector, [formSubmitHandler]);
@@ -22,9 +26,15 @@ const modal = (selector) => {
     modal.hide();
     form.reset();
   };
+  const statusWhichRequireFormCompletion = [
+    'INVOICED1',
+    'INVOICED2',
+    'FINISHED',
+    'ARCHIVED',
+  ];
 
   const isRequired = (selectedStatus) =>
-    ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'].includes(selectedStatus);
+    statusWhichRequireFormCompletion.includes(selectedStatus);
 
   const isCompleted = (datatable, rowID) =>
     JSON.parse(
@@ -38,11 +48,11 @@ const modal = (selector) => {
   return { el, open, hide, formRequiresCompletion };
 };
 
-export const InvoiceInfoModal = modal('#set-job-invoice-info');
+export const invoiceInfoModal = modal('#set-job-invoice-info');
 /**
- * @param {HTMLElement} selectEl
+ * @param {HTMLElement} newStatus
  */
-function getFormData(selectEl) {
+function getFormData(newStatus) {
   const recipientField = /** @type {!HTMLInputElement} */ (
     document.querySelector('#id_inv-invoice_recipient')
   );
@@ -65,18 +75,16 @@ function getFormData(selectEl) {
   formData['inv-job_id'] = jobIDField.value;
   formData['inv-invoice_year'] = yearField.value;
   formData['inv-invoice_month'] = monthField.value;
+  formData['inv-status'] = newStatus;
+  console.log(formData);
 
-  Object.entries(PLTableFunctions.getUpdate(selectEl)).forEach(
-    ([name, value]) => (formData['inv-' + name] = value)
-  );
   return { jobIDField, formData };
 }
 
-export const submitForm = (selectEl) => (e) => {
+export const submitForm = (newStatus) => (e) => {
   e.preventDefault();
 
-  let { jobIDField, formData } = getFormData(selectEl);
-  // const table = new DataTable($(selectEl.closest('table')));
+  let { jobIDField, formData } = getFormData(newStatus);
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     type: 'POST',
@@ -84,21 +92,20 @@ export const submitForm = (selectEl) => (e) => {
     data: formData,
     dataType: 'json',
     success: () => {
-      InvoiceInfoModal.hide();
-      plTable.getTable().ajax.reload();
+      invoiceInfoModal.hide();
+      plTable.refresh();
       form.reset();
     },
     error: PLTableFunctions.handleAjaxError(plTable.getTable()),
   });
 };
 
-export const setOpenModal = (bool) => {
-  modalWillOpen = bool;
-};
+export const setOpenModal = (bool) => (modalWillOpen = bool);
 
 export const getOpenModal = () => {
   return modalWillOpen;
 };
+
 export const setInitialInfo = () => {
   const invoiceRecipientField = form.querySelector('#id_inv-invoice_recipient');
   const hiddenJobIDField = form.querySelector('#id_inv-job_id');

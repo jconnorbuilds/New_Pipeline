@@ -18,7 +18,8 @@ import {
   revenueToggleHandler,
 } from './pipeline-ui-funcs';
 import { createNewEl } from './utils';
-import { setupTableEventHandlers } from './pipeline-dt-funcs.js';
+import { queryJobs } from './pipeline-dt-funcs.js';
+import { setupTableEventHandlers } from './pipeline-dt-ui-funcs';
 
 document
   .querySelector('#revenue-unit')
@@ -43,20 +44,114 @@ $(document).ready(function () {
 
   initCSVExporter();
 
-  $('.update-cost-table').click(function () {
-    const forms = document.getElementsByTagName('form');
-    for (const i = 0; i < forms.length; i++) {
-      forms[i].submit();
-    }
-  });
+  // $('.update-cost-table').click(function () {
+  //   const forms = document.getElementsByTagName('form');
+  //   for (const i = 0; i < forms.length; i++) {
+  //     forms[i].submit();
+  //   }
+  // });
 
   // Job form submission
-  $('#job-form').submit(function (event) {
+  const jobForm = document.querySelector('#job-form');
+  jobForm.addEventListener('submit', (e) => {
+    const spinner = document.querySelector('#add-job-spinner'); // rename this ID
+    e.preventDefault();
+    spinner.classList.toggle('invisible');
+
+    var formData = {
+      job_name: document.querySelector('#id_job_name').value,
+      client: document.querySelector('#id_client').value,
+      job_type: document.querySelector('#id_job_type').value,
+      granular_revenue: document.querySelector('#id_granular_revenue').value,
+      revenue: document.querySelector('#id_revenue').value,
+      add_consumption_tax: document.querySelector('#id_add_consumption_tax').checked,
+      personInCharge: document.querySelector('#id_personInCharge').value,
+    };
+
+    $.ajax({
+      headers: { 'X-CSRFToken': CSRFTOKEN },
+      type: 'POST',
+      url: '/pipeline/job-add',
+      data: formData,
+      beforeSend: function () {
+        spinner.classList.remove('invisible');
+      },
+      success: function (response) {
+        if (response.status === 'success') {
+          // $("table").append(response.html);
+          spinner.classList.add('invisible');
+          jobForm.classList.remove('was-validated');
+          // $(".toast").each(function() {
+          //     $(this).show()
+          // });
+          var job = response.data;
+          table.row.add($(job)).draw();
+          // #TODO: replace the below with the updateRevenueDisplay function using the new data
+          // var originalVal = parseInt($("#total-billed-monthly-exp").text().replace(/(¥|,)/g, ''));
+          // var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
+          // var resultVal = '¥' + (originalVal + newVal).toLocaleString();
+          // $("#total-billed-monthly-exp").text(resultVal)
+          var toast = document.createElement('div');
+          toast.classList.add(
+            'toast',
+            'position-fixed',
+            'bg-success-subtle',
+            'border-0',
+            'top-0',
+            'end-0'
+          );
+          toast.setAttribute('role', 'alert');
+          toast.setAttribute('aria-live', 'assertive');
+          toast.setAttribute('aria-atomic', 'true');
+
+          var jobDescriptor =
+            formData['job_name'].toUpperCase() +
+            ' from ' +
+            $('#id_client option:selected').text();
+          var header = document.createElement('div');
+          header.classList.add('toast-header');
+          header.innerHTML = `
+                        <i class="bi bi-check2-circle" class="rounded me-2"></i>
+                        <strong class="me-auto">Job added</strong>
+                        <small class="text-muted">Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        `;
+          var body = document.createElement('div');
+          body.classList.add('toast-body');
+          body.innerText = jobDescriptor;
+
+          toast.appendChild(header);
+          toast.appendChild(body);
+
+          document.body.appendChild(toast);
+
+          var toastElement = new bootstrap.Toast(toast);
+          toastElement.show();
+          setTimeout(function () {
+            $(toastElement).fadeOut('fast', function () {
+              $(this).remove();
+            });
+          }, 1000);
+          $('#job-form').get(0).reset();
+        } else {
+          console.log('it did not work');
+          $('#job-form').addClass('was-validated');
+          spinner.addClass('invisible');
+        }
+      },
+      error: function (data) {
+        alert('Form submission failed');
+        spinner.addClass('invisible');
+      },
+    });
+  });
+
+  $('#job-form-deprecated').submit(function (event) {
     var spinner = $('#add-job-spinner');
     event.preventDefault();
     spinner.toggleClass('invisible');
     var formData = {
-      job_name: $('#id_job_name').val(),
+      job_name: $('#id_job_name').value,
       client: $('#id_client').val(),
       job_type: $('#id_job_type').val(),
       granular_revenue: $('#id_granular_revenue').val(),
@@ -147,23 +242,12 @@ $(document).ready(function () {
   // var pipelineYeaOld = $('#pipeline-year');
   const pipelineMonth = document.querySelector('#pipeline-month');
   const pipelineYear = document.querySelector('#pipeline-year');
-  let { currentMonth, currentYear } = dates.currentDate();
-  pipelineMonth.value = currentMonth;
-  pipelineYear.value = currentYear;
 
-  for (let year = 2021; year <= currentYear + 1; year++)
+  for (let year = 2021; year <= dates.thisYear() + 1; year++)
     pipelineYear.appendChild(
       createNewEl('option', [], { value: year }, `${year}年`)
     );
-
-  function filterData(year, month) {
-    var url = '/pipeline/pipeline-data/';
-    if (year !== undefined && month !== undefined) {
-      url = url + year + '/' + month + '/';
-    }
-    // table.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
-    table.ajax.url(url).load();
-  }
+  [pipelineYear.value, pipelineMonth.value] = dates.currentDate();
 
   $('.toggle-view').click(function () {
     if (State.getViewType() === 'monthly') {
@@ -174,7 +258,7 @@ $(document).ready(function () {
       });
 
       $('.toggle-view').html('<b>月別で表示</b>');
-      filterData(undefined, undefined);
+      queryJobs(undefined, undefined);
     } else {
       State.setViewType('monthly');
       currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
@@ -182,59 +266,42 @@ $(document).ready(function () {
       $('#pipeline-date-select .monthly-item').addClass('d-flex');
       $('.monthly-item').slideDown('fast');
       $('.toggle-view').html('<b>全案件を表示</b>');
-      filterData(pipelineYear.value, pipelineMonth.value);
+      queryJobs(pipelineYear.value, pipelineMonth.value);
     }
     setExpectedRevenueDisplayText();
   });
 
   $('#pipeline-month, #pipeline-year').change(function () {
-    filterData(pipelineYear.value, pipelineMonth.value);
+    queryJobs(pipelineYear.value, pipelineMonth.value);
   });
 
-  const plNextMonthBtn = document.querySelector('#pipeline-next');
-  const plPrevMonthBtn = document.querySelector('#pipeline-prev');
+  const plDateBtns = document.querySelector('#pipeline-next').parentNode;
+  plDateBtns.addEventListener('click', (e) => handleDateSelection(e));
 
-  plNextMonthBtn.addEventListener('click', () => {
-    // set UI
-    setViewMonth(parseInt(pipelineMonth.value));
-    setViewYear(parseInt(pipelineYear.value));
-    let { viewYear, viewMonth } = State.getViewDate();
-    if (viewMonth != 12) {
-      viewMonth++;
-    } else {
-      viewMonth = 1;
-      viewYear++;
+  const handleDateSelection = (event) => {
+    let viewYear, viewMonth;
+    switch (event.target.getAttribute('id')) {
+      case 'pipeline-next':
+        [viewYear, viewMonth] = State.getNextMonth();
+        break;
+      case 'pipeline-prev':
+        [viewYear, viewMonth] = State.getPrevMonth();
+        break;
+      case 'pipeline-current':
+        [viewYear, viewMonth] = dates.currentDate();
     }
-    pipelineMonth.value = viewingMonth;
-    pipelineYear.value = viewingYear;
+    // update UI
+    [pipelineYear.value, pipelineMonth.value] = [viewYear, viewMonth];
 
-    // set Data
-    filterData(viewYear, viewMonth);
-  });
+    // update state
+    State.setViewDate([
+      parseInt(pipelineMonth.value),
+      parseInt(pipelineMonth.value),
+    ]);
 
-  // $('#pipeline-prev').click(function () {
-  //   viewingMonth = parseInt(pipelineMonth.value);
-  //   viewingYear = parseInt(pipelineYear.value);
-  //   if (viewingMonth != 1) {
-  //     viewingMonth--;
-  //   } else if (viewingYear - 1 < earliestYear) {
-  //     // add some error message?
-  //   } else {
-  //     viewingMonth = 12;
-  //     viewingYear--;
-  //   }
-  //   pipelineMonth.val(viewingMonth);
-  //   pipelineYear.val(viewingYear);
-  //   filterData(viewingYear, viewingMonth);
-  // });
-  $('#pipeline-current').click(function () {
-    viewingMonth = currentMonth;
-    viewingYear = currentYear;
-    pipelineYear.val(currentYear);
-    pipelineMonth.val(currentMonth);
-    filterData(currentYear, currentMonth);
-    // updateRevenueDisplay(viewingYear, viewingMonth)
-  });
+    // get data
+    queryJobs(viewYear, viewMonth);
+  };
 
   var clientForm = $('#new-client-form');
   var submitButton = clientForm.find('button[type="submit"]');

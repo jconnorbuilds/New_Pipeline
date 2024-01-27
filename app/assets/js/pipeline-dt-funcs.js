@@ -14,8 +14,6 @@ import {
   totalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
 
-import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
-
 export const table = plTable.getTable();
 export const tableEl = plTable.getTableEl();
 
@@ -126,6 +124,15 @@ const rowCallback = (row, data) => {
   setTotalExpectedRevenueAmt(getTotalExpectedRevenueAmt() + parseInt(data.revenue));
 };
 
+export const queryJobs = (year, month) => {
+  var url = '/pipeline/pipeline-data/';
+  if (year !== undefined && month !== undefined) {
+    url = url + year + '/' + month + '/';
+  }
+  // table.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
+  table.ajax.url(url).load();
+};
+
 /**
  *
  * @param {HTMLElement} selectEl
@@ -143,21 +150,6 @@ const revertStatus = (table) => {
 const handleError = (message) => {
   plTable.refresh();
   displayErrorMessage(message);
-};
-
-export const setupTableEventHandlers = (
-  datatable = table,
-  datatableEl = tableEl
-) => {
-  datatableEl.addEventListener('click', (e) => {
-    let id = e.target.closest('tr').getAttribute('id');
-    updateCurrentRowID(id);
-  });
-  datatableEl.addEventListener('input', (e) => {
-    plTable.setCurrentSelectEl(e.target.closest('select'));
-  });
-  datatable.on('click', 'td.deposit-date', handleDepositDateModalShow());
-  datatable.on('change', '.job-status-select', statusChangeHandler);
 };
 
 export {

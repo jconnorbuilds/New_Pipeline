@@ -17,8 +17,8 @@ import {
 import { statusChangeHandler } from './pipeline-dt-ui-funcs.js';
 import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
 
-export let table;
-export let tableEl;
+let table;
+let tableEl;
 
 export function initTable() {
   if (!table) {
@@ -175,6 +175,7 @@ const datatableUtils = () => {
   let currentSelectEl;
 
   const getTable = () => table || initTable();
+  const getTableEl = () => tableEl;
   const setCurrentRowID = (id) => (currentRowID = id);
   const getCurrentRowID = () => currentRowID;
   const getClientID = () =>
@@ -198,6 +199,7 @@ const datatableUtils = () => {
     keepTrackOfCurrentStatus,
     getStatus,
     getTable,
+    getTableEl,
     refresh,
   };
 };

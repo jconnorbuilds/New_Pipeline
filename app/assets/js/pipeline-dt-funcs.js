@@ -2,7 +2,7 @@ import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
 import * as bootstrap from 'bootstrap';
 import { csrftoken as CSRFTOKEN, truncate } from './common.js';
-import { NewClientForm } from './pipeline_funcs.js';
+import { NewClientForm, displayErrorMessage } from './pipeline_funcs.js';
 import { getOpenModal, invoiceInfoModal } from './invoice_info_modal.js';
 import { plTable } from './pipeline-dt.js';
 import * as State from './pipeline-state.js';
@@ -17,6 +17,7 @@ import {
 import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
 
 export const table = plTable.getTable();
+export const tableEl = plTable.getTableEl();
 
 const updateCurrentRowID = (id) => plTable.setCurrentRowID(id);
 const renderInvoiceStatus = (data, row) => {
@@ -66,6 +67,7 @@ const statusChangeHandler = (e) => {
   const statusSelectEl = e.target;
   const status = statusSelectEl.value;
   const rowID = plTable.getCurrentRowID();
+  console.log(status, rowID);
   plTable.keepTrackOfCurrentStatus(status);
 
   NewClientForm.el.addEventListener('hide.bs.modal', function () {
@@ -77,7 +79,7 @@ const statusChangeHandler = (e) => {
     : handleStatusUpdate(status, rowID);
 };
 
-const handleNewRowDraw = (table, newRowData) => {
+const handleNewRowDraw = (newRowData) => {
   /*
   Close the modal, show a success toast,
   and draw a new row in the table if it belongs on the current
@@ -138,21 +140,24 @@ const revertStatus = (table) => {
   table.ajax.reload();
 };
 
-const handleError = (message, table) => {
-  plTable.reload();
-  Pipeline.displayErrorMessage(message);
+const handleError = (message) => {
+  plTable.refresh();
+  displayErrorMessage(message);
 };
 
-export const setupTableEventHandlers = (table) => {
-  table.addEventListener('click', (e) => {
+export const setupTableEventHandlers = (
+  datatable = table,
+  datatableEl = tableEl
+) => {
+  datatableEl.addEventListener('click', (e) => {
     let id = e.target.closest('tr').getAttribute('id');
     updateCurrentRowID(id);
   });
-  table.addEventListener('input', (e) => {
+  datatableEl.addEventListener('input', (e) => {
     plTable.setCurrentSelectEl(e.target.closest('select'));
   });
-  table.on('click', 'td.deposit-date', handleDepositDateModalShow());
-  table.on('change', '.job-status-select', statusChangeHandler);
+  datatable.on('click', 'td.deposit-date', handleDepositDateModalShow());
+  datatable.on('change', '.job-status-select', statusChangeHandler);
 };
 
 export {

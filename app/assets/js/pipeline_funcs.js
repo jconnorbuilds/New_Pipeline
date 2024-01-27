@@ -28,6 +28,7 @@ const ajaxCall = (formData, url, successCallback, handleError, modal, table) => 
 };
 
 const displayErrorMessage = (message) => {
+  // TODO: actually dislpay the message on screen?
   console.error(message);
 };
 

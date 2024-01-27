@@ -18,6 +18,7 @@ import {
   revenueToggleHandler,
 } from './pipeline-ui-funcs';
 import { createNewEl } from './utils';
+import { setupTableEventHandlers } from './pipeline-dt-funcs.js';
 
 document
   .querySelector('#revenue-unit')
@@ -31,6 +32,7 @@ let table;
 $(document).ready(function () {
   table = plTable.getTable();
   $(table).DataTable();
+  setupTableEventHandlers();
 
   addDepositDateFormSubmitListener();
   createFilters();

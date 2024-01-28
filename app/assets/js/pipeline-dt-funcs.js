@@ -41,7 +41,6 @@ const updateTable = (response) => {
 };
 
 const handleAjaxError = (response) => {
-  console.log('nothing going on');
   handleError(response.message);
 };
 

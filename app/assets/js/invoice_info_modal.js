@@ -1,4 +1,4 @@
-import * as PLTableFunctions from './pipeline-dt-funcs.js';
+import { handleAjaxError } from './pipeline-dt-funcs.js';
 import { createModal } from './modals-ui.js';
 import { openModal } from './modals-ui.js';
 import { plTable } from './pipeline-dt.js';
@@ -76,7 +76,6 @@ function getFormData(newStatus) {
   formData['inv-invoice_year'] = yearField.value;
   formData['inv-invoice_month'] = monthField.value;
   formData['inv-status'] = newStatus;
-  console.log(formData);
 
   return { jobIDField, formData };
 }
@@ -96,12 +95,11 @@ export const submitForm = (newStatus) => (e) => {
       plTable.refresh();
       form.reset();
     },
-    error: PLTableFunctions.handleAjaxError(plTable.getTable()),
+    error: (response) => handleAjaxError(response),
   });
 };
 
 export const setOpenModal = (bool) => (modalWillOpen = bool);
-
 export const getOpenModal = () => {
   return modalWillOpen;
 };

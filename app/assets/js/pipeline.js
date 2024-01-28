@@ -20,6 +20,7 @@ import {
 import { createNewEl } from './utils';
 import { queryJobs } from './pipeline-dt-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs';
+import { createAndLaunchToast } from './toast-notifs.js';
 
 document
   .querySelector('#revenue-unit')
@@ -40,7 +41,7 @@ $(document).ready(function () {
   sharedJQueryFuncs();
 
   // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page
-  let depositDateModal;
+  // let depositDateModal;
 
   initCSVExporter();
 
@@ -73,173 +74,27 @@ $(document).ready(function () {
       type: 'POST',
       url: '/pipeline/job-add',
       data: formData,
-      beforeSend: function () {
-        spinner.classList.remove('invisible');
-      },
-      success: function (response) {
+      beforeSend: () => spinner.classList.remove('invisible'),
+      success: (response) => {
         if (response.status === 'success') {
-          // $("table").append(response.html);
           spinner.classList.add('invisible');
           jobForm.classList.remove('was-validated');
-          // $(".toast").each(function() {
-          //     $(this).show()
-          // });
-          var job = response.data;
-          table.row.add($(job)).draw();
-          // #TODO: replace the below with the updateRevenueDisplay function using the new data
-          // var originalVal = parseInt($("#total-billed-monthly-exp").text().replace(/(¥|,)/g, ''));
-          // var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
-          // var resultVal = '¥' + (originalVal + newVal).toLocaleString();
-          // $("#total-billed-monthly-exp").text(resultVal)
-          var toast = document.createElement('div');
-          toast.classList.add(
-            'toast',
-            'position-fixed',
-            'bg-success-subtle',
-            'border-0',
-            'top-0',
-            'end-0'
-          );
-          toast.setAttribute('role', 'alert');
-          toast.setAttribute('aria-live', 'assertive');
-          toast.setAttribute('aria-atomic', 'true');
-
-          var jobDescriptor =
-            formData['job_name'].toUpperCase() +
-            ' from ' +
-            $('#id_client option:selected').text();
-          var header = document.createElement('div');
-          header.classList.add('toast-header');
-          header.innerHTML = `
-                        <i class="bi bi-check2-circle" class="rounded me-2"></i>
-                        <strong class="me-auto">Job added</strong>
-                        <small class="text-muted">Just now</small>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                        `;
-          var body = document.createElement('div');
-          body.classList.add('toast-body');
-          body.innerText = jobDescriptor;
-
-          toast.appendChild(header);
-          toast.appendChild(body);
-
-          document.body.appendChild(toast);
-
-          var toastElement = new bootstrap.Toast(toast);
-          toastElement.show();
-          setTimeout(function () {
-            $(toastElement).fadeOut('fast', function () {
-              $(this).remove();
-            });
-          }, 1000);
-          $('#job-form').get(0).reset();
+          plTable.refresh();
+          createAndLaunchToast();
+          jobForm.reset();
         } else {
           console.log('it did not work');
-          $('#job-form').addClass('was-validated');
-          spinner.addClass('invisible');
+          jobForm.classList.add('was-validated');
+          spinner.classList.add('invisible');
         }
       },
       error: function (data) {
         alert('Form submission failed');
-        spinner.addClass('invisible');
+        spinner.classList.add('invisible');
       },
     });
   });
 
-  $('#job-form-deprecated').submit(function (event) {
-    var spinner = $('#add-job-spinner');
-    event.preventDefault();
-    spinner.toggleClass('invisible');
-    var formData = {
-      job_name: $('#id_job_name').value,
-      client: $('#id_client').val(),
-      job_type: $('#id_job_type').val(),
-      granular_revenue: $('#id_granular_revenue').val(),
-      revenue: $('#id_revenue').val(),
-      add_consumption_tax: $('#id_add_consumption_tax').prop('checked'),
-      personInCharge: $('#id_personInCharge').val(),
-    };
-
-    $.ajax({
-      headers: { 'X-CSRFToken': CSRFTOKEN },
-      type: 'POST',
-      url: '/pipeline/job-add',
-      data: formData,
-      beforeSend: function () {
-        spinner.removeClass('invisible');
-      },
-      success: function (response) {
-        if (response.status === 'success') {
-          // $("table").append(response.html);
-          spinner.addClass('invisible');
-          $('#job-form').removeClass('was-validated');
-          // $(".toast").each(function() {
-          //     $(this).show()
-          // });
-          var job = response.data;
-          table.row.add($(job)).draw();
-          // #TODO: replace the below with the updateRevenueDisplay function using the new data
-          // var originalVal = parseInt($("#total-billed-monthly-exp").text().replace(/(¥|,)/g, ''));
-          // var newVal = parseInt(job.revenue.replace(/(¥|,)/g, ''));
-          // var resultVal = '¥' + (originalVal + newVal).toLocaleString();
-          // $("#total-billed-monthly-exp").text(resultVal)
-          var toast = document.createElement('div');
-          toast.classList.add(
-            'toast',
-            'position-fixed',
-            'bg-success-subtle',
-            'border-0',
-            'top-0',
-            'end-0'
-          );
-          toast.setAttribute('role', 'alert');
-          toast.setAttribute('aria-live', 'assertive');
-          toast.setAttribute('aria-atomic', 'true');
-
-          var jobDescriptor =
-            formData['job_name'].toUpperCase() +
-            ' from ' +
-            $('#id_client option:selected').text();
-          var header = document.createElement('div');
-          header.classList.add('toast-header');
-          header.innerHTML = `
-                        <i class="bi bi-check2-circle" class="rounded me-2"></i>
-                        <strong class="me-auto">Job added</strong>
-                        <small class="text-muted">Just now</small>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                        `;
-          var body = document.createElement('div');
-          body.classList.add('toast-body');
-          body.innerText = jobDescriptor;
-
-          toast.appendChild(header);
-          toast.appendChild(body);
-
-          document.body.appendChild(toast);
-
-          var toastElement = new bootstrap.Toast(toast);
-          toastElement.show();
-          setTimeout(function () {
-            $(toastElement).fadeOut('fast', function () {
-              $(this).remove();
-            });
-          }, 1000);
-          $('#job-form').get(0).reset();
-        } else {
-          console.log('it did not work');
-          $('#job-form').addClass('was-validated');
-          spinner.addClass('invisible');
-        }
-      },
-      error: function (data) {
-        alert('Form submission failed');
-        spinner.addClass('invisible');
-      },
-    });
-  });
-
-  // var pipelineMonthOld = $('#pipeline-month');
-  // var pipelineYeaOld = $('#pipeline-year');
   const pipelineMonth = document.querySelector('#pipeline-month');
   const pipelineYear = document.querySelector('#pipeline-year');
 
@@ -294,10 +149,7 @@ $(document).ready(function () {
     [pipelineYear.value, pipelineMonth.value] = [viewYear, viewMonth];
 
     // update state
-    State.setViewDate([
-      parseInt(pipelineMonth.value),
-      parseInt(pipelineMonth.value),
-    ]);
+    State.setViewDate([+pipelineYear.value, +pipelineMonth.value]);
 
     // get data
     queryJobs(viewYear, viewMonth);

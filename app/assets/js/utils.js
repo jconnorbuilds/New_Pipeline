@@ -55,12 +55,14 @@ export {
   dates,
 };
 export function createNewEl(tag, clsList, attrDict, textContent) {
-  let newEl = document.createElement(tag);
+  // TODO: implement kwargs to make more flexible
+  const newEl = document.createElement(tag);
 
   clsList.forEach((cls) => newEl.classList.add(cls));
-  Object.entries(attrDict).forEach(([attrName, attrVal]) => {
-    newEl.setAttribute(attrName, attrVal);
-  });
+  if (attrDict)
+    Object.entries(attrDict).forEach(([attrName, attrVal]) => {
+      newEl.setAttribute(attrName, attrVal);
+    });
   newEl.textContent = textContent;
 
   return newEl;

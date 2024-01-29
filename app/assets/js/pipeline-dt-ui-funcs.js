@@ -14,13 +14,14 @@ export const setupTableEventHandlers = (
   datatable = table,
   datatableEl = tableEl
 ) => {
-  datatableEl.addEventListener('click', (e) => {
-    let id = e.target.closest('tr').getAttribute('id');
-    updateCurrentRowID(id);
-  });
-  datatableEl.addEventListener('input', (e) => {
-    plTable.setCurrentSelectEl(e.target.closest('select'));
-  });
+  // update State
+  datatableEl.addEventListener('click', (e) =>
+    updateCurrentRowID(e.target.closest('tr').getAttribute('id'))
+  );
+  datatableEl.addEventListener('input', (e) =>
+    plTable.setCurrentSelectEl(e.target.closest('select'))
+  );
+  //
   datatable.on('click', 'td.deposit-date', handleDepositDateModalShow());
   datatable.on('change', '.job-status-select', statusChangeHandler);
 };

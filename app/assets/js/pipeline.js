@@ -16,19 +16,18 @@ import {
   setExpectedRevenueDisplayText,
   createFilters,
   revenueToggleHandler,
+  showLoadingSpinner,
+  hideLoadingSpinner,
 } from './pipeline-ui-funcs';
 import { createNewEl } from './utils';
 import { queryJobs } from './pipeline-dt-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs';
 import { createAndLaunchToast } from './toast-notifs.js';
+import { pipelineMonth, pipelineYear } from './pipeline-ui-funcs';
 
 document
   .querySelector('#revenue-unit')
   .addEventListener('click', revenueToggleHandler);
-
-let currentlySelectedEl;
-export const getSelectedEl = () => currentlySelectedEl;
-export const setSelectedEl = (el) => (currentlySelectedEl = el);
 
 let table;
 $(document).ready(function () {
@@ -55,11 +54,10 @@ $(document).ready(function () {
   // Job form submission
   const jobForm = document.querySelector('#job-form');
   jobForm.addEventListener('submit', (e) => {
-    const spinner = document.querySelector('#add-job-spinner'); // rename this ID
+    showLoadingSpinner();
     e.preventDefault();
-    spinner.classList.toggle('invisible');
 
-    var formData = {
+    const formData = {
       job_name: document.querySelector('#id_job_name').value,
       client: document.querySelector('#id_client').value,
       job_type: document.querySelector('#id_job_type').value,
@@ -74,37 +72,27 @@ $(document).ready(function () {
       type: 'POST',
       url: '/pipeline/job-add',
       data: formData,
-      beforeSend: () => spinner.classList.remove('invisible'),
+      beforeSend: () => showLoadingSpinner(),
       success: (response) => {
         if (response.status === 'success') {
-          spinner.classList.add('invisible');
           jobForm.classList.remove('was-validated');
           plTable.refresh();
           createAndLaunchToast();
           jobForm.reset();
         } else {
-          console.log('it did not work');
+          console.alert('Form processing failed. Perhaps bad data was sent?');
           jobForm.classList.add('was-validated');
-          spinner.classList.add('invisible');
         }
       },
-      error: function (data) {
+      error: () => {
         alert('Form submission failed');
-        spinner.classList.add('invisible');
       },
     });
+    hideLoadingSpinner();
   });
 
-  const pipelineMonth = document.querySelector('#pipeline-month');
-  const pipelineYear = document.querySelector('#pipeline-year');
-
-  for (let year = 2021; year <= dates.thisYear() + 1; year++)
-    pipelineYear.appendChild(
-      createNewEl('option', [], { value: year }, `${year}年`)
-    );
-  [pipelineYear.value, pipelineMonth.value] = dates.currentDate();
-
-  $('.toggle-view').click(function () {
+  const toggleViewBtn = document.querySelector('.toggle-view');
+  toggleViewBtn.addEventListener('click', () => {
     if (State.getViewType() === 'monthly') {
       State.setViewType('all');
       $('#view-state').text(State.getViewType());
@@ -126,35 +114,6 @@ $(document).ready(function () {
     setExpectedRevenueDisplayText();
   });
 
-  $('#pipeline-month, #pipeline-year').change(function () {
-    queryJobs(pipelineYear.value, pipelineMonth.value);
-  });
-
-  const plDateBtns = document.querySelector('#pipeline-next').parentNode;
-  plDateBtns.addEventListener('click', (e) => handleDateSelection(e));
-
-  const handleDateSelection = (event) => {
-    let viewYear, viewMonth;
-    switch (event.target.getAttribute('id')) {
-      case 'pipeline-next':
-        [viewYear, viewMonth] = State.getNextMonth();
-        break;
-      case 'pipeline-prev':
-        [viewYear, viewMonth] = State.getPrevMonth();
-        break;
-      case 'pipeline-current':
-        [viewYear, viewMonth] = dates.currentDate();
-    }
-    // update UI
-    [pipelineYear.value, pipelineMonth.value] = [viewYear, viewMonth];
-
-    // update state
-    State.setViewDate([+pipelineYear.value, +pipelineMonth.value]);
-
-    // get data
-    queryJobs(viewYear, viewMonth);
-  };
-
   var clientForm = $('#new-client-form');
   var submitButton = clientForm.find('button[type="submit"]');
 
@@ -169,9 +128,6 @@ $(document).ready(function () {
   submitButton.prop('disabled', true);
 
   function validateInputs() {
-    /*
-     * add docstring
-     */
     if (properNameInput.val() || properNameJapaneseInput.val()) {
       submitButton.prop('disabled', false);
     } else {

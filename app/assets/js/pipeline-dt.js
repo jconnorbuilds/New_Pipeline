@@ -2,7 +2,6 @@ import $ from 'jquery';
 import 'datatables.net-responsive-bs5';
 import DataTable from 'datatables.net-responsive-bs5';
 import * as State from './pipeline-state.js';
-import { updateRevenueDisplay } from './pipeline_funcs.js';
 import { truncate } from './common.js';
 import { setTotalExpectedRevenueAmt } from './pipeline-ui-funcs.js';
 import {

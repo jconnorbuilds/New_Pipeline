@@ -115,11 +115,11 @@ const rowCallback = (row, data) => {
 
   statusCell.attr('data-initial', initialStatus);
   initialStatus === 'FINISHED'
-    ? $(row).addClass('job-finished')
-    : $(row).removeClass('job-finished');
+    ? row.classList.add('job-finished')
+    : row.classList.remove('job-finished');
   ['ONGOING', 'READYTOINV'].includes(initialStatus)
-    ? $(row).addClass('job-ongoing')
-    : $(row).removeClass('job-ongoing');
+    ? row.classList.add('job-ongoing')
+    : row.classList.remove('job-ongoing');
   setTotalExpectedRevenueAmt(getTotalExpectedRevenueAmt() + parseInt(data.revenue));
 };
 

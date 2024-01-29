@@ -1,11 +1,16 @@
 import DataTable from 'datatables.net-bs5';
 import { updateRevenueDisplay } from './pipeline_funcs';
 import * as State from './pipeline-state.js';
+import { dates, createNewEl } from './utils.js';
+import { plTable } from './pipeline-dt.js';
+import { queryJobs } from './pipeline-dt-funcs.js';
 
 const unreceivedFilter = document.querySelector('input.unreceived');
 const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
 const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
 const showOutstandingPayments = document.querySelector('input.toggle-outstanding');
+export const pipelineMonth = document.querySelector('#pipeline-month');
+export const pipelineYear = document.querySelector('#pipeline-year');
 
 export const revenueToggleHandler = (e) => {
   const btn = /** @type {!HTMLInputElement} */ (e.currentTarget);
@@ -95,3 +100,45 @@ export function createFilters() {
     return true;
   });
 }
+
+// loading spinner functions for pipeline job form submission
+const spinner = document.querySelector('#add-job-spinner'); // rename this ID
+export const toggleLoadingSpinner = (spinnerEl = spinner) => {
+  spinnerEl.classList.toggle('invisible');
+};
+export const hideLoadingSpinner = (spinnerEl = spinner) => {
+  spinnerEl.classList.add('invisible');
+};
+export const showLoadingSpinner = (spinnerEl = spinner) => {
+  spinnerEl.classList.remove('invisible');
+};
+
+// Create date selection dropdowns
+for (let year = 2021; year <= dates.thisYear() + 1; year++)
+  pipelineYear.appendChild(createNewEl('option', [], { value: year }, `${year}年`));
+[pipelineYear.value, pipelineMonth.value] = dates.currentDate();
+
+const plDateBtns = document.querySelector('#pipeline-next').parentNode;
+plDateBtns.addEventListener('click', (e) => handleDateSelection(e));
+
+const handleDateSelection = (event) => {
+  let viewYear, viewMonth;
+  switch (event.target.getAttribute('id')) {
+    case 'pipeline-next':
+      [viewYear, viewMonth] = State.getNextMonth();
+      break;
+    case 'pipeline-prev':
+      [viewYear, viewMonth] = State.getPrevMonth();
+      break;
+    case 'pipeline-current':
+      [viewYear, viewMonth] = dates.currentDate();
+  }
+  // update UI
+  [pipelineYear.value, pipelineMonth.value] = [viewYear, viewMonth];
+
+  // update state
+  State.setViewDate([+pipelineYear.value, +pipelineMonth.value]);
+
+  // get data
+  queryJobs(...State.getViewDate());
+};

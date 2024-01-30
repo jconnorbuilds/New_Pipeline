@@ -9,8 +9,6 @@ const unreceivedFilter = document.querySelector('input.unreceived');
 const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
 const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
 const showOutstandingPayments = document.querySelector('input.toggle-outstanding');
-export const pipelineMonth = document.querySelector('#pipeline-month');
-export const pipelineYear = document.querySelector('#pipeline-year');
 
 export const revenueToggleHandler = (e) => {
   const btn = /** @type {!HTMLInputElement} */ (e.currentTarget);
@@ -63,10 +61,10 @@ export function createFilters() {
   const jobStatusOrderMap = {
     ONGOING: '0_',
     READYTOINV: '1_',
-    INVOICED1: '3_',
-    INVOICED2: '4_',
-    FINISHED: '5_',
-    ARCHIVED: '6_',
+    INVOICED1: '2_',
+    INVOICED2: '3_',
+    FINISHED: '4_',
+    ARCHIVED: '5_',
   };
 
   DataTable.ext.order['dom-job-select'] = function (settings, col) {
@@ -113,15 +111,15 @@ export const showLoadingSpinner = (spinnerEl = spinner) => {
   spinnerEl.classList.remove('invisible');
 };
 
-// Create date selection dropdowns
+// Pipeline date selection
+export const pipelineMonth = document.querySelector('#pipeline-month');
+export const pipelineYear = document.querySelector('#pipeline-year');
+
 for (let year = 2021; year <= dates.thisYear() + 1; year++)
   pipelineYear.appendChild(createNewEl('option', [], { value: year }, `${year}年`));
 [pipelineYear.value, pipelineMonth.value] = dates.currentDate();
 
-const plDateBtns = document.querySelector('#pipeline-next').parentNode;
-plDateBtns.addEventListener('click', (e) => handleDateSelection(e));
-
-const handleDateSelection = (event) => {
+export const dateSelectionHandler = (event) => {
   let viewYear, viewMonth;
   switch (event.target.getAttribute('id')) {
     case 'pipeline-next':
@@ -141,4 +139,24 @@ const handleDateSelection = (event) => {
 
   // get data
   queryJobs(...State.getViewDate());
+};
+
+export const toggleViewHandler = () => {
+  if (State.getViewType() === 'monthly') {
+    State.setViewType('all');
+    $('.monthly-item').slideUp('fast', function () {
+      $('#pipeline-date-select .monthly-item').removeClass('d-flex');
+    });
+
+    $('.toggle-view').html('<b>月別で表示</b>');
+    queryJobs(undefined, undefined);
+  } else {
+    State.setViewType('monthly');
+    currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
+    $('#pipeline-date-select .monthly-item').addClass('d-flex');
+    $('.monthly-item').slideDown('fast');
+    $('.toggle-view').html('<b>全案件を表示</b>');
+    queryJobs(...State.getViewDate());
+  }
+  setExpectedRevenueDisplayText();
 };

@@ -5,11 +5,12 @@ import '../../assets/scss/pipeline.css';
 import $ from 'jquery';
 window.$ = $;
 import * as bootstrap from 'bootstrap';
-import * as State from './pipeline-state.js';
 import { csrftoken as CSRFTOKEN, sharedJQueryFuncs } from './common.js';
-import { dates } from './utils.js';
 import { initCSVExporter } from './csv-export.js';
-import { addFormSubmitListener as addDepositDateFormSubmitListener } from './deposit_date.js';
+import {
+  depositDateFormSubmitHandler,
+  depositDateFormModalShowHandler,
+} from './deposit_date.js';
 import { plTable } from './pipeline-dt.js';
 import {
   currentExpectedRevenueDisplay,
@@ -18,29 +19,36 @@ import {
   revenueToggleHandler,
   showLoadingSpinner,
   hideLoadingSpinner,
+  pipelineMonth,
+  pipelineYear,
+  addDateChangeHandlers,
+  dateSelectionHandler,
+  toggleViewHandler,
 } from './pipeline-ui-funcs';
-import { createNewEl } from './utils';
-import { queryJobs } from './pipeline-dt-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs';
 import { createAndLaunchToast } from './toast-notifs.js';
-import { pipelineMonth, pipelineYear } from './pipeline-ui-funcs';
 
 document
   .querySelector('#revenue-unit')
   .addEventListener('click', revenueToggleHandler);
 
+document
+  .querySelector('#pipeline-next')
+  .parentNode.addEventListener('click', dateSelectionHandler);
+
+document.querySelector('.toggle-view').addEventListener('click', toggleViewHandler);
+
+document
+  .querySelector('#deposit-date-form')
+  .addEventListener('submit', depositDateFormSubmitHandler);
+
 let table;
 $(document).ready(function () {
   table = plTable.getTable();
   $(table).DataTable();
-  setupTableEventHandlers();
 
-  addDepositDateFormSubmitListener();
   createFilters();
   sharedJQueryFuncs();
-
-  // flag to control behavior of the Invoice Info and New Client modal interation on the main Pipeline page
-  // let depositDateModal;
 
   initCSVExporter();
 
@@ -91,146 +99,7 @@ $(document).ready(function () {
     hideLoadingSpinner();
   });
 
-  const toggleViewBtn = document.querySelector('.toggle-view');
-  toggleViewBtn.addEventListener('click', () => {
-    if (State.getViewType() === 'monthly') {
-      State.setViewType('all');
-      $('#view-state').text(State.getViewType());
-      $('.monthly-item').slideUp('fast', function () {
-        $('#pipeline-date-select .monthly-item').removeClass('d-flex');
-      });
-
-      $('.toggle-view').html('<b>月別で表示</b>');
-      queryJobs(undefined, undefined);
-    } else {
-      State.setViewType('monthly');
-      currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
-      $('#view-state').text(State.getViewType());
-      $('#pipeline-date-select .monthly-item').addClass('d-flex');
-      $('.monthly-item').slideDown('fast');
-      $('.toggle-view').html('<b>全案件を表示</b>');
-      queryJobs(pipelineYear.value, pipelineMonth.value);
-    }
-    setExpectedRevenueDisplayText();
-  });
-
-  var clientForm = $('#new-client-form');
-  var submitButton = clientForm.find('button[type="submit"]');
-
-  var properNameInput = clientForm.find('input[name="proper_name"]');
-  var properNameJapaneseInput = clientForm.find(
-    'input[name="proper_name_japanese"]'
-  );
-
-  properNameInput.on('input', validateInputs);
-  properNameJapaneseInput.on('input', validateInputs);
-
-  submitButton.prop('disabled', true);
-
-  function validateInputs() {
-    if (properNameInput.val() || properNameJapaneseInput.val()) {
-      submitButton.prop('disabled', false);
-    } else {
-      submitButton.prop('disabled', true);
-    }
-  }
-
-  //New Client form submission
-  $('#new-client-form').submit(function (event) {
-    var spinner = $('#add-client-spinner');
-    event.preventDefault();
-    spinner.removeClass('invisible');
-    // $("#add-job-spinner").addClass('testclass')
-    var formData = {
-      friendly_name: $('#id_friendly_name').val(),
-      job_code_prefix: $('#id_job_code_prefix').val(),
-      proper_name: $('#id_proper_name').val(),
-      proper_name_japanese: $('#id_proper_name_japanese').val(),
-      new_client: 'new ajax client add',
-    };
-    $.ajax({
-      headers: { 'X-CSRFToken': CSRFTOKEN },
-      type: 'POST',
-      url: '/pipeline/',
-      data: formData,
-      beforeSend: function () {
-        spinner.removeClass('invisible');
-      },
-      success: function (response) {
-        if (response.status === 'success') {
-          spinner.addClass('invisible');
-          $('#id_client').append(
-            $('<option></option>')
-              .val(response.id)
-              .text(`${response.value} - ${response.prefix}`)
-          );
-          $('#id_client').val(response.id);
-          $('#id_invoice_recipient').append(
-            $('<option></option>')
-              .val(response.id)
-              .text(`${response.value} - ${response.prefix}`)
-          );
-          $('#id_invoice_recipient').val(response.id);
-          $('#new-client-form').removeClass('was-validated');
-          $('.toast').each(function () {
-            $(this).show();
-          });
-          $('#new-client-modal').modal('toggle');
-          $('#new-client-form')[0].reset();
-
-          // create and instantiate toast for successful client creation
-          var toast = document.createElement('div');
-          toast.classList.add(
-            'toast',
-            'position-fixed',
-            'bg-success-subtle',
-            'border-0',
-            'top-0',
-            'end-0'
-          );
-          toast.setAttribute('role', 'alert');
-          toast.setAttribute('aria-live', 'assertive');
-          toast.setAttribute('aria-atomic', 'true');
-
-          var descriptor = formData['friendly_name'].toUpperCase();
-          var header = document.createElement('div');
-          header.classList.add('toast-header');
-          header.innerHTML = `
-                        <i class="bi bi-check2-circle" class="rounded me-2"></i>
-                        <strong class="me-auto">New client added</strong>
-                        <small class="text-muted">Just now</small>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                        `;
-          var body = document.createElement('div');
-          body.classList.add('toast-body');
-          body.innerText = descriptor;
-
-          toast.appendChild(header);
-          toast.appendChild(body);
-
-          document.body.appendChild(toast);
-
-          var toastElement = new bootstrap.Toast(toast);
-          toastElement.show();
-          setTimeout(function () {
-            $(toastElement).fadeOut('fast', function () {
-              $(this).remove();
-            });
-          }, 1000);
-        } else {
-          $('#new-client-form').addClass('was-validated');
-          spinner.addClass('invisible');
-        }
-      },
-
-      error: function (request) {
-        alert('form not submitted');
-        $(this).addClass('was-validated');
-        spinner.addClass('invisible');
-      },
-    });
-  });
-
+  // TODO: clean up this mess
   $('#batch-pay-csv-dl').on('submit', function (e) {
     e.preventDefault();
     $.ajax({

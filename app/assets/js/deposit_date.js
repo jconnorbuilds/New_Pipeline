@@ -3,7 +3,7 @@ import * as bootstrap from 'bootstrap';
 import { plTable } from './pipeline-dt.js';
 import { csrftoken as CSRFTOKEN } from './common.js';
 
-const form = /**@type {HTMLFormElement} */ (
+export const form = /**@type {HTMLFormElement} */ (
   document.querySelector('#deposit-date-form')
 );
 const modalEl = document.querySelector('#set-deposit-date');
@@ -12,7 +12,7 @@ const modal = new bootstrap.Modal(modalEl);
 /** @type {number} */
 let rowID;
 
-const handleModalShow = () => (e) => {
+const modalShowHandler = () => {
   rowID = plTable.getCurrentRowID();
   const row = plTable.getTable().row(`#${rowID}`).node();
   const jobStatus = row.querySelector('.job-status-select').value;
@@ -21,26 +21,27 @@ const handleModalShow = () => (e) => {
   }
 };
 
-const addFormSubmitListener = () => {
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let depositDateData = {};
-    depositDateData['deposit_date'] = $('#id_deposit_date').val();
-    depositDateData['job_id'] = rowID;
-    $.ajax({
-      headers: { 'X-CSRFToken': CSRFTOKEN },
-      type: 'post',
-      url: `/pipeline/set-deposit-date/${rowID}/`,
-      data: depositDateData,
-      dataType: 'json',
-      success: (response) => {
-        updateTable(response);
-        form.reset();
-        modal.hide();
-      },
-      error: (response) => handleAjaxError(response),
-    });
+const submitHandler = (e) => {
+  e.preventDefault();
+  let depositDateData = {};
+  depositDateData['deposit_date'] = document.querySelector('#id_deposit_date').value;
+  depositDateData['job_id'] = rowID;
+  $.ajax({
+    headers: { 'X-CSRFToken': CSRFTOKEN },
+    type: 'post',
+    url: `/pipeline/set-deposit-date/${rowID}/`,
+    data: depositDateData,
+    dataType: 'json',
+    success: (response) => {
+      updateTable(response);
+      form.reset();
+      modal.hide();
+    },
+    error: (response) => handleAjaxError(response),
   });
 };
 
-export { handleModalShow, addFormSubmitListener };
+export {
+  modalShowHandler as depositDateModalShowHandler,
+  submitHandler as depositDateFormSubmitHandler,
+};

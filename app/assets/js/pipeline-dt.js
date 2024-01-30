@@ -8,13 +8,8 @@ import {
   refreshRevenueDisplay,
   setExpectedRevenueDisplayText,
 } from './pipeline-ui-funcs.js';
-import {
-  renderInvoiceStatus,
-  updateCurrentRowID,
-  rowCallback,
-} from './pipeline-dt-funcs.js';
-import { statusChangeHandler } from './pipeline-dt-ui-funcs.js';
-import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
+import { renderInvoiceStatus, rowCallback } from './pipeline-dt-funcs.js';
+import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 
 let table;
 let tableEl;
@@ -165,6 +160,7 @@ export function initTable() {
       },
     });
   }
+  setupTableEventHandlers(tableEl);
   return table;
 }
 

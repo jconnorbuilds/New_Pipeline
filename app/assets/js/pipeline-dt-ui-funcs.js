@@ -1,27 +1,24 @@
-import { handleModalShow as handleDepositDateModalShow } from './deposit_date.js';
-import {
-  table,
-  tableEl,
-  updateCurrentRowID,
-  statusChangeHandler,
-} from './pipeline-dt-funcs.js';
+import { depositDateModalShowHandler } from './deposit_date.js';
+import { table, tableEl, statusChangeHandler } from './pipeline-dt-funcs.js'; // importing table
 import { plTable } from './pipeline-dt.js';
 
 export const drawNewRow = (newRowData) =>
   table.row(`#${newRowData.id}`).data(newRowData).invalidate().draw(false);
 
-export const setupTableEventHandlers = (
-  datatable = table,
-  datatableEl = tableEl
-) => {
-  // update State
+export const setupTableEventHandlers = (datatableEl = tableEl) => {
   datatableEl.addEventListener('click', (e) =>
-    updateCurrentRowID(e.target.closest('tr').getAttribute('id'))
+    plTable.setCurrentRowID(e.target.closest('tr').getAttribute('id'))
   );
+
   datatableEl.addEventListener('input', (e) =>
     plTable.setCurrentSelectEl(e.target.closest('select'))
   );
-  //
-  datatable.on('click', 'td.deposit-date', handleDepositDateModalShow());
-  datatable.on('change', '.job-status-select', statusChangeHandler);
+
+  datatableEl.addEventListener('click', (e) => {
+    if (e.target.matches('td.deposit-date')) depositDateModalShowHandler();
+  });
+
+  datatableEl.addEventListener('change', (e) => {
+    if (e.target.matches('.job-status-select')) statusChangeHandler(e);
+  });
 };

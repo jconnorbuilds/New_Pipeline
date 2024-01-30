@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import DataTable from 'datatables.net-bs5';
 import * as bootstrap from 'bootstrap';
 import { csrftoken as CSRFTOKEN, truncate } from './common.js';
 import { NewClientForm, displayErrorMessage } from './pipeline_funcs.js';
@@ -17,7 +16,6 @@ import {
 export const table = plTable.getTable();
 export const tableEl = plTable.getTableEl();
 
-const updateCurrentRowID = (id) => plTable.setCurrentRowID(id);
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.job_status_choices;
   let selectEl = document.createElement('select');
@@ -57,14 +55,9 @@ const handleStatusUpdate = (status, rowID) => {
 };
 
 const statusChangeHandler = (e) => {
-  /*
-   * When a user changes the job status via the status dropdown, an
-   * invoice info form appears, or otherwise the status is simply updated.
-   */
   const statusSelectEl = e.target;
   const status = statusSelectEl.value;
   const rowID = plTable.getCurrentRowID();
-  console.log(status, rowID);
   plTable.keepTrackOfCurrentStatus(status);
 
   NewClientForm.el.addEventListener('hide.bs.modal', function () {
@@ -160,5 +153,4 @@ export {
   statusChangeHandler,
   updateTable,
   handleAjaxError,
-  updateCurrentRowID,
 };

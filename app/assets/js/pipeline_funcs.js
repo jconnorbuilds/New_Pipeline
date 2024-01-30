@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { csrftoken as CSRFTOKEN } from './common.js';
+import { csrftoken as CSRFTOKEN } from './utils.js';
 import { setOpenModal } from './invoice_info_modal.js';
 
 const newClientBtn = /** @type {!HTMLElement}*/ (
@@ -7,7 +7,14 @@ const newClientBtn = /** @type {!HTMLElement}*/ (
 );
 newClientBtn.addEventListener('click', () => setOpenModal(false));
 
-const ajaxCall = (formData, url, successCallback, handleError, modal, table) => {
+const ajaxCall = (
+  formData,
+  url,
+  successCallback,
+  handleError,
+  modal,
+  table
+) => {
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     type: 'POST',
@@ -17,7 +24,9 @@ const ajaxCall = (formData, url, successCallback, handleError, modal, table) => 
     success: (response) => {
       response.status === 'success'
         ? successCallback(modal, table, response.data)
-        : console.error('Something happend - maybe the form received bad data.');
+        : console.error(
+            'Something happend - maybe the form received bad data.'
+          );
     },
     error: () => {
       typeof handleError === 'function'
@@ -51,7 +60,9 @@ export function updateRevenueDisplay(year, month) {
     success: function (response) {
       $('#total-revenue-ytd').text(response.total_revenue_ytd);
       $('#avg-revenue-ytd').text(response.avg_monthly_revenue_ytd);
-      $('#total-revenue-monthly-act').text(response.total_revenue_monthly_actual);
+      $('#total-revenue-monthly-act').text(
+        response.total_revenue_monthly_actual
+      );
     },
   });
 }

@@ -1,10 +1,12 @@
-import { request as request_invoice } from './invoices.js';
+import { requestInvoice as request_invoice } from './invoices.js';
 
 const form = document.querySelector('form#pay-period-form');
 const modalEl = document.querySelector('#pay-period-modal');
 const modal = new bootstrap.Modal(modalEl);
 const setMenu = (row) => row.querySelector('ul.dropdown-menu > li');
-const descriptionDiv = document.querySelector('#pay-period-modal .invoice-desc');
+const descriptionDiv = document.querySelector(
+  '#pay-period-modal .invoice-desc'
+);
 modalEl.addEventListener('hide.bs.modal', () => {
   form.reset();
   descriptionDiv.innerHTML = '';
@@ -13,7 +15,9 @@ modalEl.addEventListener('hide.bs.modal', () => {
 const submitForm = (e, table) => {
   e.preventDefault();
   const costID = document.querySelector('#pay-period-form #id_cost_id').value;
-  const payPeriod = document.querySelector('#pay-period-form #id_pay_period').value;
+  const payPeriod = document.querySelector(
+    '#pay-period-form #id_pay_period'
+  ).value;
   request_invoice(costID, table, payPeriod);
 
   modal.hide();

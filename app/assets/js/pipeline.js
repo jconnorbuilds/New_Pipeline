@@ -5,7 +5,7 @@ import '../../assets/scss/pipeline.css';
 import $ from 'jquery';
 window.$ = $;
 import * as bootstrap from 'bootstrap';
-import { csrftoken as CSRFTOKEN, sharedJQueryFuncs } from './common.js';
+import { csrftoken as CSRFTOKEN } from './utils';
 import { initCSVExporter } from './csv-export.js';
 import {
   depositDateFormSubmitHandler,
@@ -36,7 +36,9 @@ document
   .querySelector('#pipeline-next')
   .parentNode.addEventListener('click', dateSelectionHandler);
 
-document.querySelector('.toggle-view').addEventListener('click', toggleViewHandler);
+document
+  .querySelector('.toggle-view')
+  .addEventListener('click', toggleViewHandler);
 
 document
   .querySelector('#deposit-date-form')
@@ -48,7 +50,6 @@ $(document).ready(function () {
   $(table).DataTable();
 
   createFilters();
-  sharedJQueryFuncs();
 
   initCSVExporter();
 
@@ -71,7 +72,8 @@ $(document).ready(function () {
       job_type: document.querySelector('#id_job_type').value,
       granular_revenue: document.querySelector('#id_granular_revenue').value,
       revenue: document.querySelector('#id_revenue').value,
-      add_consumption_tax: document.querySelector('#id_add_consumption_tax').checked,
+      add_consumption_tax: document.querySelector('#id_add_consumption_tax')
+        .checked,
       personInCharge: document.querySelector('#id_personInCharge').value,
     };
 
@@ -124,7 +126,9 @@ $(document).ready(function () {
         const successToast = document.getElementById(
           'payment-template-success-toast'
         );
-        const errorToast = document.getElementById('payment-template-error-toast');
+        const errorToast = document.getElementById(
+          'payment-template-error-toast'
+        );
         const successToastBody = successToast.querySelector('.toast-body');
         const errorToastBody = errorToast.querySelector('.toast-body');
 
@@ -151,7 +155,8 @@ $(document).ready(function () {
                         <li>${i}: ${batchProcessError[i].message}</li>
                         `;
         }
-        const successToastBS = bootstrap.Toast.getOrCreateInstance(successToast);
+        const successToastBS =
+          bootstrap.Toast.getOrCreateInstance(successToast);
         const errorToastBS = bootstrap.Toast.getOrCreateInstance(errorToast);
         if (Object.keys(batchProcessSuccess).length > 0) {
           successToastBS.show();

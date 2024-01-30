@@ -1,6 +1,6 @@
 import * as PayPeriod from './pay_period.js';
 import * as InvoiceTable from './invoices_common.js';
-import { truncate } from './common.js';
+import { truncate } from './utils.js';
 import * as Invoices from './invoices.js';
 import { Calculator } from './currency_calculator.js';
 import * as State from './pipeline-state.js';
@@ -61,7 +61,8 @@ $(document).ready(function () {
         className: 'p-0',
         width: '210px',
         render: {
-          display: (data, type, row) => InvoiceTable.renderInvoiceStatus(data, row),
+          display: (data, type, row) =>
+            InvoiceTable.renderInvoiceStatus(data, row),
           sort: (data) => data,
         },
       },
@@ -124,9 +125,13 @@ $(document).ready(function () {
     rowCallback: (row, data) => InvoiceTable.rowCallback(row, data),
   });
 
-  costTable.on('change', '.cost-vendor-select, .cost-status-select', function () {
-    return getNewRowData(this, costTable);
-  });
+  costTable.on(
+    'change',
+    '.cost-vendor-select, .cost-status-select',
+    function () {
+      return getNewRowData(this, costTable);
+    }
+  );
 
   PayPeriod.form.addEventListener('submit', (e) =>
     PayPeriod.submitForm(e, costTable)

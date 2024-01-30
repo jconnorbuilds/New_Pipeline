@@ -2,7 +2,7 @@ import $ from 'jquery';
 import 'datatables.net-responsive-bs5';
 import DataTable from 'datatables.net-responsive-bs5';
 import * as State from './pipeline-state.js';
-import { truncate } from './common.js';
+import { truncate } from './utils.js';
 import { setTotalExpectedRevenueAmt } from './pipeline-ui-funcs.js';
 import {
   refreshRevenueDisplay,
@@ -164,7 +164,7 @@ export function initTable() {
   return table;
 }
 
-const datatableUtils = () => {
+export const plTable = (() => {
   let currentRowID;
   let selectedStatus;
   let currentSelectEl;
@@ -174,7 +174,7 @@ const datatableUtils = () => {
   const setCurrentRowID = (id) => (currentRowID = id);
   const getCurrentRowID = () => currentRowID;
   const getClientID = () =>
-    parseInt(table.cell(`#${currentRowID}`, 'client_id:name').data());
+    +table.cell(`#${currentRowID}`, 'client_id:name').data();
   const refresh = () => {
     table.ajax.reload();
   };
@@ -197,6 +197,4 @@ const datatableUtils = () => {
     getTableEl,
     refresh,
   };
-};
-
-export const plTable = datatableUtils();
+})();

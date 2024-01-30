@@ -67,3 +67,10 @@ export function createNewEl(tag, clsList, attrDict, textContent) {
 
   return newEl;
 }
+export const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
+  ? document.querySelector('[name=csrfmiddlewaretoken]').value
+  : null;
+
+export function truncate(string, length) {
+  return string.length > 20 ? string.substr(0, length) + '...' : string;
+}

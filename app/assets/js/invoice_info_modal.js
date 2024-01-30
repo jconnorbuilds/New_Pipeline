@@ -2,7 +2,7 @@ import { handleAjaxError } from './pipeline-dt-funcs.js';
 import { createModal } from './modals-ui.js';
 import { openModal } from './modals-ui.js';
 import { plTable } from './pipeline-dt.js';
-import { csrftoken as CSRFTOKEN } from './common.js';
+import { csrftoken as CSRFTOKEN } from './utils.js';
 
 export let modalWillOpen = false;
 
@@ -38,7 +38,8 @@ const modal = (selector) => {
 
   const isCompleted = (datatable, rowID) =>
     JSON.parse(
-      datatable.cell('#' + rowID, 'invoice_info_completed:name').node().textContent
+      datatable.cell('#' + rowID, 'invoice_info_completed:name').node()
+        .textContent
     );
 
   const formRequiresCompletion = (selectedStatus) =>

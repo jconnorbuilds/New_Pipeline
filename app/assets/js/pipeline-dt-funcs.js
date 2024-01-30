@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import * as bootstrap from 'bootstrap';
-import { csrftoken as CSRFTOKEN, truncate } from './common.js';
+import { csrftoken as CSRFTOKEN, truncate } from './utils.js';
 import { NewClientForm, displayErrorMessage } from './pipeline_funcs.js';
 import { getOpenModal, invoiceInfoModal } from './invoice_info_modal.js';
 import { plTable } from './pipeline-dt.js';
@@ -113,7 +113,9 @@ const rowCallback = (row, data) => {
   ['ONGOING', 'READYTOINV'].includes(initialStatus)
     ? row.classList.add('job-ongoing')
     : row.classList.remove('job-ongoing');
-  setTotalExpectedRevenueAmt(getTotalExpectedRevenueAmt() + parseInt(data.revenue));
+  setTotalExpectedRevenueAmt(
+    getTotalExpectedRevenueAmt() + parseInt(data.revenue)
+  );
 };
 
 export const queryJobs = (year, month) => {
@@ -121,7 +123,6 @@ export const queryJobs = (year, month) => {
   if (year !== undefined && month !== undefined) {
     url = url + year + '/' + month + '/';
   }
-  // table.ajax.url(url).load(updateRevenueDisplay(year, month))  // using the callback function parameter of load() to display other variables on the page
   table.ajax.url(url).load();
 };
 

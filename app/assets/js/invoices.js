@@ -1,4 +1,4 @@
-import { csrftoken as CSRFTOKEN } from './common.js';
+import { csrftoken as CSRFTOKEN } from './utils.js';
 const request = (costID, table, costPayPeriod = 'next') => {
   // requests the client invoice
   $.ajax({
@@ -9,7 +9,11 @@ const request = (costID, table, costPayPeriod = 'next') => {
     dataType: 'json',
     success: function (data) {
       alert(data.message);
-      table.row(`#${data.response.id}`).data(data.response).invalidate().draw(false);
+      table
+        .row(`#${data.response.id}`)
+        .data(data.response)
+        .invalidate()
+        .draw(false);
     },
     error: function (data) {
       alert(
@@ -47,4 +51,4 @@ const getNewRowData = (selectEl, table) => {
   });
 };
 
-export { request, getUpdate, getNewRowData };
+export { request as requestInvoice, getUpdate, getNewRowData };

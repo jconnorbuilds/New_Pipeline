@@ -1,11 +1,13 @@
 import * as InvoiceTable from './invoices_common.js';
-import { truncate } from './common.js';
+import { truncate } from './utils.js';
 import * as PayPeriod from './pay_period.js';
 import * as Invoices from './invoices.js';
 import { getNewRowData } from './invoices.js';
 
 $(document).ready(function () {
-  const statusFilters = document.querySelectorAll('.display-filter .status-filter');
+  const statusFilters = document.querySelectorAll(
+    '.display-filter .status-filter'
+  );
 
   DataTable.ext.search.push(function (settings, data, dataIndex) {
     const status = data[9];
@@ -62,7 +64,9 @@ $(document).ready(function () {
         render: {
           display: (data) => {
             let date = new Date(data);
-            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
+            return data
+              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
+              : '---';
           },
           sort: (data) => data,
         },
@@ -85,7 +89,8 @@ $(document).ready(function () {
         className: 'p-0',
         width: '210px',
         render: {
-          display: (data, type, row) => InvoiceTable.renderInvoiceStatus(data, row),
+          display: (data, type, row) =>
+            InvoiceTable.renderInvoiceStatus(data, row),
           sort: (data) => data,
         },
       },

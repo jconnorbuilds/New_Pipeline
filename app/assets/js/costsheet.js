@@ -3,7 +3,7 @@ import * as InvoiceTable from './invoices_common.js';
 import { truncate } from './utils.js';
 import * as Invoices from './invoices.js';
 import { Calculator } from './currency_calculator.js';
-import * as State from './pipeline-state.js';
+import * as State from './main-pipeline/pipeline-state.js';
 import * as bootstrap from 'bootstrap';
 
 function getJobID() {

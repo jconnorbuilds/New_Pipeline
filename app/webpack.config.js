@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './assets/js/pipeline.js',
+  entry: './assets/js/main-pipeline/pipeline.js',
   output: {
     filename: 'main-pipeline-bundle.js',
     path: path.resolve(__dirname, './static'),

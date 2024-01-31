@@ -1,6 +1,9 @@
-import { updateTable, handleAjaxError } from './pipeline-dt-funcs.js';
+import {
+  updateTable,
+  handleAjaxError,
+} from './main-pipeline/pipeline-dt-funcs.js';
 import * as bootstrap from 'bootstrap';
-import { plTable } from './pipeline-dt.js';
+import { plTable } from './main-pipeline/pipeline-dt.js';
 import { csrftoken as CSRFTOKEN } from './utils.js';
 
 export const form = /**@type {HTMLFormElement} */ (

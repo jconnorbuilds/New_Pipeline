@@ -1,8 +1,8 @@
 import * as bootstrap from 'bootstrap';
 import { setInitialInfo } from './invoice_info_modal.js';
 import { setOpenModal } from './invoice_info_modal.js';
-import { showSelectedStatus } from './pipeline-dt-funcs.js';
-import { plTable } from './pipeline-dt.js';
+import { showSelectedStatus } from './main-pipeline/pipeline-dt-funcs.js';
+import { plTable } from './main-pipeline/pipeline-dt.js';
 import { invoiceInfoModal } from './invoice_info_modal.js';
 
 let modalShowHandler;
@@ -14,7 +14,8 @@ const handleModalHide = (modalEl) => {
   plTable.refresh();
 };
 
-const handleModalShow = (selectEl) => showSelectedStatus(selectEl, selectEl.value);
+const handleModalShow = (selectEl) =>
+  showSelectedStatus(selectEl, selectEl.value);
 
 const createModalShowHandler = (selectEl) => {
   modalShowHandler = () => handleModalShow(selectEl);

@@ -46,7 +46,6 @@ export const openModal = (modal) => {
 export function createModal(selector, eventHandlerFns) {
   const modalEl = document.querySelector(selector);
   const modal = new bootstrap.Modal(modalEl);
-
   console.assert(
     modalEl,
     `No elements with selector "${selector}". Check for typos? `

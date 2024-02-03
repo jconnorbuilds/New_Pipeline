@@ -1,20 +1,16 @@
-import $ from 'jquery';
-import 'datatables.net-responsive-bs5';
 import DataTable from 'datatables.net-responsive-bs5';
 import * as State from './pipeline-state.js';
 import { truncate } from '../utils.js';
-import { setTotalExpectedRevenueAmt } from './pipeline-ui-funcs.js';
 import {
+  setTotalExpectedRevenueAmt,
   refreshRevenueDisplay,
-  setExpectedRevenueDisplayText,
 } from './pipeline-ui-funcs.js';
 import { renderInvoiceStatus, rowCallback } from './pipeline-dt-funcs.js';
-import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 
 let table;
 let tableEl;
 
-export function initTable() {
+export const initTable = () => {
   if (!table) {
     tableEl = document.querySelector('#job-table');
     table = new DataTable(tableEl, {
@@ -160,9 +156,8 @@ export function initTable() {
       },
     });
   }
-  setupTableEventHandlers(tableEl);
   return table;
-}
+};
 
 export const plTable = (() => {
   let currentRowID;

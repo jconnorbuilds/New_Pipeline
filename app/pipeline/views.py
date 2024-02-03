@@ -903,9 +903,10 @@ def jobs_csv_export(request):
 
 def create_batch_payment_file(request):
     """
+    Currently, WISE doesn't support batch payments from JPY accounts, so this is shelved until it's supported.
+
     Create a WISE batch payment file from the template in /static.
     Each payment can be maximum 1m JPY, so anything over ¥950k is split into multiple payments.
-
     """
     forex_rates = get_forex_rates()
     if request.method == "POST":

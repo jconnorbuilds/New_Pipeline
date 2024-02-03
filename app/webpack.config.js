@@ -4,9 +4,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './assets/js/main-pipeline/pipeline.js',
+  entry: {
+    'main-pipeline': './assets/js/main-pipeline/pipeline.js',
+    invoices: './assets/js/invoices/invoices_list.js',
+  },
   output: {
-    filename: 'main-pipeline-bundle.js',
+    filename: '[name].bundle.js',
     path: path.resolve(__dirname, './static'),
   },
   devtool: 'inline-source-map',
@@ -14,6 +17,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: '../templates/pipeline/pipeline.html',
       template: './assets/html/pipeline.html',
+      chunks: ['main-pipeline'],
+    }),
+    new HtmlWebpackPlugin({
+      filename: '../templates/pipeline/invoices_list.html',
+      template: './assets/html/invoices_list.html',
+      chunks: ['invoices'],
     }),
   ],
   module: {
@@ -22,15 +31,12 @@ module.exports = {
         test: /\.(scss|css)$/,
         use: [
           {
-            // Adds CSS to the DOM by injecting a `<style>` tag
             loader: 'style-loader',
           },
           {
-            // Interprets `@import` and `url()` like `import/require()` and will resolve them
             loader: 'css-loader',
           },
           {
-            // Loader for webpack to process CSS with PostCSS
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
@@ -39,7 +45,6 @@ module.exports = {
             },
           },
           {
-            // Loads a SASS/SCSS file and compiles it to CSS
             loader: 'sass-loader',
           },
         ],

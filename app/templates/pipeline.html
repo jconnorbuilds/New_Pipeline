@@ -1,0 +1,466 @@
+<head><script defer src="../static/main-pipeline.bundle.js"></script></head><!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block header %}
+    {{ block.super }}
+{% endblock header %}
+{% block body_block %}
+    {% if job_form.errors %}
+        <div class="container">
+            <div class="col-4 m-0">
+                {% for error in job_form.errors %}<p>{{ error }}</p>{% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% if messages %}
+        <div class="p-1 col-xl-6 mx-auto">
+            {% for message in messages %}
+                <div class="container-fluid p-0">
+                    <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                        <span aria-hidden="True"></span>
+                        {{ message }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {# Fields area #}
+    <div class="container-auto bg-body-secondary p-4">
+        <div class="container bg-body-tertiary rounded-3">
+            <div class="row g-3 p-3 d-flex">
+                <div class="col-lg-12 col-xl-8 me-auto">
+                    <form method="post" class="form-control p-3 shadow" id="job-form">
+                        {% csrf_token %}
+                        <h3>Add a job</h3>
+                        <hr>
+                        <div class="row g-3 pb-3">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    {% render_field job_form.client class+="form-select" %}
+                                    <button class="btn btn-light rounded-end-2 border"
+                                            type="button"
+                                            id="pipeline-new-client-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#new-client-modal">New Client</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3 pb-3">
+                            <div class="col-md-6">{% render_field job_form.job_name class+="form-control" placeholder="Enter job name" %}</div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    {% render_field job_form.revenue class+="form-control" placeholder="例）100" %}
+                                    <button class="btn btn-light border col-2 text-nowrap"
+                                            type="button"
+                                            data-bs-toggle="button"
+                                            id="revenue-unit">万円</button>
+                                    <div class="input-group-text">
+                                        {% render_field job_form.add_consumption_tax class+="form-check-input my-auto me-2" %}
+                                        <label id="add-consumption-tax-help"
+                                               class="form-check-label"
+                                               for="id_add_consumption_tax">消費税</label>
+                                    </div>
+                                </div>
+                                {% render_field job_form.granular_revenue class+="form-check-input mt-0" %}
+                            </div>
+                        </div>
+                        <div class="row g-3 pb-3">
+                            <div class="col-sm-3">{% render_field job_form.job_type class+="form-select" %}</div>
+                            <div class="col-sm-3">{% render_field job_form.personInCharge class+="form-select" %}</div>
+                            <div class="col-sm-3">{% render_field job_form.invoice_month class+="form-control" %}</div>
+                            <div class="col-sm-3">{% render_field job_form.invoice_year class+="form-control" %}</div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <input type="submit"
+                                       name="addjob"
+                                       id="add-job-btn"
+                                       value="Add Job"
+                                       class="btn btn-dark">
+                            </div>
+                            <div class="col-auto p-0">
+                                <div class="spinner-border spinner-border-sm invisible"
+                                     role="status"
+                                     id="add-job-spinner">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container form-wrapper p-1 col-xl-2 align-self-end">
+                    <div class="csv-export d-none d-xl-block ">
+                        <form method="POST"
+                              action="{% url 'pipeline:jobs-csv-export' %}"
+                              class="form-control">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col">
+                                    {{ csv_export_form.fromMonth }}
+                                    {{ csv_export_form.fromYear }}
+                                    {{ csv_export_form.useRange }}
+                                    <label for="csv-export-use-range">Multi-month report</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    {{ csv_export_form.thruMonth|add_class:"invisible" }}
+                                    {{ csv_export_form.thruYear|add_class:"invisible" }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="submit"
+                                           name="csvexport"
+                                           value="Export CSV"
+                                           class="btn btn-light">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {# New Client modal #}
+    <div class="modal fade"
+         id="new-client-modal"
+         tabindex="-1"
+         aria-labelledby="new-client-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="new-client-form"
+                      method="post"
+                      action="{% url 'pipeline:index' %}">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="row px-3 py-0 g-1">
+                            <div class="col-9">
+                                <label for="id_friendly_name" class="form-label small">Client name</label>
+                                {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
+                            </div>
+                            <div class="col-3">
+                                <label for="id_job_code_prefix" class="form-label small">Prefix</label>
+                                {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
+                                <div id="prefix_help" class="form-text">2-4 characters</div>
+                            </div>
+                        </div>
+                        <div class="row p-3 g-1">
+                            <p class="p-0 g-0">Proper client name</p>
+                            <div class="col-6 pt-0">
+                                <label for="id_proper_name" class="form-label small pt-0">English</label>
+                                {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. " %}
+                            </div>
+                            <div class="col-6">
+                                <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
+                                {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
+                            </div>
+                            <div id="proper_name_help" class="form-text">The client name to be used for invoices. Enter one or the other.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                id="new-client-modal-cancel-btn"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-info submit"
+                                id="add-new-client-btn"
+                                name="new-client">Add Client</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="add-client-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {# Job table start #}
+    <div class="p-2">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="container-fluid bg-white rounded-2 shadow">
+                <div class="row p-2 align-items-center d-flex justify-content-lg-start">
+                    <div class="col-lg-6 text-lg-start text-center">
+                        <h1 class="display-1">Pipeline</h1>
+                        <div class="p-2">
+                            <button type="button"
+                                    class="btn btn-dark toggle-view"
+                                    data-bs-toggle="button"
+                                    style="white-space: nowrap">
+                                <b>全案件を表示</b>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-0 col-lg-6">
+                        <div>
+                            <dl class="row mx-auto m-0" style="width: 475px;">
+                                <dt class="revenue-display-text">今年度　請求総額</dt>
+                                <dd id="total-revenue-ytd"
+                                    class="revenue-display-amount align-items-center">
+                                </dd>
+                                <dt class="revenue-display-text">今年度　月平均</dt>
+                                <dd id="avg-revenue-ytd" class="revenue-display-amount">
+                                    {{ job.job_code }}
+                                </dd>
+                                <hr class="col-6 mt-3 mx-auto">
+                                <dt class="revenue-display-text expected">表示の月　請求総額 (予定)</dt>
+                                <dd id="total-revenue-monthly-exp" class="revenue-display-amount">
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="monthly-item">
+                            <dl class="row mx-auto" style="width: 475px;">
+                                <dt class="revenue-display-text actual">表示の月　請求総額 (実績)</dt>
+                                <dd id="total-revenue-monthly-act" class="revenue-display-amount">
+                                    {{ job.job_code }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="toast-container position-fixed top-0 end-0 p-3">
+                <div id="invoice-set-success-toast"
+                     class="toast bg-success-subtle"
+                     data-bs-delay="2000"
+                     role="alert"
+                     aria-live="assertive"
+                     aria-atomic="true">
+                    <div class="toast-header">
+                        <i class="bi bi-check2-circle rounded me-2"></i>
+                        <strong class="me-auto">Save successful</strong>
+                        <small class="text-muted">Just now</small>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">Invoice info saved!</div>
+                </div>
+            </div>
+            <div id="pipeline-date-select" class="justify-content-center">
+                <div class=" monthly-item d-flex flex-column align-items-center">
+                    <div class="display-4">
+                        <select class="form-control-plaintext d-inline"
+                                id="pipeline-year"
+                                style="width: auto"></select>
+                        <select class="form-control-plaintext d-inline"
+                                id="pipeline-month"
+                                style="width: auto">
+                            <option value="1">1月</option>
+                            <option value="2">2月</option>
+                            <option value="3">3月</option>
+                            <option value="4">4月</option>
+                            <option value="5">5月</option>
+                            <option value="6">6月</option>
+                            <option value="7">7月</option>
+                            <option value="8">8月</option>
+                            <option value="9">9月</option>
+                            <option value="10">10月</option>
+                            <option value="11">11月</option>
+                            <option value="12">12月</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button type="button"
+                                class="btn btn-dark"
+                                id="pipeline-prev"
+                                style="width: auto">
+                            <<
+                        </button>
+                        <button type="button"
+                                class="btn btn-dark"
+                                id="pipeline-current"
+                                style="width: auto">今月を表示</button>
+                        <button type="button"
+                                class="btn btn-dark"
+                                id="pipeline-next"
+                                style="width: auto">>></button>
+                    </div>
+                </div>
+                <div class="display-filter">
+                    <div>
+                        <input type="checkbox" class="toggle-ongoing" id="toggle-ongoing" checked>
+                        <label for="toggle-ongoing">進行中案件を表示</label>
+                    </div>
+                    <div>
+                        <input type="checkbox"class="only-ongoing"  id="only-ongoing">
+                        <label for="only-ongoing">進行中案件のみを表示</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" class="unreceived" id="toggle-unreceived">
+                        <label for="toggle-unreceived">未回収の支払いのみを表示</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" class="toggle-outstanding" id="toggle-outstanding">
+                        <label for="toggle-outstanding">請求書未受領・未払いの案件を表示</label>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="wrapper" style="min-height:550px;">
+                <div class="row d-flex align-items-baseline">
+                    <div class="col-auto">
+                        <h5>Bulk actions</h5>
+                    </div>
+                    <div class="col-auto">{{ bulk_actions.actions }}</div>
+                    <div class="col-auto">
+                        <input type="submit"
+                               class="btn btn-dark"
+                               name="bulk-actions"
+                               id="pipeline-bulk-actions-submit"
+                               value="Go">
+                    </div>
+                </div>
+                <table id="job-table"
+                       class="hover compact dt-responsive nowrap"
+                       style="width:100%">
+                    <thead>
+                        <tr>
+                            {% for item in headers %}<th>{{ item }}</th>{% endfor %}
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </form>
+        <div class="m-3">
+            <form method="post"
+                  action="{% url 'pipeline:index' %}"
+                  enctype="multipart/form-data"
+                  class="">
+                {% csrf_token %}
+                <div class="row col-2 ms-auto d-none d-sm-block">
+                    {{ job_import_form.file|add_class:"form-control form-control-sm" }}
+                    <input type="submit"
+                           class="btn btn-sm btn-block btn-outline-secondary"
+                           name="import-jobs"
+                           value="Import jobs">
+                </div>
+                <div class="row col-2 ms-auto">
+                    {% if job_import_form.errors %}{{ job_import_form.errors }}{% endif %}
+                    {% if job_import_form.non_field_errors %}
+                        <p>non-field errors</p>
+                        {{ job_import_form.non_field_errors }}
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+    {# Modal for setting invoice details #}
+    <div class="modal fade"
+         id="set-job-invoice-info"
+         tabindex="-1"
+         aria-labelledby="set-invoice-info-modal"
+         aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="invoice-info-form" method="post">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Invoice Details</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            {% render_field set_invoice_info_form.invoice_recipient class+="form-control" %}
+                            <button class="btn btn-light rounded-end-2 border"
+                                    type="button"
+                                    id="set-invoice-modal-new-client-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#new-client-modal">Add New Client</button>
+                            <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
+                        </div>
+                        <div class="mb-3">
+                            {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="Enter the invoice title" %}
+                            <div id="invoice-title-help" class="form-text">The title on the invoice</div>
+                        </div>
+                        <div class="input-group">
+                            {% render_field set_invoice_info_form.invoice_year class+="form-control" %}
+                            {% render_field set_invoice_info_form.invoice_month class+="form-control" %}
+                        </div>
+                        <div id="invoice-period-help" class="form-text mb-3">Period for invoicing the client (year / month)</div>
+                        {{ set_invoice_info_form.job_id }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-light"
+                                id="set-invoice-info-cancel"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-info submit"
+                                id="set-invoice-info-submit"
+                                name="set-invoice-info">Ok</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="add-client-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {# Modal for setting deposit date #}
+    <div class="modal fade"
+         id="set-deposit-date"
+         tabindex="-1"
+         aria-labelledby="set-deposit-date-modal"
+         aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="deposit-date-form"
+                      method="post"
+                      data-url="{% url 'pipeline:index' %}">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Deposit date</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        {% render_field set_deposit_date_form.deposit_date type="date" class="form-control" %}
+                        <div id="deposit-date-help" class="form-text">The date we were paid for this job</div>
+                        {{ set_deposit_date_form.job_id }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-light"
+                                id="set-deposit-date-cancel"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-info submit"
+                                id="set-deposit-date-submit"
+                                name="set-deposit-date">Ok</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="add-client-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script></script>
+{% endblock body_block %}

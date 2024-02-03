@@ -2,7 +2,6 @@ import DataTable from 'datatables.net-bs5';
 import { updateRevenueDisplay } from './pipeline-funcs';
 import * as State from './pipeline-state.js';
 import { dates, createNewEl } from '../utils.js';
-import { plTable } from './pipeline-dt.js';
 import { queryJobs } from './pipeline-dt-funcs.js';
 
 const unreceivedFilter = document.querySelector('input.unreceived');
@@ -13,13 +12,9 @@ const showOutstandingPayments = document.querySelector(
 );
 
 export const revenueToggleHandler = (e) => {
-  const btn = /** @type {!HTMLInputElement} */ (e.currentTarget);
-  const unitToggleInput = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_granular_revenue')
-  );
-  const revenueInput = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_revenue')
-  );
+  const btn = e.currentTarget;
+  const unitToggleInput = document.querySelector('#id_granular_revenue');
+  const revenueInput = document.querySelector('#id_revenue');
 
   if (btn.classList.contains('active')) {
     btn.textContent = '円';
@@ -61,12 +56,12 @@ export function setExpectedRevenueDisplayText() {
 }
 export function createFilters() {
   const jobStatusOrderMap = {
-    ONGOING: '0_',
-    READYTOINV: '1_',
-    INVOICED1: '2_',
-    INVOICED2: '3_',
-    FINISHED: '4_',
-    ARCHIVED: '5_',
+    ONGOING: '1_',
+    READYTOINV: '2_',
+    INVOICED1: '3_',
+    INVOICED2: '4_',
+    FINISHED: '5_',
+    ARCHIVED: '6_',
   };
 
   DataTable.ext.order['dom-job-select'] = function (settings, col) {
@@ -117,11 +112,13 @@ export const showLoadingSpinner = (spinnerEl = spinner) => {
 export const pipelineMonth = document.querySelector('#pipeline-month');
 export const pipelineYear = document.querySelector('#pipeline-year');
 
-for (let year = 2021; year <= dates.thisYear() + 1; year++)
-  pipelineYear.appendChild(
-    createNewEl('option', [], { value: year }, `${year}年`)
-  );
-[pipelineYear.value, pipelineMonth.value] = dates.currentDate();
+export const initializeDateSelectors = () => {
+  for (let year = 2021; year <= dates.thisYear() + 1; year++)
+    pipelineYear.appendChild(
+      createNewEl('option', [], { value: year }, `${year}年`)
+    );
+  [pipelineYear.value, pipelineMonth.value] = dates.currentDate();
+};
 
 export const dateSelectionHandler = (event) => {
   let viewYear, viewMonth;
@@ -145,6 +142,7 @@ export const dateSelectionHandler = (event) => {
   queryJobs(...State.getViewDate());
 };
 
+// TODO: replace jQuery with JS, forego slideUp/slideDown?
 export const toggleViewHandler = () => {
   if (State.getViewType() === 'monthly') {
     State.setViewType('all');

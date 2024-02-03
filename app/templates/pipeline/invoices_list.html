@@ -1,11 +1,9 @@
+<head><script defer src="../../static/invoices.bundle.js"></script></head><!DOCTYPE html>
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
-{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
 {% load static %}
 {% block header %}
     {{ block.super }}
-    <style type="text/css">a{ text-decoration: none; }</style>
-    <script type="module" src="{% static 'pipeline/invoices_list.js' %}" defer></script>
 {% endblock header %}
 {% block title %}
     All Invoices
@@ -54,51 +52,55 @@
     </div>
     <div class="container-fluid p-4">
         <div class="row col-6">
-            {% comment %} <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
-                {% csrf_token %}
-                <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">Prepare Batch Payment</button>
-            </form> {% endcomment %}
+            {% comment %}
+    <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
+      {% csrf_token %}
+      <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">
+        Prepare Batch Payment
+      </button>
+    </form>
+            {% endcomment %}
             <div class="display-filter form-control">
                 <h3>Filter by status</h3>
                 <div>
-                    <input type="checkbox" class="status-filter" value="nr" id="filter-nr">
+                    <input type="checkbox" class="status-filter" value="nr" id="filter-nr" />
                     <label for="filter-nr">Not Requested</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="req" id="filter-req">
+                    <input type="checkbox" class="status-filter" value="req" id="filter-req" />
                     <label for="filter-req">Requested</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="rec" id="filter-rec">
+                    <input type="checkbox" class="status-filter" value="rec" id="filter-rec" />
                     <label for="filter-rec">Received via upload</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="rec2" id="filter-rec2">
+                    <input type="checkbox" class="status-filter" value="rec2" id="filter-rec2" />
                     <label for="filter-rec2">Received direct (pdf/paper)</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="err" id="filter-err">
+                    <input type="checkbox" class="status-filter" value="err" id="filter-err" />
                     <label for="filter-err">Error on upload</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="que" id="filter-que">
+                    <input type="checkbox" class="status-filter" value="que" id="filter-que" />
                     <label for="filter-que">Queued for payment</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="paid" id="filter-paid">
+                    <input type="checkbox" class="status-filter" value="paid" id="filter-paid" />
                     <label for="filter-paid">Paid</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="na" id="filter-na">
+                    <input type="checkbox" class="status-filter" value="na" id="filter-na" />
                     <label for="filter-na">No invoice</label>
                 </div>
             </div>
         </div>
-        <hr>
+        <hr />
         <div class="container p-2">{% csrf_token %}</div>
         <table id="all-invoices-table"
                class="display compact dt-responsive nowrap"
-               style="width:100%">
+               style="width: 100%">
             <thead>
                 <tr>
                     {% for item in headers %}<th>{{ item }}</th>{% endfor %}

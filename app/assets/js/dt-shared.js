@@ -40,7 +40,6 @@ export const selectOnDrag = (e) => {
     const row = e.target.closest('tr');
     const checkbox = row.querySelector('.form-check-input') || null;
     const isChecked = firstSelectedBox.checked;
-    console.log(e.target.querySelector('th'));
     isChecked
       ? row.classList.add('selected-row')
       : row.classList.remove('selected-row');

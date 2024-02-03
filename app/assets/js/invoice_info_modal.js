@@ -6,9 +6,7 @@ import { csrftoken as CSRFTOKEN } from './utils.js';
 
 export let modalWillOpen = false;
 
-const form = /**@type {HTMLFormElement} */ (
-  document.querySelector('#invoice-info-form')
-);
+const form = document.querySelector('#invoice-info-form');
 const formSubmitHandler = () => {
   form.addEventListener('submit', (e) => {
     console.log('THE STATUS IS ', plTable.getStatus());
@@ -50,25 +48,13 @@ const modal = (selector) => {
 };
 
 export const invoiceInfoModal = modal('#set-job-invoice-info');
-/**
- * @param {HTMLElement} newStatus
- */
+
 function getFormData(newStatus) {
-  const recipientField = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_inv-invoice_recipient')
-  );
-  const nameField = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_inv-invoice_name')
-  );
-  const jobIDField = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_inv-job_id')
-  );
-  const yearField = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_inv-invoice_year')
-  );
-  const monthField = /** @type {!HTMLInputElement} */ (
-    document.querySelector('#id_inv-invoice_month')
-  );
+  const recipientField = document.querySelector('#id_inv-invoice_recipient');
+  const nameField = document.querySelector('#id_inv-invoice_name');
+  const jobIDField = document.querySelector('#id_inv-job_id');
+  const yearField = document.querySelector('#id_inv-invoice_year');
+  const monthField = document.querySelector('#id_inv-invoice_month');
 
   let formData = {};
   formData['inv-invoice_recipient'] = recipientField.value;

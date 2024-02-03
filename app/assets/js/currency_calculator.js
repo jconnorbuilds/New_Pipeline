@@ -5,20 +5,14 @@ import {
   getFXRates,
 } from './utils.js/index.js';
 
-const currencyCalc = /** @type {HTMLInputElement} */ (
-  document.querySelector('#currencyCalc')
-);
+const currencyCalc = document.querySelector('#currencyCalc');
 const calcInput = document.querySelector('#calcInput');
 const calcResult = document.querySelector('#calcResult');
-const source = /** @type {HTMLInputElement} */ (document.querySelector('#calcFrom'));
-const target = /** @type {HTMLInputElement} */ (document.querySelector('#calcTo'));
-const currencySelectors =
-  /** @type {HTMLInputElement[]} */ currencyCalc.querySelectorAll('select');
+const source = document.querySelector('#calcFrom');
+const target = document.querySelector('#calcTo');
+const currencySelectors = currencyCalc.querySelectorAll('select');
 
 const Calculator = (() => {
-  /**
-   * @param {string[][]} currencyList
-   */
   const setup = (currencyList) => {
     console.log(currencyList);
     const initialTargetCurrency = 'EUR';
@@ -57,23 +51,9 @@ const Calculator = (() => {
     }
   };
 
-  /**
-   * Calculates the amount in the target currency based on the value provided for the source currency.
-   *
-   * @param {string} inputVal - A thousands-separated string representation of a number
-   * @param {number} srcRate - Exchange rate of the source currency
-   * @param {number} trgtRate - Exchange rate of the target currency
-   * @returns {number} - The commaless result, the amount in the target currency.
-   */
   const evaluate = (inputVal, srcRate, trgtRate) =>
     (removeCommas(inputVal) * (srcRate / trgtRate)).toFixed(2);
 
-  /**
-   *
-   * @param {*} input
-   * @param {*} output
-   * @returns
-   */
   const zeroInputAndOutput = (input, output) => (
     (input.value = 0), (output.value = '0.00')
   );

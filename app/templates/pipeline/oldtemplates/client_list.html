@@ -1,0 +1,50 @@
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+{% block title %}
+    View Clients
+{% endblock title %}
+{% block body_block %}
+    {% csrf_token %}
+    <div class="container d-flex justify-content-center">
+        <div class="col-8">
+            <div class="container p-3">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="container-fluid p-0">
+                            <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                                {{ message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <h1 class="display-1 text-center">Client list</h1>
+            <div class="client-list container d-flex flex-column align-items-center bg-secondary-subtle border border-dark border-1 rounded-1 m-3 p-0 py-3">
+                {% for client in object_list %}
+                    <div class="d-flex w-100 px-3 py-1 justify-content-between align-items-baseline">
+                        <h4 class="d-inline m-0">{{ client.friendly_name }}</h4>
+                        <a href="{% url 'pipeline:client-update' client.id %}">Update details</a>
+                    </div>
+                {% empty %}
+                    <li>The list is empty!</li>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+const clientList = document.querySelectorAll('.client-list div');
+
+clientList.forEach(client => client.addEventListener('mouseover', () => {
+  client.classList.add("selected-row");
+}));
+
+clientList.forEach(client => client.addEventListener('mouseout', (e) => {
+  client.classList.remove("selected-row");
+}));
+
+    </script>
+{% endblock body_block %}

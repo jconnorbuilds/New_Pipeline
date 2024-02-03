@@ -1,4 +1,5 @@
-import { requestInvoice as request_invoice } from './invoices.js';
+import * as bootstrap from 'bootstrap';
+import { requestInvoice } from './invoices/invoices.js';
 
 const form = document.querySelector('form#pay-period-form');
 const modalEl = document.querySelector('#pay-period-modal');
@@ -18,7 +19,7 @@ const submitForm = (e, table) => {
   const payPeriod = document.querySelector(
     '#pay-period-form #id_pay_period'
   ).value;
-  request_invoice(costID, table, payPeriod);
+  requestInvoice(costID, table, payPeriod);
 
   modal.hide();
 };

@@ -13,7 +13,10 @@ export const drawNewRow = (newRowData) =>
 
 export const setupTableEventHandlers = (datatableEl = tableEl) => {
   datatableEl.addEventListener('click', (e) => {
-    if (e.target.matches('.deposit-date' || '.job-status-select'))
+    if (
+      e.target.matches('.deposit-date') ||
+      e.target.matches('.job-status-select')
+    )
       plTable.setCurrentRowID(e.target.closest('tr').getAttribute('id'));
   });
 

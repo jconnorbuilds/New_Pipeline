@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% load l10n %}
+{% block header %}
+    {{ block.super }}
+    <style type="text/css">a { text-decoration: none; }</style>
+    <script type="module" src="{% static 'pipeline/costsheet.js' %}" defer></script>
+{% endblock header %}
+{% block title %}
+    Cost Sheet
+{% endblock title %}
+{% block body_block %}
+    <div class="container-fluid col-md-10">
+        <div class="bg-body-secondary rounded-3 p-4">
+            <div class="col-md-8 mx-auto">
+                <div class="form-control p-3 shadow rounded-3">
+                    <h3>Add vendors</h3>
+                    <hr>
+                    {% for vendor in currentJob.vendors.all %}
+                        <div class="row">
+                            <div class="ps-3 col-9 col-lg-6">
+                                <p>{{ vendor }}</p>
+                            </div>
+                            <div class="col-3">
+                                <a href="{% url 'pipeline:remove-vendor-from-job' currentJob.id vendor.id %}">
+                                    <button type="button"
+                                            name="remove-vendor-{{ vendor.id }}"
+                                            id="costsheet-remove-vendor-btn"
+                                            class="btn btn-danger btn-sm">remove</button>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row d-flex align-items-center">
+                            <div class="col-9 col-lg-6">{% render_field simple_add_vendor_form.addVendor class+="form-select" %}</div>
+                            <div class="col-3">
+                                <input type="submit"
+                                       value="+"
+                                       name="add-vendor"
+                                       class="btn btn-sm btn-outline-dark">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="form-control p-3 shadow rounded-3">
+                    <h3>New cost</h3>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-6 col-lg-8 pe-0">
+                                        {% render_field form.amount class+="form-control border-end-0 rounded-end-0 border-bottom-0" placeholder="Amount" id="costsheet-form-amount" %}
+                                    </div>
+                                    <div class="col-6 col-lg-4 ps-0">
+                                        {% render_field form.currency class+="form-select rounded-start-0 border-bottom-0" id="costsheet-form-currency" %}
+                                    </div>
+                                </div>
+                                {% render_field form.description class+="form-control" placeholder="Description" id="costsheet-form-description" %}
+                                <input type="submit"
+                                       value="Add cost"
+                                       name="add-cost"
+                                       class="btn btn-dark col-12 col-lg-auto mt-3">
+                            </form>
+                        </div>
+                        <div class="currency-calculator mx-3 rounded-3 border border-1 shadow ms-auto col-lg-5"
+                             id="currencyCalc">
+                            <p class="align-middle m-1">ForEx Rate Quick Checker</p>
+                            <div class="input-group mb-0">
+                                <select class="form-select calc-select col-auto border-bottom-0"
+                                        id="calcFrom"></select>
+                                <input type="text"
+                                       class="form-control text-end font-monospace border-bottom-0"
+                                       id="calcInput"
+                                       placeholder="0">
+                            </div>
+                            <div class="input-group mb-3">
+                                <select class="form-select calc-select col-auto" id="calcTo"></select>
+                                <input type="text"
+                                       readonly
+                                       class="font-monospace form-control text-end align-middle py-1"
+                                       placeholder="0.00"
+                                       id="calcResult">
+                            </input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <h3 class="display-3">cost sheet</h3>
+    <hr>
+    <div class="row d-flex justify-content-md-between">
+        <div class="col-md-auto text-md-start text-center">
+            <h6 class="display-6 ">{{ currentJob.job_name }}</h6>
+            <small>ジョブコード:</small>
+            <a href="{% url 'pipeline:job-detail' currentJob.id %}"><small class="text-muted">{{ currentJob.job_code }}</small></a>
+        </div>
+        <div class="col-md-auto my-auto p-3">
+            <div class="text-md-end text-center">
+                <h6 class="font-monospace">Revenue (税抜): ¥{{ currentJob.revenue }}</h6>
+                <h6 class="font-monospace">Total cost: ¥{{ currentJob.total_cost }}</h6>
+                <h6 class="font-monospace">Profit rate: {{ currentJob.profit_rate }}%</h6>
+            </div>
+        </div>
+    </div>
+    <table id="cost-table"
+           class="display compact dt-responsive nowrap"
+           style="width:100%">
+        <thead>
+            <tr>
+                {% for item in headers %}<th>{{ item }}</th>{% endfor %}
+            </tr>
+        </thead>
+    </table>
+</div>
+{% block pay_period_modal %}
+    <div class="modal fade"
+         id="pay-period-modal"
+         tabindex="-1"
+         aria-labelledby="pay-period-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="pay-period-form" method="post">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Custom Pay Period</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="col-9">
+                            <div class="invoice-desc mx-5"></div>
+                            <label for="id_pay_period" class="form-label small">New pay period for this invoice</label>
+                            {% render_field pay_period_form.pay_period class+="form-control" %}
+                        </div>
+                        {{ pay_period_form.cost_id }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                id="pay-period-modal-cancel-btn"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-primary submit"
+                                id="pay-period-btn"
+                                name="set-pay-period">Request invoice</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="pay-period-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock pay_period_modal %}
+<script>
+{% localize off %}
+var jobID = {{ currentJob.id }};
+{% endlocalize %}
+
+var currencies = JSON.parse('{{ currencyList|escapejs }}');
+var forexRates = JSON.parse('{{ forexRates|escapejs }}');
+
+</script>
+{% endblock body_block %}

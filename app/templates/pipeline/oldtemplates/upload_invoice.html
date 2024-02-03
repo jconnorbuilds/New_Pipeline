@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
+{% load widget_tweaks %}
+{% load static %}
+{% block header %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'pipeline/dropzone.css' %}">
+    <script src="{% static 'pipeline/dropzone-min.js' %}"></script>
+{% endblock header %}
+{% block navbar %}
+{% endblock navbar %}
+{% block body_block %}
+    <div class="container">
+        <div class=" d-flex justify-content-center invoice-upload-logo">
+            <img src="{% static 'pipeline/images/bwcat_logo_720x720.png' %}"
+                 alt="BCWC logo"
+                 width="155px">
+        </div>
+        <div class="content-wrapper p-2 col-9 justify-content-center container-fluid">
+            <h3 class="display-3 text-center">Invoice Uploader</h3>
+            <hr>
+            <div class="main-content">
+                <div class="container my-3 p-3 text-bg-light border border-dark border-1 rounded-3">
+                    {% if requested_invoices %}
+                        <h6>Send us your invoices for the following jobs:</h6>
+                        <ol>
+                            {% for invoice in requested_invoices %}
+                                <li class="mt-3 lh-sm">
+                                    <strong>{{ invoice.job.job_name }}</strong>
+                                    <br>
+                                    <small><strong>PO Number: {{ invoice.PO_number }}</small></strong>
+                                        <br>
+                                        <small>For: {{ invoice.description }}</small>
+                                        <br>
+                                        <small>Amount: {{ invoice.currency }}{{ invoice.amount }}</small>
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                        {% else %}
+                            <p class="text-center">
+                                It looks like we aren't expecting any invoices from you. If that doesn't seem right, please reach out to us directly! You can respond directly to the email you received from <strong>invoice@bwcatmusic.com</strong>.
+                            </p>
+                        {% endif %}
+                    </div>
+                    <hr>
+                    {% if requested_invoices %}
+                        <h5 class="no-wrap">Step 1: Drag and drop your invoice(s)</h5>
+                        <div class="container-xl p-3" id="step-1-area">
+                            <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}"
+                                  method="post"
+                                  id="invoice-upload-form"
+                                  enctype="multipart/form-data"
+                                  class="dropzone shadow rounded">
+                                <div class="dropzone-previews"></div>
+                                {% csrf_token %}
+                                <div class="fallback">
+                                    <input name="file" type="file" multiple />
+                                </div>
+                            </form>
+                        </div>
+                        <div class="dz-messages">
+                            <div class="dz-error-messages bg-danger-subtle border border-danger p-3 border-3 rounded-3 m-3 d-none"></div>
+                        </div>
+                        <div class="container py-3" id="step-2-area">
+                            <h5>Step 2: Select the job(s) that you're invoicing</h5>
+                            <div class="container-sm-auto m-3 needs-validation">
+                                <p>
+                                    <em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em>
+                                </p>
+                                <p id="invoice-hint">Files will appear here once you've added them.</p>
+                                <div class="shadow rounded p-2"
+                                     id="invoice-select-area"
+                                     style="display: none"></div>
+                            </div>
+                        </div>
+                        <h5 class="d-inline me-3">Step 3: Click Submit:</h5>
+                        <button type="submit"
+                                name="submit"
+                                id="invoice-upload-btn"
+                                class="btn btn-dark disabled">Submit!</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script>
+	window.costsJson = {{ invoices_json|safe }};
+	window.jobsJson = {{ jobs_json|safe }};
+	window.vendorId = {{ vendor_id|safe }};
+
+        </script>
+    {% endblock body_block %}
+    {% block footer %}
+        {{ block.super }}
+        <script type="text/javascript"
+                src="{% static 'pipeline/invoice-request.js' %}"></script>
+    {% endblock footer %}

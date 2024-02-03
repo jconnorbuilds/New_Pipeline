@@ -1,0 +1,12 @@
+{% extends "pipeline/base.html" %}
+{% load static %}
+{% block title %}
+    Delete cost?
+{% endblock title %}
+{% block body_block %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete "{{ object }}"?</p>
+        <input type="submit" class="btn btn-outline-danger" value="Confirm">
+    </form>
+{% endblock body_block %}

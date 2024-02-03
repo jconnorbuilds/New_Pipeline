@@ -126,12 +126,6 @@ export const queryJobs = (year, month) => {
   table.ajax.url(url).load();
 };
 
-/**
- *
- * @param {HTMLElement} selectEl
- * @param {string} selectedStatus
- * @returns
- */
 const showSelectedStatus = (selectEl, selectedStatus) => {
   selectEl.value = selectedStatus;
 };

@@ -6,9 +6,7 @@ import * as bootstrap from 'bootstrap';
 import { plTable } from './main-pipeline/pipeline-dt.js';
 import { csrftoken as CSRFTOKEN } from './utils.js';
 
-export const form = /**@type {HTMLFormElement} */ (
-  document.querySelector('#deposit-date-form')
-);
+export const form = document.querySelector('#deposit-date-form');
 const modalEl = document.querySelector('#set-deposit-date');
 const modal = new bootstrap.Modal(modalEl);
 

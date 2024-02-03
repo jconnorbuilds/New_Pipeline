@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+{% extends "pipeline/base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block header %}
+    {{ block.super }}
+{% endblock header %}
+{% block title %}
+    All Invoices
+{% endblock title %}
+{% block body_block %}
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div class="toast-container top-0 start-50 translate-middle-x p-3">
+            <div id="payment-template-error-toast"
+                 class="toast bg-danger-subtle"
+                 data-bs-autohide="false"
+                 role="alert"
+                 aria-live="assertive"
+                 aria-atomic="true">
+                <div class="toast-header">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong class="me-auto">Errors</strong>
+                    <small class="text-muted">Just now</small>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                </div>
+                <div class="toast-body"></div>
+            </div>
+            <div id="payment-template-success-toast"
+                 class="toast bg-success-subtle"
+                 data-bs-delay="5000"
+                 role="alert"
+                 aria-live="assertive"
+                 aria-atomic="true">
+                <div class="toast-header">
+                    <i class="bi bi-check2-circle rounded me-2"></i>
+                    <strong class="me-auto">Looks good!</strong>
+                    <small class="text-muted">Just now</small>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                </div>
+                <div class="toast-body"></div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <h3 class="display-3">All Invoices</h3>
+    </div>
+    <div class="container-fluid p-4">
+        <div class="row col-6">
+            {% comment %}
+    <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
+      {% csrf_token %}
+      <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">
+        Prepare Batch Payment
+      </button>
+    </form>
+            {% endcomment %}
+            <div class="display-filter form-control">
+                <h3>Filter by status</h3>
+                <div>
+                    <input type="checkbox" class="status-filter" value="nr" id="filter-nr" />
+                    <label for="filter-nr">Not Requested</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="req" id="filter-req" />
+                    <label for="filter-req">Requested</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="rec" id="filter-rec" />
+                    <label for="filter-rec">Received via upload</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="rec2" id="filter-rec2" />
+                    <label for="filter-rec2">Received direct (pdf/paper)</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="err" id="filter-err" />
+                    <label for="filter-err">Error on upload</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="que" id="filter-que" />
+                    <label for="filter-que">Queued for payment</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="paid" id="filter-paid" />
+                    <label for="filter-paid">Paid</label>
+                </div>
+                <div>
+                    <input type="checkbox" class="status-filter" value="na" id="filter-na" />
+                    <label for="filter-na">No invoice</label>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="container p-2">{% csrf_token %}</div>
+        <table id="all-invoices-table"
+               class="display compact dt-responsive nowrap"
+               style="width: 100%">
+            <thead>
+                <tr>
+                    {% for item in headers %}<th>{{ item }}</th>{% endfor %}
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="modal fade"
+         id="pay-period-modal"
+         tabindex="-1"
+         aria-labelledby="pay-period-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="pay-period-form" method="post">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Custom Pay Period</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="col-9">
+                            <div class="invoice-desc mx-5"></div>
+                            <label for="id_pay_period" class="form-label small">New pay period for this invoice</label>
+                            {% render_field pay_period_form.pay_period class+="form-control" %}
+                        </div>
+                        {{ pay_period_form.cost_id }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                id="pay-period-modal-cancel-btn"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-primary submit"
+                                id="pay-period-btn"
+                                name="set-pay-period">Request invoice</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="pay-period-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock body_block %}

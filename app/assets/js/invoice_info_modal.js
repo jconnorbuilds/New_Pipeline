@@ -19,11 +19,13 @@ const modal = (selector) => {
   const open = () => {
     openModal(modal);
   };
+
   const hide = () => {
     plTable.refresh();
     modal.hide();
     form.reset();
   };
+
   const statusWhichRequireFormCompletion = [
     'INVOICED1',
     'INVOICED2',

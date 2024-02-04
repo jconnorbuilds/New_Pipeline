@@ -130,10 +130,6 @@ const showSelectedStatus = (selectEl, selectedStatus) => {
   selectEl.value = selectedStatus;
 };
 
-const revertStatus = (table) => {
-  table.ajax.reload();
-};
-
 const handleError = (message) => {
   plTable.refresh();
   displayErrorMessage(message);

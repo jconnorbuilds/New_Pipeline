@@ -125,13 +125,9 @@ $(document).ready(function () {
     rowCallback: (row, data) => InvoiceTable.rowCallback(row, data),
   });
 
-  costTable.on(
-    'change',
-    '.cost-vendor-select, .cost-status-select',
-    function () {
-      return getNewRowData(this, costTable);
-    }
-  );
+  costTable.on('change', 'select.vendor, select.status', function () {
+    return getNewRowData(this, costTable);
+  });
 
   PayPeriod.form.addEventListener('submit', (e) =>
     PayPeriod.submitForm(e, costTable)

@@ -4,7 +4,7 @@ import { requestInvoice } from './invoices/invoices.js';
 const form = document.querySelector('form#pay-period-form');
 const modalEl = document.querySelector('#pay-period-modal');
 const modal = new bootstrap.Modal(modalEl);
-const setMenu = (row) => row.querySelector('ul.dropdown-menu > li');
+const defineMenu = (row) => row.querySelector('ul.dropdown-menu > li');
 const descriptionDiv = document.querySelector(
   '#pay-period-modal .invoice-desc'
 );
@@ -42,4 +42,4 @@ const launchModal = (data) => {
   modal.show();
 };
 
-export { form, modal, setMenu, launchModal, submitForm };
+export { form, modal, defineMenu, launchModal, submitForm };

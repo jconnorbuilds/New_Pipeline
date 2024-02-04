@@ -1,6 +1,8 @@
+import $ from 'jquery';
 import { csrftoken as CSRFTOKEN } from '../utils.js';
+
 const request = (costID, table, costPayPeriod = 'next') => {
-  // requests the client invoice
+  // requests the vendor invoice
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     url: '/pipeline/request-single-invoice/' + costID + '/',
@@ -28,9 +30,9 @@ const getUpdate = (selectEl) => {
   // Returns an object describing the changed element
   let formData = {};
 
-  if (selectEl.classList.contains('cost-vendor-select')) {
+  if (selectEl.classList.contains('vendor')) {
     formData.vendor = selectEl.value;
-  } else if (selectEl.classList.contains('cost-status-select')) {
+  } else if (selectEl.classList.contains('status')) {
     formData.status = selectEl.value;
   } else {
     console.error('There was a problem getting the form data');
@@ -41,15 +43,15 @@ const getUpdate = (selectEl) => {
   return formData;
 };
 
-const getNewRowData = (selectEl, table) => {
+const handleStatusChange = (selectEl) => {
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     type: 'POST',
     url: '/pipeline/update-invoice-table-row',
     data: selectEl.value,
     dataType: 'json',
-    success: (response) => getNewRowData(table, response.data),
+    success: (response) => console.log(response.data),
   });
 };
 
-export { request as requestInvoice, getUpdate, getNewRowData };
+export { request as requestInvoice, handleStatusChange };

@@ -1,4 +1,3 @@
-import * as PayPeriod from '../pay_period.js';
 import DataTable from 'datatables.net-bs5';
 
 const renderRequestBtn = (data) => {
@@ -59,7 +58,7 @@ const renderAmountJPY = (data) => '¥' + data.toLocaleString();
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.invoice_status_choices;
   const selectEl = document.createElement('select');
-  selectEl.classList.add('form-control-plaintext', 'cost-status-select', 'p-0');
+  selectEl.classList.add('form-control-plaintext', 'status', 'p-0');
   selectEl.setAttribute('name', 'invoice_status');
   for (const [_, status] of Object.entries(STATUSES)) {
     const optionEl = document.createElement('option');
@@ -83,7 +82,7 @@ const renderVendorName = (row) => {
   const vendors = row.vendors_dict ? row.vendors_dict : null;
   const selectEl = document.createElement('select');
 
-  selectEl.classList.add('form-control-plaintext', 'cost-vendor-select');
+  selectEl.classList.add('form-control-plaintext', 'vendor');
   selectEl.setAttribute('name', 'vendor-select');
   createVendorOption(0, 'Select vendor', selectEl, row);
 
@@ -143,7 +142,7 @@ export const setupSortByStatus = () => {
       .column(col, { order: 'index' })
       .nodes()
       .map(function (td, i) {
-        let el = td.querySelector('.cost-status-select');
+        let el = td.querySelector('select.status');
         return el.getAttribute('style') === 'display: none;'
           ? 0
           : el
@@ -153,23 +152,20 @@ export const setupSortByStatus = () => {
   };
 };
 
-const rowCallback = (row, data) => {
-  if (data.vendor_id == 0) {
-    $(row).find('.cost-status-select').hide();
-    $(row).find('.inv-req').prop('disabled', true);
-  } else {
-    if (data.invoice_status === 'NR') {
-      $(row).find('.inv-req').prop('disabled', false);
-      $(row).find('.cost-vendor-select').prop('disabled', false);
-    } else {
-      $(row).find('.inv-req').prop('disabled', true);
-      $(row).find('.cost-vendor-select').prop('disabled', true);
-    }
-  }
+const enableDisableVendorSelection = (row, data) => {
+  data.invoice_status === 'NR'
+    ? row.querySelector('.cost-vendor-select').removeAttribute('disabled')
+    : row.querySelector('.cost-vendor-select').setAttribute('disabled', '');
+};
 
-  PayPeriod.setMenu(row).addEventListener('click', () => {
-    PayPeriod.launchModal(data);
-  });
+const enableDisableInvoiceRequestBtn = (row, data) => {
+  data.invoice_status === 'NR' && data.vendor_id != 0
+    ? row
+        .querySelectorAll('.inv-req')
+        .forEach((el) => el.removeAttribute('disabled'))
+    : row
+        .querySelectorAll('.inv-req')
+        .forEach((el) => el.setAttribute('disabled', ''));
 };
 
 export {
@@ -179,5 +175,6 @@ export {
   renderInvoiceStatus,
   renderVendorName,
   renderPayPeriod,
-  rowCallback,
+  enableDisableVendorSelection,
+  enableDisableInvoiceRequestBtn,
 };

@@ -468,6 +468,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
 
 
 def update_invoice_table_row(request):
+    print(request.POST)
     if request.POST:
         form_data_vendor = request.POST.get("vendor")
         form_data_status = request.POST.get("status")
@@ -569,7 +570,8 @@ def process_uploaded_vendor_invoice(request):
         "FORMATTED: ", (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
     )
     print(
-        "DT FORMATTED: ", (date.today() + relativedelta(months=+1)).strftime("%Y年%-m月")
+        "DT FORMATTED: ",
+        (date.today() + relativedelta(months=+1)).strftime("%Y年%-m月"),
     )
 
     if request.POST and "invoices" in request.POST:
@@ -860,7 +862,15 @@ def jobs_csv_export(request):
             },
         )
         writer = csv.writer(response)
-        fields = ["クライアント", "案件名", "ジョブコード", "予算 (¥)", "総費用", "案件タイプ", "日付"]
+        fields = [
+            "クライアント",
+            "案件名",
+            "ジョブコード",
+            "予算 (¥)",
+            "総費用",
+            "案件タイプ",
+            "日付",
+        ]
         writer.writerow(fields)
 
         scope = Job.objects.filter(job_date__gte=fromDate, job_date__lt=thruDate)

@@ -2,9 +2,9 @@
 
 import '../../../assets/scss/styles.scss';
 import '../../../assets/scss/pipeline.css';
+import * as bootstrap from 'bootstrap';
 import $ from 'jquery';
 window.$ = $;
-import * as bootstrap from 'bootstrap';
 import { csrftoken as CSRFTOKEN } from '../utils';
 import { initCSVExporter } from '../csv-export.js';
 import { depositDateFormSubmitHandler } from '../deposit_date.js';
@@ -43,9 +43,8 @@ document
 initializeGlobalMouseEvents();
 initializeDateSelectors();
 
-let table;
 $(document).ready(function () {
-  table = plTable.getTable();
+  const table = plTable.getTable();
   $(table).DataTable();
   setupTableEventHandlers();
   createFilters();

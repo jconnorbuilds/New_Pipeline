@@ -3,7 +3,6 @@ import { setInitialInfo } from './invoice_info_modal.js';
 import { setOpenModal } from './invoice_info_modal.js';
 import { showSelectedStatus } from './main-pipeline/pipeline-dt-funcs.js';
 import { plTable } from './main-pipeline/pipeline-dt.js';
-import { invoiceInfoModal } from './invoice_info_modal.js';
 
 let modalShowHandler;
 let modalHideHandler;
@@ -46,10 +45,6 @@ export const openModal = (modal) => {
 export function createModal(selector, eventHandlerFns) {
   const modalEl = document.querySelector(selector);
   const modal = new bootstrap.Modal(modalEl);
-  console.assert(
-    modalEl,
-    `No elements with selector "${selector}". Check for typos? `
-  );
 
   eventHandlerFns.forEach((fn) => fn());
 

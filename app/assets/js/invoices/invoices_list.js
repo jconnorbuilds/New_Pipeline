@@ -2,24 +2,21 @@
 
 import '../../../assets/scss/styles.scss';
 import '../../../assets/scss/pipeline.css';
+import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
+import 'datatables.net-responsive-bs5';
 import $ from 'jquery';
 window.$ = $;
-import * as bootstrap from 'bootstrap';
-import { csrftoken as CSRFTOKEN, truncate } from '../utils.js';
 import * as PayPeriod from '../pay_period.js';
-import * as Invoices from './invoices.js';
 import { getNewRowData } from './invoices.js';
-import { initTable } from './invoices-dt.js';
-import { extendSearch } from './invoices_common.js';
+import { initTable, invoiceTable } from './invoices-dt.js';
+import { extendSearch, setupSortByStatus } from './invoices_common.js';
 
-let table;
 $(document).ready(function () {
-  const allInvoicesTable = initTable();
+  const allInvoicesTable = invoiceTable.getTable();
   $(allInvoicesTable).DataTable();
   extendSearch();
-  const statusFilters = document.querySelectorAll(
-    '.display-filter .status-filter'
-  );
+  setupSortByStatus();
 
   allInvoicesTable.on(
     'change',
@@ -33,8 +30,7 @@ $(document).ready(function () {
     PayPeriod.submitForm(e, allInvoicesTable)
   );
 
-  let filters = document.querySelectorAll('.display-filter input');
-
+  const filters = document.querySelectorAll('.display-filter input');
   filters.forEach((f) =>
     f.addEventListener('change', () => {
       allInvoicesTable.draw();

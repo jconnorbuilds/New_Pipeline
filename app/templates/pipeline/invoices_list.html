@@ -1,10 +1,10 @@
-<head><script defer src="../../static/invoices.bundle.js"></script></head><!DOCTYPE html>
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
 {% load static %}
-{% block header %}
+{% block scripts %}
     {{ block.super }}
-{% endblock header %}
+    <script defer src="{% static 'invoices.bundle.js' %}"></script>
+{% endblock scripts %}
 {% block title %}
     All Invoices
 {% endblock title %}

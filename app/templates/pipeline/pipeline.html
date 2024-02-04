@@ -1,10 +1,10 @@
-<head><script defer src="../../static/main-pipeline.bundle.js"></script></head><!DOCTYPE html>
 {% extends "pipeline/base.html" %}
 {% load widget_tweaks %}
 {% load static %}
-{% block header %}
+{% block scripts %}
     {{ block.super }}
-{% endblock header %}
+    <script defer src="{% static 'main-pipeline.bundle.js' %}"></script>
+{% endblock scripts %}
 {% block body_block %}
     {% if job_form.errors %}
         <div class="container">
@@ -45,7 +45,6 @@
                                     <button class="btn btn-light rounded-end-2 border"
                                             type="button"
                                             id="pipeline-new-client-btn"
-                                            data-bs-toggle="modal"
                                             data-bs-target="#new-client-modal">New Client</button>
                                 </div>
                             </div>
@@ -385,7 +384,6 @@
                             <button class="btn btn-light rounded-end-2 border"
                                     type="button"
                                     id="set-invoice-modal-new-client-btn"
-                                    data-bs-toggle="modal"
                                     data-bs-target="#new-client-modal">Add New Client</button>
                             <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
                         </div>

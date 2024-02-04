@@ -106,17 +106,9 @@ const renderPayPeriod = (data) => {
   }
 };
 
-// Defines the order of the invoice status column
-const invoiceStatusOrderMap = {
-  NR: 1,
-  REQ: 2,
-  REC: 3,
-  REC2: 4,
-  ERR: 5,
-  QUE: 6,
-  PAID: 7,
-  NA: 8,
-};
+const statusFilters = document.querySelectorAll(
+  '.display-filter .status-filter'
+);
 
 export const extendSearch = () => {
   DataTable.ext.search.push(function (settings, data, dataIndex) {
@@ -130,7 +122,22 @@ export const extendSearch = () => {
 
     return true;
   });
+};
 
+export const setupSortByStatus = () => {
+  // Defines the order of the invoice status column
+  const invoiceStatusOrderMap = {
+    NR: 1,
+    REQ: 2,
+    REC: 3,
+    REC2: 4,
+    ERR: 5,
+    QUE: 6,
+    PAID: 7,
+    NA: 8,
+  };
+
+  // Sort by status, based on the order above
   DataTable.ext.order['dom-cost-select'] = function (settings, col) {
     return this.api()
       .column(col, { order: 'index' })

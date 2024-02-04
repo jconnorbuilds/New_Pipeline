@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net-bs5';
-// import 'datatables.net-responsive-bs5';
+import 'datatables.net-responsive-bs5';
 
 import { truncate } from '../utils.js';
 import * as InvoiceTable from './invoices_common.js';
@@ -13,11 +13,7 @@ export const initTable = () => {
   table = new DataTable(tableEl, {
     paging: true,
     pageLength: 50,
-    responsive: {
-      details: {
-        display: $.fn.dataTable.Responsive.display.childRow,
-      },
-    },
+    responsive: true,
     order: [
       [3, 'asc'], //job date (asc)
       [5, 'asc'], //job code (asc)
@@ -111,10 +107,17 @@ export const initTable = () => {
       },
       { target: 1, className: 'dt-right', width: '80px' },
       { target: 2, className: 'dt-left' },
-      { targets: 4, render: $.fn.dataTable.render.ellipsis(25, true) },
-      { target: 7, render: $.fn.dataTable.render.ellipsis(15) },
     ],
 
     rowCallback: (row, data) => InvoiceTable.rowCallback(row, data),
   });
+  return table;
 };
+
+export const invoiceTable = (() => {
+  const getTable = () => table || initTable();
+
+  return {
+    getTable,
+  };
+})();

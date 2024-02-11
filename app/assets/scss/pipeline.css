@@ -1,4 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Chivo+Mono&family=Chivo:wght@200;400;700&display=swap');
+@font-face {
+  font-family: 'Chivo';
+  src: url('../fonts/Chivo-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chivo Mono';
+  src: url('../fonts/ChivoMono-VariableFont_wght.ttf') format('truetype');
+  font-style: normal;
+}
 
 :root {
   --bs-body-font-family: 'Chivo', 'Roboto', 'sans-serif';
@@ -25,7 +35,7 @@ td a {
 
 tr:hover a {
   text-decoration: underline;
-  color:#0d6efd;
+  color: #0d6efd;
 }
 
 tr:hover a:hover {
@@ -44,24 +54,20 @@ input::-webkit-inner-spin-button {
 }
 
 .dropzone .dz-preview .dz-progress {
- top: 70% !important;
- background: rgba(255,255,255,25%) !important;
+  top: 70% !important;
+  background: rgba(255, 255, 255, 25%) !important;
 }
 
 .dropzone .dz-preview .dz-error-message {
   top: 150px !important;
 }
 
-/* tbody tr.job-finished { 
-  background-color: rgba(0, 176, 21, 0.126) !important;
-} */
-
 tbody tr.job-invoiced .job-label {
-  font-style: italic !important; 
+  font-style: italic !important;
   font-weight: 200 !important;
 }
 
-tbody tr.job-ongoing { 
+tbody tr.job-ongoing {
   background-color: var(--bs-gray-200) !important;
   background-color: rgba(218, 213, 255, 0.267) !important;
 }
@@ -120,15 +126,13 @@ tbody tr.job-ongoing {
   font-family: 'Chivo Mono', monospace;
   text-align: right;
   margin-bottom: 0px;
-  font-size: .95em;
+  font-size: 0.95em;
   width: 40%;
 }
 
 .revenue-display-text {
   font-size: 1em;
   width: 70%;
-
-
 }
 
 .revenue-display-amount {

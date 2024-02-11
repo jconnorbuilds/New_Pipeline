@@ -9,4 +9,5 @@ node_modules
 docker-compose.yml
 docker-compose.local.yml
 import_templates
+data
 **/__pycache__/

@@ -20,6 +20,7 @@
   "devDependencies": {
     "datatables.net-bs5": "^1.13.8",
     "datatables.net-responsive-bs5": "^2.5.0",
+    "file-loader": "^6.2.0",
     "jquery": "^3.7.1",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"

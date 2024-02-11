@@ -64,3 +64,10 @@ export const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
 export function truncate(string, length) {
   return string.length > 20 ? string.substr(0, length) + '...' : string;
 }
+export const slugify = (str) =>
+  str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');

@@ -4,8 +4,10 @@ const autoprefixer = require('autoprefixer');
 module.exports = {
   mode: 'development',
   entry: {
+    base: './assets/js/base.js',
     'main-pipeline': './assets/js/main-pipeline/pipeline.js',
     invoices: './assets/js/invoices/invoices_list.js',
+    'invoice-uploader': './assets/js/invoice-uploader/invoice-uploader.js',
   },
 
   output: {
@@ -37,6 +39,11 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
     ],
   },
+  watch: true,
 };

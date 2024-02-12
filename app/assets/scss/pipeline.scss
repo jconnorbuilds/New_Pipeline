@@ -1,3 +1,6 @@
+// Import all of Bootstrap's CSS
+@import 'bootstrap/scss/bootstrap';
+
 @font-face {
   font-family: 'Chivo';
   src: url('../fonts/Chivo-VariableFont_wght.ttf') format('truetype');
@@ -67,9 +70,9 @@ tbody tr.job-invoiced .job-label {
   font-weight: 200 !important;
 }
 
-tbody tr.job-ongoing {
-  background-color: var(--bs-gray-200) !important;
-  background-color: rgba(218, 213, 255, 0.267) !important;
+table.table,
+table div.btn-group button {
+  font-size: 0.9rem;
 }
 
 .all-invoices-requested {

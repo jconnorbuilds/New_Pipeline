@@ -2,7 +2,6 @@
 {% load widget_tweaks %}
 {% load static %}
 {% block scripts %}
-    {{ block.super }}
     <script defer src="{% static 'invoices.bundle.js' %}"></script>
 {% endblock scripts %}
 {% block title %}
@@ -97,16 +96,20 @@
             </div>
         </div>
         <hr />
-        <div class="container p-2">{% csrf_token %}</div>
-        <table id="all-invoices-table"
-               class="display compact dt-responsive nowrap dataTable"
-               style="width: 100%">
-            <thead>
-                <tr>
-                    {% for item in headers %}<th>{{ item }}</th>{% endfor %}
-                </tr>
-            </thead>
-        </table>
+        <div class="table-responsive">
+            {% csrf_token %}
+            <table id="all-invoices-table"
+                   class="table table-sm table-hover table-borderless nowrap align-middle"
+                   style="width: 100%">
+                <thead>
+                    <tr>
+                        {% for item in headers %}<th>{{ item }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="modal fade"
          id="pay-period-modal"

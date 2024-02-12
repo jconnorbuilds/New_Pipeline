@@ -326,15 +326,17 @@
                                value="Go">
                     </div>
                 </div>
-                <table id="job-table"
-                       class="hover compact dt-responsive nowrap"
-                       style="width:100%">
-                    <thead>
-                        <tr>
-                            {% for item in headers %}<th>{{ item }}</th>{% endfor %}
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table id="job-table"
+                           class="table table-sm table-hover table-borderless nowrap align-middle"
+                           style="width:100%">
+                        <thead>
+                            <tr>
+                                {% for item in headers %}<th>{{ item }}</th>{% endfor %}
+                            </tr>
+                        </thead>
+                    </table>
+                </div
             </div>
         </form>
         <div class="m-3">
@@ -360,104 +362,104 @@
             </form>
         </div>
     </div>
-    {# Modal for setting invoice details #}
-    <div class="modal fade"
-         id="set-job-invoice-info"
-         tabindex="-1"
-         aria-labelledby="set-invoice-info-modal"
-         aria-hidden="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="invoice-info-form" method="post">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Invoice Details</h1>
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+</div>
+{# Modal for setting invoice details #}
+<div class="modal fade"
+     id="set-job-invoice-info"
+     tabindex="-1"
+     aria-labelledby="set-invoice-info-modal"
+     aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="invoice-info-form" method="post">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Invoice Details</h1>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        {% render_field set_invoice_info_form.invoice_recipient class+="form-control" %}
+                        <button class="btn btn-light rounded-end-2 border"
+                                type="button"
+                                id="set-invoice-modal-new-client-btn"
+                                data-bs-target="#new-client-modal">Add New Client</button>
+                        <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
                     </div>
-                    <div class="modal-body">
-                        {% csrf_token %}
-                        <div class="input-group mb-3">
-                            {% render_field set_invoice_info_form.invoice_recipient class+="form-control" %}
-                            <button class="btn btn-light rounded-end-2 border"
-                                    type="button"
-                                    id="set-invoice-modal-new-client-btn"
-                                    data-bs-target="#new-client-modal">Add New Client</button>
-                            <div id="invoice-recipient-help" class="form-text">Who is the invoice addressed to? (Usually same as Client)</div>
-                        </div>
-                        <div class="mb-3">
-                            {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="Enter the invoice title" %}
-                            <div id="invoice-title-help" class="form-text">The title on the invoice</div>
-                        </div>
-                        <div class="input-group">
-                            {% render_field set_invoice_info_form.invoice_year class+="form-control" %}
-                            {% render_field set_invoice_info_form.invoice_month class+="form-control" %}
-                        </div>
-                        <div id="invoice-period-help" class="form-text mb-3">Period for invoicing the client (year / month)</div>
-                        {{ set_invoice_info_form.job_id }}
+                    <div class="mb-3">
+                        {% render_field set_invoice_info_form.invoice_name class+="form-control" placeholder="Enter the invoice title" %}
+                        <div id="invoice-title-help" class="form-text">The title on the invoice</div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-light"
-                                id="set-invoice-info-cancel"
-                                data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit"
-                                class="btn btn-info submit"
-                                id="set-invoice-info-submit"
-                                name="set-invoice-info">Ok</button>
-                        <div class="spinner-border spinner-border-sm invisible"
-                             role="status"
-                             id="add-client-spinner">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                    <div class="input-group">
+                        {% render_field set_invoice_info_form.invoice_year class+="form-control" %}
+                        {% render_field set_invoice_info_form.invoice_month class+="form-control" %}
                     </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {# Modal for setting deposit date #}
-    <div class="modal fade"
-         id="set-deposit-date"
-         tabindex="-1"
-         aria-labelledby="set-deposit-date-modal"
-         aria-hidden="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="deposit-date-form"
-                      method="post"
-                      data-url="{% url 'pipeline:index' %}">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Deposit date</h1>
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        {% csrf_token %}
-                        {% render_field set_deposit_date_form.deposit_date type="date" class="form-control" %}
-                        <div id="deposit-date-help" class="form-text">The date we were paid for this job</div>
-                        {{ set_deposit_date_form.job_id }}
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-light"
-                                id="set-deposit-date-cancel"
-                                data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit"
-                                class="btn btn-info submit"
-                                id="set-deposit-date-submit"
-                                name="set-deposit-date">Ok</button>
-                        <div class="spinner-border spinner-border-sm invisible"
-                             role="status"
-                             id="add-client-spinner">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                    <div id="invoice-period-help" class="form-text mb-3">Period for invoicing the client (year / month)</div>
+                    {{ set_invoice_info_form.job_id }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-light"
+                            id="set-invoice-info-cancel"
+                            data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit"
+                            class="btn btn-info submit"
+                            id="set-invoice-info-submit"
+                            name="set-invoice-info">Ok</button>
+                    <div class="spinner-border spinner-border-sm invisible"
+                         role="status"
+                         id="add-client-spinner">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-    <script></script>
+</div>
+{# Modal for setting deposit date #}
+<div class="modal fade"
+     id="set-deposit-date"
+     tabindex="-1"
+     aria-labelledby="set-deposit-date-modal"
+     aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deposit-date-form"
+                  method="post"
+                  data-url="{% url 'pipeline:index' %}">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Deposit date</h1>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% render_field set_deposit_date_form.deposit_date type="date" class="form-control" %}
+                    <div id="deposit-date-help" class="form-text">The date we were paid for this job</div>
+                    {{ set_deposit_date_form.job_id }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-light"
+                            id="set-deposit-date-cancel"
+                            data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit"
+                            class="btn btn-info submit"
+                            id="set-deposit-date-submit"
+                            name="set-deposit-date">Ok</button>
+                    <div class="spinner-border spinner-border-sm invisible"
+                         role="status"
+                         id="add-client-spinner">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock body_block %}

@@ -111,8 +111,8 @@ const rowCallback = (row, data) => {
     ? row.classList.add('job-finished')
     : row.classList.remove('job-finished');
   ['ONGOING', 'READYTOINV'].includes(initialStatus)
-    ? row.classList.add('job-ongoing')
-    : row.classList.remove('job-ongoing');
+    ? row.classList.add('table-primary')
+    : row.classList.remove('table-primary');
   setTotalExpectedRevenueAmt(
     getTotalExpectedRevenueAmt() + parseInt(data.revenue)
   );

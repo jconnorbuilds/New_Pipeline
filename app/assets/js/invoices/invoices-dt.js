@@ -1,8 +1,4 @@
 import DataTable from 'datatables.net-bs5';
-import 'datatables.net-responsive-bs5';
-import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
-import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
-
 import { truncate } from '../utils.js';
 import { invoicesTableRowCallback } from './invoices-dt-funcs.js';
 import {
@@ -21,8 +17,9 @@ export const initTable = () => {
     tableEl = document.querySelector('#all-invoices-table');
     table = new DataTable(tableEl, {
       paging: true,
+      processing: true,
       pageLength: 50,
-      responsive: true,
+      responsive: false,
       order: [
         [3, 'asc'], //job date (asc)
         [5, 'asc'], //job code (asc)

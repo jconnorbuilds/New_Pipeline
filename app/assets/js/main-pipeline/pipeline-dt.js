@@ -1,7 +1,4 @@
 import DataTable from 'datatables.net-bs5';
-import 'datatables.net-responsive-bs5';
-import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
-import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
 import * as State from './pipeline-state.js';
 import { truncate } from '../utils.js';
 import {
@@ -17,7 +14,8 @@ export const initTable = () => {
   tableEl = document.querySelector('#job-table');
   table = new DataTable(tableEl, {
     paging: false,
-    responsive: true,
+    processing: true,
+    responsive: false,
     order: [
       [9, 'asc'],
       [7, 'desc'],
@@ -60,8 +58,8 @@ export const initTable = () => {
         render: {
           // prettier-ignore
           display: (data, type, row) => row.invoice_name
-                ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(row.invoice_name, 15)}</a>`
-                : `<a href="/pipeline/${row.id}/job-detail/">${truncate(data, 15)}</a>`,
+                ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${row.invoice_name}</a>`
+                : `<a href="/pipeline/${row.id}/job-detail/">${(data)}</a>`,
           sort: (data) => data,
         },
       },

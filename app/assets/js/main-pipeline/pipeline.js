@@ -1,9 +1,12 @@
 'use strict';
 
+import '../../../assets/scss/pipeline.scss';
+import 'datatables.net-responsive-bs5';
+import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
 import $ from 'jquery';
 window.$ = $;
-import '../../../assets/scss/styles.scss';
-import '../../../assets/scss/pipeline.css';
+
 import * as bootstrap from 'bootstrap';
 import { csrftoken as CSRFTOKEN } from '../utils';
 import { initCSVExporter } from '../csv-export.js';

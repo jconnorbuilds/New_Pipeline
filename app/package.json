@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/jconnorbuilds/New_Pipeline#readme",
   "devDependencies": {
-    "datatables.net-bs5": "^1.13.8",
+    "datatables.net-bs5": "^1.13.10",
     "datatables.net-responsive-bs5": "^2.5.0",
     "file-loader": "^6.2.0",
     "jquery": "^3.7.1",
@@ -26,6 +26,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2"
   }
 }

@@ -1,4 +1,5 @@
 import DataTable from 'datatables.net-bs5';
+
 import * as State from './pipeline-state.js';
 import { truncate } from '../utils.js';
 import {
@@ -15,7 +16,8 @@ export const initTable = () => {
   table = new DataTable(tableEl, {
     paging: false,
     processing: true,
-    responsive: false,
+    dom: 'lfrtip',
+    autoWidth: true,
     order: [
       [9, 'asc'],
       [7, 'desc'],
@@ -28,7 +30,7 @@ export const initTable = () => {
       search: '',
     },
     preDrawCallback: () => setTotalExpectedRevenueAmt(0),
-    drawCallback: () => refreshRevenueDisplay(),
+    drawCallback: () => refreshRevenueDisplay(), // update this to calculate once after table finishes drawing?
     ajax: {
       url:
         '/pipeline/pipeline-data/' +
@@ -41,39 +43,34 @@ export const initTable = () => {
     columns: [
       {
         data: null,
-        responsivePriority: 2,
         render: (data, type, row) =>
           `<input type='checkbox' name='select' value=${row.id} class='form-check-input'>`,
       },
       {
         data: 'client_name',
-        responsivePriority: 5,
         render: (data, type, row) =>
           `<a href="client-update/${row.client_id}">${data}</a>`,
       },
       {
         data: 'job_name',
         className: 'job-label',
-        responsivePriority: 1,
         render: {
           // prettier-ignore
           display: (data, type, row) => row.invoice_name
-                ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${row.invoice_name}</a>`
-                : `<a href="/pipeline/${row.id}/job-detail/">${(data)}</a>`,
+                ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(row.invoice_name)}</a>`
+                : `<a href="/pipeline/${row.id}/job-detail/">${truncate(data)}</a>`,
           sort: (data) => data,
         },
       },
       { data: 'job_code' },
       {
         data: 'revenue',
-        className: 'pe-4 revenue-amt',
-        responsivePriority: 3,
+        className: 'revenue-amt',
         render: (data, type, row) => `¥${data.toLocaleString()}`,
       },
       {
         data: 'total_cost',
-        className: 'pe-4',
-        responsivePriority: 4,
+        className: 'px-4',
         render: {
           display: (data, type, row) =>
             // prettier-ignore
@@ -83,8 +80,7 @@ export const initTable = () => {
       },
       {
         data: 'profit_rate',
-        className: 'pe-4',
-        width: '120px',
+        className: 'px-4',
         render: (data) => `${data}%`,
       },
       {
@@ -107,7 +103,7 @@ export const initTable = () => {
       {
         data: 'status',
         name: 'status',
-        responsivePriority: 6,
+        width: '120px',
         render: {
           display: (data, type, row) => renderInvoiceStatus(data, row),
         },

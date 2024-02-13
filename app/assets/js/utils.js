@@ -61,8 +61,34 @@ export const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
   ? document.querySelector('[name=csrfmiddlewaretoken]').value
   : null;
 
-export function truncate(string, length) {
-  return string.length > 20 ? string.substr(0, length) + '...' : string;
+export function truncate(string, allowedLengthJp = 15, maxLength = 30) {
+  // Function to count Japanese characters
+  const countJapaneseCharacters = (str) => {
+    // Regex checks for hiragana, katakana, most kanji, and full-width romaji
+    const JPRegex =
+      /[\u3040-\u309F\u30A0-\u30FF\uFF01-\uFF5E\u4E00-\u9FAF\u3400-\u4DBF]/gu;
+    const matches = str.match(JPRegex);
+    return matches ? matches.length : 0;
+  };
+
+  // Calculate the number of Japanese characters
+  const jpCharCount = countJapaneseCharacters(string);
+  const totalLength = string.length;
+
+  // Truncate based on the number of JP + EN characters
+  if (jpCharCount > allowedLengthJp) {
+    return string.substring(0, allowedLengthJp) + '...';
+  } else if (jpCharCount >= 10 && totalLength > 15) {
+    return string.substring(0, 15) + '...';
+  } else if (jpCharCount >= 5 && totalLength > 20) {
+    return string.substring(0, 20) + '...';
+  } else if (jpCharCount >= 2 && totalLength > 25) {
+    return string.substring(0, 25) + '...';
+  } else if (totalLength > maxLength) {
+    return string.substring(0, maxLength) + '...';
+  }
+  // No truncation needed
+  return string;
 }
 export const slugify = (str) =>
   str

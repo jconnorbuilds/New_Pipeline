@@ -13,7 +13,7 @@ import {
   totalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
 
-export const table = plTable.getTable();
+export const table = plTable.getOrInitTable();
 export const tableEl = plTable.getTableEl();
 
 const renderInvoiceStatus = (data, row) => {

@@ -449,8 +449,8 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["headers"] = [
             "",
-            "金額 (¥)",
-            "金額(local)",
+            "金額",
+            "現地",
             "請求期間",
             "案件名",
             "ジョブコード",
@@ -1249,8 +1249,8 @@ class CostsheetViewBase(LoginRequiredMixin, CreateView):
         context["forexRates"] = json.dumps(self.forex_rates)
         context["currentJob"] = currentJob
         context["headers"] = [
-            "金額(¥)",
-            "金額(現地)",
+            "金額",
+            "現地",
             "ベンダー名",
             "作業の内容",
             "PO番号",

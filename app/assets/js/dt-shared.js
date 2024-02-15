@@ -55,5 +55,5 @@ export const preventHighlighting = (e) => {
 export const getCostIDAndSubmitInvoice = (e) => {
   e.preventDefault();
   const costID = e.target.getAttribute('id').split('-').pop();
-  requestInvoice(costID, plTable.getTable());
+  requestInvoice(costID, plTable.getOrInitTable());
 };

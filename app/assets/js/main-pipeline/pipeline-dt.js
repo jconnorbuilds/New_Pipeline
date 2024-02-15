@@ -32,12 +32,7 @@ export const initTable = () => {
     preDrawCallback: () => setTotalExpectedRevenueAmt(0),
     drawCallback: () => refreshRevenueDisplay(), // update this to calculate once after table finishes drawing?
     ajax: {
-      url:
-        '/pipeline/pipeline-data/' +
-        State.getViewYear() +
-        '/' +
-        State.getViewMonth() +
-        '/',
+      url: `/pipeline/pipeline-data/${State.getViewYear()}/${State.getViewMonth()}/`,
       dataSrc: (json) => json.data,
     },
     columns: [
@@ -159,8 +154,9 @@ export const plTable = (() => {
   let selectedStatus;
   let currentSelectEl;
 
-  const getTable = () => table || initTable();
-  const getTableEl = () => tableEl;
+  const getOrInitTable = () => table || initTable();
+  const getTableEl = () =>
+    getOrInitTable().table().container().querySelector('table');
   const setCurrentRowID = (id) => (currentRowID = id);
   const getCurrentRowID = () => currentRowID;
   const getClientID = () =>
@@ -183,7 +179,7 @@ export const plTable = (() => {
     getClientID,
     keepTrackOfCurrentStatus,
     getStatus,
-    getTable,
+    getOrInitTable,
     getTableEl,
     refresh,
   };

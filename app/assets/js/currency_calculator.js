@@ -3,7 +3,7 @@ import {
   separateThousandsOnInput,
   removeCommas,
   getFXRates,
-} from './utils.js/index.js';
+} from './utils.js';
 
 const currencyCalc = document.querySelector('#currencyCalc');
 const calcInput = document.querySelector('#calcInput');
@@ -14,16 +14,14 @@ const currencySelectors = currencyCalc.querySelectorAll('select');
 
 const Calculator = (() => {
   const setup = (currencyList) => {
-    console.log(currencyList);
     const initialTargetCurrency = 'EUR';
     currencyList.forEach((currency) => {
       const sourceOption = document.createElement('option');
-      sourceOption.value = currency[0];
-      sourceOption.innerHTML = currency[1];
-
       const targetOption = document.createElement('option');
+      sourceOption.value = currency[0];
       targetOption.value = currency[0];
-      targetOption.innerHTML = currency[1];
+      sourceOption.innerHTML = currency[0];
+      targetOption.innerHTML = currency[0];
 
       if (targetOption.value === initialTargetCurrency) {
         targetOption.setAttribute('selected', 'selected');
@@ -74,4 +72,4 @@ const Calculator = (() => {
   return { setup };
 })();
 
-export { Calculator };
+export default Calculator;

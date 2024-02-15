@@ -19,7 +19,7 @@ export const initTable = () => {
       paging: true,
       processing: true,
       pageLength: 50,
-      responsive: false,
+      autoWidth: true,
       order: [
         [3, 'asc'], //job date (asc)
         [5, 'asc'], //job code (asc)
@@ -39,14 +39,19 @@ export const initTable = () => {
         },
         {
           data: 'amount_JPY',
-          className: 'px-3',
+          className: 'px-4 dt-right',
           render: (data) => renderAmountJPY(data),
         },
         {
           data: 'amount',
+          className: 'px-4 dt-right',
           responsivePriority: 1,
           render: {
-            display: (data, type, row) => renderAmount(data, row),
+            display: (data, type, row) =>
+              renderAmount(data, {
+                name: row.currency,
+                symbol: row.currency_symbol,
+              }),
             sort: (data) => data,
           },
         },
@@ -111,8 +116,6 @@ export const initTable = () => {
             td.classList.add('font-monospace');
           },
         },
-        { target: 1, className: 'dt-right', width: '80px' },
-        { target: 2, className: 'dt-left' },
       ],
 
       rowCallback: (row, data) => invoicesTableRowCallback(row, data),
@@ -122,13 +125,14 @@ export const initTable = () => {
 };
 
 export const invoiceTable = (() => {
-  const getTable = () => table || initTable();
-  const getTableEl = () => tableEl;
+  const getOrInitTable = () => table || initTable();
+  const getTableEl = () =>
+    getOrInitTable().table().container().querySelector('table');
 
   const refresh = () => table.ajax.reload();
 
   return {
-    getTable,
+    getOrInitTable,
     getTableEl,
     refresh,
   };

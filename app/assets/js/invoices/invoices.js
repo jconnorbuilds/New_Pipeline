@@ -1,7 +1,9 @@
 import $ from 'jquery';
 import { csrftoken as CSRFTOKEN } from '../utils.js';
+import DataTable from 'datatables.net-bs5';
 
 const request = (costID, table, costPayPeriod = 'next') => {
+  console.log(table);
   // requests the vendor invoice
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
@@ -11,7 +13,7 @@ const request = (costID, table, costPayPeriod = 'next') => {
     dataType: 'json',
     success: function (data) {
       alert(data.message);
-      table
+      new DataTable(table)
         .row(`#${data.response.id}`)
         .data(data.response)
         .invalidate()

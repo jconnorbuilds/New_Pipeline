@@ -44,7 +44,7 @@ const modal = (selector) => {
 
   const formRequiresCompletion = (selectedStatus) =>
     isRequired(selectedStatus) &&
-    !isCompleted(plTable.getTable(), plTable.getCurrentRowID());
+    !isCompleted(plTable.getOrInitTable(), plTable.getCurrentRowID());
 
   return { el, open, hide, formRequiresCompletion };
 };

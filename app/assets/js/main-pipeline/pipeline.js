@@ -46,7 +46,7 @@ initializeGlobalMouseEvents();
 initializeDateSelectors();
 
 $(document).ready(function () {
-  const table = plTable.getTable();
+  const table = plTable.getOrInitTable();
   $(table).DataTable();
   setupTableEventHandlers();
   createFilters();

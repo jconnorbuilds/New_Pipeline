@@ -8,6 +8,7 @@ module.exports = {
     'main-pipeline': './assets/js/main-pipeline/pipeline.js',
     invoices: './assets/js/invoices/invoices_list.js',
     'invoice-uploader': './assets/js/invoice-uploader/invoice-uploader.js',
+    costsheet: './assets/js/costsheet/costsheet.js',
   },
 
   output: {

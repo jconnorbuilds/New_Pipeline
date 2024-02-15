@@ -1,22 +1,18 @@
-import * as PayPeriod from '../pay_period.js';
 import { invoiceTable } from '../invoices/invoices-dt.js';
-import { handleStatusChange, handleVendorChange } from './invoices-dt-funcs.js';
+import {
+  handleRowUpdate,
+  setupPayPeriodFormSubmission,
+} from './invoices_common.js';
 
-const table = invoiceTable.getTable();
-const tableEl = table.table().container();
+const table = invoiceTable.getOrInitTable();
+const tableEl = invoiceTable.getTableEl();
 
 export const setupTableEventHandlers = (
-  datatableEl = tableEl,
-  datatable = table
+  datatable = table,
+  datatableEl = tableEl
 ) => {
-  datatableEl.addEventListener('change', (e) => {
-    if (e.target.matches('select.status')) handleStatusChange(e);
-    if (e.target.matches('select.vendor')) handleVendorChange(e);
-  });
-
-  PayPeriod.form.addEventListener('submit', (e) =>
-    PayPeriod.submitForm(e, datatableEl)
-  );
+  handleRowUpdate(datatableEl);
+  setupPayPeriodFormSubmission(datatableEl);
 
   const filters = document.querySelectorAll('.display-filter input');
   filters.forEach((f) => f.addEventListener('change', () => datatable.draw()));

@@ -1,4 +1,8 @@
+import $ from 'jquery';
+window.$ = $;
 import DataTable from 'datatables.net-bs5';
+import { csrftoken as CSRFTOKEN } from '../utils.js';
+import * as PayPeriod from '../pay_period.js';
 
 const renderRequestBtn = (data) => {
   /*  create a Bootstrap input group with a "request invoice" btn
@@ -51,7 +55,8 @@ const renderRequestBtn = (data) => {
   return btnGroup.outerHTML;
 };
 
-const renderAmount = (data, row) => row.currency + data.toLocaleString();
+const renderAmount = (amount, currency) =>
+  currency.name == 'JPY' ? '' : currency.symbol + amount.toLocaleString();
 
 const renderAmountJPY = (data) => '¥' + data.toLocaleString();
 
@@ -111,7 +116,7 @@ const statusFilters = document.querySelectorAll(
 
 export const extendSearch = () => {
   DataTable.ext.search.push(function (settings, data, dataIndex) {
-    const status = data[9];
+    const status = data[9]; // invoice status;
     let selectedStatuses = [];
     statusFilters.forEach((status) => {
       if (status.checked) selectedStatuses.push(status.value.toUpperCase());
@@ -159,6 +164,7 @@ const enableDisableVendorSelection = (row, data) => {
 };
 
 const enableDisableInvoiceRequestBtn = (row, data) => {
+  // enables/disables both parts of the invoice request button group
   data.invoice_status === 'NR' && data.vendor_id != 0
     ? row
         .querySelectorAll('.inv-req')
@@ -177,4 +183,46 @@ export {
   renderPayPeriod,
   enableDisableVendorSelection,
   enableDisableInvoiceRequestBtn,
+};
+
+export const handleStatusChange = (e) => {
+  const selectEl = e.target;
+  const _table = selectEl.closest('table');
+  const _status = selectEl.value;
+  const _rowID = selectEl.closest('tr').getAttribute('id');
+  $.ajax({
+    headers: { 'X-CSRFToken': CSRFTOKEN },
+    type: 'post',
+    url: '/pipeline/update-invoice-table-row',
+    data: { status: _status, cost_id: _rowID },
+    dataType: 'json',
+    success: (response) => updateTable(response, _table),
+    error: (response) => console.warn(response),
+  });
+};
+
+export const handleVendorChange = (status, rowID) => {
+  console.log('changing vendors...eventually');
+};
+
+export const handleRowUpdate = (datatableEl) => {
+  datatableEl.addEventListener('change', (e) => {
+    if (e.target.matches('select.status')) handleStatusChange(e);
+    if (e.target.matches('select.vendor')) handleVendorChange(e);
+  });
+};
+
+export const setupPayPeriodFormSubmission = (
+  datatableEl,
+  payPeriodModal = PayPeriod
+) => {
+  console.log(datatableEl);
+  payPeriodModal.form.addEventListener('submit', (e) =>
+    payPeriodModal.submitForm(e, datatableEl)
+  );
+};
+export const updateTable = (response, table) => {
+  response.status === 'success'
+    ? new DataTable(table).ajax.reload()
+    : console.error(response.message);
 };

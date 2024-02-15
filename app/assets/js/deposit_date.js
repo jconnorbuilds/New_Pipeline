@@ -11,7 +11,10 @@ const modalEl = document.querySelector('#set-deposit-date');
 const modal = new bootstrap.Modal(modalEl);
 
 const modalShowHandler = () => {
-  const row = plTable.getTable().row(`#${plTable.getCurrentRowID()}`).node();
+  const row = plTable
+    .getOrInitTable()
+    .row(`#${plTable.getCurrentRowID()}`)
+    .node();
   const jobStatus = row.querySelector('.job-status-select').value;
   if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(jobStatus)) {
     modal.show();

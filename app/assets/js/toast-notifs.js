@@ -1,45 +1,68 @@
-import * as bootstrap from 'bootstrap';
-import { createNewEl } from './utils.js';
-export const createAndLaunchToast = () => {
-  const toast = document.createElement('div');
-  toast.classList.add(
-    'toast',
-    'position-fixed',
-    'bg-success-subtle',
-    'border-0',
-    'top-0',
-    'end-0'
-  );
-  toast.setAttribute('role', 'alert');
-  toast.setAttribute('aria-live', 'assertive');
-  toast.setAttribute('aria-atomic', 'true');
+import { Toast } from 'bootstrap';
+import { createElement, createNewEl } from './utils.js';
+import successIcon from '../images/check2-circle.svg';
 
-  var jobDescriptor = 'Placeholder for jobDescriptor';
-  const header = createNewEl('div', ['toast-header']);
-  const icon = createNewEl('i', 'bi bi-check2-circle rounded me-2'.split(' '));
-  const title = createNewEl('strong', ['me-auto'], {}, 'Job added');
-  const timestamp = createNewEl('small', ['text-muted'], {}, 'Just now');
-  const closeBtn = createNewEl('button', ['btn-close'], {
-    type: 'button',
-    'data-bs-dismiss': 'toast',
-    'aria-label': 'Close',
+const createToastEl = (headerText, bodyText, id = '') => {
+  const icon = [
+    'img',
+    {
+      attributes: {
+        src: successIcon,
+        alt: 'success-icon',
+      },
+    },
+  ];
+  const title = ['strong', { classes: ['me-auto'], text: headerText }];
+  const timestamp = ['small', { classes: 'text-muted', text: 'Just now' }];
+  const closeBtn = [
+    'button',
+    {
+      classes: 'btn-close',
+      data: { bsDismiss: 'toast' },
+      attributes: { type: 'button', 'aria-label': 'Close' },
+    },
+  ];
+  const toastHeader = [
+    'div',
+    {
+      classes: ['toast-header'],
+      children: [icon, title, timestamp, closeBtn],
+    },
+  ];
+  const toastBody = [
+    'div',
+    {
+      classes: ['toast-body'],
+      text: bodyText,
+    },
+  ];
+
+  const toastEl = createElement('div', {
+    id: id,
+    classes: ['toast', 'bg-success-subtle', 'border-0'],
+    attributes: {
+      role: 'alert',
+      'aria-live': 'assertive',
+      'aria-atomic': 'true',
+    },
+    children: [toastHeader, toastBody],
   });
-  [icon, title, timestamp, closeBtn].forEach((el) => header.appendChild(el));
 
-  var body = document.createElement('div');
-  body.classList.add('toast-body');
-  body.innerText = jobDescriptor;
-
-  toast.appendChild(header);
-  toast.appendChild(body);
-
-  document.body.appendChild(toast);
-
-  var toastElement = new bootstrap.Toast(toast);
-  toastElement.show();
-  setTimeout(function () {
-    $(toastElement).fadeOut('fast', function () {
-      $(this).remove();
-    });
-  }, 1000);
+  return toastEl;
 };
+
+const createAndInitializeToast = (
+  headerText,
+  bodyText,
+  options = {},
+  id = ''
+) => {
+  const toastEl = createToastEl(headerText, bodyText, id);
+  const toastContainer = document.querySelector('.toast-container');
+  toastContainer
+    ? toastContainer.appendChild(toastEl)
+    : document.body.appendChild(toastEl);
+  return new Toast(toastEl, options);
+};
+
+export default createAndInitializeToast;

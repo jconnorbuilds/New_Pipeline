@@ -2,7 +2,7 @@ import { handleAjaxError } from './main-pipeline/pipeline-dt-funcs.js';
 import { createModal } from './modals-ui.js';
 import { openModal } from './modals-ui.js';
 import { plTable } from './main-pipeline/pipeline-dt.js';
-import { csrftoken as CSRFTOKEN } from './utils.js';
+import { CSRFTOKEN } from './utils.js';
 
 export let modalWillOpen = false;
 

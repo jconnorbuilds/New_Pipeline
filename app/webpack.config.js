@@ -6,7 +6,7 @@ module.exports = {
   entry: {
     base: './assets/js/base.js',
     'main-pipeline': './assets/js/main-pipeline/pipeline.js',
-    invoices: './assets/js/invoices/invoices_list.js',
+    invoices: './assets/js/costs-and-invoices/invoices_list.js',
     'invoice-uploader': './assets/js/invoice-uploader/invoice-uploader.js',
     costsheet: './assets/js/costsheet/costsheet.js',
   },
@@ -18,6 +18,10 @@ module.exports = {
   devtool: 'inline-source-map',
   module: {
     rules: [
+      {
+        test: /\.svg$/i,
+        loader: 'svg-inline-loader',
+      },
       {
         test: /\.(scss|css)$/,
         use: [

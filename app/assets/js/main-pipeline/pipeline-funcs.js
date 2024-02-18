@@ -1,9 +1,9 @@
 import $ from 'jquery';
-import { csrftoken as CSRFTOKEN } from '../utils.js';
+import { CSRFTOKEN } from '../utils.js';
 import { setOpenModal } from '../invoice_info_modal.js';
-import { createAndLaunchToast } from '../toast-notifs.js';
 import { showLoadingSpinner, hideLoadingSpinner } from './pipeline-ui-funcs.js';
 import { plTable } from './pipeline-dt.js';
+import createAndInitializeToast from '../toast-notifs.js';
 
 const newClientBtn = document.querySelector('#pipeline-new-client-btn');
 newClientBtn.addEventListener('click', () => setOpenModal(false));
@@ -84,6 +84,14 @@ const handleFormSubmission = (e) => {
     personInCharge: document.querySelector('#id_personInCharge').value,
   };
 
+  const createSuccessToast = (response) => {
+    return createAndInitializeToast(
+      'Job created',
+      response.data.job_name,
+      'toast-successful-job-created'
+    );
+  };
+
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     type: 'POST',
@@ -94,7 +102,7 @@ const handleFormSubmission = (e) => {
       if (response.status === 'success') {
         jobForm.classList.remove('was-validated');
         plTable.refresh();
-        createAndLaunchToast();
+        createSuccessToast(response).show();
         jobForm.reset();
       } else {
         console.alert('Form processing failed. Perhaps bad data was sent?');

@@ -4,7 +4,7 @@ import {
 } from './main-pipeline/pipeline-dt-funcs.js';
 import * as bootstrap from 'bootstrap';
 import { plTable } from './main-pipeline/pipeline-dt.js';
-import { csrftoken as CSRFTOKEN } from './utils.js';
+import { CSRFTOKEN } from './utils.js';
 
 export const form = document.querySelector('#deposit-date-form');
 const modalEl = document.querySelector('#set-deposit-date');

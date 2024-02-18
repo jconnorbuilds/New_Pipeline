@@ -233,25 +233,6 @@
                     </div>
                 </div>
             </div>
-            <div class="toast-container position-fixed top-0 end-0 p-3">
-                <div id="invoice-set-success-toast"
-                     class="toast bg-success-subtle"
-                     data-bs-delay="2000"
-                     role="alert"
-                     aria-live="assertive"
-                     aria-atomic="true">
-                    <div class="toast-header">
-                        <i class="bi bi-check2-circle rounded me-2"></i>
-                        <strong class="me-auto">Save successful</strong>
-                        <small class="text-muted">Just now</small>
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="toast"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">Invoice info saved!</div>
-                </div>
-            </div>
             <div id="pipeline-date-select" class="justify-content-center">
                 <div class=" monthly-item d-flex flex-column align-items-center">
                     <div class="display-4">
@@ -459,6 +440,25 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+    <div class="toast-container top-0 end-0 p-3">
+        <div id="invoice-set-success-toast"
+             class="toast bg-success-subtle"
+             data-bs-delay="2000"
+             role="alert"
+             aria-live="assertive"
+             aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-check2-circle rounded me-2"></i>
+                <strong class="me-auto">Save successful</strong>
+                <small class="text-muted">Just now</small>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+            </div>
+            <div class="toast-body">Invoice info saved!</div>
         </div>
     </div>
 {% endblock body_block %}

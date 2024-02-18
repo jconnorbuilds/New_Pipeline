@@ -1,11 +1,11 @@
-function separateThousands(x) {
+const separateThousands = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
+};
 
-function separateThousandsOnInput(x) {
+const separateThousandsOnInput = (x) => {
   let xInt = parseInt(x.replaceAll(',', ''));
   return xInt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
+};
 
 // Parses a thousands-separated number from str -> int
 const removeCommas = (numStr) => {
@@ -21,30 +21,18 @@ const getFXRates = (srcCurrency, trgtCurrency) => {
 
 const theDate = () => new Date();
 
-const currentDate = () => {
-  const date = theDate();
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  return [year, month];
-};
-
-const thisYear = () => theDate().getFullYear();
-const thisMonth = () => theDate().getMonth() + 1;
-
 const dates = {
-  currentDate,
-  thisYear,
-  thisMonth,
+  currentDate: () => {
+    const date = theDate();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    return [year, month];
+  },
+  thisYear: () => theDate().getFullYear(),
+  thisMonth: () => theDate().getMonth() + 1,
 };
 
-export {
-  separateThousands,
-  separateThousandsOnInput,
-  removeCommas,
-  getFXRates,
-  dates,
-};
-export function createNewEl(tag, clsList, attrDict, textContent) {
+const createNewEl = (tag, clsList, attrDict, textContent) => {
   // TODO: implement kwargs to make more flexible
   const newEl = document.createElement(tag);
 
@@ -56,12 +44,13 @@ export function createNewEl(tag, clsList, attrDict, textContent) {
   newEl.textContent = textContent;
 
   return newEl;
-}
-export const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
+};
+
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
   ? document.querySelector('[name=csrfmiddlewaretoken]').value
   : null;
 
-export function truncate(string, allowedLengthJp = 15, maxLength = 30) {
+const truncate = (string, allowedLengthJp = 15, maxLength = 30) => {
   // Function to count Japanese characters
   const countJapaneseCharacters = (str) => {
     // Regex checks for hiragana, katakana, most kanji, and full-width romaji
@@ -89,11 +78,60 @@ export function truncate(string, allowedLengthJp = 15, maxLength = 30) {
   }
   // No truncation needed
   return string;
-}
-export const slugify = (str) =>
+};
+
+const slugify = (str) =>
   str
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
+
+const createElement = (type, options = {}) => {
+  const element = document.createElement(type);
+
+  // classes, attributes, text, children, id, data,
+  if (options.classes) {
+    typeof options.classes === 'string'
+      ? element.classList.add(options.classes)
+      : element.classList.add(...options.classes);
+  }
+
+  if (options.attributes) {
+    Object.keys(options.attributes).forEach((key) => {
+      element.setAttribute(key, options.attributes[key]);
+    });
+  }
+
+  if (options.text) element.textContent = options.text;
+
+  if (options.children) {
+    options.children.forEach((child) => {
+      element.appendChild(createElement(...child));
+    });
+  }
+
+  if (options.id) element.id = options.id;
+
+  if (options.data) {
+    Object.keys(options.data).forEach((key) => {
+      element.dataset[key] = options.data[key];
+    });
+  }
+
+  return element;
+};
+
+export {
+  separateThousands,
+  separateThousandsOnInput,
+  removeCommas,
+  getFXRates,
+  dates,
+  createNewEl,
+  csrftoken as CSRFTOKEN,
+  truncate,
+  slugify,
+  createElement,
+};

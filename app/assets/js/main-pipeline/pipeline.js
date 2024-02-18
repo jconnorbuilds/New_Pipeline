@@ -7,7 +7,7 @@ import $ from 'jquery';
 window.$ = $;
 
 import * as bootstrap from 'bootstrap';
-import { csrftoken as CSRFTOKEN } from '../utils';
+import { CSRFTOKEN } from '../utils';
 import { initCSVExporter } from '../csv-export.js';
 import { depositDateFormSubmitHandler } from '../deposit_date.js';
 import { plTable } from './pipeline-dt.js';

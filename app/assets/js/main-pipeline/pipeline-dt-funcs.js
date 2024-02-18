@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import * as bootstrap from 'bootstrap';
-import { csrftoken as CSRFTOKEN, truncate } from '../utils.js';
+import { CSRFTOKEN, truncate } from '../utils.js';
 import { NewClientForm, displayErrorMessage } from './pipeline-funcs.js';
 import { getOpenModal, invoiceInfoModal } from '../invoice_info_modal.js';
 import { plTable } from './pipeline-dt.js';
@@ -8,9 +8,7 @@ import * as State from './pipeline-state.js';
 import { drawNewRow } from './pipeline-dt-ui-funcs.js';
 import {
   getTotalExpectedRevenueAmt,
-  refreshRevenueDisplay,
   setTotalExpectedRevenueAmt,
-  totalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
 
 export const table = plTable.getOrInitTable();

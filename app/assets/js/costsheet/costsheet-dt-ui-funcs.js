@@ -1,9 +1,9 @@
 import costTable from './costsheet-dt.js';
-import * as PayPeriod from '../pay_period.js';
+import * as PayPeriod from '../pay-period-modal.js';
 import {
   handleRowUpdate,
   setupPayPeriodFormSubmission,
-} from '../invoices/invoices_common.js';
+} from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
 import $ from 'jquery';
 window.$ = $;
 

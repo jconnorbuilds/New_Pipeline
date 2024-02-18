@@ -1,4 +1,4 @@
-import { invoiceTable } from '../invoices/invoices-dt.js';
+import { invoiceTable } from '../costs-and-invoices/invoices-dt.js';
 
 const tableEl = invoiceTable.getTableEl();
 

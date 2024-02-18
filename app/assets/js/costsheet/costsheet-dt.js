@@ -6,10 +6,11 @@ import {
   renderPayPeriod,
   renderRequestBtn,
   renderVendorName,
-} from '../invoices/invoices_common.js';
-import * as PayPeriod from '../pay_period.js';
+} from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
+import * as PayPeriod from '../pay-period-modal.js';
 import { truncate } from '../utils.js';
-import { invoicesTableRowCallback } from '../invoices/invoices-dt-funcs.js';
+import { invoicesTableRowCallback } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
+import { addRowEventListeners } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
 
 const getJobID = () => {
   return typeof jobID !== 'undefined' ? jobID : false;
@@ -113,6 +114,9 @@ const initTable = () => {
       },
     ],
     rowCallback: (row, data) => invoicesTableRowCallback(row, data),
+    createdRow: (row, data, dataIndex, cells) => {
+      addRowEventListeners(row, data);
+    },
   });
   return table;
 };

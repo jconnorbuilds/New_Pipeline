@@ -3,6 +3,7 @@ import { updateRevenueDisplay } from './pipeline-funcs';
 import * as State from './pipeline-state.js';
 import { dates, createNewEl } from '../utils.js';
 import { queryJobs } from './pipeline-dt-funcs.js';
+import { createElement } from '../utils.js';
 
 const unreceivedFilter = document.querySelector('input.unreceived');
 const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
@@ -112,11 +113,17 @@ export const showLoadingSpinner = (spinnerEl = spinner) => {
 export const pipelineMonth = document.querySelector('#pipeline-month');
 export const pipelineYear = document.querySelector('#pipeline-year');
 
+const createOptionEl = (year) => {
+  return createElement('option', {
+    attributes: { value: year },
+    text: `${year}年`,
+  });
+};
+
 export const initializeDateSelectors = () => {
-  for (let year = 2021; year <= dates.thisYear() + 1; year++)
-    pipelineYear.appendChild(
-      createNewEl('option', [], { value: year }, `${year}年`)
-    );
+  for (let year = 2021; year <= dates.thisYear() + 1; year++) {
+    pipelineYear.appendChild(createOptionEl(year));
+  }
   [pipelineYear.value, pipelineMonth.value] = dates.currentDate();
 };
 

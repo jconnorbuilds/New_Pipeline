@@ -42,11 +42,11 @@ export const openModal = (modal) => {
   modal.show();
 };
 
-export function createModal(selector, eventHandlerFns) {
+export const createModal = (selector, eventHandlerFns) => {
   const modalEl = document.querySelector(selector);
   const modal = new bootstrap.Modal(modalEl);
 
   eventHandlerFns.forEach((fn) => fn());
 
   return [modal, modalEl];
-}
+};

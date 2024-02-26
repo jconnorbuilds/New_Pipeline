@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import * as bootstrap from 'bootstrap';
-import { CSRFTOKEN, truncate } from '../utils.js';
+import { CSRFTOKEN } from '../utils.js';
 import { NewClientForm, displayErrorMessage } from './pipeline-funcs.js';
 import { getOpenModal, invoiceInfoModal } from '../invoice_info_modal.js';
 import { plTable } from './pipeline-dt.js';

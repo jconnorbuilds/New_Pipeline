@@ -1,116 +1,107 @@
-import $ from 'jquery';
-const clientForm = $('#new-client-form');
-const submitButton = clientForm.find('button[type="submit"]');
+import $, { error } from 'jquery';
+import { CSRFTOKEN, createElement } from './utils.js';
+import { Modal } from 'bootstrap';
+import createAndInitializeToast from './toast-notifs.js';
 
-const properNameInput = clientForm.find('input[name="proper_name"]');
-const properNameJapaneseInput = clientForm.find(
+const newClientForm = document.querySelector('#new-client-form');
+const submitButton = newClientForm.querySelector('button[type="submit"]');
+const friendlyNameInput = newClientForm.querySelector('#id_friendly_name');
+const properNameInput = newClientForm.querySelector(
+  'input[name="proper_name"]'
+);
+const properNameJapaneseInput = newClientForm.querySelector(
   'input[name="proper_name_japanese"]'
 );
-
-properNameInput.on('input', validateInputs);
-properNameJapaneseInput.on('input', validateInputs);
-
-submitButton.prop('disabled', true);
-
-function validateInputs() {
-  if (properNameInput.val() || properNameJapaneseInput.val()) {
-    submitButton.prop('disabled', false);
+const spinner = document.querySelector('#add-client-spinner');
+const validateInputs = () => {
+  if (properNameInput.value || properNameJapaneseInput.value) {
+    submitButton.removeAttribute('disabled');
   } else {
-    submitButton.prop('disabled', true);
+    submitButton.setAttribute('disabled', '');
   }
-}
+};
+const clientField = document.querySelector('#id_client');
+const invoiceRecipient = document.querySelector('#id_invoice_recipient');
+const errorMsgs = document.querySelector('#new-client-errors');
 
-$('#new-client-form').submit(function (event) {
-  var spinner = $('#add-client-spinner');
-  event.preventDefault();
-  spinner.removeClass('invisible');
-  // $("#add-job-spinner").addClass('testclass')
-  var formData = {
-    friendly_name: $('#id_friendly_name').val(),
-    job_code_prefix: $('#id_job_code_prefix').val(),
-    proper_name: $('#id_proper_name').val(),
-    proper_name_japanese: $('#id_proper_name_japanese').val(),
+const processFormErrors = (errors) => {
+  console.log(errors);
+  const clientFriendlyNameErrorMsg = errors['friendly_name'];
+  if (clientFriendlyNameErrorMsg) {
+    friendlyNameInput.classList.add('is-invalid'); // TODO: set up proper client-side validation
+    errorMsgs.appendChild(
+      createElement('div', { text: clientFriendlyNameErrorMsg })
+    );
+  }
+
+  // newClientForm.classList.add('was-validated');
+  spinner.classList.add('invisible');
+};
+
+const handleSuccessfulSubmission = (response) => {
+  const invoiceInfoModalIsOpen = !!invoiceRecipient;
+  if (response.status === 'success') {
+    spinner.classList.add('invisible');
+    const newClientOption = createElement('option', {
+      attributes: { value: response.id, selected: '' },
+      text: `${response.client_friendly_name} - ${response.prefix}`,
+    });
+    // adds the newly added client to the client list
+    clientField.appendChild(newClientOption);
+    // adds the newly added client to the invoice recipient list ( in the invoice info modal)
+    if (invoiceInfoModalIsOpen) invoiceRecipient.appendChild(newClientForm);
+
+    Modal.getOrCreateInstance('#new-client-modal').toggle();
+    newClientForm.classList.remove('was-validated');
+    newClientForm.reset();
+
+    // create and instantiate toast for successful client creation
+    createAndInitializeToast(
+      'New client added',
+      response.client_friendly_name
+    ).show();
+
+    errorMsgs.replaceChildren(); // removes all error messages
+    [friendlyNameInput].forEach((field) =>
+      field.classList.remove('is-valid', 'is-invalid')
+    );
+  } else {
+    processFormErrors(response.errors);
+  }
+};
+
+const newClientFormSubmission = (e) => {
+  e.preventDefault();
+  const formData = {
+    friendly_name: document.querySelector('#id_friendly_name').value,
+    job_code_prefix: document.querySelector('#id_job_code_prefix').value,
+    proper_name: document.querySelector('#id_proper_name').value,
+    proper_name_japanese: document.querySelector('#id_proper_name_japanese')
+      .value,
     new_client: 'new ajax client add',
   };
+
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     type: 'POST',
     url: '/pipeline/',
+    dataType: 'json',
     data: formData,
-    beforeSend: function () {
-      spinner.removeClass('invisible');
-    },
-    success: function (response) {
-      if (response.status === 'success') {
-        spinner.addClass('invisible');
-        $('#id_client').append(
-          $('<option></option>')
-            .val(response.id)
-            .text(`${response.value} - ${response.prefix}`)
-        );
-        $('#id_client').val(response.id);
-        $('#id_invoice_recipient').append(
-          $('<option></option>')
-            .val(response.id)
-            .text(`${response.value} - ${response.prefix}`)
-        );
-        $('#id_invoice_recipient').val(response.id);
-        $('#new-client-form').removeClass('was-validated');
-        $('.toast').each(function () {
-          $(this).show();
-        });
-        $('#new-client-modal').modal('toggle');
-        $('#new-client-form')[0].reset();
-
-        // create and instantiate toast for successful client creation
-        var toast = document.createElement('div');
-        toast.classList.add(
-          'toast',
-          'position-fixed',
-          'bg-success-subtle',
-          'border-0',
-          'top-0',
-          'end-0'
-        );
-        toast.setAttribute('role', 'alert');
-        toast.setAttribute('aria-live', 'assertive');
-        toast.setAttribute('aria-atomic', 'true');
-
-        var descriptor = formData['friendly_name'].toUpperCase();
-        var header = document.createElement('div');
-        header.classList.add('toast-header');
-        header.innerHTML = `
-                      <i class="bi bi-check2-circle" class="rounded me-2"></i>
-                      <strong class="me-auto">New client added</strong>
-                      <small class="text-muted">Just now</small>
-                      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                      `;
-        var body = document.createElement('div');
-        body.classList.add('toast-body');
-        body.innerText = descriptor;
-
-        toast.appendChild(header);
-        toast.appendChild(body);
-
-        document.body.appendChild(toast);
-
-        var toastElement = new bootstrap.Toast(toast);
-        toastElement.show();
-        setTimeout(function () {
-          $(toastElement).fadeOut('fast', function () {
-            $(this).remove();
-          });
-        }, 1000);
-      } else {
-        $('#new-client-form').addClass('was-validated');
-        spinner.addClass('invisible');
-      }
-    },
-
-    error: function (request) {
-      alert('form not submitted');
-      $(this).addClass('was-validated');
-      spinner.addClass('invisible');
+    beforeSend: () => spinner.classList.remove('invisible'),
+    success: (response) => handleSuccessfulSubmission(response),
+    error: (response) => {
+      alert('form not submitted', response);
+      newClientForm.classList.add('was-validated');
+      spinner.classList.add('invisible');
     },
   });
-});
+};
+
+const initializeNewClientForm = () => {
+  submitButton.setAttribute('disabled', '');
+  properNameInput.addEventListener('input', () => validateInputs());
+  properNameJapaneseInput.addEventListener('input', () => validateInputs());
+  newClientForm.addEventListener('submit', (e) => newClientFormSubmission(e));
+};
+
+export default initializeNewClientForm;

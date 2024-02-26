@@ -54,7 +54,7 @@ const createToastEl = (headerText, bodyText, id = '') => {
 const createAndInitializeToast = (
   headerText,
   bodyText,
-  options = {},
+  options = {}, // animation, autohide, delay(ms)
   id = ''
 ) => {
   const toastEl = createToastEl(headerText, bodyText, id);

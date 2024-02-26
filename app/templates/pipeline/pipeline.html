@@ -125,69 +125,6 @@
             </div>
         </div>
     </div>
-    {# New Client modal #}
-    <div class="modal fade"
-         id="new-client-modal"
-         tabindex="-1"
-         aria-labelledby="new-client-modal"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="new-client-form"
-                      method="post"
-                      action="{% url 'pipeline:index' %}">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        {% csrf_token %}
-                        <div class="row px-3 py-0 g-1">
-                            <div class="col-9">
-                                <label for="id_friendly_name" class="form-label small">Client name</label>
-                                {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
-                            </div>
-                            <div class="col-3">
-                                <label for="id_job_code_prefix" class="form-label small">Prefix</label>
-                                {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
-                                <div id="prefix_help" class="form-text">2-4 characters</div>
-                            </div>
-                        </div>
-                        <div class="row p-3 g-1">
-                            <p class="p-0 g-0">Proper client name</p>
-                            <div class="col-6 pt-0">
-                                <label for="id_proper_name" class="form-label small pt-0">English</label>
-                                {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. " %}
-                            </div>
-                            <div class="col-6">
-                                <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
-                                {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
-                            </div>
-                            <div id="proper_name_help" class="form-text">The client name to be used for invoices. Enter one or the other.</div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button"
-                                id="new-client-modal-cancel-btn"
-                                class="btn btn-light"
-                                data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit"
-                                class="btn btn-info submit"
-                                id="add-new-client-btn"
-                                name="new-client">Add Client</button>
-                        <div class="spinner-border spinner-border-sm invisible"
-                             role="status"
-                             id="add-client-spinner">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
     {# Job table start #}
     <div class="p-2">
         <form method="POST">
@@ -341,6 +278,70 @@
                     {% endif %}
                 </div>
             </form>
+        </div>
+    </div>
+    {# New Client modal #}
+    <div class="modal fade"
+         id="new-client-modal"
+         tabindex="-1"
+         aria-labelledby="new-client-modal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="new-client-form"
+                      method="post"
+                      action="{% url 'pipeline:index' %}">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add a New Client</h1>
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="row px-3 py-0 g-1">
+                            <div class="col-9">
+                                <label for="id_friendly_name" class="form-label small">Client name</label>
+                                {% render_field client_form.friendly_name class+="form-control" placeholder="e.g. Apple" %}
+                            </div>
+                            <div class="col-3">
+                                <label for="id_job_code_prefix" class="form-label small">Prefix</label>
+                                {% render_field client_form.job_code_prefix class+="form-control" placeholder="e.g. APL" %}
+                                <div id="prefix_help" class="form-text">2-4 characters</div>
+                            </div>
+                        </div>
+                        <div class="row p-3 g-1">
+                            <p class="p-0 g-0">Proper client name</p>
+                            <div class="col-6 pt-0">
+                                <label for="id_proper_name" class="form-label small pt-0">English</label>
+                                {% render_field client_form.proper_name class+="form-control" placeholder="e.g. Apple Japan, Inc. " %}
+                            </div>
+                            <div class="col-6">
+                                <label for="id_proper_name_japanese" class="form-label small">Japanese</label>
+                                {% render_field client_form.proper_name_japanese class+="form-control" placeholder="e.g. (株)りんご社" %}
+                            </div>
+                            <div id="proper_name_help" class="form-text">The client name to be used for invoices. Enter one or the other.</div>
+                        </div>
+                        <div id="new-client-errors" class="error-text"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                id="new-client-modal-cancel-btn"
+                                class="btn btn-light"
+                                data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit"
+                                class="btn btn-info submit"
+                                id="add-new-client-btn"
+                                name="new-client">Add Client</button>
+                        <div class="spinner-border spinner-border-sm invisible"
+                             role="status"
+                             id="add-client-spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     {# Modal for setting invoice details #}

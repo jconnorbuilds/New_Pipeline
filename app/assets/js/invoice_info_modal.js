@@ -4,7 +4,7 @@ import { openModal } from './modals-ui.js';
 import { plTable } from './main-pipeline/pipeline-dt.js';
 import { CSRFTOKEN } from './utils.js';
 
-export let modalWillOpen = false;
+let modalWillOpen = false;
 
 const form = document.querySelector('#invoice-info-form');
 const formSubmitHandler = () => {
@@ -88,7 +88,9 @@ export const submitForm = (newStatus) => (e) => {
   });
 };
 
-export const setOpenModal = (bool) => (modalWillOpen = bool);
+export const setOpenModal = (bool) => {
+  modalWillOpen = bool;
+};
 export const getOpenModal = () => {
   return modalWillOpen;
 };

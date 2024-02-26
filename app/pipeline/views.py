@@ -202,7 +202,7 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 return JsonResponse(
                     {
                         "id": instance.id,
-                        "value": instance.friendly_name,
+                        "client_friendly_name": instance.friendly_name,
                         "prefix": instance.job_code_prefix,
                         "status": "success",
                     }

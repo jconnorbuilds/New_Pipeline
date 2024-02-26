@@ -21,6 +21,7 @@ import {
 import { initializeGlobalMouseEvents } from '../dt-shared.js';
 import { jobFormSubmissionHandler } from './pipeline-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
+import initializeNewClientForm from '../new-client-form-funcs.js';
 
 document
   .querySelector('#revenue-unit')
@@ -45,12 +46,13 @@ document
 initializeGlobalMouseEvents();
 initializeDateSelectors();
 
-$(document).ready(function () {
+$(function () {
   const table = plTable.getOrInitTable();
-  $(table).DataTable();
+  // $(table).DataTable();
   setupTableEventHandlers();
   createFilters();
   initCSVExporter();
+  initializeNewClientForm();
 
   // $('.update-cost-table').click(function () {
   //   const forms = document.getElementsByTagName('form');

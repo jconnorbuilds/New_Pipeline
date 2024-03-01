@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import * as bootstrap from 'bootstrap';
 import { CSRFTOKEN } from '../utils.js';
-import { NewClientForm, displayErrorMessage } from './pipeline-funcs.js';
-import { getOpenModal, invoiceInfoModal } from '../invoice_info_modal.js';
+import { displayErrorMessage } from './pipeline-funcs.js';
+import invoiceInfo from '../invoice_details_modal.js';
 import { plTable } from './pipeline-dt.js';
 import * as State from './pipeline-state.js';
 import { drawNewRow } from './pipeline-dt-ui-funcs.js';
@@ -58,12 +58,8 @@ const statusChangeHandler = (e) => {
   const rowID = plTable.getCurrentRowID();
   plTable.keepTrackOfCurrentStatus(status);
 
-  NewClientForm.el.addEventListener('hide.bs.modal', function () {
-    if (getOpenModal()) invoiceInfoModal.open();
-  });
-
-  invoiceInfoModal.formRequiresCompletion(status)
-    ? invoiceInfoModal.open()
+  invoiceInfo.formRequiresCompletion(status)
+    ? invoiceInfo.openModal()
     : handleStatusUpdate(status, rowID);
 };
 

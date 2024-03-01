@@ -6,7 +6,7 @@ import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
 import $ from 'jquery';
 window.$ = $;
 
-import * as bootstrap from 'bootstrap';
+import { Modal } from 'bootstrap';
 import { CSRFTOKEN } from '../utils';
 import { initCSVExporter } from '../csv-export.js';
 import { depositDateFormSubmitHandler } from '../deposit_date.js';
@@ -22,6 +22,8 @@ import { initializeGlobalMouseEvents } from '../dt-shared.js';
 import { jobFormSubmissionHandler } from './pipeline-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 import initializeNewClientForm from '../new-client-form-funcs.js';
+import { preventModalFromOpening } from '../invoice_details_modal.js';
+import invoiceInfo from '../invoice_details_modal.js';
 
 document
   .querySelector('#revenue-unit')
@@ -42,6 +44,18 @@ document
 document
   .querySelector('#job-form')
   .addEventListener('submit', jobFormSubmissionHandler);
+
+document
+  .querySelector('#pipeline-new-client-btn')
+  .addEventListener('click', () => {
+    invoiceInfo.preventFromOpening();
+  });
+
+// invoiceDetailsNewClientbtn.addEventListener('click', () => {
+//   invoiceInfo.preventFromOpening();
+//   const newClientModal = Modal.getOrCreateInstance('#new-client-modal');
+//   newClientModal.show();
+// });
 
 initializeGlobalMouseEvents();
 initializeDateSelectors();

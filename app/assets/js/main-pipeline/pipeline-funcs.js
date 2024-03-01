@@ -1,18 +1,9 @@
 import $ from 'jquery';
 import { Modal } from 'bootstrap';
 import { CSRFTOKEN } from '../utils.js';
-import { setOpenModal } from '../invoice_info_modal.js';
 import { showLoadingSpinner, hideLoadingSpinner } from './pipeline-ui-funcs.js';
 import { plTable } from './pipeline-dt.js';
 import createAndInitializeToast from '../toast-notifs.js';
-
-const newClientBtn = document.querySelector('#pipeline-new-client-btn');
-
-newClientBtn.addEventListener('click', () => {
-  setOpenModal(false); // change to 'preventFromOpening' or something
-  const newClientModal = Modal.getOrCreateInstance('#new-client-modal');
-  newClientModal.show();
-});
 
 const ajaxCall = (
   formData,
@@ -101,7 +92,7 @@ const handleFormSubmission = (e) => {
 
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'POST',
+    method: 'POST',
     url: '/pipeline/job-add',
     data: formData,
     // beforeSend: () => showLoadingSpinner(),
@@ -124,7 +115,6 @@ const handleFormSubmission = (e) => {
 };
 
 export {
-  newClientBtn,
   ajaxCall,
   displayErrorMessage,
   NewClientForm,

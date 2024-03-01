@@ -1,4 +1,4 @@
-import $, { error } from 'jquery';
+import $ from 'jquery';
 import { CSRFTOKEN, createElement } from './utils.js';
 import { Modal } from 'bootstrap';
 import createAndInitializeToast from './toast-notifs.js';
@@ -35,14 +35,10 @@ const processFormErrors = (errors) => {
       createElement('div', { text: clientFriendlyNameErrorMsg })
     );
   }
-
-  // newClientForm.classList.add('was-validated');
   spinner.classList.add('invisible');
 };
 
 const handleSuccessfulSubmission = (response) => {
-  // const invoiceInfoModalIsOpen = !!invoiceRecipient;
-  // console.log(invoiceInfoModalIsOpen);
   if (response.status === 'success') {
     spinner.classList.add('invisible');
     const addNewClientOption = () =>
@@ -52,9 +48,10 @@ const handleSuccessfulSubmission = (response) => {
       });
     // adds the newly added client to the client list
     clientField.appendChild(addNewClientOption());
-    // adds the newly added client to the invoice recipient list ( in the invoice info modal)
 
     Modal.getOrCreateInstance('#new-client-modal').toggle();
+    // adds the newly added client to the invoice recipient list
+    // ( in the invoice info modal)
     invoiceRecipient.appendChild(addNewClientOption());
     newClientForm.classList.remove('was-validated');
     newClientForm.reset();
@@ -91,8 +88,8 @@ const newClientFormSubmission = (e) => {
     url: '/pipeline/',
     data: formData,
     beforeSend: () => spinner.classList.remove('invisible'),
-    success: (response, textStatus) => {
-      handleSuccessfulSubmission(response), console.log(textStatus);
+    success: (response) => {
+      handleSuccessfulSubmission(response);
     },
     error: (jqXHR) => {
       alert('form not submitted', jqXHR.statusText);
@@ -103,13 +100,12 @@ const newClientFormSubmission = (e) => {
 };
 
 const initializeNewClientForm = () => {
-  console.log('adding event listeners to newClientForm');
   submitButton.setAttribute('disabled', '');
   properNameInput.addEventListener('input', () => validateInputs());
   properNameJapaneseInput.addEventListener('input', () => validateInputs());
   newClientForm.addEventListener('submit', (e) => newClientFormSubmission(e));
   newClientModalEl.addEventListener('hide.bs.modal', () => {
-    if (invoiceInfo.getOpenModal()) invoiceInfo.openModal();
+    if (invoiceInfo.getOpenModal()) invoiceInfo.modal.show();
   });
 };
 

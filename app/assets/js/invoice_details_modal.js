@@ -63,20 +63,6 @@ const invoiceInfo = (() => {
     '#set-invoice-modal-new-client-btn'
   );
 
-  const openModal = () => {
-    letModalOpen();
-    setInitialInfo();
-    modal.show();
-  };
-
-  const openModalWithNewClientInfo = () => {
-    letModalOpen();
-    modal.show();
-  };
-
-  // const hideModal = () => {
-  //   hideModalAndRefreshTable(modal);
-  // };
   let modalWillOpen = false;
 
   const preventFromOpening = () => {
@@ -90,42 +76,42 @@ const invoiceInfo = (() => {
   };
 
   const formRequiresCompletion = (selectedStatus) => {
-    const statusWhichRequireFormCompletion = [
+    const _requiredStatuses = [
       'INVOICED1',
       'INVOICED2',
       'FINISHED',
       'ARCHIVED',
     ];
 
-    const _isRequired = (selectedStatus) =>
-      statusWhichRequireFormCompletion.includes(selectedStatus);
+    const _formIsRequired = (selectedStatus) =>
+      _requiredStatuses.includes(selectedStatus);
 
-    const _isCompleted = (datatable, rowID) =>
+    const _jobIsCompleted = (
+      datatable = plTable.getOrInitTable(),
+      rowID = plTable.getCurrentRowID()
+    ) =>
       JSON.parse(
         datatable.cell('#' + rowID, 'invoice_info_completed:name').node()
           .textContent
       );
 
-    return (
-      _isRequired(selectedStatus) &&
-      !_isCompleted(plTable.getOrInitTable(), plTable.getCurrentRowID())
-    );
+    return !_jobIsCompleted() && _formIsRequired(selectedStatus);
   };
+
+  el.addEventListener('show.bs.modal', () => {
+    letModalOpen();
+    setInitialInfo();
+  });
 
   el.addEventListener('hide.bs.modal', () => {
     plTable.refresh();
     form.reset();
   });
 
-  invoiceInfoNewClientBtn.addEventListener('click', () => {
-    letModalOpen();
-    console.log(getOpenModal());
-  });
+  invoiceInfoNewClientBtn.addEventListener('click', () => letModalOpen());
 
   return {
     modal,
-    openModal,
-    openModalWithNewClientInfo,
     preventFromOpening,
     letModalOpen,
     getOpenModal,

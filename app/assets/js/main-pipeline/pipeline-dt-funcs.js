@@ -59,7 +59,7 @@ const statusChangeHandler = (e) => {
   plTable.keepTrackOfCurrentStatus(status);
 
   invoiceInfo.formRequiresCompletion(status)
-    ? invoiceInfo.openModal()
+    ? invoiceInfo.modal.show()
     : handleStatusUpdate(status, rowID);
 };
 

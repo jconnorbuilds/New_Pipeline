@@ -2,6 +2,7 @@ import { handleAjaxError } from './main-pipeline/pipeline-dt-funcs.js';
 import createModal from './create-modal.js';
 import { plTable } from './main-pipeline/pipeline-dt.js';
 import { CSRFTOKEN } from './utils.js';
+import createAndInitializeToast from './toast-notifs.js';
 
 const form = document.querySelector('#invoice-info-form');
 
@@ -33,8 +34,16 @@ const submitForm = (newStatus) => (e) => {
     url: `/pipeline/set-client-invoice-info/${jobIDField.value}/`,
     data: formData,
     dataType: 'json',
-    success: () => {
+    success: (response) => {
+      const jobName = response.data.job_name;
+      const invoiceName = response.data.invoice_name;
       invoiceInfo.modal.hide();
+      createAndInitializeToast(
+        'Invoice details saved',
+        `${jobName}
+        ${invoiceName}
+        `
+      ).show();
       plTable.refresh();
       form.reset();
     },

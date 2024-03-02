@@ -1,7 +1,7 @@
 import DataTable from 'datatables.net-bs5';
 import { updateRevenueDisplay } from './pipeline-funcs';
 import * as State from './pipeline-state.js';
-import { dates, createNewEl } from '../utils.js';
+import { dates } from '../utils.js';
 import { queryJobs } from './pipeline-dt-funcs.js';
 import { createElement } from '../utils.js';
 

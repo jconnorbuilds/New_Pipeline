@@ -187,21 +187,34 @@ export {
 
 export const handleStatusChange = (e) => {
   const selectEl = e.target;
-  const _table = selectEl.closest('table');
+  const table = selectEl.closest('table');
   const _status = selectEl.value;
   const _rowID = selectEl.closest('tr').getAttribute('id');
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'post',
+    method: 'POST',
     url: '/pipeline/update-invoice-table-row',
     data: { status: _status, cost_id: _rowID },
     dataType: 'json',
-    success: (response) => updateTable(response, _table),
+    success: (response) => updateTable(response, table),
     error: (response) => console.warn(response),
   });
 };
 
-export const handleVendorChange = (status, rowID) => {
+export const handleVendorChange = (e) => {
+  const selectEl = e.target;
+  const table = selectEl.closest('table');
+  const _vendor = selectEl.value;
+  const _rowID = selectEl.closest('tr').getAttribute('id');
+  $.ajax({
+    headers: { 'X-CSRFToken': CSRFTOKEN },
+    method: 'POST',
+    url: '/pipeline/update-invoice-table-row',
+    data: { vendor: _vendor, cost_id: _rowID },
+    dataType: 'json',
+    success: (response) => updateTable(response, table),
+    error: (response) => console.warn(response),
+  });
   console.log('changing vendors...eventually');
 };
 

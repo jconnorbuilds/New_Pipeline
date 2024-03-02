@@ -32,26 +32,14 @@ const dates = {
   thisMonth: () => theDate().getMonth() + 1,
 };
 
-const createNewEl = (tag, clsList, attrDict, textContent) => {
-  // TODO: implement kwargs to make more flexible
-  const newEl = document.createElement(tag);
-
-  clsList.forEach((cls) => newEl.classList.add(cls));
-  if (attrDict)
-    Object.entries(attrDict).forEach(([attrName, attrVal]) => {
-      newEl.setAttribute(attrName, attrVal);
-    });
-  newEl.textContent = textContent;
-
-  return newEl;
-};
-
 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
   ? document.querySelector('[name=csrfmiddlewaretoken]').value
   : null;
 
-const truncate = (string, allowedLengthJp = 15, maxLength = 30) => {
+const truncate = (string, maxLength = 30) => {
   // Function to count Japanese characters
+  const allowedLengthJp = Math.round(maxLength * 0.5);
+
   const countJapaneseCharacters = (str) => {
     // Regex checks for hiragana, katakana, most kanji, and full-width romaji
     const JPRegex =
@@ -67,15 +55,22 @@ const truncate = (string, allowedLengthJp = 15, maxLength = 30) => {
   // Truncate based on the number of JP + EN characters
   if (jpCharCount > allowedLengthJp) {
     return string.substring(0, allowedLengthJp) + '...';
-  } else if (jpCharCount >= 10 && totalLength > 15) {
-    return string.substring(0, 15) + '...';
-  } else if (jpCharCount >= 5 && totalLength > 20) {
-    return string.substring(0, 20) + '...';
-  } else if (jpCharCount >= 2 && totalLength > 25) {
-    return string.substring(0, 25) + '...';
+  } else if (jpCharCount >= maxLength * 0.66 && totalLength > maxLength * 0.5) {
+    return string.substring(0, Math.round(maxLength * 0.5)) + '...';
+  } else if (
+    jpCharCount >= maxLength * 0.33 &&
+    totalLength > maxLength * 0.33
+  ) {
+    return string.substring(0, maxLength * 0.33) + '...';
+  } else if (
+    jpCharCount >= maxLength * 0.125 &&
+    totalLength > maxLength * 0.83
+  ) {
+    return string.substring(0, Math.round(maxLength * 0.83)) + '...';
   } else if (totalLength > maxLength) {
     return string.substring(0, maxLength) + '...';
   }
+
   // No truncation needed
   return string;
 };
@@ -129,7 +124,6 @@ export {
   removeCommas,
   getFXRates,
   dates,
-  createNewEl,
   csrftoken as CSRFTOKEN,
   truncate,
   slugify,

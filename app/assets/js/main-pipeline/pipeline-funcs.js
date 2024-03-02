@@ -5,35 +5,6 @@ import { showLoadingSpinner, hideLoadingSpinner } from './pipeline-ui-funcs.js';
 import { plTable } from './pipeline-dt.js';
 import createAndInitializeToast from '../toast-notifs.js';
 
-const ajaxCall = (
-  formData,
-  url,
-  successCallback,
-  handleError,
-  modal,
-  table
-) => {
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'POST',
-    url: url,
-    data: formData,
-    dataType: 'json',
-    success: (response) => {
-      response.status === 'success'
-        ? successCallback(modal, table, response.data)
-        : console.error(
-            'Something happend - maybe the form received bad data.'
-          );
-    },
-    error: () => {
-      typeof handleError === 'function'
-        ? handleError()
-        : console.error('Error occurred during the AJAX request');
-    },
-  });
-};
-
 const displayErrorMessage = (message) => {
   // TODO: actually dislpay the message on screen?
   console.error(message);
@@ -86,6 +57,7 @@ const handleFormSubmission = (e) => {
     return createAndInitializeToast(
       'Job created',
       response.data.job_name,
+      {},
       'toast-successful-job-created'
     );
   };
@@ -115,7 +87,6 @@ const handleFormSubmission = (e) => {
 };
 
 export {
-  ajaxCall,
   displayErrorMessage,
   NewClientForm,
   handleFormSubmission as jobFormSubmissionHandler,

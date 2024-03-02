@@ -6,8 +6,6 @@ import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
 import $ from 'jquery';
 window.$ = $;
 
-import { Modal } from 'bootstrap';
-import { CSRFTOKEN } from '../utils';
 import { initCSVExporter } from '../csv-export.js';
 import { depositDateFormSubmitHandler } from '../deposit_date.js';
 import { plTable } from './pipeline-dt.js';
@@ -22,7 +20,6 @@ import { initializeGlobalMouseEvents } from '../dt-shared.js';
 import { jobFormSubmissionHandler } from './pipeline-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 import initializeNewClientForm from '../new-client-form-funcs.js';
-import { preventModalFromOpening } from '../invoice_details_modal.js';
 import invoiceInfo from '../invoice_details_modal.js';
 
 document
@@ -51,18 +48,15 @@ document
     invoiceInfo.preventFromOpening();
   });
 
-// invoiceDetailsNewClientbtn.addEventListener('click', () => {
-//   invoiceInfo.preventFromOpening();
-//   const newClientModal = Modal.getOrCreateInstance('#new-client-modal');
-//   newClientModal.show();
-// });
+let filters = document.querySelectorAll('.display-filter input');
+
+filters.forEach((f) => f.addEventListener('change', () => table.draw()));
 
 initializeGlobalMouseEvents();
 initializeDateSelectors();
 
 $(function () {
-  const table = plTable.getOrInitTable();
-  // $(table).DataTable();
+  plTable.getOrInitTable();
   setupTableEventHandlers();
   createFilters();
   initCSVExporter();
@@ -74,79 +68,4 @@ $(function () {
   //     forms[i].submit();
   //   }
   // });
-
-  // TODO: clean up this mess, but it's for an unsupported feature...
-  $('#batch-pay-csv-dl').on('submit', function (e) {
-    e.preventDefault();
-    $.ajax({
-      headers: { 'X-CSRFToken': CSRFTOKEN },
-      type: 'POST',
-      url: '/pipeline/prepare-batch-payment/',
-      data: '',
-      success: function (data, testStatus, xhr) {
-        var blob = new Blob([data]);
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'WISE_batch_payment.csv';
-        link.click();
-
-        var processingStatus = JSON.parse(
-          xhr.getResponseHeader('X-Processing-Status')
-        );
-        console.log('Processing status:', processingStatus);
-
-        var batchProcessSuccess = [];
-        var batchProcessError = [];
-        const successToast = document.getElementById(
-          'payment-template-success-toast'
-        );
-        const errorToast = document.getElementById(
-          'payment-template-error-toast'
-        );
-        const successToastBody = successToast.querySelector('.toast-body');
-        const errorToastBody = errorToast.querySelector('.toast-body');
-
-        for (var key in processingStatus) {
-          if (processingStatus[key].status == 'success') {
-            batchProcessSuccess[key] = processingStatus[key];
-          } else if (processingStatus[key].status == 'error') {
-            batchProcessError[key] = processingStatus[key];
-          } else {
-            alert('Unknown error during processing!');
-          }
-        }
-
-        successToastBody.innerHTML = '';
-        errorToastBody.innerHTML = '';
-        for (const i in batchProcessSuccess) {
-          successToastBody.innerHTML += `
-                        <li>${i}: ${batchProcessSuccess[i].message}</li>
-                        `;
-        }
-        for (const i in batchProcessError) {
-          errorToastBody.innerHTML += `
-                        <li>${i}: ${batchProcessError[i].message}</li>
-                        `;
-        }
-        const successToastBS =
-          bootstrap.Toast.getOrCreateInstance(successToast);
-        const errorToastBS = bootstrap.Toast.getOrCreateInstance(errorToast);
-        if (Object.keys(batchProcessSuccess).length > 0) {
-          successToastBS.show();
-        }
-
-        if (Object.keys(batchProcessError).length > 0) {
-          errorToastBS.show();
-        }
-      },
-    });
-  });
-
-  let filters = document.querySelectorAll('.display-filter input');
-
-  filters.forEach((f) =>
-    f.addEventListener('change', () => {
-      table.draw();
-    })
-  );
 });

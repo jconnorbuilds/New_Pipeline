@@ -1,5 +1,5 @@
 import { Toast } from 'bootstrap';
-import { createElement, createNewEl } from './utils.js';
+import { createElement } from './utils.js';
 import successIcon from '../images/check2-circle.svg';
 
 const createToastEl = (headerText, bodyText, id = '') => {

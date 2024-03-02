@@ -69,10 +69,16 @@ export const initTable = () => {
             sort: (data) => data,
           },
         },
-        { data: 'job_name', responsivePriority: 2 },
+        {
+          data: 'job_name',
+          render: {
+            display: (data) => truncate(data),
+            sort: (data) => data,
+          },
+        },
         { data: 'job_code' },
         { data: 'vendor_name' },
-        { data: 'description', render: (data) => truncate(data, 15) },
+        { data: 'description', render: (data) => truncate(data, 16) },
         {
           data: 'PO_number',
           render: {

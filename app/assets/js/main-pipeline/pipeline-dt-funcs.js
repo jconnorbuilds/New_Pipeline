@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import * as bootstrap from 'bootstrap';
 import { CSRFTOKEN } from '../utils.js';
 import { displayErrorMessage } from './pipeline-funcs.js';
 import invoiceInfo from '../invoice_details_modal.js';
@@ -10,6 +9,7 @@ import {
   getTotalExpectedRevenueAmt,
   setTotalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
+import createAndInitializeToast from '../toast-notifs.js';
 
 export const table = plTable.getOrInitTable();
 export const tableEl = plTable.getTableEl();
@@ -65,17 +65,9 @@ const statusChangeHandler = (e) => {
 
 const handleNewRowDraw = (newRowData) => {
   /*
-  Close the modal, show a success toast,
-  and draw a new row in the table if it belongs on the current
+  Close the modal, draw a new row in the table if it belongs on the current
   page.
-
-  arguments:
-  table: the job table
-  newRowData: response data returned from the ajax call
   */
-  const invoiceInfoSavedToast = bootstrap.Toast.getOrCreateInstance(
-    $('#invoice-set-success-toast')
-  );
 
   if (newRowData.job_date) {
     const newDataInvoicePeriod = newRowData.job_date.split('-');

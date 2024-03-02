@@ -1,16 +1,19 @@
 import DataTable from 'datatables.net-bs5';
 import {
+  handleRowUpdate,
   renderAmount,
   renderAmountJPY,
   renderInvoiceStatus,
   renderPayPeriod,
   renderRequestBtn,
   renderVendorName,
+  setupPayPeriodFormSubmission,
 } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
-import * as PayPeriod from '../pay-period-modal.js';
 import { truncate } from '../utils.js';
-import { invoicesTableRowCallback } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
-import { addRowEventListeners } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
+import {
+  invoicesTableRowCallback,
+  addRowEventListeners,
+} from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
 
 const getJobID = () => {
   return typeof jobID !== 'undefined' ? jobID : false;
@@ -126,8 +129,12 @@ const costTable = (() => {
   const getTableEl = () =>
     getOrInitTable().table().container().querySelector('table');
   const refresh = () => table.ajax.reload();
+  const setupTableEventHandlers = (datatableEl = getTableEl()) => {
+    handleRowUpdate(datatableEl);
+    setupPayPeriodFormSubmission(datatableEl);
+  };
 
-  return { getOrInitTable, getTableEl, refresh };
+  return { getOrInitTable, getTableEl, refresh, setupTableEventHandlers };
 })();
 
 export default costTable;

@@ -9,11 +9,13 @@ import {
   renderVendorName,
   setupPayPeriodFormSubmission,
 } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
-import { truncate } from '../utils.js';
+import { createElement, truncate } from '../utils.js';
 import {
   invoicesTableRowCallback,
   addRowEventListeners,
 } from '../costs-and-invoices/costs-and-invoices-common-funcs.js';
+import penIcon from '../../images/pencil-square.svg';
+import trashIcon from '../../images/trash3-fill.svg';
 
 const getJobID = () => {
   return typeof jobID !== 'undefined' ? jobID : false;
@@ -27,7 +29,7 @@ const initTable = () => {
   table = new DataTable(tableEl, {
     paging: false,
     processing: true,
-    dom: 'lfrtip',
+    dom: 'lrtp',
     autoWidth: true,
     order: [[0, 'asc']],
     orderClasses: false,
@@ -72,7 +74,7 @@ const initTable = () => {
         data: 'invoice_status',
         orderDataType: 'dom-cost-select',
         className: 'p-0',
-        width: '210px',
+        // width: '210px',
         render: {
           display: (data, type, row) => renderInvoiceStatus(data, row),
           sort: (data) => data,
@@ -89,25 +91,49 @@ const initTable = () => {
       {
         // Edit and delete buttons
         data: 'id',
-        render: function (data) {
-          const btnGroup = document.createElement('div');
-          const editBtn = document.createElement('a');
-          const delBtn = document.createElement('a');
-          editBtn.setAttribute('href', `/pipeline/${data}/update-cost/`);
-          delBtn.setAttribute('href', `/pipeline/${data}/delete-cost/`);
-          editBtn.classList.add('btn', 'btn-dark', 'btn-sm');
-          delBtn.classList.add('btn', 'btn-danger', 'btn-sm');
+        render: (data) => {
+          const editIcon = [
+            'img',
+            {
+              attributes: {
+                src: penIcon,
+                alt: 'edit icon',
+              },
+            },
+          ];
+          const deleteIcon = [
+            'img',
+            {
+              attributes: {
+                src: trashIcon,
+                alt: 'delete icon',
+              },
+            },
+          ];
 
-          const editIcon = document.createElement('i');
-          const delIcon = document.createElement('i');
-          editIcon.classList.add('bi', 'bi-wrench-adjustable-circle');
-          delIcon.classList.add('bi', 'bi-trash3-fill');
+          const editBtn = [
+            'a',
+            {
+              classes: ['btn', 'btn-outline-secondary', 'btn-sm'],
+              attributes: { href: `/pipeline/${data}/update-cost/` },
+              children: [editIcon],
+            },
+          ];
 
-          editBtn.appendChild(editIcon);
-          delBtn.appendChild(delIcon);
-          btnGroup.appendChild(editBtn);
-          btnGroup.appendChild(delBtn);
+          const deleteBtn = [
+            'a',
+            {
+              classes: ['btn', 'btn-outline-secondary', 'btn-sm'],
+              attributes: { href: `/pipeline/${data}/delete-cost/` },
+              children: [deleteIcon],
+            },
+          ];
 
+          const btnGroup = createElement('div', {
+            classes: ['btn-group'],
+            attributes: { role: 'group' },
+            children: [editBtn, deleteBtn],
+          });
           return btnGroup.outerHTML;
         },
       },

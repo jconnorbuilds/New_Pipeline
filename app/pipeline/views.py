@@ -456,7 +456,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
             "ジョブコード",
             "作家",
             "作業内容",
-            "PO番",
+            "PO番号",
             "請求書ステータス",
             "支払予定期間",
             "",

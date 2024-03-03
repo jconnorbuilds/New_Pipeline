@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "widget_tweaks",
     "coverage",
+    "webpack_loader",
 ]
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
@@ -190,6 +191,16 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     # '/var/www/static/',
 ]
+
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "webpack_bundles/",
+        "CACHE": not DEBUG,
+        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
+        "POLL_INTERVAL": 0.1,
+        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
+    }
+}
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"

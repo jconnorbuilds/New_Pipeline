@@ -1,9 +1,9 @@
-import * as bootstrap from 'bootstrap';
+import { Modal } from 'bootstrap';
 import { requestInvoice } from './costs-and-invoices/costs-and-invoices-common-funcs.js';
 
 const form = document.querySelector('form#pay-period-form');
 const modalEl = document.querySelector('#pay-period-modal');
-const modal = new bootstrap.Modal(modalEl);
+const modal = new Modal(modalEl);
 const defineMenu = (row) => row.querySelector('ul.dropdown-menu > li');
 const descriptionDiv = document.querySelector(
   '#pay-period-modal .invoice-desc'

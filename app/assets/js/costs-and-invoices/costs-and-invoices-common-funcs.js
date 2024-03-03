@@ -1,7 +1,7 @@
 import $ from 'jquery';
 window.$ = $;
 import DataTable from 'datatables.net-bs5';
-import { CSRFTOKEN } from '../utils.js';
+import { CSRFTOKEN, createElement } from '../utils.js';
 import * as PayPeriod from '../pay-period-modal.js';
 
 const renderRequestBtn = (data) => {
@@ -10,47 +10,58 @@ const renderRequestBtn = (data) => {
 
       return: the outerHTML to render in the table.
   */
-  const btnGroup = document.createElement('div');
-  const requestBtn = document.createElement('button');
-  const innerBtnGroup = document.createElement('div');
-  const dropdownBtn = document.createElement('button');
-  const dropdownMenu = document.createElement('ul');
-  const dropdownItemContainer = document.createElement('li');
-  const dropdownItem = document.createElement('span');
-  btnGroup.classList.add('btn-group', 'btn-group-sm');
-  btnGroup.setAttribute('role', 'group');
-  btnGroup.setAttribute(
-    'aria-label',
-    'Invoice request button with nested dropdown'
-  );
-  requestBtn.classList.add('btn', 'btn-primary', 'inv-req', 'inv-req-btn');
-  requestBtn.setAttribute('type', 'button');
-  requestBtn.setAttribute('id', `invoice-request-btn-${data}`);
-  requestBtn.textContent = 'Req. invoice';
+  const requestBtn = [
+    'button',
+    {
+      classes: ['btn', 'btn-primary', 'inv-req', 'inv-req-btn'],
+      attributes: { type: 'button' },
+      id: `invoice-request-btn-${data}`,
+      text: 'Req. invoice',
+    },
+  ];
 
-  innerBtnGroup.classList.add('btn-group');
-  innerBtnGroup.setAttribute('role', 'group');
+  const innerBtnGroup = [
+    'div',
+    {
+      classes: 'btn-group',
+      attributes: { role: 'group' },
+    },
+  ];
+  const dropdownBtn = [
+    'button',
+    {
+      classes: [
+        'btn',
+        'btn-primary',
+        'dropdown-toggle',
+        'inv-req',
+        'inv-req-menu',
+      ],
+      attributes: { type: 'button', 'aria-expanded': false },
+      data: { bsToggle: 'dropdown' },
+      children: [innerBtnGroup],
+    },
+  ];
+  const dropdownItem = [
+    'span',
+    { classes: 'dropdown-item', text: 'Specify pay period' },
+  ];
 
-  dropdownBtn.setAttribute('type', 'button');
-  dropdownBtn.classList.add(
-    'btn',
-    'btn-primary',
-    'dropdown-toggle',
-    'inv-req',
-    'inv-req-menu'
-  );
-  dropdownBtn.dataset.bsToggle = 'dropdown';
-  dropdownBtn.setAttribute('aria-expanded', 'false');
-  dropdownMenu.classList.add('dropdown-menu');
-  dropdownItem.classList.add('dropdown-item');
-  dropdownItem.textContent = 'Specify pay period';
+  const dropdownItemContainer = ['li', { children: [dropdownItem] }];
 
-  dropdownItemContainer.appendChild(dropdownItem);
-  dropdownMenu.appendChild(dropdownItemContainer);
-  dropdownBtn.appendChild(innerBtnGroup);
-  btnGroup.appendChild(requestBtn);
-  btnGroup.appendChild(dropdownBtn);
-  btnGroup.appendChild(dropdownMenu);
+  const dropdownMenu = [
+    'ul',
+    { classes: 'dropdown-menu', children: [dropdownItemContainer] },
+  ];
+
+  const btnGroup = createElement('div', {
+    classes: ['btn-group', 'btn-group-sm'],
+    attributes: {
+      role: 'group',
+      'aria-label': 'Invoice request button with nested dropdown',
+    },
+    children: [requestBtn, dropdownBtn, dropdownMenu],
+  });
 
   return btnGroup.outerHTML;
 };

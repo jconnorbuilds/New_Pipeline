@@ -9,7 +9,6 @@ import {
   getTotalExpectedRevenueAmt,
   setTotalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
-import createAndInitializeToast from '../toast-notifs.js';
 
 export const table = plTable.getOrInitTable();
 export const tableEl = plTable.getTableEl();

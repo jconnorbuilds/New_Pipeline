@@ -114,7 +114,7 @@ const initTable = () => {
           const editBtn = [
             'a',
             {
-              classes: ['btn', 'btn-outline-secondary', 'btn-sm'],
+              classes: ['btn', 'btn-outline-secondary'],
               attributes: { href: `/pipeline/${data}/update-cost/` },
               children: [editIcon],
             },
@@ -123,14 +123,14 @@ const initTable = () => {
           const deleteBtn = [
             'a',
             {
-              classes: ['btn', 'btn-outline-secondary', 'btn-sm'],
+              classes: ['btn', 'btn-outline-secondary'],
               attributes: { href: `/pipeline/${data}/delete-cost/` },
               children: [deleteIcon],
             },
           ];
 
           const btnGroup = createElement('div', {
-            classes: ['btn-group'],
+            classes: ['btn-group', 'btn-group-sm'],
             attributes: { role: 'group' },
             children: [editBtn, deleteBtn],
           });

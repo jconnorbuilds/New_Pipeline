@@ -1,7 +1,6 @@
 'use strict';
 
 import '../../../assets/scss/pipeline.scss';
-import * as bootstrap from 'bootstrap';
 import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
 import { initTable } from './invoices-dt.js';
 import {

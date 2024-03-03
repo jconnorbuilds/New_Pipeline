@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import { Modal } from 'bootstrap';
 import { CSRFTOKEN } from '../utils.js';
 import { showLoadingSpinner, hideLoadingSpinner } from './pipeline-ui-funcs.js';
 import { plTable } from './pipeline-dt.js';

@@ -2,13 +2,13 @@ import {
   updateTable,
   handleAjaxError,
 } from './main-pipeline/pipeline-dt-funcs.js';
-import * as bootstrap from 'bootstrap';
+import { Modal } from 'bootstrap';
 import { plTable } from './main-pipeline/pipeline-dt.js';
 import { CSRFTOKEN } from './utils.js';
 
 export const form = document.querySelector('#deposit-date-form');
 const modalEl = document.querySelector('#set-deposit-date');
-const modal = new bootstrap.Modal(modalEl);
+const modal = new Modal(modalEl);
 
 const modalShowHandler = () => {
   const row = plTable

@@ -1,11 +1,20 @@
-<!DOCTYPE html>
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
 {% load static %}
 {% load l10n %}
-{% block scripts %}
+{% block styles %}
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.css"
+          rel="stylesheet">
+    {% render_bundle 'costsheet' 'css' %}
     <style type="text/css">a { text-decoration: none; }</style>
-    <script src="{% static 'costsheet.bundle.js' %}" defer></script>
+{% endblock styles %}
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.js"></script>
+    {% render_bundle 'costsheet' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block title %}
     Cost Sheet
@@ -170,8 +179,8 @@
 var jobID = {{ currentJob.id }};
 {% endlocalize %}
 
-var currencies = JSON.parse('{{ currencyList|escapejs }}');
-var forexRates = JSON.parse('{{ forexRates|escapejs }}');
+// var currencies = JSON.parse('{{ currencyList|escapejs }}');
+// var forexRates = JSON.parse('{{ forexRates|escapejs }}');
 
 </script>
 {% endblock body_block %}

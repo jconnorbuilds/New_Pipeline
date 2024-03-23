@@ -40,6 +40,7 @@ from .forms import (
     PipelineJobUpdateForm,
     CostPayPeriodForm,
 )
+from .currencies import currencies
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import dropbox
@@ -93,6 +94,16 @@ class RedirectToPreviousMixin:
 
 def index(request):
     return redirect("pipeline:index")
+
+
+def forex_rates(request):
+    forex_rates = get_forex_rates()
+    return JsonResponse(forex_rates)
+
+
+def currency_list(request):
+    print({currencies})
+    return JsonResponse(currencies, safe=False)
 
 
 class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):

@@ -1,8 +1,20 @@
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
 {% load static %}
+{% block styles %}
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.css"
+          rel="stylesheet">
+    {% render_bundle 'pipeline' 'css' %}
+{% endblock styles %}
+{% block shared_scripts %}
+{% endblock shared_scripts %}
 {% block scripts %}
-    <script defer src="{% static 'main-pipeline.bundle.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.js"></script>
+    {% render_bundle 'pipeline' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block body_block %}
     {% if job_form.errors %}
@@ -332,7 +344,7 @@
                                 class="btn btn-light"
                                 data-bs-dismiss="modal">Cancel</button>
                         <button type="submit"
-                                class="btn btn-info submit"
+                                class="btn btn-dark submit"
                                 id="add-new-client-btn"
                                 name="new-client">Add Client</button>
                         <div class="spinner-border spinner-border-sm invisible"
@@ -390,7 +402,7 @@
                                 id="set-invoice-info-cancel"
                                 data-bs-dismiss="modal">Cancel</button>
                         <button type="submit"
-                                class="btn btn-info submit"
+                                class="btn btn-dark submit"
                                 id="set-invoice-info-submit"
                                 name="set-invoice-info">Ok</button>
                         <div class="spinner-border spinner-border-sm invisible"
@@ -433,7 +445,7 @@
                                 id="set-deposit-date-cancel"
                                 data-bs-dismiss="modal">Cancel</button>
                         <button type="submit"
-                                class="btn btn-info submit"
+                                class="btn btn-dark submit"
                                 id="set-deposit-date-submit"
                                 name="set-deposit-date">Ok</button>
                         <div class="spinner-border spinner-border-sm invisible"

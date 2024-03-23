@@ -1,8 +1,16 @@
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
 {% load static %}
+{% block styles %}
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.css"
+          rel="stylesheet">
+    <style type="text/css">a { text-decoration: none; }</style>
+    {% render_bundle 'invoices-list' 'css' %}
+{% endblock styles %}
 {% block scripts %}
-    <script defer src="{% static 'invoices.bundle.js' %}"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.js"></script>
+    {% render_bundle 'invoices-list' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block title %}
     All Invoices
@@ -62,35 +70,59 @@
             <div class="display-filter form-control">
                 <h3>Filter by status</h3>
                 <div>
-                    <input type="checkbox" class="status-filter" value="nr" id="filter-nr" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="nr"
+                           id="filter-nr" />
                     <label for="filter-nr">Not Requested</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="req" id="filter-req" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="req"
+                           id="filter-req" />
                     <label for="filter-req">Requested</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="rec" id="filter-rec" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="rec"
+                           id="filter-rec" />
                     <label for="filter-rec">Received via upload</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="rec2" id="filter-rec2" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="rec2"
+                           id="filter-rec2" />
                     <label for="filter-rec2">Received direct (pdf/paper)</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="err" id="filter-err" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="err"
+                           id="filter-err" />
                     <label for="filter-err">Error on upload</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="que" id="filter-que" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="que"
+                           id="filter-que" />
                     <label for="filter-que">Queued for payment</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="paid" id="filter-paid" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="paid"
+                           id="filter-paid" />
                     <label for="filter-paid">Paid</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="na" id="filter-na" />
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="na"
+                           id="filter-na" />
                     <label for="filter-na">No invoice</label>
                 </div>
             </div>

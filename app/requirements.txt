@@ -1,5 +1,6 @@
 amqp==5.1.1
 asgiref==3.6.0
+async-timeout==4.0.3
 beautifulsoup4==4.12.2
 billiard==3.6.4.0
 boto3==1.26.129
@@ -14,8 +15,9 @@ click-repl==0.2.0
 colorama==0.4.6
 coverage==7.3.2
 cssbeautifier==1.14.9
-Django==4.2.1
+Django==4.2.9
 django-bootstrap5==23.3
+django-webpack-loader==3.0.1
 django-webtest==1.9.11
 django-widget-tweaks==1.4.12
 djangorestframework==3.14.0
@@ -34,7 +36,6 @@ json5==0.9.14
 kombu==5.2.4
 livereload==2.6.3
 pathspec==0.11.2
-pip==23.0.1
 ply==3.11
 prompt-toolkit==3.0.38
 psycopg2-binary==2.9.6
@@ -46,11 +47,11 @@ redis==4.5.5
 regex==2023.10.3
 requests==2.30.0
 s3transfer==0.6.1
-setuptools==66.0.0
 six==1.16.0
 soupsieve==2.5
 sqlparse==0.4.4
 stone==3.3.1
+tomli==2.0.1
 tornado==6.3.2
 tqdm==4.66.1
 urllib3==1.26.15
@@ -59,4 +60,3 @@ waitress==2.1.2
 wcwidth==0.2.6
 WebOb==1.8.7
 WebTest==3.0.0
-wheel==0.38.4

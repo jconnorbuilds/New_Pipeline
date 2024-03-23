@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 {% extends "pipeline/base.html" %}
-{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
 {% load widget_tweaks %}
 {% load static %}
 {% block navbar %}
-{% endblock %}
-
+{% endblock navbar %}
 {% block body_block %}
-<div class="container">
-	<div class="d-flex justify-content-center invoice-upload-logo">
-		<img src="{% static 'pipeline/images/bwcat_logo_720x720.png' %}" alt="BCWC logo" width="155px">
-	</div>
-	<div class="p-2 col-9 justify-content-center container-fluid">
-        <div class="container-fluid justify-content-center">
-            <h3 class="display-3 text-center">Thank you!</h3>
-            <hr>
-            {% comment %} <p>Always a pleasure working with you.</p>
+    <div class="container">
+        <div class="d-flex justify-content-center invoice-upload-logo">
+            <img src="{% static 'images/bwcat_logo_720x720.png' %}"
+                 alt="BCWC logo"
+                 width="155px">
+        </div>
+        <div class="p-2 col-9 justify-content-center container-fluid">
+            <div class="container-fluid justify-content-center">
+                <h3 class="display-3 text-center">Thank you!</h3>
+                <hr>
+                {% comment %} <p>Always a pleasure working with you.</p>
             <p>We've received the following invoices:</p>
             <div class="justify-content-center">
                 {% if successful_invoices %}
@@ -43,10 +43,10 @@
                     <p>Please get in touch with us and we'll get it sorted</p>
                 {% endif %}
             </div>
-            <p>We're sending you a confirmation email as well.</p> {% endcomment %}
+                <p>We're sending you a confirmation email as well.</p> {% endcomment %}
+            </div>
         </div>
-	</div>
-    <form>
-    </form>
-</div>
-{% endblock %}
+        <form>
+        </form>
+    </div>
+{% endblock body_block %}

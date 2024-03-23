@@ -13,11 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
-from urllib.parse import urlparse
 from dotenv import load_dotenv
 import boto3
-
-# from celery.schedules import crontab
 
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
@@ -56,7 +53,9 @@ DEBUG = int(os.getenv("DEBUG", 0))
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALLOWED_HOSTS = "localhost 127.0.0.1 [::1] 139.162.72.231 .bwcat.tools".split(" ")
-CSRF_TRUSTED_ORIGINS = "https://bwcat.tools https://127.0.0.1".split(" ")
+CSRF_TRUSTED_ORIGINS = (
+    "https://bwcat.tools https://127.0.0.1 https://localhost/*".split(" ")
+)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
@@ -68,13 +67,18 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.forms",
-    "rest_framework",
     "pipeline",
     "django_bootstrap5",
     "widget_tweaks",
     "coverage",
     "webpack_loader",
 ]
+
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "STATS_FILE": str(BASE_DIR / "frontend" / "webpack-stats.json"),
+    },
+}
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 # REST_FRAMEWORK = {
@@ -186,21 +190,15 @@ USE_TZ = True
 # Static files (CSS, Javascript, etc.)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    # '/var/www/static/',
+    ("images", BASE_DIR / "frontend/assets/images"),
+    ("js", BASE_DIR / "frontend/build/js"),
+    ("css", BASE_DIR / "frontend/build/css"),
+    # ("build", BASE_DIR / "frontend/build"),
 ]
 
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "BUNDLE_DIR_NAME": "webpack_bundles/",
-        "CACHE": not DEBUG,
-        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
-        "POLL_INTERVAL": 0.1,
-        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-    }
-}
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"

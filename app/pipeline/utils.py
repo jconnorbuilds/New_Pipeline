@@ -110,11 +110,14 @@ def get_invoice_data(cost, forex_rates, vendors=None):
     response = {
         "id": cost.id,
         "job_id": cost.job.id,
-        "amount_JPY": round(cost.amount * forex_rates[cost.currency])
-        if cost.invoice_status not in ["PAID"]
-        else round(cost.amount * cost.locked_exchange_rate),
+        "amount_JPY": (
+            round(cost.amount * forex_rates[cost.currency])
+            if cost.invoice_status not in ["PAID"]
+            else round(cost.amount * cost.locked_exchange_rate)
+        ),
         "amount": cost.amount,
         "currency": cost.currency,
+        "currency_symbol": cost.get_currency_display(),
         "job_date": cost.job.job_date,
         "job_name": cost.job.job_name,
         "job_code": cost.job.job_code,
@@ -126,9 +129,9 @@ def get_invoice_data(cost, forex_rates, vendors=None):
         "pay_period": cost.pay_period,
         "invoice_status": cost.invoice_status,
         "invoice_status_choices": Cost.INVOICE_STATUS_CHOICES,
-        "vendors_dict": {vendor.id: vendor.familiar_name for vendor in vendors}
-        if vendors
-        else None,
+        "vendors_dict": (
+            {vendor.id: vendor.familiar_name for vendor in vendors} if vendors else None
+        ),
         "person_in_charge": cost.job.get_personInCharge_display(),
     }
     return response
@@ -214,9 +217,9 @@ def process_imported_jobs(csv_file):
 
                 except IntegrityError as e:
                     if Job.objects.filter(job_code=job_code.strip()).exists():
-                        errors[
-                            f"{job_code}"
-                        ] = "A job with that job code already exists, but differs from the info in the uploaded file. Support for updating via bulk upload coming soon."
+                        errors[f"{job_code}"] = (
+                            "A job with that job code already exists, but differs from the info in the uploaded file. Support for updating via bulk upload coming soon."
+                        )
                     else:
                         errors[f"{job_code}"] = e
                     print("integrityerror", e)
@@ -227,9 +230,9 @@ def process_imported_jobs(csv_file):
                     errors[f"{job_code}"] = e
                     print("otherexception", e)
             else:
-                errors[
-                    "DATA ERROR"
-                ] = f'Could not parse the client "{client_code}". Make sure this client exists and that the code is being used in the import template.'
+                errors["DATA ERROR"] = (
+                    f'Could not parse the client "{client_code}". Make sure this client exists and that the code is being used in the import template.'
+                )
 
             # for item in not_created_items:
             #   messages.info(request, item)

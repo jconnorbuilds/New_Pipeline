@@ -6,6 +6,8 @@ from .models import Job
 app_name = "pipeline"
 
 urlpatterns = [
+    path("currency-list", views.currency_list, name="currency-list"),
+    path("forex-rates", views.forex_rates, name="forex-rates"),
     path(
         "",
         views.PipelineViewBase.as_view(),

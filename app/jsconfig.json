@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ES2021",
+    "jsx": "react",
+    "allowImportingTsExtensions": false,
+    "checkJs": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
+}

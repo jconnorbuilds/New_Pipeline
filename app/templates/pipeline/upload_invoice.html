@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 {% extends "pipeline/base.html" %}
-{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
 {% load static %}
-{% block header %}
+{% block title %}
+    BCWC Invoice Uploader
+{% endblock title %}
+{% block styles %}
     {{ block.super }}
-    <link rel="stylesheet" href="{% static 'pipeline/dropzone.css' %}">
-    <script src="{% static 'pipeline/dropzone-min.js' %}"></script>
-{% endblock header %}
+    {% render_bundle 'invoice-uploader' 'css' %}
+{% endblock styles %}
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    {% render_bundle 'invoice-uploader' 'js' attrs="defer" %}
+{% endblock scripts %}
 {% block navbar %}
 {% endblock navbar %}
 {% block body_block %}
     <div class="container">
         <div class=" d-flex justify-content-center invoice-upload-logo">
-            <img src="{% static 'pipeline/images/bwcat_logo_720x720.png' %}"
+            <img src="{% static 'images/bwcat_logo_720x720.png' %}"
                  alt="BCWC logo"
                  width="155px">
         </div>
@@ -90,8 +98,3 @@
 
         </script>
     {% endblock body_block %}
-    {% block footer %}
-        {{ block.super }}
-        <script type="text/javascript"
-                src="{% static 'pipeline/invoice-request.js' %}"></script>
-    {% endblock footer %}

@@ -1,0 +1,228 @@
+// @import '~bootstrap/scss/bootstrap';
+
+// Bootstrap 5.3 ref https://github.com/twbs/examples/blob/main/webpack/src/scss/styles.scss
+// Place variable overrides first, then import just the styles you need. Note that some stylesheets are required no matter what.
+
+// Toggle global options
+
+// Include functions first
+@import 'bootstrap/scss/functions';
+
+// Customize some defaults
+// $body-color: #333;
+// $body-bg: #fff;
+// $border-radius: 0.4rem;
+$primary: #873ec3;
+$info: #ffd166;
+$danger: #ef476f;
+$success: #06d6a0;
+$dark: #1e1620;
+
+// Required
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+
+// Optional
+@import 'bootstrap/scss/images';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/tables';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/dropdown';
+@import 'bootstrap/scss/button-group';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/navbar'; // Requires nav
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/breadcrumb';
+@import 'bootstrap/scss/accordion';
+@import 'bootstrap/scss/pagination';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/progress';
+@import 'bootstrap/scss/list-group';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/toasts';
+@import 'bootstrap/scss/modal'; // Requires transitions
+@import 'bootstrap/scss/tooltip';
+@import 'bootstrap/scss/popover';
+@import 'bootstrap/scss/carousel';
+@import 'bootstrap/scss/spinners';
+@import 'bootstrap/scss/offcanvas'; // Requires transitions
+@import 'bootstrap/scss/placeholders';
+
+// Helpers
+@import 'bootstrap/scss/helpers';
+
+// Utilities
+@import 'bootstrap/scss/utilities/api';
+
+// Custom styles
+
+@import 'https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Chivo:wght@100..900&display=swap';
+
+:root {
+  --bs-body-font-family: 'Chivo', 'Roboto', 'sans-serif';
+  --bs-font-monospace: 'Chivo Mono', 'Roboto Mono', 'monospace';
+}
+
+html,
+body {
+  height: 100vh;
+  font-family: var(--bs-body-font-family);
+  font-style: normal;
+  font-optical-sizing: auto;
+  font-weight: 400;
+}
+
+strong {
+  font-weight: var(--fw-bold);
+}
+
+.edit-del-btn-group {
+  color: inherit;
+}
+
+td a {
+  text-decoration: none;
+  color: inherit;
+}
+
+tr:hover a {
+  text-decoration: underline;
+  color: #0d6efd;
+}
+
+tr:hover a:hover {
+  text-decoration: underline;
+  color: #0da5fd;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.single-invoice-request-btn {
+  white-space: nowrap;
+}
+
+.dropzone .dz-preview .dz-progress {
+  top: 70% !important;
+  background: rgba(255 255 255 / 25%) !important;
+}
+
+.dropzone .dz-preview .dz-error-message {
+  top: 150px !important;
+}
+
+tbody tr.job-invoiced .job-label {
+  font-style: italic !important;
+  font-weight: 200 !important;
+}
+
+table.table,
+table div.btn-group button {
+  font-size: 0.9rem;
+}
+
+#all-invoices-table,
+#all-invoices-table div.btn-group button {
+  font-size: 0.8rem;
+}
+
+.all-invoices-requested {
+  background-color: rgba(226 244 62 / 35%) !important;
+}
+
+.selected-row {
+  background-color: rgba(81 208 255 / 20%) !important;
+}
+
+.indent {
+  display: inline-block;
+  margin-left: 4ch;
+}
+
+.display-filter > div {
+  display: inline-block;
+  margin: 10px 20px 0;
+}
+
+.job-details-w400 {
+  width: 400px;
+}
+
+.job-details-w300 {
+  width: 300px;
+}
+
+.job-details-w600 {
+  width: 600px;
+}
+
+.job-details-item {
+  width: 60%;
+}
+
+.job-details-item-sm {
+  width: 40%;
+}
+
+.job-details-desc {
+  text-align: right;
+  width: 60%;
+  margin-bottom: 0;
+}
+
+.job-details-desc-sm {
+  text-align: right;
+  width: 40%;
+  margin-bottom: 0;
+}
+
+.job-details-amount {
+  font-family: 'Chivo Mono', monospace;
+  text-align: right;
+  margin-bottom: 0;
+  font-size: 0.95em;
+  width: 40%;
+}
+
+.revenue-display-text {
+  font-size: 1em;
+  width: 70%;
+}
+
+.revenue-display-amount {
+  width: 30%;
+  text-align: right;
+  margin-bottom: 0;
+  font-size: 1em;
+  font-family: 'Chivo Mono', monospace;
+}
+
+.font-monospace {
+  font-family: 'Chivo Mono', monospace;
+}
+
+.error-text {
+  color: red;
+}
+
+td .inv-req-btn li {
+  cursor: pointer;
+}
+
+/* stylelint-disable-next-line */
+div.dt-processing > div:last-child > div {
+  background: $primary;
+}

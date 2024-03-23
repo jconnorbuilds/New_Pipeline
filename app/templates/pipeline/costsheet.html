@@ -1,18 +1,21 @@
-<!DOCTYPE html>
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
 {% load static %}
 {% load l10n %}
-{% block header %}
-    {{ block.super }}
+{% block styles %}
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.css"
+          rel="stylesheet">
+    {% render_bundle 'costsheet' 'css' %}
     <style type="text/css">a { text-decoration: none; }</style>
-    <script type="text/javascript"
-            src="{% static 'pipeline/costsheet.js' %}"
-            defer></script>
-    <script type="text/javascript"
-            src="{% static 'pipeline/invoices_common.js' %}"
-            defer></script>
-{% endblock header %}
+{% endblock styles %}
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.js"></script>
+    {% render_bundle 'costsheet' 'js' attrs="defer" %}
+{% endblock scripts %}
 {% block title %}
     Cost Sheet
 {% endblock title %}
@@ -79,7 +82,7 @@
                             <div class="input-group mb-0">
                                 <select class="form-select calc-select col-auto border-bottom-0"
                                         id="calcFrom"></select>
-                                <input type="number"
+                                <input type="text"
                                        class="form-control text-end font-monospace border-bottom-0"
                                        id="calcInput"
                                        placeholder="0">
@@ -117,7 +120,7 @@
         </div>
     </div>
     <table id="cost-table"
-           class="display compact dt-responsive nowrap"
+           class="table table-sm table-hover table-borderless nowrap align-middle"
            style="width:100%">
         <thead>
             <tr>
@@ -176,8 +179,8 @@
 var jobID = {{ currentJob.id }};
 {% endlocalize %}
 
-var currencyList = JSON.parse('{{ currencyList|escapejs }}');
-var forexRates = JSON.parse('{{ forexRates|escapejs }}');
+// var currencies = JSON.parse('{{ currencyList|escapejs }}');
+// var forexRates = JSON.parse('{{ forexRates|escapejs }}');
 
 </script>
 {% endblock body_block %}

@@ -40,6 +40,7 @@ from .forms import (
     PipelineJobUpdateForm,
     CostPayPeriodForm,
 )
+from .currencies import currencies
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import dropbox
@@ -93,6 +94,16 @@ class RedirectToPreviousMixin:
 
 def index(request):
     return redirect("pipeline:index")
+
+
+def forex_rates(request):
+    forex_rates = get_forex_rates()
+    return JsonResponse(forex_rates)
+
+
+def currency_list(request):
+    print({currencies})
+    return JsonResponse(currencies, safe=False)
 
 
 class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
@@ -202,7 +213,7 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                 return JsonResponse(
                     {
                         "id": instance.id,
-                        "value": instance.friendly_name,
+                        "client_friendly_name": instance.friendly_name,
                         "prefix": instance.job_code_prefix,
                         "status": "success",
                     }
@@ -449,14 +460,14 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["headers"] = [
             "",
-            "金額 (¥)",
-            "金額(local)",
+            "金額",
+            "現地",
             "請求期間",
             "案件名",
             "ジョブコード",
             "作家",
             "作業内容",
-            "PO番",
+            "PO番号",
             "請求書ステータス",
             "支払予定期間",
             "",
@@ -468,6 +479,7 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
 
 
 def update_invoice_table_row(request):
+    print(request.POST)
     if request.POST:
         form_data_vendor = request.POST.get("vendor")
         form_data_status = request.POST.get("status")
@@ -569,7 +581,8 @@ def process_uploaded_vendor_invoice(request):
         "FORMATTED: ", (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
     )
     print(
-        "DT FORMATTED: ", (date.today() + relativedelta(months=+1)).strftime("%Y年%-m月")
+        "DT FORMATTED: ",
+        (date.today() + relativedelta(months=+1)).strftime("%Y年%-m月"),
     )
 
     if request.POST and "invoices" in request.POST:
@@ -860,7 +873,15 @@ def jobs_csv_export(request):
             },
         )
         writer = csv.writer(response)
-        fields = ["クライアント", "案件名", "ジョブコード", "予算 (¥)", "総費用", "案件タイプ", "日付"]
+        fields = [
+            "クライアント",
+            "案件名",
+            "ジョブコード",
+            "予算 (¥)",
+            "総費用",
+            "案件タイプ",
+            "日付",
+        ]
         writer.writerow(fields)
 
         scope = Job.objects.filter(job_date__gte=fromDate, job_date__lt=thruDate)
@@ -903,9 +924,10 @@ def jobs_csv_export(request):
 
 def create_batch_payment_file(request):
     """
+    Currently, WISE doesn't support batch payments from JPY accounts, so this is shelved until it's supported.
+
     Create a WISE batch payment file from the template in /static.
     Each payment can be maximum 1m JPY, so anything over ¥950k is split into multiple payments.
-
     """
     forex_rates = get_forex_rates()
     if request.method == "POST":
@@ -1238,8 +1260,8 @@ class CostsheetViewBase(LoginRequiredMixin, CreateView):
         context["forexRates"] = json.dumps(self.forex_rates)
         context["currentJob"] = currentJob
         context["headers"] = [
-            "金額(¥)",
-            "金額(現地)",
+            "金額",
+            "現地",
             "ベンダー名",
             "作業の内容",
             "PO番号",

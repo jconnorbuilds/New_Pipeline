@@ -1,17 +1,17 @@
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
-{% comment %} {% load render_table from django_tables2 %} {% endcomment %}
 {% load static %}
-{% block header %}
-    {{ block.super }}
-    <style type="text/css">a{ text-decoration: none; }</style>
-    <script type="text/javascript"
-            src="{% static 'pipeline/invoices_common.js' %}"
-            defer></script>
-    <script type="text/javascript"
-            src="{% static 'pipeline/invoices_list.js' %}"
-            defer></script>
-{% endblock header %}
+{% block styles %}
+    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.css"
+          rel="stylesheet">
+    <style type="text/css">a { text-decoration: none; }</style>
+    {% render_bundle 'invoices-list' 'css' %}
+{% endblock styles %}
+{% block scripts %}
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.js"></script>
+    {% render_bundle 'invoices-list' 'js' attrs="defer" %}
+{% endblock scripts %}
 {% block title %}
     All Invoices
 {% endblock title %}
@@ -59,57 +59,89 @@
     </div>
     <div class="container-fluid p-4">
         <div class="row col-6">
-            {% comment %} <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
-                {% csrf_token %}
-                <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">Prepare Batch Payment</button>
-            </form> {% endcomment %}
+            {% comment %}
+    <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
+      {% csrf_token %}
+      <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">
+        Prepare Batch Payment
+      </button>
+    </form>
+            {% endcomment %}
             <div class="display-filter form-control">
                 <h3>Filter by status</h3>
                 <div>
-                    <input type="checkbox" class="status-filter" value="nr" id="filter-nr">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="nr"
+                           id="filter-nr" />
                     <label for="filter-nr">Not Requested</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="req" id="filter-req">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="req"
+                           id="filter-req" />
                     <label for="filter-req">Requested</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="rec" id="filter-rec">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="rec"
+                           id="filter-rec" />
                     <label for="filter-rec">Received via upload</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="rec2" id="filter-rec2">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="rec2"
+                           id="filter-rec2" />
                     <label for="filter-rec2">Received direct (pdf/paper)</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="err" id="filter-err">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="err"
+                           id="filter-err" />
                     <label for="filter-err">Error on upload</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="que" id="filter-que">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="que"
+                           id="filter-que" />
                     <label for="filter-que">Queued for payment</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="paid" id="filter-paid">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="paid"
+                           id="filter-paid" />
                     <label for="filter-paid">Paid</label>
                 </div>
                 <div>
-                    <input type="checkbox" class="status-filter" value="na" id="filter-na">
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="na"
+                           id="filter-na" />
                     <label for="filter-na">No invoice</label>
                 </div>
             </div>
         </div>
-        <hr>
-        <div class="container p-2">{% csrf_token %}</div>
-        <table id="all-invoices-table"
-               class="display compact dt-responsive nowrap"
-               style="width:100%">
-            <thead>
-                <tr>
-                    {% for item in headers %}<th>{{ item }}</th>{% endfor %}
-                </tr>
-            </thead>
-        </table>
+        <hr />
+        <div class="table-responsive">
+            {% csrf_token %}
+            <table id="all-invoices-table"
+                   class="table table-sm table-hover table-borderless nowrap align-middle"
+                   style="width: 100%">
+                <thead>
+                    <tr>
+                        {% for item in headers %}<th>{{ item }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="modal fade"
          id="pay-period-modal"

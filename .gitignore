@@ -4,8 +4,13 @@
 **/.vscode/
 htmlcov
 *.numbers
+node_modules
+package-lock.json
+package.json
 .vscode
 docker-compose.yml
 docker-compose.local.yml
 import_templates
+data
+
 **/__pycache__/

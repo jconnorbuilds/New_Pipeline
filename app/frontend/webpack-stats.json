@@ -1,40 +1,40 @@
 {
   "status": "done",
   "assets": {
-    "assets/images/3bb70a9771e41b193ffd..svg": {
-      "name": "assets/images/3bb70a9771e41b193ffd..svg",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/3bb70a9771e41b193ffd..svg",
-      "publicPath": "/static/assets/images/3bb70a9771e41b193ffd..svg"
+    "assets/images/check2-circle.svg": {
+      "name": "assets/images/check2-circle.svg",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/check2-circle.svg",
+      "publicPath": "/static/assets/images/check2-circle.svg"
     },
-    "assets/images/4af97979c7b17f44d3fd..svg": {
-      "name": "assets/images/4af97979c7b17f44d3fd..svg",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/4af97979c7b17f44d3fd..svg",
-      "publicPath": "/static/assets/images/4af97979c7b17f44d3fd..svg"
+    "assets/images/pencil-square.svg": {
+      "name": "assets/images/pencil-square.svg",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/pencil-square.svg",
+      "publicPath": "/static/assets/images/pencil-square.svg"
     },
-    "assets/images/ef84a970115e0ccc2e38..svg": {
-      "name": "assets/images/ef84a970115e0ccc2e38..svg",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/ef84a970115e0ccc2e38..svg",
-      "publicPath": "/static/assets/images/ef84a970115e0ccc2e38..svg"
+    "assets/images/trash3-fill.svg": {
+      "name": "assets/images/trash3-fill.svg",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/trash3-fill.svg",
+      "publicPath": "/static/assets/images/trash3-fill.svg"
     },
-    "css/base-72f3d.css": {
-      "name": "css/base-72f3d.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-72f3d.css",
-      "publicPath": "/static/css/base-72f3d.css"
+    "css/base-3614e.css": {
+      "name": "css/base-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-3614e.css",
+      "publicPath": "/static/css/base-3614e.css"
     },
-    "css/base-72f3d.css.map": {
-      "name": "css/base-72f3d.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-72f3d.css.map",
-      "publicPath": "/static/css/base-72f3d.css.map"
+    "css/base-3614e.css.map": {
+      "name": "css/base-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-3614e.css.map",
+      "publicPath": "/static/css/base-3614e.css.map"
     },
-    "css/costsheet-72f3d.css": {
-      "name": "css/costsheet-72f3d.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-72f3d.css",
-      "publicPath": "/static/css/costsheet-72f3d.css"
+    "css/costsheet-3614e.css": {
+      "name": "css/costsheet-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-3614e.css",
+      "publicPath": "/static/css/costsheet-3614e.css"
     },
-    "css/costsheet-72f3d.css.map": {
-      "name": "css/costsheet-72f3d.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-72f3d.css.map",
-      "publicPath": "/static/css/costsheet-72f3d.css.map"
+    "css/costsheet-3614e.css.map": {
+      "name": "css/costsheet-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-3614e.css.map",
+      "publicPath": "/static/css/costsheet-3614e.css.map"
     },
     "css/invoice-uploader-cf2ac.css": {
       "name": "css/invoice-uploader-cf2ac.css",
@@ -46,70 +46,70 @@
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader-cf2ac.css.map",
       "publicPath": "/static/css/invoice-uploader-cf2ac.css.map"
     },
-    "css/invoices-list-72f3d.css": {
-      "name": "css/invoices-list-72f3d.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-72f3d.css",
-      "publicPath": "/static/css/invoices-list-72f3d.css"
+    "css/invoices-list-3614e.css": {
+      "name": "css/invoices-list-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-3614e.css",
+      "publicPath": "/static/css/invoices-list-3614e.css"
     },
-    "css/invoices-list-72f3d.css.map": {
-      "name": "css/invoices-list-72f3d.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-72f3d.css.map",
-      "publicPath": "/static/css/invoices-list-72f3d.css.map"
+    "css/invoices-list-3614e.css.map": {
+      "name": "css/invoices-list-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-3614e.css.map",
+      "publicPath": "/static/css/invoices-list-3614e.css.map"
     },
-    "css/pipeline-72f3d.css": {
-      "name": "css/pipeline-72f3d.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-72f3d.css",
-      "publicPath": "/static/css/pipeline-72f3d.css"
+    "css/pipeline-3614e.css": {
+      "name": "css/pipeline-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-3614e.css",
+      "publicPath": "/static/css/pipeline-3614e.css"
     },
-    "css/pipeline-72f3d.css.map": {
-      "name": "css/pipeline-72f3d.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-72f3d.css.map",
-      "publicPath": "/static/css/pipeline-72f3d.css.map"
+    "css/pipeline-3614e.css.map": {
+      "name": "css/pipeline-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-3614e.css.map",
+      "publicPath": "/static/css/pipeline-3614e.css.map"
     },
-    "js/base.569c6234.js": {
-      "name": "js/base.569c6234.js",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/base.569c6234.js",
-      "publicPath": "/static/js/base.569c6234.js"
+    "js/base.js": {
+      "name": "js/base.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/base.js",
+      "publicPath": "/static/js/base.js"
     },
-    "js/costsheet.ea2a2194.js": {
-      "name": "js/costsheet.ea2a2194.js",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.ea2a2194.js",
-      "publicPath": "/static/js/costsheet.ea2a2194.js"
+    "js/costsheet.js": {
+      "name": "js/costsheet.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.js",
+      "publicPath": "/static/js/costsheet.js"
     },
-    "js/costsheet.ea2a2194.js.map": {
-      "name": "js/costsheet.ea2a2194.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.ea2a2194.js.map",
-      "publicPath": "/static/js/costsheet.ea2a2194.js.map"
+    "js/costsheet.js.map": {
+      "name": "js/costsheet.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.js.map",
+      "publicPath": "/static/js/costsheet.js.map"
     },
-    "js/invoice-uploader.ee4c4905.js": {
-      "name": "js/invoice-uploader.ee4c4905.js",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.ee4c4905.js",
-      "publicPath": "/static/js/invoice-uploader.ee4c4905.js"
+    "js/invoice-uploader.js": {
+      "name": "js/invoice-uploader.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.js",
+      "publicPath": "/static/js/invoice-uploader.js"
     },
-    "js/invoice-uploader.ee4c4905.js.map": {
-      "name": "js/invoice-uploader.ee4c4905.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.ee4c4905.js.map",
-      "publicPath": "/static/js/invoice-uploader.ee4c4905.js.map"
+    "js/invoice-uploader.js.map": {
+      "name": "js/invoice-uploader.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.js.map",
+      "publicPath": "/static/js/invoice-uploader.js.map"
     },
-    "js/invoices-list.96c22809.js": {
-      "name": "js/invoices-list.96c22809.js",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.96c22809.js",
-      "publicPath": "/static/js/invoices-list.96c22809.js"
+    "js/invoices-list.js": {
+      "name": "js/invoices-list.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.js",
+      "publicPath": "/static/js/invoices-list.js"
     },
-    "js/invoices-list.96c22809.js.map": {
-      "name": "js/invoices-list.96c22809.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.96c22809.js.map",
-      "publicPath": "/static/js/invoices-list.96c22809.js.map"
+    "js/invoices-list.js.map": {
+      "name": "js/invoices-list.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.js.map",
+      "publicPath": "/static/js/invoices-list.js.map"
     },
-    "js/pipeline.0169a6f0.js": {
-      "name": "js/pipeline.0169a6f0.js",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.0169a6f0.js",
-      "publicPath": "/static/js/pipeline.0169a6f0.js"
+    "js/pipeline.js": {
+      "name": "js/pipeline.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.js",
+      "publicPath": "/static/js/pipeline.js"
     },
-    "js/pipeline.0169a6f0.js.map": {
-      "name": "js/pipeline.0169a6f0.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.0169a6f0.js.map",
-      "publicPath": "/static/js/pipeline.0169a6f0.js.map"
+    "js/pipeline.js.map": {
+      "name": "js/pipeline.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.js.map",
+      "publicPath": "/static/js/pipeline.js.map"
     },
     "js/vendor.bootstrap.js": {
       "name": "js/vendor.bootstrap.js",
@@ -134,27 +134,27 @@
   },
   "chunks": {
     "base": [
-      "js/base.569c6234.js",
-      "css/base-72f3d.css"
+      "js/base.js",
+      "css/base-3614e.css"
     ],
     "costsheet": [
       "js/vendor.bootstrap.js",
-      "js/costsheet.ea2a2194.js",
-      "css/costsheet-72f3d.css"
+      "js/costsheet.js",
+      "css/costsheet-3614e.css"
     ],
     "invoice-uploader": [
-      "js/invoice-uploader.ee4c4905.js",
+      "js/invoice-uploader.js",
       "css/invoice-uploader-cf2ac.css"
     ],
     "invoices-list": [
       "js/vendor.bootstrap.js",
-      "js/invoices-list.96c22809.js",
-      "css/invoices-list-72f3d.css"
+      "js/invoices-list.js",
+      "css/invoices-list-3614e.css"
     ],
     "pipeline": [
       "js/vendor.bootstrap.js",
-      "js/pipeline.0169a6f0.js",
-      "css/pipeline-72f3d.css"
+      "js/pipeline.js",
+      "css/pipeline-3614e.css"
     ]
   },
   "publicPath": "/static/"

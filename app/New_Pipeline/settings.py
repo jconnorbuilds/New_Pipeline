@@ -192,7 +192,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    ("images", BASE_DIR / "frontend/assets/images"),
+    ("assets", BASE_DIR / "frontend/assets"),
     ("js", BASE_DIR / "frontend/build/js"),
     ("css", BASE_DIR / "frontend/build/css"),
     # ("build", BASE_DIR / "frontend/build"),

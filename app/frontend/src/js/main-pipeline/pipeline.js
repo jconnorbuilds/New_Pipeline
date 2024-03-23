@@ -13,8 +13,6 @@ import {
   dateSelectionHandler,
   toggleViewHandler,
   initializeDateSelectors,
-  extendSearch,
-  setupStatusOrdering,
 } from './pipeline-ui-funcs';
 import { initializeGlobalMouseEvents } from '../tables/dt-shared.js';
 import { jobFormSubmissionHandler } from './pipeline-funcs.js';

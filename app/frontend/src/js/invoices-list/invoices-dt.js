@@ -24,7 +24,7 @@ const initTable = () => {
       pageLength: 50,
       autoWidth: true,
       order: [
-        [3, 'asc'], //job date (asc)
+        [3, 'desc'], //job date (desc)
         [5, 'asc'], //job code (asc)
       ],
       orderClasses: false,
@@ -61,15 +61,13 @@ const initTable = () => {
         {
           data: 'job_date',
           className: 'invoice-period',
-          render: {
-            display: (data) => {
-              let date = new Date(data);
-              return data
-                ? `${date.getFullYear()}年${date.getMonth() + 1}月`
-                : '---';
-            },
-            sort: (data) => data,
+          render: (data) => {
+            let date = new Date(data);
+            return data
+              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
+              : '---';
           },
+          // type: 'job-date',
         },
         {
           data: 'job_name',
@@ -94,10 +92,8 @@ const initTable = () => {
           orderDataType: 'dom-cost-select',
           className: 'p-0',
           width: '210px',
-          render: {
-            display: (data, type, row) => renderInvoiceStatus(data, row),
-            sort: (data) => data,
-          },
+          render: (data, type, row) => renderInvoiceStatus(data, row),
+          type: 'status',
         },
         {
           data: 'pay_period',

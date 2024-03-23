@@ -153,19 +153,15 @@ export const setupSortByStatus = () => {
     NA: 8,
   };
 
-  // Sort by status, based on the order above
-  DataTable.ext.order['dom-cost-select'] = function (settings, col) {
-    return this.api()
-      .column(col, { order: 'index' })
-      .nodes()
-      .map(function (td) {
-        let el = td.querySelector('select.status');
-        return el.getAttribute('style') === 'display: none;'
-          ? 0
-          : el
-          ? invoiceStatusOrderMap[el.value]
-          : 0;
-      });
+  DataTable.ext.type.order['status-pre'] = (data) => {
+    const statusOrder = invoiceStatusOrderMap[data];
+    return statusOrder ? statusOrder : -1;
+  };
+};
+
+export const setupSortByDate = () => {
+  DataTable.ext.type.order['job-date-pre'] = (data) => {
+    console.log(data);
   };
 };
 

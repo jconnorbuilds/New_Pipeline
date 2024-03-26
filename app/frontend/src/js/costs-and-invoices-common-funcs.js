@@ -270,7 +270,8 @@ export const addRowEventListeners = (row, data) => {
 
 export const invoicesTableRowCallback = (row, data) => {
   enableDisableInvoiceRequestBtn(row, data);
-  //name this function and extract
+  // name this function and extract
+  // TODO: add an empty option to the select to handle sorting better
   if (data.vendor_id == 0) {
     row.querySelector('select.status').style.display = 'none';
     row

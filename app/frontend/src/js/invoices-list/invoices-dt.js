@@ -100,7 +100,6 @@ const initTable = () => {
           className: 'px-3',
           width: '210px',
           render: (data, type, row) => {
-            console.log({ data });
             return renderInvoiceStatus(data, row);
           },
           // type: 'status',

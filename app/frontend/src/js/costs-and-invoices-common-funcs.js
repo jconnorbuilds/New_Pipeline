@@ -126,9 +126,14 @@ const statusFilters = document.querySelectorAll(
   '.display-filter .status-filter'
 );
 
-export const extendSearch = () => {
+/**
+ * Extends DataTables search to allow filtering by checkbox selection
+ */
+export const initializeStatusFilters = () => {
   DataTable.ext.search.push(function (settings, data) {
-    const status = data[9]; // invoice status;
+    const status = new DOMParser()
+      .parseFromString(data[9], 'text/html')
+      .querySelector('select').value; // invoice status;
     let selectedStatuses = [];
     statusFilters.forEach((status) => {
       if (status.checked) selectedStatuses.push(status.value.toUpperCase());
@@ -156,12 +161,6 @@ export const setupSortByStatus = () => {
   DataTable.ext.type.order['status-pre'] = (data) => {
     const statusOrder = invoiceStatusOrderMap[data];
     return statusOrder ? statusOrder : -1;
-  };
-};
-
-export const setupSortByDate = () => {
-  DataTable.ext.type.order['job-date-pre'] = (data) => {
-    console.log(data);
   };
 };
 

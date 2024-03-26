@@ -10,6 +10,7 @@
 {% endblock styles %}
 {% block scripts %}
     <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/datatables.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/2.0.3/sorting/absolute.js"></script>
     {% render_bundle 'invoices-list' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block title %}

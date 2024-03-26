@@ -7,6 +7,7 @@ import {
   renderRequestBtn,
   invoicesTableRowCallback,
   addRowEventListeners,
+  setupSortByStatus,
 } from '../costs-and-invoices-common-funcs.js';
 import { truncate } from '../utils.js';
 
@@ -15,6 +16,8 @@ let tableEl;
 
 const initTable = () => {
   if (!table) {
+    const invoicePeriodType = DataTable.absoluteOrder('null');
+    const invoiceStatusType = DataTable.absoluteOrder('null');
     tableEl = document.querySelector('#all-invoices-table');
     table = new DataTable(tableEl, {
       paging: true,
@@ -24,8 +27,8 @@ const initTable = () => {
       pageLength: 50,
       autoWidth: true,
       order: [
-        [3, 'desc'], //job date (desc)
-        [5, 'asc'], //job code (asc)
+        { name: 'invoicePeriod', dir: 'desc' },
+        { name: 'jobCode', dir: 'asc' },
       ],
       orderClasses: false,
       language: {
@@ -60,14 +63,18 @@ const initTable = () => {
         },
         {
           data: 'job_date',
+          name: 'invoicePeriod',
           className: 'invoice-period',
-          render: (data) => {
-            let date = new Date(data);
-            return data
-              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
-              : '---';
+          render: {
+            display: (data) => {
+              let date = new Date(data);
+              return data
+                ? `${date.getFullYear()}年${date.getMonth() + 1}月`
+                : '---';
+            },
+            sort: (data) => data,
           },
-          // type: 'job-date',
+          type: invoicePeriodType,
         },
         {
           data: 'job_name',
@@ -76,7 +83,7 @@ const initTable = () => {
             sort: (data) => data,
           },
         },
-        { data: 'job_code' },
+        { data: 'job_code', name: 'jobCode' },
         { data: 'vendor_name' },
         { data: 'description', render: (data) => truncate(data, 16) },
         {
@@ -89,11 +96,15 @@ const initTable = () => {
         },
         {
           data: 'invoice_status',
-          orderDataType: 'dom-cost-select',
-          className: 'p-0',
+          name: 'invoiceStatus',
+          className: 'px-3',
           width: '210px',
-          render: (data, type, row) => renderInvoiceStatus(data, row),
-          type: 'status',
+          render: (data, type, row) => {
+            console.log({ data });
+            return renderInvoiceStatus(data, row);
+          },
+          // type: 'status',
+          type: invoiceStatusType,
         },
         {
           data: 'pay_period',
@@ -129,6 +140,7 @@ const initTable = () => {
       },
     });
   }
+  setupSortByStatus();
   return table;
 };
 

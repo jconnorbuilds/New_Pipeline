@@ -3,12 +3,11 @@
 import '../../styles/index.scss';
 import invoiceTable from './invoices-dt.js';
 import {
-  extendSearch,
+  initializeStatusFilters,
   setupSortByStatus,
 } from '../costs-and-invoices-common-funcs.js';
 import { setupTableEventHandlers } from './invoices-dt-ui-funcs.js';
 
 invoiceTable.getOrInitTable();
 setupTableEventHandlers();
-extendSearch();
-setupSortByStatus();
+initializeStatusFilters();

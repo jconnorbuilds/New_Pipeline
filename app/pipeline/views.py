@@ -512,6 +512,7 @@ def all_invoices_data(request):
     costs = Cost.objects.all()
     forex_rates = get_forex_rates()
     data = {"data": [get_invoice_data(cost, forex_rates) for cost in costs]}
+    print(data)
     return JsonResponse(
         data,
     )

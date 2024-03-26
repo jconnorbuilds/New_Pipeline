@@ -4,105 +4,158 @@
     "assets/images/check2-circle.svg": {
       "name": "assets/images/check2-circle.svg",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/check2-circle.svg",
-      "publicPath": "http://localhost:9091/assets/images/check2-circle.svg"
+      "publicPath": "/static/assets/images/check2-circle.svg"
     },
     "assets/images/pencil-square.svg": {
       "name": "assets/images/pencil-square.svg",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/pencil-square.svg",
-      "publicPath": "http://localhost:9091/assets/images/pencil-square.svg"
+      "publicPath": "/static/assets/images/pencil-square.svg"
     },
     "assets/images/trash3-fill.svg": {
       "name": "assets/images/trash3-fill.svg",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/trash3-fill.svg",
-      "publicPath": "http://localhost:9091/assets/images/trash3-fill.svg"
+      "publicPath": "/static/assets/images/trash3-fill.svg"
     },
-    "css/base-1f2.css": {
-      "name": "css/base-1f2.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-1f2.css",
-      "publicPath": "http://localhost:9091/css/base-1f2.css"
+    "css/base-3614e.css": {
+      "name": "css/base-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-3614e.css",
+      "publicPath": "/static/css/base-3614e.css"
     },
-    "css/costsheet-1f2.css": {
-      "name": "css/costsheet-1f2.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-1f2.css",
-      "publicPath": "http://localhost:9091/css/costsheet-1f2.css"
+    "css/base-3614e.css.map": {
+      "name": "css/base-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-3614e.css.map",
+      "publicPath": "/static/css/base-3614e.css.map"
     },
-    "css/invoice-uploader-685.css": {
-      "name": "css/invoice-uploader-685.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader-685.css",
-      "publicPath": "http://localhost:9091/css/invoice-uploader-685.css"
+    "css/costsheet-3614e.css": {
+      "name": "css/costsheet-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-3614e.css",
+      "publicPath": "/static/css/costsheet-3614e.css"
     },
-    "css/invoices-list-1f2.css": {
-      "name": "css/invoices-list-1f2.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-1f2.css",
-      "publicPath": "http://localhost:9091/css/invoices-list-1f2.css"
+    "css/costsheet-3614e.css.map": {
+      "name": "css/costsheet-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-3614e.css.map",
+      "publicPath": "/static/css/costsheet-3614e.css.map"
     },
-    "css/pipeline-1f2.css": {
-      "name": "css/pipeline-1f2.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-1f2.css",
-      "publicPath": "http://localhost:9091/css/pipeline-1f2.css"
+    "css/invoice-uploader-cf2ac.css": {
+      "name": "css/invoice-uploader-cf2ac.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader-cf2ac.css",
+      "publicPath": "/static/css/invoice-uploader-cf2ac.css"
+    },
+    "css/invoice-uploader-cf2ac.css.map": {
+      "name": "css/invoice-uploader-cf2ac.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader-cf2ac.css.map",
+      "publicPath": "/static/css/invoice-uploader-cf2ac.css.map"
+    },
+    "css/invoices-list-3614e.css": {
+      "name": "css/invoices-list-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-3614e.css",
+      "publicPath": "/static/css/invoices-list-3614e.css"
+    },
+    "css/invoices-list-3614e.css.map": {
+      "name": "css/invoices-list-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-3614e.css.map",
+      "publicPath": "/static/css/invoices-list-3614e.css.map"
+    },
+    "css/pipeline-3614e.css": {
+      "name": "css/pipeline-3614e.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-3614e.css",
+      "publicPath": "/static/css/pipeline-3614e.css"
+    },
+    "css/pipeline-3614e.css.map": {
+      "name": "css/pipeline-3614e.css.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-3614e.css.map",
+      "publicPath": "/static/css/pipeline-3614e.css.map"
     },
     "js/base.js": {
       "name": "js/base.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/base.js",
-      "publicPath": "http://localhost:9091/js/base.js"
+      "publicPath": "/static/js/base.js"
     },
     "js/costsheet.js": {
       "name": "js/costsheet.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.js",
-      "publicPath": "http://localhost:9091/js/costsheet.js"
+      "publicPath": "/static/js/costsheet.js"
+    },
+    "js/costsheet.js.map": {
+      "name": "js/costsheet.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.js.map",
+      "publicPath": "/static/js/costsheet.js.map"
     },
     "js/invoice-uploader.js": {
       "name": "js/invoice-uploader.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.js",
-      "publicPath": "http://localhost:9091/js/invoice-uploader.js"
+      "publicPath": "/static/js/invoice-uploader.js"
+    },
+    "js/invoice-uploader.js.map": {
+      "name": "js/invoice-uploader.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.js.map",
+      "publicPath": "/static/js/invoice-uploader.js.map"
     },
     "js/invoices-list.js": {
       "name": "js/invoices-list.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.js",
-      "publicPath": "http://localhost:9091/js/invoices-list.js"
+      "publicPath": "/static/js/invoices-list.js"
+    },
+    "js/invoices-list.js.map": {
+      "name": "js/invoices-list.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.js.map",
+      "publicPath": "/static/js/invoices-list.js.map"
     },
     "js/pipeline.js": {
       "name": "js/pipeline.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.js",
-      "publicPath": "http://localhost:9091/js/pipeline.js"
+      "publicPath": "/static/js/pipeline.js"
+    },
+    "js/pipeline.js.map": {
+      "name": "js/pipeline.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.js.map",
+      "publicPath": "/static/js/pipeline.js.map"
     },
     "js/vendor.bootstrap.js": {
       "name": "js/vendor.bootstrap.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.bootstrap.js",
-      "publicPath": "http://localhost:9091/js/vendor.bootstrap.js"
+      "publicPath": "/static/js/vendor.bootstrap.js"
+    },
+    "js/vendor.bootstrap.js.LICENSE.txt": {
+      "name": "js/vendor.bootstrap.js.LICENSE.txt",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.bootstrap.js.LICENSE.txt",
+      "publicPath": "/static/js/vendor.bootstrap.js.LICENSE.txt"
+    },
+    "js/vendor.bootstrap.js.map": {
+      "name": "js/vendor.bootstrap.js.map",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.bootstrap.js.map",
+      "publicPath": "/static/js/vendor.bootstrap.js.map"
     },
     "public/.gitkeep": {
       "name": "public/.gitkeep",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/public/.gitkeep",
-      "publicPath": "http://localhost:9091/public/.gitkeep"
+      "publicPath": "/static/public/.gitkeep"
     }
   },
   "chunks": {
     "base": [
-      "css/base-1f2.css",
-      "js/base.js"
+      "js/base.js",
+      "css/base-3614e.css"
     ],
     "costsheet": [
       "js/vendor.bootstrap.js",
-      "css/costsheet-1f2.css",
-      "js/costsheet.js"
+      "js/costsheet.js",
+      "css/costsheet-3614e.css"
     ],
     "invoice-uploader": [
-      "css/invoice-uploader-685.css",
-      "js/invoice-uploader.js"
+      "js/invoice-uploader.js",
+      "css/invoice-uploader-cf2ac.css"
     ],
     "invoices-list": [
       "js/vendor.bootstrap.js",
-      "css/invoices-list-1f2.css",
-      "js/invoices-list.js"
+      "js/invoices-list.js",
+      "css/invoices-list-3614e.css"
     ],
     "pipeline": [
       "js/vendor.bootstrap.js",
-      "css/pipeline-1f2.css",
-      "js/pipeline.js"
+      "js/pipeline.js",
+      "css/pipeline-3614e.css"
     ]
   },
-  "publicPath": "http://localhost:9091/",
-  "error": "ModuleBuildError",
-  "message": "Module build failed (from ./node_modules/babel-loader/lib/index.js):\nSyntaxError: /Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/src/js/costs-and-invoices-common-funcs.js: Unexpected token, expected \",\" (132:22)\n\n  130 |   DataTable.ext.search.push(function (settings, data) {\n  131 |     const status = data[9]; // invoice status;\n> 132 |     console.log(status;\n      |                       ^\n  133 |     let selectedStatuses = [];\n  134 |     statusFilters.forEach((status) => {\n  135 |       if (status.checked) selectedStatuses.push(status.value.toUpperCase());\n    at constructor (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:353:19)\n    at Parser.raise (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:3277:19)\n    at Parser.unexpected (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:3297:16)\n    at Parser.expect (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:3601:28)\n    at Parser.parseCallExpressionArguments (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10764:14)\n    at Parser.parseCoverCallAndAsyncArrowHead (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10693:29)\n    at Parser.parseSubscript (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10630:19)\n    at Parser.parseSubscripts (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10603:19)\n    at Parser.parseExprSubscripts (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10594:17)\n    at Parser.parseUpdate (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10573:21)\n    at Parser.parseMaybeUnary (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10551:23)\n    at Parser.parseMaybeUnaryOrPrivate (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10405:61)\n    at Parser.parseExprOps (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10410:23)\n    at Parser.parseMaybeConditional (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10387:23)\n    at Parser.parseMaybeAssign (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10348:21)\n    at Parser.parseExpressionBase (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10302:23)\n    at /Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10298:39\n    at Parser.allowInAnd (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11931:16)\n    at Parser.parseExpression (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10298:17)\n    at Parser.parseStatementContent (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12372:23)\n    at Parser.parseStatementLike (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12239:17)\n    at Parser.parseStatementListItem (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12219:17)\n    at Parser.parseBlockOrModuleBlockBody (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12796:61)\n    at Parser.parseBlockBody (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12789:10)\n    at Parser.parseBlock (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12777:10)\n    at Parser.parseFunctionBody (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11616:24)\n    at Parser.parseFunctionBodyAndFinish (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11602:10)\n    at /Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12919:12\n    at Parser.withSmartMixTopicForbiddingContext (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11913:14)\n    at Parser.parseFunction (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:12918:10)\n    at Parser.parseFunctionOrFunctionSent (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11089:17)\n    at Parser.parseExprAtom (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10878:21)\n    at Parser.parseExprSubscripts (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10590:23)\n    at Parser.parseUpdate (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10573:21)\n    at Parser.parseMaybeUnary (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10551:23)\n    at Parser.parseMaybeUnaryOrPrivate (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10405:61)\n    at Parser.parseExprOps (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10410:23)\n    at Parser.parseMaybeConditional (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10387:23)\n    at Parser.parseMaybeAssign (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10348:21)\n    at /Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10318:39\n    at Parser.allowInAnd (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11936:12)\n    at Parser.parseMaybeAssignAllowIn (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10318:17)\n    at Parser.parseExprListItem (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:11696:18)\n    at Parser.parseCallExpressionArguments (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10776:22)\n    at Parser.parseCoverCallAndAsyncArrowHead (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10693:29)\n    at Parser.parseSubscript (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10630:19)\n    at Parser.parseSubscripts (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10603:19)\n    at Parser.parseExprSubscripts (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10594:17)\n    at Parser.parseUpdate (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10573:21)\n    at Parser.parseMaybeUnary (/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/node_modules/@babel/parser/lib/index.js:10551:23)"
+  "publicPath": "/static/"
 }

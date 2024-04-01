@@ -5,12 +5,14 @@ import { CSRFTOKEN, createElement } from './utils.js';
 import * as PayPeriod from './modals/pay-period-modal.js';
 import { requestInvoice } from './tables/dt-shared.js';
 
+/**
+ * create a Bootstrap input group with a "request invoice" button
+ * and a dropdown to optionally set the payment period to something other than default.
+ *
+ * @param {*} - JSON data from DataTables row
+ * @returns {*} - the outerHTML of the button (DataTables render fn doesn't accept nodes)
+ */
 const renderRequestBtn = (data) => {
-  /*  create a Bootstrap input group with a "request invoice" btn
-      and a dropdown to optionally set the payment period to something other than default.
-
-      return: the outerHTML to render in the table.
-  */
   const requestBtn = [
     'button',
     {
@@ -181,18 +183,7 @@ const enableDisableInvoiceRequestBtn = (row, data) => {
         .forEach((el) => el.setAttribute('disabled', ''));
 };
 
-export {
-  renderRequestBtn,
-  renderAmount,
-  renderAmountJPY,
-  renderInvoiceStatus,
-  renderVendorName,
-  renderPayPeriod,
-  enableDisableVendorSelection,
-  enableDisableInvoiceRequestBtn,
-};
-
-export const handleStatusChange = (e) => {
+const handleStatusChange = (e) => {
   const selectEl = e.target;
   const table = selectEl.closest('table');
   const status = selectEl.value;
@@ -214,7 +205,7 @@ export const handleStatusChange = (e) => {
  * @todo update the error function with something useful
  * @param {*} e
  */
-export const handleVendorChange = (e) => {
+const handleVendorChange = (e) => {
   const selectEl = e.target;
   const table = selectEl.closest('table');
   const vendor = selectEl.value;
@@ -230,14 +221,14 @@ export const handleVendorChange = (e) => {
   });
 };
 
-export const handleRowUpdate = (datatableEl) => {
+const handleRowUpdate = (datatableEl) => {
   datatableEl.addEventListener('change', (e) => {
     if (e.target.matches('select.status')) handleStatusChange(e);
     if (e.target.matches('select.vendor')) handleVendorChange(e);
   });
 };
 
-export const setupPayPeriodFormSubmission = (
+const setupPayPeriodFormSubmission = (
   datatableEl,
   payPeriodModal = PayPeriod
 ) => {
@@ -246,7 +237,7 @@ export const setupPayPeriodFormSubmission = (
   );
 };
 
-export const addRequestBtnListener = (row, data) => {
+const addRequestBtnListener = (row, data) => {
   const invoiceRequestBtn = row.querySelector('button.inv-req-btn');
   invoiceRequestBtn.addEventListener('click', (e) => {
     const table = e.target.closest('table');
@@ -254,13 +245,13 @@ export const addRequestBtnListener = (row, data) => {
   });
 };
 
-export const updateTable = (response, table) => {
+const updateTable = (response, table) => {
   response.status === 'success'
     ? new DataTable(table).ajax.reload()
     : console.error(response.message);
 };
 
-export const addRowEventListeners = (row, data) => {
+const addRowEventListeners = (row, data) => {
   addRequestBtnListener(row, data);
 
   PayPeriod.defineMenu(row).addEventListener('click', () => {
@@ -268,7 +259,7 @@ export const addRowEventListeners = (row, data) => {
   });
 };
 
-export const invoicesTableRowCallback = (row, data) => {
+const invoicesTableRowCallback = (row, data) => {
   enableDisableInvoiceRequestBtn(row, data);
   // name this function and extract
   // TODO: add an empty option to the select to handle sorting better
@@ -278,4 +269,23 @@ export const invoicesTableRowCallback = (row, data) => {
       .querySelectorAll('.inv-req')
       .forEach((el) => el.setAttribute('disabled', ''));
   }
+};
+
+export {
+  renderRequestBtn,
+  renderAmount,
+  renderAmountJPY,
+  renderInvoiceStatus,
+  renderVendorName,
+  renderPayPeriod,
+  enableDisableVendorSelection,
+  enableDisableInvoiceRequestBtn,
+  handleStatusChange,
+  handleVendorChange,
+  handleRowUpdate,
+  setupPayPeriodFormSubmission,
+  addRequestBtnListener,
+  updateTable,
+  addRowEventListeners,
+  invoicesTableRowCallback,
 };

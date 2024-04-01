@@ -10,7 +10,7 @@ import { requestInvoice } from './tables/dt-shared.js';
  * and a dropdown to optionally set the payment period to something other than default.
  *
  * @param {*} - JSON data from DataTables row
- * @returns {*} - the outerHTML of the button (DataTables render fn doesn't accept nodes)
+ * @returns {string} - the outerHTML of the input group (DataTables render fn doesn't accept nodes)
  */
 const renderRequestBtn = (data) => {
   const requestBtn = [
@@ -66,7 +66,15 @@ const renderRequestBtn = (data) => {
     children: [requestBtn, dropdownBtn, dropdownMenu],
   });
 
-  return btnGroup.outerHTML;
+  dropdownMenu.addEventListener('click', () => {
+    PayPeriod.launchModal(data);
+  });
+  requestBtn.addEventListener('click', (e) => {
+    const table = e.target.closest('table');
+    requestInvoice(data.id, table);
+  });
+
+  return btnGroup;
 };
 
 const renderAmount = (amount, currency) =>
@@ -251,14 +259,6 @@ const updateTable = (response, table) => {
     : console.error(response.message);
 };
 
-const addRowEventListeners = (row, data) => {
-  addRequestBtnListener(row, data);
-
-  PayPeriod.defineMenu(row).addEventListener('click', () => {
-    PayPeriod.launchModal(data);
-  });
-};
-
 const invoicesTableRowCallback = (row, data) => {
   enableDisableInvoiceRequestBtn(row, data);
   // name this function and extract
@@ -286,6 +286,6 @@ export {
   setupPayPeriodFormSubmission,
   addRequestBtnListener,
   updateTable,
-  addRowEventListeners,
+  // addRowEventListeners,
   invoicesTableRowCallback,
 };

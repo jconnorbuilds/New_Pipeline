@@ -6,7 +6,6 @@ import {
   renderPayPeriod,
   renderRequestBtn,
   invoicesTableRowCallback,
-  addRowEventListeners,
   setupSortByStatus,
 } from '../costs-and-invoices-common-funcs.js';
 import { truncate } from '../utils.js';
@@ -111,7 +110,6 @@ const initTable = () => {
         },
         {
           data: 'id',
-          responsivePriority: 3,
           render: (data) => renderRequestBtn(data),
         },
         {
@@ -134,9 +132,6 @@ const initTable = () => {
       ],
 
       rowCallback: (row, data) => invoicesTableRowCallback(row, data),
-      createdRow: (row, data) => {
-        addRowEventListeners(row, data);
-      },
     });
   }
   setupSortByStatus();

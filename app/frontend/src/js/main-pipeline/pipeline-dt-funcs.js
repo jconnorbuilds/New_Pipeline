@@ -10,9 +10,6 @@ import {
   setTotalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
 
-export const table = plTable.getOrInitTable();
-export const tableEl = plTable.getTableEl();
-
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.job_status_choices;
   let selectEl = document.createElement('select');
@@ -71,10 +68,14 @@ const handleNewRowDraw = (newRowData) => {
   if (newRowData.job_date) {
     const newDataInvoicePeriod = newRowData.job_date.split('-');
     if (newDataInvoicePeriod) {
-      State.checkForNeedsNewRow() ? drawNewRow(newRowData) : plTable.refresh();
+      State.checkForNeedsNewRow()
+        ? drawNewRow(newRowData, plTable.getOrInitTable())
+        : plTable.refresh();
     }
   } else {
-    State.checkForNeedsNewRow() ? drawNewRow(newRowData) : plTable.refresh();
+    State.checkForNeedsNewRow()
+      ? drawNewRow(newRowData, plTable.getOrInitTable())
+      : plTable.refresh();
   }
 };
 
@@ -103,7 +104,7 @@ export const queryJobs = (year, month) => {
   if (year !== undefined && month !== undefined) {
     url = url + year + '/' + month + '/';
   }
-  table.ajax.url(url).load();
+  plTable.getOrInitTable().ajax.url(url).load();
 };
 
 const showSelectedStatus = (selectEl, selectedStatus) => {

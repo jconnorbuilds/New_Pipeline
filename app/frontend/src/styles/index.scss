@@ -14,8 +14,8 @@
 // $border-radius: 0.4rem;
 $primary: #873ec3;
 $info: #ffd166;
-$danger: #e15861;
-$success: #06d6a0;
+$danger: rgb(167 0 0);
+$success: #003b2c;
 $dark: #1e1620;
 
 // Required
@@ -218,11 +218,15 @@ table div.btn-group button {
   color: red;
 }
 
-td .inv-req-btn li {
-  cursor: pointer;
-}
-
 /* stylelint-disable-next-line */
 div.dt-processing > div:last-child > div {
   background: $primary;
+}
+
+td span.job-code.highlight {
+  background-color: $dark;
+  color: white;
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
 }

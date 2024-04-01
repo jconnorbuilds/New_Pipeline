@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
+import * as bootstrap from 'bootstrap';
 import * as State from './pipeline-state.js';
 import { truncate } from '../utils.js';
 import {
@@ -14,7 +15,9 @@ let tableEl;
 
 const ONGOING_STATUSES = ['ONGOING', 'READYTOINV'];
 
-export const initTable = () => {
+let jobCodeNameMap = new Map();
+
+const initTable = () => {
   tableEl = document.querySelector('#job-table');
   table = new DataTable(tableEl, {
     paging: false,
@@ -52,15 +55,34 @@ export const initTable = () => {
       {
         data: 'job_name',
         className: 'job-label',
-        render: {
-          // prettier-ignore
-          display: (data, type, row) => row.invoice_name
-                ? `<a href="/pipeline/${row.id}/job-detail/">INV: ${truncate(row.invoice_name)}</a>`
-                : `<a href="/pipeline/${row.id}/job-detail/">${truncate(data)}</a>`,
-          sort: (data) => data,
+        render: (data, type, row) => {
+          const cellContent = document.createElement('a');
+          cellContent.setAttribute('href', `/pipeline/${row.id}/job-detail/`);
+          if (!ONGOING_STATUSES.includes(row.status)) {
+            cellContent.textContent = `INV: ${truncate(row.invoice_name)}`;
+          } else {
+            cellContent.textContent = truncate(data);
+          }
+
+          return cellContent;
         },
       },
-      { data: 'job_code' },
+      {
+        data: 'job_code',
+        className: 'dt-center',
+        render: (data, type, row) => {
+          const cellContent = document.createElement('span');
+          cellContent.classList.add('copyable', 'job-code');
+          cellContent.textContent = data;
+          if (!ONGOING_STATUSES.includes(row.status)) {
+            cellContent.dataset.bsToggle = 'tooltip';
+            cellContent.dataset.bsPlacement = 'top';
+            cellContent.dataset.bsTitle = `${row.job_name}`;
+            new bootstrap.Tooltip(cellContent);
+          }
+          return cellContent;
+        },
+      },
       {
         data: 'revenue',
         className: 'revenue-amt',
@@ -145,6 +167,8 @@ export const initTable = () => {
     rowCallback: (row, data) => rowCallback(row, data),
     createdRow: (row, data, dataIndex, cells) => {
       if (!data.deposit_date) row.classList.add('payment-unreceived');
+      jobCodeNameMap.set(data.job_code, data.job_name);
+
       /* 
       this should work but is currently broken in DataTables v2.0.2 as of 2023/3/23. Currently using the workaround from here:
       
@@ -170,6 +194,10 @@ export const initTable = () => {
   });
   setupStatusOrdering();
   return table;
+};
+
+export const copyJobCodeAndNameToClipboard = (jobCode) => {
+  navigator.clipboard.writeText(`${jobCode} ${jobCodeNameMap.get(jobCode)}`);
 };
 
 export const plTable = (() => {

@@ -1,7 +1,7 @@
 import $ from 'jquery';
 window.$ = $;
 import DataTable from 'datatables.net';
-import { CSRFTOKEN, createElement } from './utils.js';
+import { CSRFTOKEN } from './utils.js';
 import * as PayPeriod from './modals/pay-period-modal.js';
 import { requestInvoice } from './tables/dt-shared.js';
 
@@ -12,62 +12,56 @@ import { requestInvoice } from './tables/dt-shared.js';
  * @param {*} - JSON data from DataTables row
  * @returns {string} - the outerHTML of the input group (DataTables render fn doesn't accept nodes)
  */
-const renderRequestBtn = (data) => {
-  const requestBtn = [
-    'button',
-    {
-      classes: ['btn', 'btn-primary', 'inv-req', 'inv-req-btn'],
-      attributes: { type: 'button' },
-      id: `invoice-request-btn-${data}`,
-      text: 'Req. invoice',
-    },
-  ];
+const renderRequestBtn = (data, row) => {
+  const btnGroup = document.createElement('div');
+  btnGroup.classList.add('btn-group', 'btn-group-sm');
+  btnGroup.setAttribute('role', 'group');
+  btnGroup.setAttribute(
+    'aria-label',
+    'Invoice request button with nested dropdown'
+  );
 
-  const innerBtnGroup = [
-    'div',
-    {
-      classes: 'btn-group',
-      attributes: { role: 'group' },
-    },
-  ];
-  const dropdownBtn = [
-    'button',
-    {
-      classes: [
-        'btn',
-        'btn-primary',
-        'dropdown-toggle',
-        'inv-req',
-        'inv-req-menu',
-      ],
-      attributes: { type: 'button', 'aria-expanded': false },
-      data: { bsToggle: 'dropdown' },
-      children: [innerBtnGroup],
-    },
-  ];
-  const dropdownItem = [
-    'span',
-    { classes: 'dropdown-item', text: 'Specify pay period' },
-  ];
+  const requestBtn = document.createElement('button');
+  requestBtn.classList.add('btn', 'btn-primary', 'inv-req', 'inv-req-btn');
+  requestBtn.setAttribute('type', 'button');
+  requestBtn.id = `invoice-request-btn-${data}`;
+  requestBtn.textContent = 'Req. invoice';
 
-  const dropdownItemContainer = ['li', { children: [dropdownItem] }];
+  const innerBtnGroup = document.createElement('div');
+  innerBtnGroup.classList.add('btn-group');
+  innerBtnGroup.setAttribute('role', 'group');
 
-  const dropdownMenu = [
-    'ul',
-    { classes: 'dropdown-menu', children: [dropdownItemContainer] },
-  ];
+  const dropdownBtn = document.createElement('button');
+  dropdownBtn.classList.add(
+    'btn',
+    'btn-primary',
+    'dropdown-toggle',
+    'inv-req',
+    'inv-req-menu'
+  );
+  dropdownBtn.setAttribute('type', 'button');
+  dropdownBtn.setAttribute('aria-expanded', false);
+  dropdownBtn.dataset.bsToggle = 'dropdown';
 
-  const btnGroup = createElement('div', {
-    classes: ['btn-group', 'btn-group-sm'],
-    attributes: {
-      role: 'group',
-      'aria-label': 'Invoice request button with nested dropdown',
-    },
-    children: [requestBtn, dropdownBtn, dropdownMenu],
-  });
+  const dropdownItem = document.createElement('span');
+  dropdownItem.classList.add('dropdown-item', 'btn');
+  dropdownItem.textContent = 'Specify pay period';
+
+  const dropdownItemContainer = document.createElement('li');
+  const dropdownMenu = document.createElement('ul');
+  dropdownMenu.classList.add('dropdown-menu');
+
+  dropdownBtn.append(innerBtnGroup);
+
+  dropdownItemContainer.append(dropdownItem);
+  dropdownMenu.append(dropdownItemContainer);
+
+  btnGroup.append(requestBtn);
+  btnGroup.append(dropdownBtn);
+  btnGroup.append(dropdownMenu);
 
   dropdownMenu.addEventListener('click', () => {
-    PayPeriod.launchModal(data);
+    PayPeriod.launchModal(row);
   });
   requestBtn.addEventListener('click', (e) => {
     const table = e.target.closest('table');
@@ -124,9 +118,16 @@ const renderVendorName = (row) => {
 
 const renderPayPeriod = (data) => {
   if (data) {
-    let year = data.split('-')[0];
-    let month = data.split('-')[1];
-    return `${year}年${month}月末`;
+    const date = new Date(data);
+
+    const formatter = new Intl.DateTimeFormat('ja-JP', {
+      year: 'numeric',
+      month: 'long',
+      timeZone: 'UTC',
+    });
+
+    const formattedDate = formatter.format(date);
+    return `${formattedDate}末`;
   } else {
     return '-';
   }
@@ -286,6 +287,5 @@ export {
   setupPayPeriodFormSubmission,
   addRequestBtnListener,
   updateTable,
-  // addRowEventListeners,
   invoicesTableRowCallback,
 };

@@ -51,27 +51,23 @@ const initTable = () => {
           data: 'amount',
           className: 'px-4 dt-right',
           responsivePriority: 1,
-          render: {
-            display: (data, type, row) =>
-              renderAmount(data, {
-                name: row.currency,
-                symbol: row.currency_symbol,
-              }),
-            sort: (data) => data,
+          render: (data, type, row) => {
+            return renderAmount(data, {
+              name: row.currency,
+              symbol: row.currency_symbol,
+            });
           },
         },
+
         {
           data: 'job_date',
           name: 'invoicePeriod',
           className: 'invoice-period',
-          render: {
-            display: (data) => {
-              let date = new Date(data);
-              return data
-                ? `${date.getFullYear()}年${date.getMonth() + 1}月`
-                : '---';
-            },
-            sort: (data) => data,
+          render: (data) => {
+            let date = new Date(data);
+            return data
+              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
+              : '---';
           },
           type: invoicePeriodType,
         },
@@ -110,7 +106,7 @@ const initTable = () => {
         },
         {
           data: 'id',
-          render: (data) => renderRequestBtn(data),
+          render: (data, type, row) => renderRequestBtn(data, row),
         },
         {
           data: 'id',

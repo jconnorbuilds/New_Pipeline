@@ -42,73 +42,70 @@
     {% endif %}
     {# Fields area #}
     <div class="container-auto bg-body-secondary p-4">
-        <div class="container bg-body-tertiary rounded-3">
-            <div class="row g-3 p-3 d-flex">
-                <div class="col-lg-12 col-xl-8 me-auto">
-                    <form method="post" class="form-control p-3 shadow" id="job-form">
-                        {% csrf_token %}
-                        <h3>Add a job</h3>
-                        <hr>
-                        <div class="row g-3 pb-3">
-                            <div class="col-sm-12">
-                                <div class="input-group">
-                                    {% render_field job_form.client class+="form-select" %}
-                                    <button class="btn btn-light rounded-end-2 border"
-                                            type="button"
-                                            id="pipeline-new-client-btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#new-client-modal">New Client</button>
+        <div class="row g-3 p-3 d-flex">
+            <div class="col-lg-12 col-xl-8 mx-auto">
+                <form method="post" class="form-control p-3 shadow" id="job-form">
+                    {% csrf_token %}
+                    <h3>Add a job</h3>
+                    <hr>
+                    <div class="row g-3 pb-3">
+                        <div class="col-sm-12">
+                            <div class="input-group">
+                                {% render_field job_form.client class+="form-select" %}
+                                <button class="btn btn-light rounded-end-2 border"
+                                        type="button"
+                                        id="pipeline-new-client-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#new-client-modal">New Client</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 pb-3">
+                        <div class="col-md-6">{% render_field job_form.job_name class+="form-control" placeholder="Enter job name" %}</div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                {% render_field job_form.revenue class+="form-control" placeholder="例）100" %}
+                                <button class="btn btn-light border col-2 text-nowrap"
+                                        type="button"
+                                        data-bs-toggle="button"
+                                        id="revenue-unit">万円</button>
+                                <div class="input-group-text">
+                                    {% render_field job_form.add_consumption_tax class+="form-check-input my-auto me-2" %}
+                                    <label id="add-consumption-tax-help"
+                                           class="form-check-label"
+                                           for="id_add_consumption_tax">消費税</label>
                                 </div>
                             </div>
+                            {% render_field job_form.granular_revenue class+="form-check-input mt-0" %}
                         </div>
-                        <div class="row g-3 pb-3">
-                            <div class="col-md-6">{% render_field job_form.job_name class+="form-control" placeholder="Enter job name" %}</div>
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    {% render_field job_form.revenue class+="form-control" placeholder="例）100" %}
-                                    <button class="btn btn-light border col-2 text-nowrap"
-                                            type="button"
-                                            data-bs-toggle="button"
-                                            id="revenue-unit">万円</button>
-                                    <div class="input-group-text">
-                                        {% render_field job_form.add_consumption_tax class+="form-check-input my-auto me-2" %}
-                                        <label id="add-consumption-tax-help"
-                                               class="form-check-label"
-                                               for="id_add_consumption_tax">消費税</label>
-                                    </div>
-                                </div>
-                                {% render_field job_form.granular_revenue class+="form-check-input mt-0" %}
+                    </div>
+                    <div class="row g-3 pb-3">
+                        <div class="col-sm-3">{% render_field job_form.job_type class+="form-select" %}</div>
+                        <div class="col-sm-3">{% render_field job_form.personInCharge class+="form-select" %}</div>
+                        <div class="col-sm-3">{% render_field job_form.invoice_month class+="form-control" %}</div>
+                        <div class="col-sm-3">{% render_field job_form.invoice_year class+="form-control" %}</div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <input type="submit"
+                                   name="addjob"
+                                   id="add-job-btn"
+                                   value="Add Job"
+                                   class="btn btn-dark">
+                        </div>
+                        <div class="col-auto p-0">
+                            <div class="spinner-border spinner-border-sm invisible"
+                                 role="status"
+                                 id="add-job-spinner">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
                         </div>
-                        <div class="row g-3 pb-3">
-                            <div class="col-sm-3">{% render_field job_form.job_type class+="form-select" %}</div>
-                            <div class="col-sm-3">{% render_field job_form.personInCharge class+="form-select" %}</div>
-                            <div class="col-sm-3">{% render_field job_form.invoice_month class+="form-control" %}</div>
-                            <div class="col-sm-3">{% render_field job_form.invoice_year class+="form-control" %}</div>
-                        </div>
-                        <div class="row align-items-center">
-                            <div class="col-auto">
-                                <input type="submit"
-                                       name="addjob"
-                                       id="add-job-btn"
-                                       value="Add Job"
-                                       class="btn btn-dark">
-                            </div>
-                            <div class="col-auto p-0">
-                                <div class="spinner-border spinner-border-sm invisible"
-                                     role="status"
-                                     id="add-job-spinner">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="container form-wrapper p-1 col-xl-2 align-self-end">
+                    </div>
+                </form>
+            </div>
+            {% comment %} <div class="container form-wrapper p-1 col-xl-2 align-self-end">
                     <div class="csv-export d-none d-xl-block ">
-                        <form method="POST"
-                              action="{% url 'pipeline:jobs-csv-export' %}"
-                              class="form-control">
+                        <form method="POST" action="{% url 'pipeline:jobs-csv-export' %}" class="form-control">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col">
@@ -126,16 +123,12 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <input type="submit"
-                                           name="csvexport"
-                                           value="Export CSV"
-                                           class="btn btn-light">
+                                    <input type="submit" name="csvexport" value="Export CSV" class="btn btn-light">
                                 </div>
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
+            </div> {% endcomment %}
         </div>
     </div>
     {# Job table start #}
@@ -224,21 +217,30 @@
                     </div>
                 </div>
                 <div class="display-filter">
-                    <div>
-                        <input type="checkbox" class="toggle-ongoing" id="toggle-ongoing" checked>
-                        <label for="toggle-ongoing">進行中案件を表示</label>
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="toggle-ongoing form-check-input"
+                               id="toggle-ongoing"
+                               checked>
+                        <label class="form-check-label" for="toggle-ongoing">進行中案件を表示</label>
                     </div>
-                    <div>
-                        <input type="checkbox"class="only-ongoing"  id="only-ongoing">
-                        <label for="only-ongoing">進行中案件のみを表示</label>
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="only-ongoing form-check-input"
+                               id="only-ongoing">
+                        <label class="form-check-label" for="only-ongoing">進行中案件のみを表示</label>
                     </div>
-                    <div>
-                        <input type="checkbox" class="unreceived" id="toggle-unreceived">
-                        <label for="toggle-unreceived">未回収の支払いのみを表示</label>
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="unreceived form-check-input"
+                               id="toggle-unreceived">
+                        <label class="form-check-label" for="toggle-unreceived">未回収の支払いのみを表示</label>
                     </div>
-                    <div>
-                        <input type="checkbox" class="toggle-outstanding" id="toggle-outstanding">
-                        <label for="toggle-outstanding">請求書未受領・未払いの案件を表示</label>
+                    <div class="form-check">
+                        <input type="checkbox"
+                               class="toggle-outstanding form-check-input"
+                               id="toggle-outstanding">
+                        <label class="form-check-label" for="toggle-outstanding">請求書未受領・未払いの案件を表示</label>
                     </div>
                 </div>
             </div>

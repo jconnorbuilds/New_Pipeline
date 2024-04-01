@@ -24,13 +24,14 @@ const submitForm = (e, table) => {
   modal.hide();
 };
 
-const launchModal = (data) => {
+const launchModal = (rowData) => {
+  console.log({ rowData });
   const idField = document.querySelector('#pay-period-modal #id_cost_id');
 
   const descriptors = [
-    `Vendor name: ${data.vendor_name}`,
-    `PO number: ${data.PO_number}`,
-    `Job name: ${data.job_name}`,
+    `Vendor name: ${rowData.vendor_name}`,
+    `PO number: ${rowData.PO_number}`,
+    `Job name: ${rowData.job_name}`,
   ];
   descriptors.forEach((str) => {
     const pEl = document.createElement('p');
@@ -38,7 +39,7 @@ const launchModal = (data) => {
     descriptionDiv.appendChild(pEl);
   });
 
-  idField.value = data.id;
+  idField.value = rowData.id;
   modal.show();
 };
 

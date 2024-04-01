@@ -8,7 +8,6 @@ import {
   renderRequestBtn,
   renderVendorName,
   invoicesTableRowCallback,
-  addRowEventListeners,
   setupPayPeriodFormSubmission,
 } from '../costs-and-invoices-common-funcs.js';
 import { createElement, truncate } from '../utils.js';
@@ -34,7 +33,6 @@ const initTable = () => {
   table = new DataTable(tableEl, {
     paging: false,
     processing: true,
-    dom: 'lrtp',
     autoWidth: true,
     order: [[0, 'asc']],
     orderClasses: false,
@@ -55,21 +53,16 @@ const initTable = () => {
       {
         data: 'amount',
         className: 'dt-right pe-4',
-        render: {
-          display: (data, type, row) =>
-            renderAmount(data, {
-              name: row.currency,
-              symbol: row.currency_symbol,
-            }),
-          sort: (data) => data,
+        render: (data, type, row) => {
+          return renderAmount(data, {
+            name: row.currency,
+            symbol: row.currency_symbol,
+          });
         },
       },
       {
         data: 'vendor_name',
-        render: {
-          display: (data, type, row) => renderVendorName(row),
-          sort: (data) => data,
-        },
+        render: (data, type, row) => renderVendorName(row),
       },
       {
         data: 'description',
@@ -80,11 +73,7 @@ const initTable = () => {
         data: 'invoice_status',
         orderDataType: 'dom-cost-select',
         className: 'p-0',
-        // width: '210px',
-        render: {
-          display: (data, type, row) => renderInvoiceStatus(data, row),
-          sort: (data) => data,
-        },
+        render: (data, type, row) => renderInvoiceStatus(data, row),
       },
       {
         data: 'pay_period',
@@ -92,7 +81,7 @@ const initTable = () => {
       },
       {
         data: 'id',
-        render: (data) => renderRequestBtn(data),
+        render: (data, type, row) => renderRequestBtn(data, row),
       },
       {
         // Edit and delete buttons
@@ -140,7 +129,7 @@ const initTable = () => {
             attributes: { role: 'group' },
             children: [editBtn, deleteBtn],
           });
-          return btnGroup.outerHTML;
+          return btnGroup;
         },
       },
       {
@@ -149,9 +138,6 @@ const initTable = () => {
       },
     ],
     rowCallback: (row, data) => invoicesTableRowCallback(row, data),
-    createdRow: (row, data) => {
-      addRowEventListeners(row, data);
-    },
   });
   return table;
 };

@@ -163,7 +163,7 @@ class Cost(models.Model):
         max_digits=10, decimal_places=3, default=None, null=True, blank=True
     )
     exchange_rate_locked_at = models.DateTimeField(default=None, null=True, blank=True)
-    pay_period = models.DateField(null=True)
+    pay_period = models.DateField(null=True, blank=True)
 
     # a flag to cue the save method to re-calculate the exchange rate based on a custom datetime
     exchange_rate_override = models.BooleanField(default=False)

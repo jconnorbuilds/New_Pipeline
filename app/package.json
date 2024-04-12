@@ -1,0 +1,69 @@
+{
+  "name": "npt",
+  "version": "1.0.0",
+  "description": "Simple project management and invoice tracking",
+  "private": true,
+  "scripts": {
+    "lint": "npm run lint:styles; npm run lint:scripts",
+    "lint:styles": "stylelint src",
+    "lint:scripts": "eslint src",
+    "start": "webpack serve --config frontend/webpack/webpack.config.dev.js",
+    "build": "cross-env NODE_ENV=production webpack --config frontend/webpack/webpack.config.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jconnorbuilds/New_Pipeline.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jconnorbuilds/New_Pipeline/issues"
+  },
+  "homepage": "https://github.com/jconnorbuilds/New_Pipeline#readme",
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/eslint-parser": "^7.23.10",
+    "@babel/preset-env": "^7.24.0",
+    "autoprefixer": "^10.4.18",
+    "babel-loader": "^9.1.3",
+    "bootstrap": "^5.3.2",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.10.0",
+    "eslint": "^8.57.0",
+    "eslint-webpack-plugin": "^4.0.1",
+    "file-loader": "^6.2.0",
+    "html-loader": "^5.0.0",
+    "html-webpack-plugin": "^5.6.0",
+    "jquery": "^3.7.1",
+    "mini-css-extract-plugin": "^2.8.1",
+    "postcss": "^8.4.35",
+    "postcss-loader": "^8.1.1",
+    "sass": "^1.72.0",
+    "sass-loader": "^14.1.1",
+    "source-map-loader": "^5.0.0",
+    "style-loader": "^3.3.4",
+    "stylelint": "^16.2.1",
+    "stylelint-config-standard-scss": "^13.0.0",
+    "stylelint-webpack-plugin": "^5.0.0",
+    "svg-inline-loader": "^0.8.2",
+    "webpack": "^5.90.3",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "webpack-bundle-tracker": "^3.0.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.3",
+    "webpack-merge": "^5.10.0"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.2",
+    "core-js": "^3.36.0",
+    "dropzone": "^6.0.0-beta.2",
+    "path-browserify": "^1.0.1",
+    "postcss-preset-env": "^9.4.0",
+    "terser": "^5.29.2",
+    "util": "^0.12.5"
+  }
+}

@@ -12,16 +12,16 @@ module.exports = merge(common, {
   bail: true,
   output: {
     filename: 'js/[name].js',
-    chunkFilename: 'js/[name].[chunkhash:8].chunk.js',
+    chunkFilename: 'js/[name].[contenthash].js',
   },
   plugins: [
     new Webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name]-[contenthash:5].css',
+      filename: 'css/[name]-[contenthash].css',
     }),
-    new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin({ analyzerMode: 'disabled' }),
   ],
   module: {
     rules: [

@@ -55,7 +55,12 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
-      patterns: [{ from: Path.resolve(__dirname, '../public'), to: 'public' }],
+      patterns: [
+        {
+          from: Path.resolve(__dirname, '../static/'),
+          to: './',
+        },
+      ],
     }),
     new BundleTracker({
       path: Path.join(__dirname, './../'),
@@ -75,9 +80,14 @@ module.exports = {
         type: 'javascript/auto',
       },
       {
-        test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+        test: /\.(ttf|woff|woff2)(\?.*)?$/,
         type: 'asset/resource',
-        generator: { filename: '[path][name][ext]' },
+        generator: { filename: 'fonts/[name].[contenthash][ext]' },
+      },
+      {
+        test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg)(\?.*)?$/,
+        type: 'asset/resource',
+        generator: { filename: 'images/[name].[contenthash][ext]' },
       },
     ],
   },

@@ -77,6 +77,10 @@ INSTALLED_APPS = [
 WEBPACK_LOADER = {
     "DEFAULT": {
         "STATS_FILE": str(BASE_DIR / "frontend" / "webpack-stats.json"),
+        "CACHE": not DEBUG,
+        "STATS_FILE": os.path.join(BASE_DIR, "frontend/webpack-stats.json"),
+        "POLL_INTERVAL": 0.1,
+        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     },
 }
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
@@ -192,13 +196,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    ("assets", BASE_DIR / "frontend/assets"),
+    ("images", BASE_DIR / "frontend/build/images"),
     ("js", BASE_DIR / "frontend/build/js"),
     ("css", BASE_DIR / "frontend/build/css"),
-    # ("build", BASE_DIR / "frontend/build"),
 ]
-
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"

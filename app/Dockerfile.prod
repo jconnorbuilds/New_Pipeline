@@ -42,9 +42,18 @@ WORKDIR $APP_HOME
 
 # install dependencies
 RUN apk update && apk add libpq
+# Add Node.js and npm
+RUN apk add --update nodejs npm  
+
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --no-cache /wheels/*
+
+# copy package.json and package-lock.json
+COPY ./package*.json $APP_HOME/
+
+# install npm dependencies
+RUN npm ci
 
 # copy entrypoint.prod.sh
 COPY ./entrypoint.prod.sh .
@@ -53,6 +62,9 @@ RUN chmod +x  $APP_HOME/entrypoint.prod.sh
 
 # copy project
 COPY . $APP_HOME
+
+# build static assets
+RUN npm run build
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME

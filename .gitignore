@@ -5,9 +5,9 @@
 htmlcov
 *.numbers
 node_modules
-package-lock.json
-package.json
-.vscode
+/app/frontend/build
+staticfiles
+!staticfiles.json
 docker-compose.yml
 docker-compose.local.yml
 import_templates

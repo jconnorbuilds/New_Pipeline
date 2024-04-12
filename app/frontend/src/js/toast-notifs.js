@@ -1,6 +1,6 @@
 import { Toast } from 'bootstrap/dist/js/bootstrap.bundle';
 import { createElement } from './utils.js';
-import successIcon from '../../assets/images/check2-circle.svg';
+import successIcon from '../images/check2-circle.svg';
 
 const createToastEl = (headerText, bodyText, id = '') => {
   const icon = [

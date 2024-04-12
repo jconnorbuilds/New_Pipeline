@@ -163,7 +163,7 @@ class Cost(models.Model):
         max_digits=10, decimal_places=3, default=None, null=True, blank=True
     )
     exchange_rate_locked_at = models.DateTimeField(default=None, null=True, blank=True)
-    pay_period = models.DateField(null=True)
+    pay_period = models.DateField(null=True, blank=True)
 
     # a flag to cue the save method to re-calculate the exchange rate based on a custom datetime
     exchange_rate_override = models.BooleanField(default=False)
@@ -207,14 +207,29 @@ class Cost(models.Model):
                     POCount = int(PO.PO_number[-3::])
         POCount += 1
         po = f"{self.vendor.vendor_code[:3]}{self.job.client.job_code_prefix[:3]}{POCount:04d}"
-
+        print("get_PO_number is running for some reason")
         return po
 
     def save(self, *args, **kwargs):
+        """
+        Get a PO number, either when
+        1. A cost has no PO number, or
+        2. If a cost needs a new PO number
+        """
         if self.vendor and not self.PO_number and not self.PO_num_is_fixed:
+            print("one")
             self.PO_number = self.get_PO_number()
             self.PO_num_is_fixed = True
-        elif self.vendor and self.vendor.vendor_code not in self.PO_number[0:6]:
+
+        # Vendor codes may be up to 4 characters, but get truncated due to 10-digit length of the PO number format.
+        # Need to come up with a smarter (simpler) way to check when a new PO number is needed.
+        elif self.vendor and self.vendor.vendor_code[:3] not in self.PO_number[0:6]:
+            print(
+                self.vendor.vendor_code,
+                self.vendor.vendor_code[:3],
+                self.PO_number[0:6],
+            )
+            print("two")
             self.PO_number = self.get_PO_number()
 
         if self.exchange_rate_override:

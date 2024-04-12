@@ -65,7 +65,7 @@ const renderRequestBtn = (data, row) => {
   });
   requestBtn.addEventListener('click', (e) => {
     const table = e.target.closest('table');
-    requestInvoice(data.id, table);
+    requestInvoice(data, table);
   });
 
   return btnGroup;

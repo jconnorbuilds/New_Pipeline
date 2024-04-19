@@ -271,7 +271,9 @@ class Job(models.Model):
     isArchived = models.BooleanField(default=False)
     isInvoiced = models.BooleanField(default=False)
     revenue = models.IntegerField()
-    granular_revenue = models.BooleanField(default=False)
+    granular_revenue = models.BooleanField(
+        default=False
+    )  # TODO: remove the need for a separate column, do it in javascript
     add_consumption_tax = models.BooleanField(default=True)
     consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
     revenue_incl_tax = models.IntegerField(null=True, editable=False)
@@ -289,6 +291,7 @@ class Job(models.Model):
     # If the client has a job code or special name for the invoice
     invoice_name = models.CharField(max_length=100, blank=True, null=True)
     relatedJobs = models.ManyToManyField("self", blank=True)
+    is_extension_of = models.ManyToManyField("self", blank=True, null=True)
     deposit_date = models.DateField(blank=True, null=True)
 
     # Separating out year and month because the day of the month doesn't matter

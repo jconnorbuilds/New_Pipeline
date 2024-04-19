@@ -20,11 +20,12 @@ module.exports = merge(common, {
   },
 
   devServer: {
-    hot: false,
+    hot: true,
     port: 9091,
     devMiddleware: {
       writeToDisk: true,
     },
+    watchFiles: ['templates/**/*'],
   },
   plugins: [
     new Webpack.DefinePlugin({

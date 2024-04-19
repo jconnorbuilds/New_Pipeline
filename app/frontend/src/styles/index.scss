@@ -230,3 +230,14 @@ td span.job-code.highlight {
   border-radius: 3px;
   cursor: pointer;
 }
+
+.job-basic-info__ > div,
+.job-outgoing-invoices__ > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.job-basic-info__title {
+  font-weight: 700;
+}

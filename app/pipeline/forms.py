@@ -2,7 +2,7 @@ from django import forms
 
 # from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from django.forms import ModelForm, Textarea, formset_factory, formsets, renderers
+from django.forms import ModelForm, ModelMultipleChoiceField
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -189,6 +189,31 @@ class ClientForm(ModelForm):
                 "At least one proper name field must be filled in."
             )
         return cleaned_data
+
+
+class NewExtensionForm(ModelForm):
+
+    is_extension_of = forms.ModelChoiceField(
+        queryset=Job.objects.all(),
+        widget=forms.Select(),
+        label="Extend from job",
+        empty_label="Select a job",
+    )
+
+    class Meta:
+        model = Job
+        fields = ["is_extension_of"]
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        new_extension = self.cleaned_data["is_extension_of"]
+        print(instance.is_extension_of.all())
+
+        if commit:
+            instance.is_extension_of.add(new_extension)
+            instance.save()
+
+        return instance
 
 
 class PipelineCSVExportForm(forms.Form):

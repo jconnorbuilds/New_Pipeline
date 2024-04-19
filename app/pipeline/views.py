@@ -25,6 +25,7 @@ from django.views.generic import (
     UpdateView,
     CreateView,
 )
+from django.views.generic.edit import FormMixin
 from .models import Job, Vendor, Cost, Client
 from .forms import (
     CostForm,
@@ -39,6 +40,7 @@ from .forms import (
     SetDepositDateForm,
     PipelineJobUpdateForm,
     CostPayPeriodForm,
+    NewExtensionForm,
 )
 from .currencies import currencies
 from datetime import date
@@ -440,13 +442,19 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
     model = Client
 
 
-class JobDetailView(DetailView):
+class JobDetailView(UpdateView):
     template_name = "pipeline/job_details.html"
+    template_name_suffix = ""
     model = Job
+    form_class = NewExtensionForm
+
+    def get_success_url(self):
+        return reverse("pipeline:job-detail", kwargs={"pk": self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["job_id"] = self.kwargs["pk"]
+        context["form"] = self.get_form_class()
         return context
 
 

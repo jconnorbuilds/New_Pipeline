@@ -82,6 +82,22 @@ body {
   font-weight: 400;
 }
 
+button.remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  padding: 0 5px;
+  background-color: inherit;
+  color: inherit;
+}
+
+button.remove:hover {
+  background-color: #aaa;
+  color: white;
+}
+
 strong {
   font-weight: var(--fw-bold);
 }

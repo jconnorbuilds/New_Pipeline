@@ -10,9 +10,10 @@ const filterJobs = (e) => {
     if (!jobLi) throw new Error(`Wasn't able to load the job list!`);
     jobLi.forEach((job) => {
       let jobDisplayName = job.querySelector('a').textContent.toUpperCase();
-      job.style.display = !jobDisplayName.includes(searchString)
-        ? 'none'
-        : 'list-item';
+      job.style.display =
+        !jobDisplayName.includes(searchString) || searchString === ''
+          ? 'none'
+          : 'list-item';
     });
   } catch (error) {
     console.error(error.message);
@@ -20,7 +21,7 @@ const filterJobs = (e) => {
 };
 
 const _toggleIcon = (isOpen) => {
-  let icon = menuToggle.querySelector('i');
+  let icon = menuToggle?.querySelector('i');
   icon.classList = isOpen ? 'bi bi-caret-down-fill' : 'bi bi-caret-right-fill';
 };
 
@@ -33,6 +34,7 @@ const _createJobList = (jobDataJson) => {
     a.textContent = `${job.job_name} ${job.job_code}`;
     a.dataset.jobId = job.id;
     li.appendChild(a);
+    li.style.display = 'none';
     jobList.appendChild(li);
 
     // Add event listener to create input and submit form
@@ -61,5 +63,5 @@ const toggleMenu = (e) => {
   }
 };
 
-menuToggle.addEventListener('click', toggleMenu);
+menuToggle?.addEventListener('click', toggleMenu);
 jobExtensionSearch.addEventListener('keyup', filterJobs);

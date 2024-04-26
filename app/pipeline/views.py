@@ -453,6 +453,7 @@ class JobDetailView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["all_jobs"] = Job.objects.all()
         context["job_id"] = self.kwargs["pk"]
         context["form"] = self.get_form_class()
         return context

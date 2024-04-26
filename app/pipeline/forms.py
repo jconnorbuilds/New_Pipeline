@@ -207,7 +207,6 @@ class NewExtensionForm(ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         new_extension = self.cleaned_data["is_extension_of"]
-        print(instance.is_extension_of.all())
 
         if commit:
             instance.is_extension_of.add(new_extension)

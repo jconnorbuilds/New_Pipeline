@@ -22,6 +22,9 @@ module.exports = {
     costsheet: {
       import: Path.resolve(__dirname, '../src/js/costsheet/costsheet.js'),
     },
+    'job-details': {
+      import: Path.resolve(__dirname, '../src/js/job-details.js'),
+    },
   },
   output: {
     path: Path.join(__dirname, '../build'),

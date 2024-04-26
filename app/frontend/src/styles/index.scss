@@ -241,3 +241,16 @@ td span.job-code.highlight {
 .job-basic-info__title {
   font-weight: 700;
 }
+
+// .job-extension .menu-toggle {
+//   display: flex;
+//   align-items: center;
+// }
+.job-extension .menu-toggle {
+  cursor: pointer;
+}
+
+.job-extension__job-list {
+  max-height: 250px;
+  overflow-y: scroll;
+}

@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+{% endblock styles %}
+{% block scripts %}
+    {% render_bundle 'job-details' 'js' attrs="defer" %}
+{% endblock scripts %}
 {% block body_block %}
     <div class="container col-lg-7 p-0">
-        {% comment %} <h1 class="display-3">{{ job.job_name }} - {{ job.job_code }} </h1> {% endcomment %}
         <h1 class="display-1 text-center">Job details</h1>
         <div class="container bg-body-secondary border rounded-1 p-3 mb-3">
             {% if messages %}
@@ -106,11 +114,31 @@
                     <p class="text-center">This job has no costs.</p>
                 </div>
             {% endif %}
-            <div class="job-extension__ container col-md-6 mx-auto text-center">
-                <h6 class="fw-bold">Extension of...</h6>
-                <form method="POST">
+            <div class="job-extension container col-xl-8">
+                <div class="menu-toggle d-flex g-3 align-items-center justify-content-center">
+                    <h6 class="fw-bold m-0">Extension of...</h6>
+                    <i class="bi bi-caret-right-fill"></i>
+                </div>
+                <form id="job-extension-form" method="POST" class="d-none">
                     {% csrf_token %}
-                    {% render_field form.is_extension_of class+="form-select d-inline-block" %}
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text"
+                               class="form-control"
+                               id="job-extension-search"
+                               placeholder="Search jobs..."
+                               aria-label="Job extension"
+                               aria-describedby="search-icon">
+                    </div>
+                    <ul class="job-extension__job-list">
+                        {% for job in all_jobs %}
+                            <li>
+                                <a href="#">{{ job.job_name }} {{ job.job_code }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
                     <button class="btn btn-dark d-inline-block" type="submit">+</button>
                 </form>
                 {% if job.is_extension_of.all %}

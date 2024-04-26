@@ -17,6 +17,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
+from django.views.decorators.http import require_http_methods
 from django.views.generic import (
     TemplateView,
     ListView,
@@ -59,6 +60,7 @@ from .utils import (
     get_invoice_data,
     update_cost_addtl_row_data,
 )
+
 
 import json
 import csv
@@ -457,6 +459,12 @@ class JobDetailView(UpdateView):
         context["job_id"] = self.kwargs["pk"]
         context["form"] = self.get_form_class()
         return context
+
+
+@require_http_methods(["GET"])
+def get_job_list(request):
+    jobs = Job.objects.all().values("id", "job_name", "job_code")
+    return JsonResponse(list(jobs), safe=False)
 
 
 class InvoiceView(LoginRequiredMixin, TemplateView):

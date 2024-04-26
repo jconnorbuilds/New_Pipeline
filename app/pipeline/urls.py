@@ -8,6 +8,7 @@ app_name = "pipeline"
 urlpatterns = [
     path("currency-list", views.currency_list, name="currency-list"),
     path("forex-rates", views.forex_rates, name="forex-rates"),
+    path("ajax/get_job_list/", views.get_job_list, name="get-job-list"),
     path(
         "",
         views.PipelineViewBase.as_view(),
@@ -28,11 +29,6 @@ urlpatterns = [
         views.SetInvoiceInfoView.as_view(),
         name="set-client-invoice-info",
     ),
-    # path(
-    #     "cost-pay-period/<pk>/",
-    #     views.SetCostPayPeriod.as_view(),
-    #     name="set-cost-pay-period",
-    # ),
     path(
         "set-deposit-date/<pk>/",
         views.SetDepositDateView.as_view(),

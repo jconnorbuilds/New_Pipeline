@@ -133,13 +133,7 @@
                                aria-describedby="search-icon">
                     </div>
                     <ul class="job-extension__job-list">
-                        {% for job in all_jobs %}
-                            <li>
-                                <a href="#">{{ job.job_name }} {{ job.job_code }}</a>
-                            </li>
-                        {% endfor %}
                     </ul>
-                    <button class="btn btn-dark d-inline-block" type="submit">+</button>
                 </form>
                 {% if job.is_extension_of.all %}
                     <ul class="list-unstyled">

@@ -41,7 +41,6 @@ from .forms import (
     SetDepositDateForm,
     PipelineJobUpdateForm,
     CostPayPeriodForm,
-    NewExtensionForm,
 )
 from .currencies import currencies
 from datetime import date
@@ -66,21 +65,19 @@ import json
 import csv
 
 # @api_view(['GET', 'POST'])
+# class VendorList(generics.ListCreateAPIView):
+#     queryset = Vendor.objects.all()
+#     serializer_class = VendorSerializer
 
 
-class VendorList(generics.ListCreateAPIView):
-    queryset = Vendor.objects.all()
-    serializer_class = VendorSerializer
+# class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Vendor.objects.all()
+#     serializer_class = VendorSerializer
 
 
-class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Vendor.objects.all()
-    serializer_class = VendorSerializer
-
-
-class JobList(generics.ListCreateAPIView):
-    queryset = Job.objects.all()
-    serializer_class = JobSerializer
+# class JobList(generics.ListCreateAPIView):
+#     queryset = Job.objects.all()
+#     serializer_class = JobSerializer
 
 
 class RedirectToPreviousMixin:
@@ -446,19 +443,11 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
 class JobDetailView(UpdateView):
     template_name = "pipeline/job_details.html"
-    template_name_suffix = ""
     model = Job
-    form_class = NewExtensionForm
+    fields = ["is_extension_of"]
 
     def get_success_url(self):
         return reverse("pipeline:job-detail", kwargs={"pk": self.object.pk})
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["all_jobs"] = Job.objects.all()
-        context["job_id"] = self.kwargs["pk"]
-        context["form"] = self.get_form_class()
-        return context
 
 
 @require_http_methods(["GET"])

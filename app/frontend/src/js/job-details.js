@@ -2,6 +2,9 @@ const jobExtensionSearch = document.querySelector('#job-extension-search');
 const jobList = document.querySelector('.job-extension__job-list');
 const menuToggle = document.querySelector('.job-extension .menu-toggle');
 const jobExtensionForm = document.querySelector('#job-extension-form');
+const extensionRemovalButton = document.querySelector(
+  '.job-extension__label button.remove'
+);
 
 const filterJobs = (e) => {
   const searchString = e.target.value.toUpperCase();
@@ -63,5 +66,15 @@ const toggleMenu = (e) => {
   }
 };
 
+const removeExtension = (e) => {
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = 'is_extension_of';
+  input.value = null;
+  jobExtensionForm.appendChild(input);
+  jobExtensionForm.submit();
+};
+
+extensionRemovalButton?.addEventListener('click', removeExtension);
 menuToggle?.addEventListener('click', toggleMenu);
 jobExtensionSearch.addEventListener('keyup', filterJobs);

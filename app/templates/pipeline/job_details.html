@@ -65,7 +65,7 @@
                     <div class="text-center">
                         <h6 class="fw-bold d-inline-block">Costs</h6>
                         <span class="fw-bold d-inline-block">
-                            (<a href="{% url 'pipeline:cost-add' job_id %}">cost sheet</a>)
+                            (<a href="{% url 'pipeline:cost-add' job.id %}">cost sheet</a>)
                         </span>
                     </div>
                     {% if job.costs_of_job.all %}
@@ -115,9 +115,9 @@
                 </div>
             {% endif %}
             <div class="job-extension container col-xl-8">
-                {% if job.is_extension_of.all %}
-                    <div class="menu-disabled d-flex g-3 align-items-center justify-content-center">
-                        <h6 class="fw-bold m-0">Extension of {{ job.job_name }} {{ job.job_code }}</h6>
+                {% if job.is_extension_of %}
+                    <div class="job-extension__label d-flex g-3 align-items-center justify-content-center">
+                        <h6 class="fw-bold m-0">Extension of {{ job.is_extension_of.job_name }} {{ job.is_extension_of.job_code }}</h6>
                         <button class="remove">
                             <i class="bi bi-x"></i>
                         </button>
@@ -225,9 +225,9 @@
     {% endif %}
 </div>
 <div class="d-flex justify-content-end">
-    <a href="{% url 'pipeline:job-update' job_id %}"
+    <a href="{% url 'pipeline:job-update' job.id %}"
        class="btn btn-dark btn-sm col-auto">Update Job Details</a>
-    <a href="{% url 'pipeline:job-delete' job_id %}"
+    <a href="{% url 'pipeline:job-delete' job.id %}"
        class="btn btn-danger btn-sm col-auto">Delete Job</a>
 </div>
 </div>

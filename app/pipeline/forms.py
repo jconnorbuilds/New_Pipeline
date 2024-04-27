@@ -191,30 +191,6 @@ class ClientForm(ModelForm):
         return cleaned_data
 
 
-class NewExtensionForm(ModelForm):
-
-    is_extension_of = forms.ModelChoiceField(
-        queryset=Job.objects.all(),
-        widget=forms.Select(),
-        label="Extend from job",
-        empty_label="Select a job",
-    )
-
-    class Meta:
-        model = Job
-        fields = ["is_extension_of"]
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        new_extension = self.cleaned_data["is_extension_of"]
-
-        if commit:
-            instance.is_extension_of.add(new_extension)
-            instance.save()
-
-        return instance
-
-
 class PipelineCSVExportForm(forms.Form):
     fromMonth = forms.CharField(
         max_length=50,

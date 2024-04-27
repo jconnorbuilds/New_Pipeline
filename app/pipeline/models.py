@@ -291,7 +291,9 @@ class Job(models.Model):
     # If the client has a job code or special name for the invoice
     invoice_name = models.CharField(max_length=100, blank=True, null=True)
     relatedJobs = models.ManyToManyField("self", blank=True)
-    is_extension_of = models.ManyToManyField("self", blank=True, null=True)
+    is_extension_of = models.ForeignKey(
+        "self", on_delete=models.CASCADE, blank=True, null=True
+    )
     deposit_date = models.DateField(blank=True, null=True)
 
     # Separating out year and month because the day of the month doesn't matter

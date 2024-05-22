@@ -14,6 +14,7 @@ urlpatterns = [
         views.PipelineViewBase.as_view(),
         name="index",
     ),
+    path("test/email-test/<cost_id>/", views.email_test_view, name="email-test"),
     path(
         "job-add",
         views.AddJobView.as_view(),

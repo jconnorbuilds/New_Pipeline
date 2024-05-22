@@ -43,7 +43,7 @@ const submitForm = (newStatus) => (e) => {
         'Invoice details saved',
         `${jobName}
         ${invoiceName}
-        `
+        `,
       ).show();
       plTable.refresh();
       form.reset();
@@ -70,7 +70,7 @@ const formSubmitHandler = () => {
 const invoiceInfo = (() => {
   const [modal, el] = createModal('#set-job-invoice-info', [formSubmitHandler]);
   const invoiceInfoNewClientBtn = document.querySelector(
-    '#set-invoice-modal-new-client-btn'
+    '#set-invoice-modal-new-client-btn',
   );
 
   let modalWillOpen = false;
@@ -86,23 +86,17 @@ const invoiceInfo = (() => {
   };
 
   const formRequiresCompletion = (selectedStatus) => {
-    const _requiredStatuses = [
-      'INVOICED1',
-      'INVOICED2',
-      'FINISHED',
-      'ARCHIVED',
-    ];
+    const _requiredStatuses = ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'];
 
     const _formIsRequired = (selectedStatus) =>
       _requiredStatuses.includes(selectedStatus);
 
     const _jobIsCompleted = (
       datatable = plTable.getOrInitTable(),
-      rowID = plTable.getCurrentRowID()
+      rowID = plTable.getCurrentRowID(),
     ) =>
       JSON.parse(
-        datatable.cell('#' + rowID, 'invoice_info_completed:name').node()
-          .textContent
+        datatable.cell('#' + rowID, 'invoice_info_completed:name').node().textContent,
       );
 
     return !_jobIsCompleted() && _formIsRequired(selectedStatus);

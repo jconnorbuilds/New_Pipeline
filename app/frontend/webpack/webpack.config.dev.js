@@ -22,10 +22,12 @@ module.exports = merge(common, {
   devServer: {
     hot: true,
     port: 9091,
+    static: Path.resolve(__dirname, '../static'),
     devMiddleware: {
       writeToDisk: true,
     },
-    watchFiles: ['templates/**/*'],
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    watchFiles: ['templates/**/*', '(static||src)/styles/*.*css'],
   },
   plugins: [
     new Webpack.DefinePlugin({

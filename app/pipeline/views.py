@@ -769,7 +769,6 @@ def RequestVendorInvoiceSingle(request, cost_id):
     vendor = Vendor.objects.get(costs_by_vendor__id=cost_id)
     cost = Cost.objects.get(id=cost_id)
     protocol = "http" if settings.DEBUG else "https"
-    print(request.POST)
 
     if cost.invoice_status not in ["REQ", "REC", "REC2", "PAID", "NA"]:
         # TODO: prepare a separate email for Japanese clients
@@ -845,7 +844,24 @@ def RequestVendorInvoiceSingle(request, cost_id):
         return JsonResponse({"status": "error", "message": "error :("})
 
 
-# Simple CSV Write Operation
+def email_test_view(request, cost_id):
+    vendor = Vendor.objects.get(costs_by_vendor__id=cost_id)
+    cost = Cost.objects.get(id=cost_id)
+    protocol = "http" if settings.DEBUG else "https"
+
+    template = "invoice_uploader/invoice_request_email_template.html"
+
+    return render(
+        request,
+        template,
+        {
+            "vendor_name": vendor.familiar_name,
+            "vendor": vendor,
+            "cost": cost,
+            "request": request,
+            "protocol": protocol,
+        },
+    )
 
 
 def jobs_csv_export(request):

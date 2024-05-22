@@ -8,16 +8,10 @@ module.exports = {
     base: Path.resolve(__dirname, '../src/js/base.js'),
     pipeline: Path.resolve(__dirname, '../src/js/main-pipeline/pipeline.js'),
     'invoice-uploader': {
-      import: Path.resolve(
-        __dirname,
-        '../src/js/invoice-uploader/invoice-uploader.js'
-      ),
+      import: Path.resolve(__dirname, '../src/js/invoice-uploader/invoice-uploader.js'),
     },
     'invoices-list': {
-      import: Path.resolve(
-        __dirname,
-        '../src/js/invoices-list/invoices-list.js'
-      ),
+      import: Path.resolve(__dirname, '../src/js/invoices-list/invoices-list.js'),
     },
     costsheet: {
       import: Path.resolve(__dirname, '../src/js/costsheet/costsheet.js'),
@@ -62,6 +56,9 @@ module.exports = {
         {
           from: Path.resolve(__dirname, '../static/'),
           to: './',
+        },
+        {
+          from: Path.resolve(__dirname, '../static/'),
         },
       ],
     }),

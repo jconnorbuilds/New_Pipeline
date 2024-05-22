@@ -289,7 +289,7 @@ class Job(models.Model):
         Client, on_delete=models.CASCADE, null=True, blank=True
     )
     # If the client has a job code or special name for the invoice
-    invoice_name = models.CharField(max_length=100, blank=True, null=True)
+    invoice_name = models.CharField(max_length=100, null=True)
     relatedJobs = models.ManyToManyField("self", blank=True)
     is_extension_of = models.ForeignKey(
         "self", on_delete=models.CASCADE, blank=True, null=True
@@ -513,4 +513,4 @@ class Job(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.job_name} - {self.job_code}"
+        return f"{self.job_name} [Job Code: {self.job_code}]"

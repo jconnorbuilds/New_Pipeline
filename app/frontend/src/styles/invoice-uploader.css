@@ -1,0 +1,84 @@
+/* @import './reset.css'; */
+
+p,
+h3 {
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.main-content {
+  min-width: max-content;
+}
+
+.job-title {
+  display: flex;
+  align-items: baseline;
+  h3 {
+    font-weight: 700;
+  }
+
+  .subtitle {
+    display: block;
+    padding-left: 0.5em;
+    font-size: 1.2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: #999;
+  }
+}
+
+li.invoice::marker {
+  font-size: 1.5rem;
+}
+
+li.invoice {
+  padding: 1rem;
+  background-color: #fdfdfd;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
+}
+
+li.inv-detail {
+  font-size: 1rem;
+  padding-left: 0;
+  padding: 0;
+  font-weight: 300;
+  color: black;
+  list-style-type: '- ';
+  list-style-type: none;
+
+  .detail-name {
+    font-weight: 500;
+  }
+
+  .val {
+    color: #555;
+  }
+}
+
+.vendor-invoice-info {
+  padding: 0.5rem 0;
+
+  .extension-info {
+    padding: 0.3rem 1rem;
+    margin: 0.5rem 0;
+    background-color: rgb(142, 241, 185);
+    border-radius: 10px;
+
+    .ext-job-name {
+      font-weight: 700;
+    }
+    .ext-job-code {
+      font-weight: 200;
+      font-style: italic;
+    }
+  }
+
+  h6.inv-details-header {
+    text-decoration: underline;
+  }
+}

@@ -1,4 +1,9 @@
-/* @import './reset.css'; */
+@import './reset.css';
+@import 'https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,100..900;1,100..900&family=Chivo:wght@100..900&display=swap';
+
+body {
+  font-family: 'Chivo', 'Roboto', 'sans-serif';
+}
 
 p,
 h3 {
@@ -6,53 +11,116 @@ h3 {
 }
 
 .container {
+  max-width: 1536px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.container-fluid {
+  width: 100%;
+}
+
+.bcwc-logo {
   display: flex;
   justify-content: center;
 }
 
-.main-content {
-  min-width: max-content;
+section.header {
+  text-align: center;
+  /* font-size: 1.5rem; */
 }
 
-.job-title {
-  display: flex;
-  align-items: baseline;
-  h3 {
-    font-weight: 700;
-  }
-
-  .subtitle {
-    display: block;
-    padding-left: 0.5em;
-    font-size: 1.2rem;
-    font-weight: 300;
-    font-style: italic;
-    color: #999;
-  }
+.requested-invoices {
+  width: 75%;
+  margin: auto;
 }
 
-li.invoice::marker {
-  font-size: 1.5rem;
+ol.invoice-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(375px, 1fr));
+  grid-template-rows: auto;
+  justify-content: center;
+  padding: 0;
 }
 
 li.invoice {
+  display: grid;
+
+  /* flex-direction: column; */
+  align-items: flex-start;
   padding: 1rem;
   background-color: #fdfdfd;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
 }
 
+.invoice__inv-info-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  padding: 0.25rem;
+}
+
+.invoice__inv-info-header .job-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.invoice__inv-info-header .subtitle {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 300;
+  font-style: italic;
+  color: #999;
+}
+
+.invoice__extension-info {
+  background-color: rgba(78, 255, 105, 0.579);
+  padding: 0.75rem;
+  border-radius: 10px;
+  width: 100%;
+}
+.invoice__extension-info .ext-job-name {
+  font-weight: 700;
+}
+
+.invoice__extension-info .ext-job-code {
+  color: #666;
+  font-size: 0.7em;
+  font-style: italic;
+}
+
+.invoice__inv-info-details {
+  display: flex;
+  padding: 0.5rem;
+}
+
+.invoice__inv-info-details .inv-main-details {
+  display: grid;
+  justify-content: center;
+}
+
+.invoice__inv-info-details .inv-main-details > ul {
+  width: max-content;
+}
+
 li.inv-detail {
-  font-size: 1rem;
   padding-left: 0;
   padding: 0;
   font-weight: 300;
-  color: black;
   list-style-type: '- ';
-  list-style-type: none;
+  /* list-style-type: none; */
 
   .detail-name {
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .val {
@@ -60,25 +128,70 @@ li.inv-detail {
   }
 }
 
-.vendor-invoice-info {
-  padding: 0.5rem 0;
+.upload-step {
+  font-weight: 500;
+}
 
-  .extension-info {
-    padding: 0.3rem 1rem;
-    margin: 0.5rem 0;
-    background-color: rgb(142, 241, 185);
-    border-radius: 10px;
+/* 2xl */
+@media (max-width: 1536px) {
+  .container {
+    max-width: 1280px;
+  }
+}
 
-    .ext-job-name {
-      font-weight: 700;
-    }
-    .ext-job-code {
-      font-weight: 200;
-      font-style: italic;
-    }
+/* xl */
+@media (max-width: 1280px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+/* lg */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 768px;
+  }
+  .requested-invoices {
+    width: 80%;
+  }
+}
+
+/* md */
+@media (max-width: 768px) {
+  .container {
+    max-width: 640px;
+  }
+  .requested-invoices {
+    width: 80%;
+  }
+}
+
+/* sm */
+@media (max-width: 640px) {
+  .container {
+    max-width: 475px;
+  }
+  .requested-invoices {
+    width: 100%;
+  }
+}
+
+/* xs */
+@media (max-width: 475px) {
+  .container {
+    width: 100%;
+  }
+  .requested-invoices {
+    width: 100%;
   }
 
-  h6.inv-details-header {
-    text-decoration: underline;
+  .invoice .job-title {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .inv-details-header {
+    text-align: center;
   }
 }

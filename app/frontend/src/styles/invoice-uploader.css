@@ -10,6 +10,11 @@ h3 {
   margin: 0;
 }
 
+:root {
+  --info-highlight: rgb(24, 236, 0);
+  --main-text-color: #292929;
+}
+
 .container {
   max-width: 1536px;
   margin-left: auto;
@@ -31,14 +36,19 @@ h3 {
   justify-content: center;
 }
 
-section.header {
-  text-align: center;
-  /* font-size: 1.5rem; */
+.bold {
+  font-weight: 700;
 }
 
-.requested-invoices {
+section.header {
+  text-align: center;
+}
+
+.requested-invoices,
+.section {
   width: 75%;
   margin: auto;
+  padding: 1rem 0;
 }
 
 ol.invoice-list {
@@ -47,7 +57,7 @@ ol.invoice-list {
   grid-template-columns: repeat(auto-fit, minmax(375px, 1fr));
   grid-template-rows: auto;
   justify-content: center;
-  padding: 0;
+  padding: 1.5rem 0;
 }
 
 li.invoice {
@@ -79,22 +89,24 @@ li.invoice {
   font-size: 0.7rem;
   font-weight: 300;
   font-style: italic;
-  color: #999;
+  color: #666;
 }
 
 .invoice__extension-info {
-  background-color: rgba(78, 255, 105, 0.579);
+  background-color: var(--info-highlight);
   padding: 0.75rem;
   border-radius: 10px;
   width: 100%;
+  font-size: 0.9rem;
 }
+
 .invoice__extension-info .ext-job-name {
   font-weight: 700;
 }
 
 .invoice__extension-info .ext-job-code {
   color: #666;
-  font-size: 0.7em;
+  font-size: 0.85em;
   font-style: italic;
 }
 
@@ -117,7 +129,6 @@ li.inv-detail {
   padding: 0;
   font-weight: 300;
   list-style-type: '- ';
-  /* list-style-type: none; */
 
   .detail-name {
     font-weight: 600;
@@ -129,7 +140,115 @@ li.inv-detail {
 }
 
 .upload-step {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+#invoice-select-area {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem 0;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: max-content;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 6px;
+
+  & > * {
+    height: 2rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+  }
+}
+
+.input-group label.ig-text {
+  border-radius: 5px 0 0 5px;
+  background-color: #292929;
+  color: #eee;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border: 1px solid #bdbdbd;
+}
+
+.input-group select.ig-select {
+  border-radius: 0 5px 5px 0;
+  border: 1px solid #bdbdbd;
+  border-left: none;
+}
+
+.inv-matched {
+  display: flex;
+  align-items: center;
+}
+
+.inv-matched__body {
+  position: relative;
+  display: flex;
+  width: 90%;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: row;
+  padding: 1rem;
+  background-color: #fdfdfd;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
+  border: 1px solid #bdbdbd;
+}
+
+.inv-matched__job-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.inv-matched__is-attached {
+  background-color: var(--info-highlight);
+  /* width: min-content; */
+  text-align: center;
+  line-height: 0.6;
+  font-size: 0.8rem;
   font-weight: 500;
+  border-radius: 10px;
+  padding: 0.3rem;
+}
+
+.inv-matched__options {
+  color: var(--main-text-color);
+  font-size: 1.3rem;
+  padding: 0 1rem;
+
+  & > i {
+    cursor: pointer;
+  }
+}
+
+.inv-matched__validation {
+  font-size: 1.2rem;
+  width: 0;
+  padding: 0;
+  background-color: inherit;
+
+  i {
+    position: absolute;
+    color: rgb(21, 213, 88);
+    top: -10%;
+    right: -1%;
+    border-radius: 50%;
+    border: 2px solid rgb(0, 142, 45);
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 2px 4px;
+  }
+}
+
+.inv-matched__options:hover i {
+  /* box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px; */
+  transform: translate(1px, -1px) scale(1.05);
+}
+
+.hidden {
+  /* display: none; */
 }
 
 /* 2xl */
@@ -151,7 +270,7 @@ li.inv-detail {
   .container {
     max-width: 768px;
   }
-  .requested-invoices {
+  .section {
     width: 80%;
   }
 }
@@ -161,7 +280,7 @@ li.inv-detail {
   .container {
     max-width: 640px;
   }
-  .requested-invoices {
+  .section {
     width: 80%;
   }
 }
@@ -171,8 +290,12 @@ li.inv-detail {
   .container {
     max-width: 475px;
   }
-  .requested-invoices {
+  .section {
     width: 100%;
+  }
+
+  .invoice__inv-info-header {
+    align-items: center;
   }
 }
 
@@ -181,8 +304,13 @@ li.inv-detail {
   .container {
     width: 100%;
   }
-  .requested-invoices {
+
+  .section {
     width: 100%;
+  }
+
+  .invoice__inv-info-header {
+    align-items: center;
   }
 
   .invoice .job-title {

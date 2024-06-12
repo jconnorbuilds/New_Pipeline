@@ -63,6 +63,9 @@ from .utils import (
 
 import json
 import csv
+import logging
+
+logger = logging.getLogger(__name__)
 
 # @api_view(['GET', 'POST'])
 # class VendorList(generics.ListCreateAPIView):
@@ -580,17 +583,6 @@ def process_uploaded_vendor_invoice(request):
     err_500_message = (
         "Oops, there was an error uploading your invoice. Please remove the files or refresh the page and try again. If the error persists, please email us at invoice@bwcatmusic.com - you can send us your invoice directly. We're working hard to make sure these errors don't happen, sorry for the trouble!",
     )
-    print("TZ NOW ", timezone.now())
-    print("TZ NOW + RELDELTA ", (timezone.now() + relativedelta(months=+1)))
-    print("DATE TODAY ", date.today())
-    print("DATE TODAY + RELDELTA ", (date.today() + relativedelta(months=+1)))
-    print(
-        "FORMATTED: ", (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
-    )
-    print(
-        "DT FORMATTED: ",
-        (date.today() + relativedelta(months=+1)).strftime("%Y年%-m月"),
-    )
 
     if request.POST and "invoices" in request.POST:
         s3 = settings.LINODE_STORAGE
@@ -601,47 +593,65 @@ def process_uploaded_vendor_invoice(request):
             file_dict[unquote(file.name)] = file
 
         for invoice_id, invoice_filename in file_ids_and_filenames.items():
-            cost = Cost.objects.get(id=invoice_id)
-            invoice_file = file_dict.get(invoice_filename, None)
-            date_folder_name = (
-                cost.pay_period.strftime("%Y年%-m月")
-                if cost.pay_period
-                else (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
-            )
-            print("PAY PERIOD: ", cost.pay_period)
-            currency_folder_name = "_" + cost.currency
-            file_extension = "." + invoice_filename.split(".")[-1]
-            if invoice_file and invoice_file.size < 100 * 1024 * 1024:
-                if invoice_file.size < 100 * 1024 * 1024:
-                    try:
-                        invoice_folder = (
-                            "/Financial/_ INVOICES/_VENDOR INVOICES"
-                            if not settings.DEBUG
-                            else "/Financial/TEST/_ INVOICES/_VENDOR INVOICES"
-                        )
-                        full_filepath = f"{invoice_folder}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
-                        print("FILEPATH: ", full_filepath)
-                        dropbox_upload_file(invoice_file, full_filepath)
-                        cost.invoice_status = "REC"
-                        cost.save()
-                        successful_invoices.append(cost)
+            try:
+                cost = Cost.objects.get(id=invoice_id)
+                invoice_file = file_dict.get(invoice_filename, None)
+                date_folder_name = (
+                    cost.pay_period.strftime("%Y年%-m月")
+                    if cost.pay_period
+                    else (timezone.now() + relativedelta(months=+1)).strftime(
+                        "%Y年%-m月"
+                    )
+                )
+                print("PAY PERIOD: ", cost.pay_period)
+                currency_folder_name = "_" + cost.currency
+                file_extension = f".{invoice_filename.split('.')[-1]}"
+                if invoice_file and invoice_file.size < 100 * 1024 * 1024:
+                    if invoice_file.size < 100 * 1024 * 1024:
+                        try:
+                            invoice_folder = (
+                                "/Financial/_ INVOICES/_VENDOR INVOICES"
+                                if not settings.DEBUG
+                                else "/Financial/TEST/_ INVOICES/_VENDOR INVOICES"
+                            )
+                            full_filepath = f"{invoice_folder}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
+                            print("FILEPATH: ", full_filepath)
+                            dropbox_upload_file(invoice_file, full_filepath)
+                            cost.invoice_status = "REC"
+                            cost.save()
+                            successful_invoices.append(cost)
 
-                    except Exception as e:
-                        cost.invoice_status = "ERR"
-                        cost.save()
-                        unsuccessful_invoices.append(cost)
+                        except Exception as e:
+                            cost.invoice_status = "ERR"
+                            cost.save()
+                            unsuccessful_invoices.append(cost)
+                            return JsonResponse(
+                                {"error": err_500_message, "status_code": 500},
+                                status=500,
+                            )
+                    else:
                         return JsonResponse(
-                            {"error": err_500_message, "status_code": 500}, status=500
+                            {
+                                "error": """File too large! Please limit files to 10MB or less.""",
+                                "status_code": 413,
+                            },
+                            status=413,
                         )
                 else:
-                    return JsonResponse(
-                        {
-                            "error": """File too large! Please limit files to 10MB or less.""",
-                            "status_code": 413,
-                        },
-                        status=413,
+                    logger.error(
+                        f"{cost.vendor} attempted to upload an invoice and it failed. Maybe it was too big? {invoice_filename} (PO#:{cost.PO_number})"
                     )
-            else:
+                    return JsonResponse(
+                        {"error": err_500_message, "status_code": 500}, status=500
+                    )
+            # Catch errors that are not filesize errors
+            except Exception as e:
+                cost.invoice_status = "ERR"
+                cost.save()
+                unsuccessful_invoices.append(cost)
+                logger.error(
+                    f"{cost.vendor} attempted to upload an invoice and it failed. {invoice_filename} (PO#:{cost.PO_number}) \n Error: {e}"
+                )
                 return JsonResponse(
                     {"error": err_500_message, "status_code": 500}, status=500
                 )
@@ -745,7 +755,7 @@ def invoice_upload_view(request, vendor_uuid):
     jobs_json = json.dumps(jobs)
     invoices_json = serializers.serialize("json", requested_invoices)
     for invoice in requested_invoices:
-        print(invoice)
+        print(f"{invoice}")
 
     context = {
         "requested_invoices": requested_invoices,
@@ -754,6 +764,29 @@ def invoice_upload_view(request, vendor_uuid):
         "vendor_id": vendor.id,
     }
     return render(request, "pipeline/upload_invoice.html", context)
+
+
+@require_http_methods(["GET"])
+def get_vendor_requested_invoices_data(request, vendor_uuid):
+    vendor = Vendor.objects.get(uuid=vendor_uuid)
+    requested_invoices = Cost.objects.filter(
+        vendor_id=vendor.id, invoice_status="REQ"
+    ).select_related("job")
+
+    data = {}
+    jobs = list(
+        Job.objects.filter(costs_of_job__in=requested_invoices).values(
+            "pk", "job_name", "job_code"
+        )
+    )
+
+    invoices_json = json.loads(serializers.serialize("json", requested_invoices))
+
+    data["jobs"] = jobs
+    data["requested_invoices"] = invoices_json
+    data["vendor_id"] = vendor.id
+
+    return JsonResponse(data, safe=False)
 
 
 def upload_invoice_success_landing_page(request):

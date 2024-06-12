@@ -7,51 +7,52 @@
     BCWC Invoice Uploader
 {% endblock title %}
 {% block styles %}
-    {{ block.super }}
+    {% comment %} {{ block.super }} {% endcomment %}
     {% render_bundle 'invoice-uploader' 'css' %}
 {% endblock styles %}
 {% block scripts %}
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
             crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/3bfcb4bec9.js"
+            crossorigin="anonymous"></script>==
     {% render_bundle 'invoice-uploader' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block navbar %}
 {% endblock navbar %}
 {% block body_block %}
     <div class="container">
-        <div class=" d-flex justify-content-center invoice-upload-logo">
-            <img src="{% static 'images/bwcat_logo_720x720.png' %}"
-                 alt="BCWC logo"
-                 width="155px">
-        </div>
-        <div class="content-wrapper p-2 col-xs-9 col-lg-9 justify-content-center container-fluid">
-            <h3 class="display-3 text-center">Invoice Uploader</h3>
-            <hr>
-            <div class="main-content">
-                <div class="container my-3 p-3">
-                    {% if requested_invoices %}
-                        <h6>Send us your invoices for the following jobs:</h6>
-                        <ol>
-                            {% for invoice in requested_invoices %}
-                                <li class="mt-3 invoice">
-                                    <div class="job-title">
-                                        <h3>{{ invoice.job.job_name }}</h3>
-                                        <div class="subtitle">
-                                            (Job code: <span class="val">{{ invoice.job.job_code }})</span>
-                                        </div>
+        <section class="section header">
+            <div class="bcwc-logo">
+                <img src="{% static 'images/bwcat_logo_720x720.png' %}"
+                     alt="BCWC logo"
+                     width="155px">
+            </div>
+            <h1 class="title">Invoice Uploader</h1>
+        </section>
+        <div class="main-content">
+            <div class="requested-invoices section">
+                {% if requested_invoices %}
+                    <p>Send us your invoices for the following jobs:</p>
+                    <ol class="invoice-list">
+                        {% for invoice in requested_invoices %}
+                            <li class="invoice" data-po-num="{{ invoice.PO_number }}">
+                                <div class="invoice__inv-info-header">
+                                    <p class="job-name">{{ invoice.job.job_name }}</p>
+                                    <div class="subtitle">
+                                        Job code: <span class="val">{{ invoice.job.job_code }}</span>
                                     </div>
-                                    <div class="vendor-invoice-info">
-                                        {% if invoice.job.is_extension_of %}
-                                            <div class="extension-info">
-                                                <p>This invoice is for an extension of a previous usage:</p>
-                                                <p class="ext-job-name">
-                                                    {{ invoice.job.is_extension_of.job_name }} <span class="ext-job-code">(Job code: {{ invoice.job.is_extension_of.job_code }})</span>
-                                                </p>
-                                                <p class="ext-job-code"></p>
-                                            </div>
-                                        {% endif %}
-                                        <h6 class="inv-details-header">Invoice details:</h6>
+                                </div>
+                                {% if invoice.job.is_extension_of %}
+                                    <div class="invoice__extension-info">
+                                        <p>Usage extension:</p>
+                                        <span class="ext-job-name">{{ invoice.job.is_extension_of.job_name }}</span>
+                                        <span class="ext-job-code">Job code: {{ invoice.job.is_extension_of.job_code }}</span>
+                                    </div>
+                                {% endif %}
+                                <div class="invoice__inv-info-details">
+                                    <p class="inv-details-header">Invoice details</p>
+                                    <div class="inv-main-details">
                                         <ul>
                                             <li class="inv-detail">
                                                 <span class="detail-name">PO Number:</span> <span class="val">{{ invoice.PO_number }}</span>
@@ -64,19 +65,20 @@
                                             </li>
                                         </ul>
                                     </div>
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    {% else %}
-                        <p class="text-center">
-                            It looks like we aren't expecting any invoices from you. If that doesn't seem right, please reach out to us directly! You can respond directly to the email you received from <strong>invoice@bwcatmusic.com</strong>.
-                        </p>
-                    {% endif %}
-                </div>
-                <hr>
-                {% if requested_invoices %}
-                    <h5 class="no-wrap">Step 1: Drag and drop your invoice(s)</h5>
-                    <div class="container-xl p-3" id="step-1-area">
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <p class="text-center">
+                        It looks like we aren't expecting any invoices from you. If that doesn't seem right, please reach out to us directly! You can respond directly to the email you received from <strong>invoice@bwcatmusic.com</strong>.
+                    </p>
+                {% endif %}
+            </div>
+            {% if requested_invoices %}
+                <div class="container">
+                    <div class="section" id="step-1-area">
+                        <p class="upload-step">Step 1: Drag and drop your invoice(s)</p>
                         <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}"
                               method="post"
                               id="invoice-upload-form"
@@ -92,31 +94,25 @@
                     <div class="dz-messages">
                         <div class="dz-error-messages bg-danger-subtle border border-danger p-3 border-3 rounded-3 m-3 d-none"></div>
                     </div>
-                    <div class="container py-3" id="step-2-area">
-                        <h5>Step 2: Select the job(s) that you're invoicing</h5>
-                        <div class="container-sm-auto m-3 needs-validation">
-                            <p>
-                                <em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em>
-                            </p>
-                            <p id="invoice-hint">Files will appear here once you've added them.</p>
-                            <div class="shadow rounded p-2"
-                                 id="invoice-select-area"
-                                 style="display: none"></div>
-                        </div>
+                    <div class="section" id="step-2-area">
+                        <p class="upload-step">Step 2: Select the job(s) that you're invoicing</p>
+                        <p>
+                            <em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em>
+                        </p>
+                        <p id="invoice-hint">Files will appear here once you've added them.</p>
+                        <div class="shadow rounded p-2"
+                             id="invoice-select-area"
+                             style="display: none"></div>
                     </div>
-                    <h5 class="d-inline me-3">Step 3: Click Submit:</h5>
-                    <button type="submit"
-                            name="submit"
-                            id="invoice-upload-btn"
-                            class="btn btn-dark disabled">Submit!</button>
-                {% endif %}
-            </div>
+                    <div class="section d-inline me-3">
+                        <p class="upload-step">Step 3: Click Submit:</p>
+                        <button type="submit"
+                                name="submit"
+                                id="invoice-upload-btn"
+                                class="btn btn-dark disabled">Submit!</button>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
-    <script>
-	window.costsJson = {{ invoices_json|safe }};
-	window.jobsJson = {{ jobs_json|safe }};
-	window.vendorId = {{ vendor_id|safe }};
-
-    </script>
 {% endblock body_block %}

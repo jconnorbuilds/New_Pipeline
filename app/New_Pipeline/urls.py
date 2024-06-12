@@ -13,16 +13,34 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from pipeline import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('pipeline/', include('pipeline.urls', namespace='pipeline')),
+    path("admin/", admin.site.urls),
+    path("pipeline/", include("pipeline.urls", namespace="pipeline")),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("invoice-uploader/<vendor_uuid>", views.invoice_upload_view, name="upload-invoice"),
-    path("invoice-uploader/thanks/", views.upload_invoice_success_landing_page, name="upload-thanks"),
-    path("invoice-uploader/send-email/", views.upload_invoice_confirmation_email, name="upload-confirmation-email"),
-    path('', views.index, name='index'),
+    path(
+        "invoice-uploader/<vendor_uuid>",
+        views.invoice_upload_view,
+        name="upload-invoice",
+    ),
+    path(
+        "invoice-uploader/thanks/",
+        views.upload_invoice_success_landing_page,
+        name="upload-thanks",
+    ),
+    path(
+        "invoice-uploader/send-email/",
+        views.upload_invoice_confirmation_email,
+        name="upload-confirmation-email",
+    ),
+    path(
+        "invoice-uploader/ajax/get_vendor_requested_invoices_data/<vendor_uuid>/",
+        views.get_vendor_requested_invoices_data,
+        name="get-requted-invoices-data",
+    ),
+    path("", views.index, name="index"),
 ]

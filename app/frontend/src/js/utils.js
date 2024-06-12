@@ -23,7 +23,7 @@ const removeCommas = (numStr) => {
  *
  * @param {String[]} currencySymbolsList // ex. ["USD", "JPY",...]
  */
-const getFXRatesDict = (successCallback) => {
+const getFXRatesDictOld = (successCallback) => {
   $.ajax({
     headers: { 'X-CSRFToken': csrftoken },
     method: 'GET',
@@ -33,6 +33,24 @@ const getFXRatesDict = (successCallback) => {
     success: successCallback,
     error: (response) => alert(response),
   });
+};
+
+const getFXRatesDict = async () => {
+  const data = fetch('/pipeline/forex-rates')
+    .then((response) => response.json())
+    .catch((err) => console.error("Couldn't get the FX rates! ", err));
+
+  return data;
+};
+
+const CURRENCY_SYMBOLS = {
+  JPY: '¥',
+  USD: '$',
+  CAD: 'CA$',
+  AUD: 'AU$',
+  EUR: '€',
+  GBP: '£',
+  THB: '฿',
 };
 
 const theDate = () => new Date();
@@ -69,15 +87,9 @@ const truncate = (string, maxLength = 30) => {
     return string.substring(0, allowedLengthJp) + '...';
   } else if (jpCharCount >= maxLength * 0.66 && totalLength > maxLength * 0.5) {
     return string.substring(0, Math.round(maxLength * 0.5)) + '...';
-  } else if (
-    jpCharCount >= maxLength * 0.33 &&
-    totalLength > maxLength * 0.33
-  ) {
+  } else if (jpCharCount >= maxLength * 0.33 && totalLength > maxLength * 0.33) {
     return string.substring(0, maxLength * 0.33) + '...';
-  } else if (
-    jpCharCount >= maxLength * 0.125 &&
-    totalLength > maxLength * 0.83
-  ) {
+  } else if (jpCharCount >= maxLength * 0.125 && totalLength > maxLength * 0.83) {
     return string.substring(0, Math.round(maxLength * 0.83)) + '...';
   } else if (totalLength > maxLength) {
     return string.substring(0, maxLength) + '...';
@@ -135,9 +147,11 @@ export {
   separateThousandsOnInput,
   removeCommas,
   getFXRatesDict,
+  getFXRatesDictOld,
   dates,
   csrftoken as CSRFTOKEN,
   truncate,
   slugify,
   createElement,
+  CURRENCY_SYMBOLS,
 };

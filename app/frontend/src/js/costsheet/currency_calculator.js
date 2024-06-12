@@ -2,7 +2,7 @@ import {
   separateThousands,
   separateThousandsOnInput,
   removeCommas,
-  getFXRatesDict,
+  getFXRatesDictOld,
   createElement,
 } from '../utils.js';
 
@@ -53,29 +53,21 @@ const Calculator = (() => {
     const calculate = (input, output) => {
       input.value = separateThousandsOnInput(input.value);
       output.value = separateThousands(
-        evaluate(
-          input.value,
-          fxRatesDict[source.value],
-          fxRatesDict[target.value]
-        )
+        evaluate(input.value, fxRatesDict[source.value], fxRatesDict[target.value]),
       );
       return output.value;
     };
 
     // Add event listeners to recalculate on input or when a different currency is selected
-    calcInput.addEventListener('input', () =>
-      handleCalcInput(calcInput, calcResult)
-    );
+    calcInput.addEventListener('input', () => handleCalcInput(calcInput, calcResult));
 
     [source, target].forEach((selectEl) => {
-      selectEl.addEventListener('change', () =>
-        handleCalcInput(calcInput, calcResult)
-      );
+      selectEl.addEventListener('change', () => handleCalcInput(calcInput, calcResult));
     });
   };
 
   const setup = () => {
-    getFXRatesDict((fxRatesDict) => build(fxRatesDict));
+    getFXRatesDictOld((fxRatesDict) => build(fxRatesDict));
   };
 
   return { setup };

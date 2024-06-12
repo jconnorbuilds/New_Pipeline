@@ -3,7 +3,7 @@ const jobList = document.querySelector('.job-extension__job-list');
 const menuToggle = document.querySelector('.job-extension .menu-toggle');
 const jobExtensionForm = document.querySelector('#job-extension-form');
 const extensionRemovalButton = document.querySelector(
-  '.job-extension__label button.remove'
+  '.job-extension__label button.remove',
 );
 
 const filterJobs = (e) => {

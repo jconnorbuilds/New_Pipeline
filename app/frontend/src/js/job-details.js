@@ -53,7 +53,7 @@ const _createJobList = (jobDataJson) => {
   });
 };
 
-const toggleMenu = (e) => {
+const toggleMenu = () => {
   let formIsShown = !jobExtensionForm.classList.toggle('d-none');
 
   _toggleIcon(formIsShown);
@@ -66,7 +66,7 @@ const toggleMenu = (e) => {
   }
 };
 
-const removeExtension = (e) => {
+const removeExtension = () => {
   const input = document.createElement('input');
   input.type = 'hidden';
   input.name = 'is_extension_of';

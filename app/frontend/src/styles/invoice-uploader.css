@@ -11,8 +11,9 @@ h3 {
 }
 
 :root {
-  --info-highlight: rgb(24, 236, 0);
+  --info-highlight: rgb(21, 213, 88);
   --main-text-color: #292929;
+  --quick-fade-in-transition: opacity 200ms ease-in-out;
 }
 
 .container {
@@ -215,14 +216,29 @@ li.inv-detail {
   padding: 0.3rem;
 }
 
-.inv-matched__options {
-  color: var(--main-text-color);
+.inv-matched__del {
+  color: #666;
   font-size: 1.3rem;
   padding: 0 1rem;
+  /* display: none; */
+  opacity: 0;
+  transition: opacity 50ms ease-in;
+  cursor: pointer;
 
   & > i {
-    cursor: pointer;
+    transition: transform 150ms ease-in-out;
   }
+}
+
+.inv-matched:hover .inv-matched__del {
+  /* display: block; */
+  opacity: 1;
+}
+
+.inv-matched__del:hover i {
+  /* box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px; */
+  transform: translate(2px, -2px) scale(1.05);
+  color: #911;
 }
 
 .inv-matched__validation {
@@ -242,13 +258,15 @@ li.inv-detail {
   }
 }
 
-.inv-matched__options:hover i {
-  /* box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px; */
-  transform: translate(1px, -1px) scale(1.05);
+.dz-messages__error {
+  background-color: #911;
+  color: #fefcd6;
+  padding: 0.5rem;
+  border-radius: 5px;
 }
 
 .hidden {
-  /* display: none; */
+  display: none;
 }
 
 /* 2xl */

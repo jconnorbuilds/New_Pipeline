@@ -20,7 +20,6 @@ module.exports = merge(common, {
   },
 
   devServer: {
-    hot: true,
     port: 9091,
     static: Path.resolve(__dirname, '../static'),
     devMiddleware: {
@@ -34,7 +33,7 @@ module.exports = merge(common, {
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name]-[contenthash:3].css',
+      filename: 'css/[name].css',
     }),
     // new ESLintPlugin({
     //   extensions: 'js',

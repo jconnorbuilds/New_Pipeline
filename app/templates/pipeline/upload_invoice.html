@@ -7,7 +7,6 @@
     BCWC Invoice Uploader
 {% endblock title %}
 {% block styles %}
-    {% comment %} {{ block.super }} {% endcomment %}
     {% render_bundle 'invoice-uploader' 'css' %}
 {% endblock styles %}
 {% block scripts %}
@@ -15,12 +14,21 @@
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
             crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/3bfcb4bec9.js"
-            crossorigin="anonymous"></script>==
+            crossorigin="anonymous"></script>
     {% render_bundle 'invoice-uploader' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block navbar %}
 {% endblock navbar %}
 {% block body_block %}
+    <body>
+        <div class="dropzone-overlay">
+            <span>
+                <img src="{% static 'images/bwcat_logo_720x720.png' %}"
+                     alt="BCWC logo"
+                     width="350px">
+            </img>
+        </span>
+    </div>
     <div class="container">
         <section class="section header">
             <div class="bcwc-logo">
@@ -37,10 +45,21 @@
                     <ol class="invoice-list">
                         {% for invoice in requested_invoices %}
                             <li class="invoice" data-po-num="{{ invoice.PO_number }}">
+                                <div class="invoice__indicators">
+                                    <div class="indicators__attach-inv">
+                                        <i class="fa-solid fa-plus"></i>
+                                        <span>Add invoice</span>
+                                    </div>
+                                    <div class="indicators__validation hidden">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                    </div>
+                                </div>
                                 <div class="invoice__inv-info-header">
-                                    <p class="job-name">{{ invoice.job.job_name }}</p>
-                                    <div class="subtitle">
-                                        Job code: <span class="val">{{ invoice.job.job_code }}</span>
+                                    <div class="inv-info-header__job-name">
+                                        <p class="job-name">{{ invoice.job.job_name }}</p>
+                                        <div class="subtitle">
+                                            Job code: <span class="val">{{ invoice.job.job_code }}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 {% if invoice.job.is_extension_of %}
@@ -76,43 +95,34 @@
                 {% endif %}
             </div>
             {% if requested_invoices %}
-                <div class="container">
-                    <div class="section" id="step-1-area">
-                        <p class="upload-step">Step 1: Drag and drop your invoice(s)</p>
-                        <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}"
-                              method="post"
-                              id="invoice-upload-form"
-                              enctype="multipart/form-data"
-                              class="dropzone shadow rounded">
-                            <div class="dropzone-previews"></div>
-                            {% csrf_token %}
-                            <div class="fallback">
-                                <input name="file" type="file" multiple />
-                            </div>
-                        </form>
-                    </div>
-                    <div class="dz-messages">
-                        <div class="dz-error-messages bg-danger-subtle border border-danger p-3 border-3 rounded-3 m-3 d-none"></div>
-                    </div>
-                    <div class="section" id="step-2-area">
-                        <p class="upload-step">Step 2: Select the job(s) that you're invoicing</p>
-                        <p>
-                            <em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em>
-                        </p>
-                        <p id="invoice-hint">Files will appear here once you've added them.</p>
-                        <div class="shadow rounded p-2"
-                             id="invoice-select-area"
-                             style="display: none"></div>
-                    </div>
-                    <div class="section d-inline me-3">
-                        <p class="upload-step">Step 3: Click Submit:</p>
-                        <button type="submit"
-                                name="submit"
-                                id="invoice-upload-btn"
-                                class="btn btn-dark disabled">Submit!</button>
-                    </div>
+                <div class="section dz-messages">
+                    <div class="dz-messages__error hidden"></div>
+                </div>
+                <div class="section" id="step-1-area">
+                    <p class="upload-step">Step 1: Drag and drop your invoice(s)</p>
+                    <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}"
+                          method="post"
+                          id="invoice-upload-form"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="fallback">
+                            <input name="file" type="file" multiple />
+                        </div>
+                    </form>
+                    <div id="invoice-select-area" style="display: none"></div>
+                </div>
+                <div class="section hidden" id="step-2-area">
+                    <p class="upload-step">Step 2: Select the job(s) that you're invoicing</p>
+                    <p>
+                        <em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em>
+                    </p>
+                    <p id="invoice-hint">Files will appear here once you've added them.</p>
+                </div>
+                <div class="section">
+                    <button type="submit" name="submit" id="invoice-upload-btn" class="disabled">Submit!</button>
                 </div>
             {% endif %}
         </div>
     </div>
+</body>
 {% endblock body_block %}

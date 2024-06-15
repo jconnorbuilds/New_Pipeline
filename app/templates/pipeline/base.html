@@ -27,69 +27,68 @@
             {% endblock header %}
         </title>
     </head>
-    <body>
-        {% block navbar %}
-            <nav class="navbar navbar-expand-lg bg-dark p-0" data-bs-theme="dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="{% url 'admin:index' %}">
-                        <img src="{% static 'images/bwcat_logo_sm.png' %}"
-                             alt="Bootstrap"
-                             width="65"
-                             height="65">
-                    </a>
-                    <button class="navbar-toggler"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent"
-                            aria-controls="navbarSupportedContent"
-                            aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'pipeline:index' %}">Pipeline</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'pipeline:invoices' %}">All Invoices</a>
-                            </li>
+    {% block navbar %}
+        <nav class="navbar navbar-expand-lg bg-dark p-0" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'admin:index' %}">
+                    <img src="{% static 'images/bwcat_logo_sm.png' %}"
+                         alt="Bootstrap"
+                         width="65"
+                         height="65">
+                </a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pipeline:index' %}">Pipeline</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'pipeline:invoices' %}">All Invoices</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle"
+                               href="#"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">Clients</a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'pipeline:client-add' %}">Add Client</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'pipeline:client-list' %}">View Clients</a>
+                                </li>
+                            </ul>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle"
                                    href="#"
                                    role="button"
                                    data-bs-toggle="dropdown"
-                                   aria-expanded="false">Clients</a>
+                                   aria-expanded="false">Vendors</a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" href="{% url 'pipeline:client-add' %}">Add Client</a>
+                                        <a class="dropdown-item" href="{% url 'pipeline:vendor-add' %}">Add Vendor</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{% url 'pipeline:client-list' %}">View Clients</a>
+                                        <a class="dropdown-item" href="{% url 'pipeline:vendor-list' %}">View Vendors</a>
                                     </li>
                                 </ul>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle"
-                                       href="#"
-                                       role="button"
-                                       data-bs-toggle="dropdown"
-                                       aria-expanded="false">Vendors</a>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'pipeline:vendor-add' %}">Add Vendor</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{% url 'pipeline:vendor-list' %}">View Vendors</a>
-                                        </li>
-                                    </ul>
-                                </li>
                             </li>
-                        </ul>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
-            </nav>
-        {% endblock navbar %}
-        {% block body_block %}
-        {% endblock body_block %}
-    </body>
+            </div>
+        </nav>
+    {% endblock navbar %}
+    {% block body_block %}
+        <body></body>
+    {% endblock body_block %}
 </html>

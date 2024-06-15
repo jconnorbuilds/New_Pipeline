@@ -5,13 +5,10 @@ import 'dropzone/dist/dropzone.css';
 import '../../styles/invoice-uploader.css';
 import { slugify, CURRENCY_SYMBOLS } from '../utils.js';
 
-let hintWithInvoices =
-  "Simply choose the matching job from the dropdown menu. When you've finished, click the Submit button below.";
-let hintWithNoInvoices = "Files will appear here once you've added them.";
-
 const dropzoneMessages = document.querySelector('.dz-messages');
 const dropzoneErrorMessages = document.querySelector('.dz-messages__error');
 const invoiceSelectArea = document.querySelector('#invoice-select-area');
+const requestedInvoicesArea = document.querySelector('.requested-invoices');
 const vendorUUID = window.location.href.split('/').pop();
 const validationSuccessIcon = `<i class="fa-solid fa-circle-check"></i>`;
 const validationFailIcon = `<i class="fa-solid fa-circle-xmark"></i>`;
@@ -19,12 +16,10 @@ const invoiceIcon = `<i class="fa-solid fa-file-invoice"></i>`;
 const deleteIcon = `<i class="fa-solid fa-delete-left"></i>`;
 const invoiceUploadButton = document.querySelector('#invoice-upload-btn');
 
+let invoiceListeningForFile;
+
 function clearDropzone() {
   invoiceSelectArea.style.display = 'none';
-  if (!myDropzone.getRejectedFiles().length) {
-    document.querySelector('#invoice-hint').textContent = hintWithNoInvoices;
-    document.querySelector('.dz-message').style.display = 'block';
-  }
   if (!myDropzone.files.length) {
     dropzoneErrorMessages.classList.add('hidden');
   }
@@ -35,26 +30,25 @@ function sanitizeFileName(file) {
   return file.name.replace(/　/g, '');
 }
 
-let myDropzone;
-Dropzone.options.invoiceUploadForm = {
+let myDropzone = new Dropzone(document.body, {
+  url: '/pipeline/process-uploaded-vendor-invoice/',
   autoProcessQueue: false,
   uploadMultiple: true,
   parallelUploads: 20,
   maxFiles: 20,
   maxFilesize: 10,
-  previewsContainer: '.dropzone-previews',
-  clickable: false,
+  disablePreviews: true,
+  clickable: '.indicators__attach-inv',
   thumbnailMethod: 'contain',
   acceptedFiles: '.pdf, .jpg, .jpeg',
-  addRemoveLinks: true,
-  dictDefaultMessage: 'Drop them here!',
   renameFile: sanitizeFileName,
 
   // Set up the dropzone
   init: function () {
     let dz = this;
     // First change the button to actually tell Dropzone to process the queue.
-    $('#invoice-upload-btn').on('click', function (e) {
+    // Get rid of the init function?
+    invoiceUploadButton.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const allSelected = checkifAllJobsSelected();
@@ -82,12 +76,14 @@ Dropzone.options.invoiceUploadForm = {
       formData.append('invoices', JSON.stringify(invoices));
       dropzoneErrorMessages.classList.add('hidden');
     });
+
     this.on('successmultiple', function () {
       // Gets triggered when the files have successfully been sent.
       dropzoneErrorMessages.classList.add('hidden');
       dropzoneMessages.textContent = 'All looks good!';
       window.location.replace('../invoice-uploader/send-email/');
     });
+
     this.on('errormultiple', function (files, response) {
       // Gets triggered when there was an error sending the files.
       dropzoneErrorMessages.textContent = response.error ? response.error : response;
@@ -97,20 +93,52 @@ Dropzone.options.invoiceUploadForm = {
     this.on('removedfile', function (file) {
       // Does NOT remove the form if the form was already removed i.e. as a duplicate
       if (!isDuplicate(this, file, false)) {
-        document.querySelector(`#form-${slugify(file.cleanName)}`).remove();
-        const invoiceAttachedCard = document.querySelector(
-          `.inv-matched[data-po-num="${file.PONumber}"]`,
-        );
-        console.log(invoiceAttachedCard);
-        invoiceAttachedCard?.remove();
-        showMainInvoiceDetailsCard(file.PONumber);
+        if (file.PONumber) toggleInvoiceAttachedPill(file.PONumber, false);
       }
 
       formsAndFilesAreValid();
       if (!dz.files.length) clearDropzone();
     });
+
+    let formNum = 0;
+    this.on('addedfile', (file) => {
+      file.cleanName = sanitizeFileName(file);
+
+      if (isDuplicate(this, file)) {
+        this.removeFile(file);
+      } else {
+        let fileDisplay = createAddedFileDisplayBase(file, costs, ++formNum);
+        dropzoneErrorMessages.classList.add('hidden');
+
+        if (fileHasMatchingInvoice(file, costs)) {
+          const cost = costs.find((cost) =>
+            file.cleanName.includes(cost.fields.PO_number),
+          );
+          file.PONumber = cost.fields.PO_number;
+
+          updateFileDisplayMatched(fileDisplay, cost, file);
+          updateInvoiceDisplay(cost.fields.PO_number, true);
+        } else if (invoiceListeningForFile) {
+          const cost = costs.find(
+            (cost) => invoiceListeningForFile.dataset.poNum === cost.fields.PO_number,
+          );
+          file.PONumber = cost.fields.PO_number;
+          updateFileDisplayMatched(fileDisplay, cost, file);
+          updateInvoiceDisplay(cost.fields.PO_number, true);
+          invoiceListeningForFile = null;
+        }
+
+        invoiceSelectArea.appendChild(fileDisplay);
+        invoiceSelectArea.style.display = 'grid';
+
+        // Seems like the file is considered rejected until the "accept" event occurs, so we wait.
+        setTimeout(function () {
+          formsAndFilesAreValid();
+        }, 50);
+      }
+    });
   },
-};
+});
 
 // Functions for form and file validation
 function formsAndFilesAreValid() {
@@ -184,8 +212,6 @@ function isDuplicate(dropzone, fileToCheck, isFileCurrentlyInDropzone = true) {
   let errMessage;
   const PONumRegEx = /[A-Za-z]{4,6}\d{4}/;
   const PONum = fileToCheck.cleanName.match(PONumRegEx);
-  console.log(!!PONum);
-  console.log(PONum);
 
   const result = dropzone.files.some((dropzoneFile, idx) => {
     // If the file is already in the dropzone (i.e. just added), it'll be last in the files list,
@@ -260,49 +286,13 @@ const vendorId = requestedInvoiceData.vendor_id;
 function appendOption(cost, file, selectEl) {
   const option = document.createElement('option');
   option.value = cost.pk;
-  option.text = `PO# ${cost.fields.PO_number} - Job details: ${
-    cost.fields.description
-  } for ${jobMap[cost.fields.job].name}`;
+  option.dataset.poNum = cost.fields.PO_number;
+  option.text = `${jobMap[cost.fields.job].name} / ${cost.fields.description} / ${
+    CURRENCY_SYMBOLS[cost.fields.currency]
+  }${cost.fields.amount.toLocaleString()}`;
 
   option.toggleAttribute('selected', fileMatchesCost(file, cost));
-
   selectEl.append(option);
-}
-
-function createInputGroup(file, costsList, formNum) {
-  const invoiceSelectInputGroup = document.createElement('div');
-  const labelEl = document.createElement('label');
-  const selectEl = document.createElement('select');
-  const emptyOption = document.createElement('option');
-
-  invoiceSelectInputGroup.classList.add('input-group', 'inv-select-group');
-  invoiceSelectInputGroup.setAttribute('id', `form-${slugify(file.cleanName)}`);
-
-  labelEl.classList.add('ig-text');
-  labelEl.setAttribute('for', `invoice-select-${formNum}`);
-  labelEl.appendChild(document.createTextNode(file.cleanName));
-
-  selectEl.classList.add('ig-select', 'invoice-select');
-  selectEl.setAttribute('id', `invoice-select-${formNum}`);
-  selectEl.dataset.fileName = file.cleanName;
-
-  emptyOption.value = 0;
-  emptyOption.text = 'Select job';
-
-  selectEl.appendChild(emptyOption);
-  invoiceSelectInputGroup.appendChild(labelEl);
-  invoiceSelectInputGroup.appendChild(selectEl);
-
-  costsList.forEach((cost) => {
-    if (cost.fields.vendor === vendorId) {
-      appendOption(cost, file, selectEl);
-    }
-    if ($(`#invoice-select-${formNum} :selected`).val() !== '0') {
-      $(`#invoice-select-${formNum}`).addClass('is-valid');
-    }
-  });
-
-  return invoiceSelectInputGroup;
 }
 
 function fileMatchesCost(file, cost) {
@@ -312,133 +302,184 @@ function fileMatchesCost(file, cost) {
   );
 }
 
-function fileHasMatchingCost(file, costs) {
+function createInvoiceSelector(file, costsList, formNum) {
+  const selectEl = document.createElement('select');
+  const emptyOption = document.createElement('option');
+
+  selectEl.classList.add('inv-selector');
+  selectEl.setAttribute('id', `invoice-select-${formNum}`);
+
+  emptyOption.value = 0;
+  emptyOption.text = 'Select job';
+
+  selectEl.appendChild(emptyOption);
+  costsList.forEach((cost) => {
+    appendOption(cost, file, selectEl);
+    addInvoiceValidationClass(selectEl);
+  });
+
+  return selectEl;
+}
+
+function addInvoiceValidationClass(selectEl) {
+  selectEl.classList.toggle('is-valid', selectEl.value);
+}
+
+function fileHasMatchingInvoice(file, costs) {
   return costs.some((cost) => file.cleanName.includes(cost.fields.PO_number));
 }
 
-function createMatchedInvoiceDisplay(cleanFileName, cost) {
+function createAddedFileDisplayBase(file, costsList, formNum) {
   const container = document.createElement('div');
-  const jobName = jobMap[cost.fields.job].name;
-  const currency = cost.fields.currency;
-  const specifyTaxIfNeeded = currency === 'JPY' ? '(tax excl.)' : '';
 
-  container.classList.add('inv-matched');
-  container.dataset.poNum = cost.fields.PO_number;
-  container.dataset.fileName = cleanFileName;
-  console.log(cost);
+  container.classList.add('inv-file');
+  container.dataset.fileName = file.cleanName;
   container.innerHTML += `
-    <div class="inv-matched__body">
-      <div class="inv-matched__job-name">
-        ${jobName}
+    <div class="inv-file__body">
+      <div class="inv-file__inv-icon">
+        ${invoiceIcon}
       </div>
-      <div class="inv-matched__is-attached">
-        Invoice attached
+      <div class="inv-file__file-name">
+        ${file.cleanName}
       </div>
-      <div class="inv-matched__PO-number">
-        ${cost.fields.PO_number}
+      <div class="inv-file__is-attached">
+        Unattached
       </div>
-      <div class="inv-matched__PO-number">
-      ${
-        CURRENCY_SYMBOLS[currency]
-      }${cost.fields.amount.toLocaleString()}<span class="tax-memo">${specifyTaxIfNeeded}</span>
-      </div>
-      <div class="inv-matched__validation">
-      ${validationSuccessIcon}
-      </div>
+      
+      <div class="inv-file__selector"></div>
     </div>
-    <div class="inv-matched__options">
-
-      <div class="inv-matched__del">${deleteIcon}</div>
+    <div class="inv-file__options">
+      <div class="inv-file__del">${deleteIcon}</div>
     </div>
   `;
+
+  const selectorContainer = container.querySelector('.inv-file__selector');
+  selectorContainer.appendChild(createInvoiceSelector(file, costsList, formNum));
 
   return container;
 }
 
-function hideMainInvoiceDetailsCard(PONumber) {
-  const targetElement = document.querySelector(`[data-po-num="${PONumber}"]`);
-  console.log(targetElement);
-  targetElement.style.display = 'none';
+function updateFileDisplayMatched(fileDisplay, cost, file) {
+  fileDisplay.classList.add('matched');
+  fileDisplay.querySelector('.inv-selector').classList.add('hidden');
+  fileDisplay.querySelector('.inv-file__is-attached').textContent = 'OK';
+
+  const jobName = document.createElement('div');
+  jobName.classList.add('inv-file__job-name');
+  jobName.textContent = jobMap[cost.fields.job].name;
+
+  fileDisplay.querySelector('.inv-file__body').appendChild(jobName);
+
+  const invoices = [...document.querySelectorAll('li.invoice')];
+  const invoice = invoices.find((inv) => inv.dataset.poNum === cost.fields.PO_number);
 }
 
-function showMainInvoiceDetailsCard(PONumber) {
-  const targetElement = document.querySelector(`[data-po-num="${PONumber}"]`);
-  targetElement.style.display = 'grid';
+function toggleInvoiceAttachedPill(PONumber, isAttached) {
+  const targetInvoice = document.querySelector(`.invoice[data-po-num="${PONumber}"]`);
+  const targetElement = targetInvoice.querySelector('.indicators__attach-inv');
+  targetElement.classList.toggle('attached', isAttached);
+  targetElement.innerHTML = isAttached
+    ? 'Invoice attached'
+    : `<i class="fa-solid fa-plus"></i><span>Add invoice</span>`;
+}
+
+function addValidation(PONumber, isValid) {
+  const targetElement = document.querySelector(`.invoice[data-po-num="${PONumber}"]`);
+  const iconContainer = targetElement.querySelector('.indicators__validation');
+  iconContainer.innerHTML = isValid ? validationSuccessIcon : validationFailIcon;
+}
+
+function toggleValidationVisibility(PONumber, isVisible) {
+  const targetElement = document.querySelector(`.invoice[data-po-num="${PONumber}"]`);
+  const iconContainer = targetElement.querySelector('.indicators__validation');
+  iconContainer.classList.toggle('hidden', isVisible);
+}
+
+function updateInvoiceDisplay(PONumber, isMatched) {
+  if (isMatched) {
+    toggleInvoiceAttachedPill(PONumber, true);
+    addValidation(PONumber, true);
+  }
 }
 
 $(document).ready(function () {
-  console.log('Ready!');
-
   /* 
     Dynamic dropdown menu generation logic.
     When a file is uploaded, a dropdown is generated with all 
     costs that are awaiting invoices that are available to that vendor.
     */
-  myDropzone = new Dropzone('#invoice-upload-form');
 
-  const invoiceSelectArea = document.querySelector('#invoice-select-area');
-  const dropzoneMessage = document.querySelector('.dz-message');
-
-  console.log(costs);
-
-  let formNum = 0;
-  myDropzone.on('addedfile', (file) => {
-    file.cleanName = sanitizeFileName(file);
-    dropzoneMessage.style.display = 'none';
-
-    if (isDuplicate(myDropzone, file)) {
-      myDropzone.removeFile(file);
-    } else {
-      dropzoneErrorMessages.classList.add('hidden');
-      const selectInputGroup = createInputGroup(file, costs, ++formNum);
-
-      if (fileHasMatchingCost(file, costs)) {
-        const cost = costs.find((cost) => file.cleanName.includes(cost.fields.PO_number));
-        file.PONumber = cost.fields.PO_number;
-
-        selectInputGroup.style.display = 'none';
-        const matchedInvoiceDisplay = createMatchedInvoiceDisplay(file.cleanName, cost);
-        invoiceSelectArea.appendChild(matchedInvoiceDisplay);
-        // hideMainInvoiceDetailsCard(cost.fields.PO_number);
-      }
-
-      invoiceSelectArea.appendChild(selectInputGroup);
-      invoiceSelectArea.style.display = 'grid';
-      $('#invoice-hint').text(hintWithInvoices);
-
-      // Seems like the file is considered rejected until the "accept" event occurs, so we wait.
-      setTimeout(function () {
-        formsAndFilesAreValid();
-      }, 50);
-    }
-  });
-  // Use event delegation to handle dynamically-generated elements
   invoiceSelectArea.addEventListener('change', (e) => {
-    if (e.target.matches('.invoice-select')) {
+    if (e.target.matches('.inv-selector')) {
       const invoiceSelector = e.target;
-      const filename = e.target.dataset.fileName;
+      const filename = e.target.closest('.inv-file').dataset.fileName;
       formsAndFilesAreValid();
-      const cost = costs.find((cost) =>
-        invoiceSelector.selectedOptions[0].text.includes(cost.fields.PO_number),
+      const cost = costs.find(
+        (cost) =>
+          invoiceSelector.selectedOptions[0].dataset.poNum === cost.fields.PO_number,
       );
       const file = myDropzone.files.find((f) => f.cleanName === filename);
       file.PONumber = cost.fields.PO_number;
 
-      const inputGroupToRemove = e.target.parentElement;
-      inputGroupToRemove.style.display = 'none';
-      invoiceSelectArea.appendChild(createMatchedInvoiceDisplay(file.cleanName, cost));
-      // hideMainInvoiceDetailsCard(cost.fields.PO_number);
+      updateInvoiceDisplay(cost.fields.PO_number, true);
+      updateFileDisplayMatched(e.target.closest('.inv-file'), cost, file);
     }
   });
 
   invoiceSelectArea.addEventListener('click', (e) => {
-    if (e.target.closest('.inv-matched__del')) {
+    if (e.target.closest('.inv-file__del')) {
       const delBtn = e.target;
-      const targetFileName = delBtn.closest('.inv-matched').dataset.fileName;
+      const targetFileName = delBtn.closest('.inv-file').dataset.fileName;
       const fileToDelete = myDropzone.files.find(
         (file) => file.cleanName === targetFileName,
       );
-      myDropzone.removeFile(fileToDelete);
+      if (fileToDelete) myDropzone.removeFile(fileToDelete);
+      delBtn.closest('.inv-file').remove();
     }
+  });
+
+  requestedInvoicesArea.addEventListener('click', (e) => {
+    if (e.target.closest('.invoice .indicators__attach-inv')) {
+      invoiceListeningForFile = e.target.closest('.invoice');
+    }
+  });
+
+  document.addEventListener('cancel', () => {
+    invoiceListeningForFile = null;
+  });
+
+  document.body.addEventListener('dragenter', (e) => {
+    if (
+      e.dataTransfer.items &&
+      Array.from(e.dataTransfer.items).some((item) => item.kind === 'file')
+    ) {
+      const dzOverlay = document.querySelector('.dropzone-overlay');
+      dzOverlay.classList.add('dropzone-overlay--active'), false;
+    } else {
+      console.log('no files here');
+    }
+  });
+
+  document.body.addEventListener('dragleave', (e) => {
+    const dzOverlay = document.querySelector('.dropzone-overlay');
+    dzOverlay.classList.remove('dropzone-overlay--active'), false;
+  });
+
+  document.body.addEventListener('dragover', (e) => {
+    if (
+      e.dataTransfer.items &&
+      Array.from(e.dataTransfer.items).some((item) => item.kind === 'file')
+    ) {
+      const dzOverlay = document.querySelector('.dropzone-overlay');
+      dzOverlay.classList.add('dropzone-overlay--active'), false;
+    } else {
+      console.log('No files here, regular drag');
+    }
+  });
+
+  document.body.addEventListener('drop', (e) => {
+    console.log(e.dataTransfer);
+    const dzOverlay = document.querySelector('.dropzone-overlay');
+    dzOverlay.classList.remove('dropzone-overlay--active'), false;
   });
 });

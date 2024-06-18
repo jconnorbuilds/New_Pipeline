@@ -5,38 +5,30 @@ import 'dropzone/dist/dropzone.css';
 import '../../styles/invoice-uploader.css';
 import { slugify, CURRENCY_SYMBOLS } from '../utils.js';
 import { CostDisplay, InvoiceFileDisplay } from './Cost.js';
+import './invoice-uploader-view.js';
 
-const dropzoneMessages = document.querySelector('.dz-messages');
-const dropzoneErrorMessages = document.querySelector('.dz-messages__error');
-const invoiceSelectArea = document.querySelector('#invoice-select-area');
-const requestedInvoicesArea = document.querySelector('.requested-invoices');
-const validationSuccessIcon = `<i class="fa-solid fa-circle-check"></i>`;
-const validationFailIcon = `<i class="fa-solid fa-circle-xmark"></i>`;
-const invoiceUploadButton = document.querySelector('#invoice-upload-btn');
-const dzOverlay = document.querySelector('.dropzone-overlay');
-const invoiceIcon = `<i class="fa-solid fa-file-invoice"></i>`;
-const deleteIcon = `<i class="fa-solid fa-delete-left"></i>`;
-const fileUploadButtons = document.querySelectorAll('.indicators__attach-inv');
+import {
+  dropzoneMessages,
+  dropzoneErrorMessages,
+  invoiceSelectArea,
+  requestedInvoicesArea,
+  invoiceUploadButton,
+  dzOverlay,
+  fileUploadButtons,
+  updateFileDisplay,
+  createAddedFileDisplayBase,
+  displayNewErrorMessage,
+  removeErrorMessages,
+} from './invoice-uploader-view.js';
 
 const vendorUUID = window.location.href.split('/').pop();
 const requestedInvoiceData = await getRequestedInvoiceData();
 const vendorId = requestedInvoiceData.vendor_id;
 const jobMap = getJobMap(requestedInvoiceData);
-const costs = [];
-const fileDisplays = [];
-
-requestedInvoiceData.requested_invoices.forEach((cost) =>
-  costs.push(new CostDisplay(cost)),
+const costs = requestedInvoiceData.requested_invoices.map(
+  (cost) => new CostDisplay(cost),
 );
-console.log(costs);
-
 let costListeningForFile;
-
-// Removes full-width space to avoid some dropzone upload issue
-function sanitizeFileName(file) {
-  // eslint-disable-next-line no-irregular-whitespace
-  return file.name.replace(/　/g, '');
-}
 
 let myDropzone = new Dropzone(document.body, {
   url: '/pipeline/process-uploaded-vendor-invoice/',
@@ -50,6 +42,25 @@ let myDropzone = new Dropzone(document.body, {
   acceptedFiles: '.pdf, .jpg, .jpeg',
   renameFile: sanitizeFileName,
 });
+
+function getJobMap(data) {
+  const jobMap = {};
+  data.jobs.forEach((job) => {
+    jobMap[job.pk] = {
+      jobCode: job.job_code,
+      name: job.job_name,
+      display: `${job.job_code} - ${job.job_name}`,
+    };
+  });
+
+  return jobMap;
+}
+
+// Removes full-width space to avoid some dropzone upload issue
+function sanitizeFileName(file) {
+  // eslint-disable-next-line no-irregular-whitespace
+  return file.name.replace(/　/g, '');
+}
 
 // Only allow single upload via the file select dialog
 document.querySelector('.dz-hidden-input').removeAttribute('multiple');
@@ -123,6 +134,7 @@ function checkifAllJobsSelected() {
 }
 
 function filesAreTheSame(file1, file2) {
+  console.log(file1.cleanName, file2.cleanName);
   return (
     file1.cleanName === file2.cleanName &&
     file1.size === file2.size &&
@@ -165,6 +177,8 @@ function getErrorMessage(fileToCheck, fileCurrentlyInDropzone = true) {
       errMessage = `It looks like you uploaded two of the same file (${fileToCheck.name}). We've removed the duplicate.`;
     } else if (filesHaveSamePONumber(dropzoneFile, fileToCheck)) {
       errMessage = `It looks like you tried to add two files with the same PO number in the filename: (${fileToCheck.cleanName}). We've removed the duplicate.`;
+    } else {
+      errMessage = 'something else';
     }
   });
 
@@ -174,11 +188,6 @@ function getErrorMessage(fileToCheck, fileCurrentlyInDropzone = true) {
 function extractPONumber(string) {
   const PONum = string.match(/[A-Za-z]{4,6}\d{4}/);
   return PONum ? PONum[0] : null;
-}
-
-function updateErrorMessage(message) {
-  dropzoneErrorMessages.textContent = message;
-  dropzoneErrorMessages.classList.toggle('hidden', message === '');
 }
 
 async function getRequestedInvoiceData() {
@@ -191,115 +200,9 @@ async function getRequestedInvoiceData() {
   return data;
 }
 
-function getJobMap(data) {
-  const jobMap = {};
-  data.jobs.forEach((job) => {
-    jobMap[job.pk] = {
-      jobCode: job.job_code,
-      name: job.job_name,
-      display: `${job.job_code} - ${job.job_name}`,
-    };
-  });
-
-  return jobMap;
-}
-
-function appendOption(cost, file, selectEl) {
-  const option = document.createElement('option');
-  option.value = cost.pk;
-  option.dataset.poNum = cost.PONumber;
-  option.text = `${jobMap[cost.jobId].name} / ${cost.description} / ${
-    CURRENCY_SYMBOLS[cost.currency]
-  }${cost.amount.toLocaleString()}`;
-
-  option.toggleAttribute('selected', fileMatchesCost(file, cost));
-  selectEl.append(option);
-}
-
-function fileMatchesCost(file, cost) {
-  return (
-    file.cleanName.includes(cost.PONumber) ||
-    file.cleanName.includes(jobMap[cost.jobId].jobCode)
-  );
-}
-
-function createInvoiceSelector(file, formNum) {
-  const selectEl = document.createElement('select');
-  const emptyOption = document.createElement('option');
-
-  selectEl.classList.add('inv-selector');
-  selectEl.setAttribute('id', `invoice-select-${formNum}`);
-
-  emptyOption.value = 0;
-  emptyOption.text = 'Select job';
-
-  selectEl.appendChild(emptyOption);
-  costs.forEach((cost) => {
-    appendOption(cost, file, selectEl);
-    addInvoiceValidationClass(selectEl);
-  });
-
-  return selectEl;
-}
-
-function addInvoiceValidationClass(selectEl) {
-  selectEl.classList.toggle('is-valid', selectEl.value);
-}
-
 function getAutoMatchedCost(file) {
   return costs.find((cost) => file.PONumber === cost.PONumber);
 }
-
-function createAddedFileDisplayBase(file, formNum) {
-  const container = document.createElement('div');
-
-  container.classList.add('inv-file');
-  container.dataset.fileName = file.cleanName;
-  container.innerHTML += `
-    <div class="inv-file__body">
-      <div class="inv-file__inv-icon">
-        ${invoiceIcon}
-      </div>
-      <div class="inv-file__file-name">
-        ${file.cleanName}
-      </div>
-      <div class="inv-file__is-attached">
-        Unattached
-      </div>
-      
-      <div class="inv-file__selector"></div>
-    </div>
-    <div class="inv-file__options">
-      <div class="inv-file__del">${deleteIcon}</div>
-    </div>
-  `;
-
-  const selectorContainer = container.querySelector('.inv-file__selector');
-  selectorContainer.appendChild(createInvoiceSelector(file, formNum));
-
-  return container;
-}
-
-function updateFileDisplayMatched(fileDisplay, jobName) {
-  fileDisplay.classList.add('matched');
-  fileDisplay.querySelector('.inv-selector').classList.add('hidden');
-  fileDisplay.querySelector('.inv-file__is-attached').textContent = 'OK';
-
-  const jobNameDisplay = document.createElement('div');
-  jobNameDisplay.classList.add('inv-file__job-name');
-  jobNameDisplay.textContent = jobName;
-
-  fileDisplay.querySelector('.inv-file__body').appendChild(jobNameDisplay);
-}
-
-// function toggleInvoiceAttachedPill(PONumber, isAttached) {
-//   const targetInvoice = document.querySelector(`.invoice[data-po-num="${PONumber}"]`);
-//   const targetElement = targetInvoice.querySelector('.indicators__attach-inv');
-//   targetElement.classList.toggle('attached', isAttached);
-//   targetElement.innerHTML = isAttached
-//     ? 'Invoice attached'
-//     : `<i class="fa-solid fa-plus"></i><span>Add invoice</span>`;
-// }
 
 function getCostByPONumber(PONumber) {
   return costs.find((cost) => PONumber === cost.PONumber);
@@ -328,8 +231,14 @@ function findAndRemoveFileFromDz(e) {
     );
 
   myDropzone.removeFile(fileToDelete);
+  removeErrorMessages(myDropzone.files, fileToDelete);
   costs.forEach((cost) => {
-    if (cost.invoiceFile === fileToDelete) cost.unmatchFile();
+    if (
+      cost.invoiceFile === fileToDelete &&
+      costs.filter((cost) => cost.invoiceFile === fileToDelete).length === 1 &&
+      fileToDelete.status !== 'error'
+    )
+      cost.unmatchFile();
   });
   delBtn.closest('.inv-file').remove();
   console.log(costs);
@@ -341,6 +250,108 @@ function draggingFiles(e) {
     Array.from(e.dataTransfer.items).some((item) => item.kind === 'file')
   );
 }
+
+function fileMatchesAlreadyMatchedCost(file) {
+  return costs.some((cost) => cost.PONumber === file.PONumber && cost.isMatched);
+}
+
+function filePONumDoesntMatchTargetedCost(file) {
+  return (
+    costListeningForFile &&
+    file.PONumber &&
+    file.PONumber !== costListeningForFile.PONumber
+  );
+}
+
+function checkForErrorsOnFileAdd(file) {
+  if (fileMatchesAlreadyMatchedCost(file)) {
+    displayNewErrorMessage(
+      `The file you are attempting to submit matches a job that already has an invoice attached to it. Please ensure that you are submitting invoices for the correct job(s)! We've already removed the file that caused this error.`,
+    ),
+      file;
+    return true;
+  }
+
+  if (filePONumDoesntMatchTargetedCost(file)) {
+    displayNewErrorMessage(
+      `It looks like there is a PO in the filename that doesn't match the job you are attempting to submit it for. To avoid payment issues, please double check the filename and try adding it again.  ${
+        jobMap[costListeningForFile.jobId].name
+      } 
+        }: ${file.PONumber}`,
+      file,
+    ),
+      (costListeningForFile = null);
+    return true;
+  }
+
+  return false;
+}
+
+function displayErrorMessage() {}
+
+function handleDropzoneError() {}
+
+function unmatchFileAndResetFileDisplay(e) {
+  const matchedCost = costs.find(
+    (cost) =>
+      cost.invoiceFile?.cleanName === e.target.closest('.inv-file').dataset.fileName,
+  );
+  if (matchedCost) matchedCost.unmatchFile();
+
+  updateFileDisplay(e.target.closest('.inv-file'), 'default');
+}
+
+let formNum = 0;
+myDropzone.on('addedfile', (file) => {
+  file.cleanName = sanitizeFileName(file);
+  file.PONumber = extractPONumber(file.cleanName);
+
+  if (fileIsDuplicate(file)) {
+    displayNewErrorMessage(getErrorMessage(file));
+    myDropzone.removeFile(file);
+    return;
+  }
+
+  const fileDisplay = createAddedFileDisplayBase(file, costs, ++formNum, jobMap);
+  const autoMatchedCost = getAutoMatchedCost(file, costs);
+  removeErrorMessages(myDropzone.files);
+  let matchingCost;
+
+  // Check for certain errors immediately after file is added
+
+  const initialErrors = checkForErrorsOnFileAdd(file);
+  if (initialErrors) {
+    displayErrorMessage();
+    costListeningForFile = null;
+    updateFileDisplay(fileDisplay, 'error');
+  } else if (costListeningForFile) {
+    matchingCost = getCostByPONumber(costListeningForFile.PONumber);
+  } else if (autoMatchedCost) {
+    matchingCost = autoMatchedCost;
+  }
+
+  console.log({ matchingCost });
+
+  if (matchingCost) {
+    file.PONumber = matchingCost.PONumber;
+    const jobName = jobMap[matchingCost.jobId].name;
+    updateFileDisplay(fileDisplay, 'matched', jobName, !!autoMatchedCost);
+    matchingCost.matchFile(file, fileDisplay);
+  }
+
+  costListeningForFile = null;
+
+  invoiceSelectArea.appendChild(fileDisplay);
+  // dropzoneErrorMessages.classList.add('hidden');
+
+  if (myDropzone.files.length !== invoiceSelectArea.querySelectorAll('.inv-file').length)
+    console.warn('Dropzone and display are out of sync!');
+
+  // Seems like the file is considered rejected until the "accept" event occurs, so we wait.
+  setTimeout(function () {
+    formsAndFilesAreValid();
+  }, 50);
+});
 
 fileUploadButtons.forEach((btn) => {
   btn.addEventListener('mouseenter', () => {
@@ -361,116 +372,35 @@ myDropzone.on('sendingmultiple', function (files, xhr, formData) {
     }
   });
   formData.append('invoices', JSON.stringify(invoices));
-  dropzoneErrorMessages.classList.add('hidden');
+  // dropzoneErrorMessages.classList.add('hidden');
 });
 
 myDropzone.on('successmultiple', function () {
   // Gets triggered when the files have successfully been sent.
-  dropzoneErrorMessages.classList.add('hidden');
+  // dropzoneErrorMessages.classList.add('hidden');
   dropzoneMessages.textContent = 'All looks good!';
   window.location.replace('../invoice-uploader/send-email/');
 });
 
-myDropzone.on('errormultiple', function (files, response) {
+myDropzone.on('errormultiple', function (files, message) {
   // Gets triggered when there was an error sending the files.
-  dropzoneErrorMessages.textContent = response.error ? response.error : response;
-  dropzoneErrorMessages.classList.remove('hidden');
+  console.log('# of errors: ', files.length, files);
+  displayNewErrorMessage(message, files);
+
+  files.forEach((file) => {
+    const fileDisplay = document.querySelector(
+      `.inv-file[data-file-name="${files[0].cleanName}"]`,
+    );
+    if (fileDisplay) {
+      const cost = costs.find((cost) => cost.invoiceFile === file);
+      cost?.unmatchFile();
+      updateFileDisplay(fileDisplay, 'error');
+    }
+  });
 });
 
 myDropzone.on('removedfile', function (file) {
   formsAndFilesAreValid();
-});
-
-function fileMatchesAlreadyMatchedCost(file) {
-  return costs.some((cost) => cost.PONumber === file.PONumber && cost.isMatched);
-}
-
-function checkForErrorsOnFileAdd(file) {
-  if (fileIsDuplicate(file)) {
-    updateErrorMessage(getErrorMessage(file));
-    return true;
-  }
-
-  if (fileMatchesAlreadyMatchedCost(file)) {
-    updateErrorMessage(
-      `The file you are attempting to submit matches a job that already has an invoice attached to it. Please ensure that you are submitting invoices for the correct job(s)! We've already removed the file that caused this error.`,
-    );
-    return true;
-  }
-
-  if (costListeningForFile) {
-    if (file.PONumber && file.PONumber !== costListeningForFile.PONumber) {
-      updateErrorMessage(
-        `It looks like there is a PO in the filename that doesn't match the job you are attempting to submit it for. To avoid payment issues, please double check the filename and try adding it again.  ${
-          jobMap[costListeningForFile.jobId].name
-        } 
-        }: ${file.PONumber}`,
-      );
-      costListeningForFile = null;
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function displayErrorMessage() {}
-
-function handleDropzoneError() {}
-
-myDropzone.on('error', (file, message) => {
-  console.error(message, file);
-  const fileDisplay = document.querySelector(
-    `.inv-file[data-file-name="${file.cleanName}"]`,
-  );
-  const statusIndicator = fileDisplay.querySelector('.inv-file__is-attached');
-  statusIndicator.classList.remove('matched');
-  statusIndicator.classList.add('error');
-  statusIndicator.textContent = 'Error';
-  handleDropzoneError();
-});
-
-let formNum = 0;
-myDropzone.on('addedfile', (file) => {
-  file.cleanName = sanitizeFileName(file);
-  file.PONumber = extractPONumber(file.cleanName);
-
-  const errors = checkForErrorsOnFileAdd(file);
-  if (errors) {
-    myDropzone.removeFile(file);
-    displayErrorMessage();
-    costListeningForFile = null;
-    return;
-  }
-
-  const autoMatchedCost = getAutoMatchedCost(file, costs);
-  let fileDisplay = createAddedFileDisplayBase(file, costs, ++formNum);
-
-  if (autoMatchedCost && !costListeningForFile) {
-    const cost = autoMatchedCost;
-    updateFileDisplayMatched(fileDisplay, jobMap[cost.jobId].name);
-    cost.matchFile(file, fileDisplay);
-  } else if (costListeningForFile) {
-    // Should only execute when a file is being uploaded via the upload dialog
-    const cost = getCostByPONumber(costListeningForFile.PONumber);
-    file.PONumber = cost.PONumber;
-    updateFileDisplayMatched(fileDisplay, jobMap[cost.jobId].name);
-    cost.matchFile(file, fileDisplay);
-    costListeningForFile = null;
-  }
-
-  invoiceSelectArea.appendChild(fileDisplay);
-  dropzoneErrorMessages.classList.add('hidden');
-  console.log(costs);
-  console.log(myDropzone.files);
-
-  if (myDropzone.files.length !== invoiceSelectArea.querySelectorAll('.inv-file').length)
-    console.warn('Dropzone and display are out of sync!');
-
-  // Seems like the file is considered rejected until the "accept" event occurs, so we wait.
-  setTimeout(function () {
-    formsAndFilesAreValid();
-  }, 50);
 });
 
 invoiceUploadButton.addEventListener('click', (e) => {
@@ -490,11 +420,12 @@ invoiceSelectArea.addEventListener('change', (e) => {
   if (e.target.matches('select.inv-selector')) {
     try {
       const { cost, file } = matchUploadedInvoiceToJob(e);
-      formsAndFilesAreValid();
       cost.matchFile(file, e.target.closest('.inv-file'));
-      updateFileDisplayMatched(cost.invoiceFileDisplay, jobMap[cost.jobId].name, file);
+      updateFileDisplay(cost.invoiceFileDisplay, 'matched', jobMap[cost.jobId].name);
+      removeErrorMessages(myDropzone.files);
+      formsAndFilesAreValid();
     } catch (err) {
-      updateErrorMessage(err.message);
+      displayNewErrorMessage(err.message);
       console.error(err);
     }
   }
@@ -507,9 +438,11 @@ invoiceSelectArea.addEventListener('click', (e) => {
     try {
       findAndRemoveFileFromDz(e);
     } catch (err) {
-      updateErrorMessage(err.message);
+      displayNewErrorMessage(err.message);
       console.error(err.message);
     }
+  } else if (e.target.closest('button.inv-file__options')) {
+    unmatchFileAndResetFileDisplay(e);
   }
 });
 
@@ -523,6 +456,7 @@ requestedInvoicesArea.addEventListener('click', (e) => {
   }
 });
 
+// Stop costs from listening for files when file dialog is closed
 document.addEventListener('cancel', () => {
   costListeningForFile = null;
 });

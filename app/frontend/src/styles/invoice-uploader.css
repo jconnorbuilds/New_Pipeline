@@ -76,6 +76,7 @@ button[type='submit'] {
 
 button[type='submit'].disabled {
   background-color: #666d;
+  box-shadow: none;
   cursor: pointer;
 }
 
@@ -305,7 +306,7 @@ li.inv-detail {
 }
 
 .indicators__attach-inv,
-.inv-file__is-attached {
+.status--default {
   background-color: #666;
   display: flex;
   flex-direction: row;
@@ -331,7 +332,8 @@ li.inv-detail {
   cursor: pointer;
 }
 
-.indicators__attach-inv:not(.attached):hover {
+.indicators__attach-inv:not(.attached):hover,
+.indicators__attach-inv:not(.attached):focus {
   width: 90px;
 }
 
@@ -340,7 +342,8 @@ li.inv-detail {
   opacity: 0;
 }
 
-.indicators__attach-inv:hover span {
+.indicators__attach-inv:hover span,
+.indicators__attach-inv:focus span {
   opacity: 1;
   transition: opacity 250ms;
 }
@@ -350,7 +353,11 @@ li.inv-detail {
   background-color: #666;
 }
 
-.inv-file.matched .inv-file__is-attached,
+.inv-file .status--error {
+  background-color: #911;
+}
+
+.status--matched,
 .attached {
   color: #fff;
   background-color: var(--info-highlight);
@@ -362,12 +369,8 @@ li.inv-detail {
   padding: 0 1rem;
   /* display: none; */
   opacity: 0;
-  transition: opacity 50ms ease-in;
+  transition: opacity 75ms ease-in, transform 150ms ease-in-out;
   cursor: pointer;
-
-  & > i {
-    transition: transform 150ms ease-in-out;
-  }
 }
 
 .inv-file:hover .inv-file__del {
@@ -375,17 +378,48 @@ li.inv-detail {
   opacity: 1;
 }
 
-.inv-file__del:hover i {
+.inv-file__del:hover {
   /* box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px; */
   transform: translate(2px, -2px) scale(1.05);
   color: #911;
 }
 
 .dz-messages__error {
-  background-color: #911;
-  color: #fefcd6;
+  background-color: #9115;
+  display: block;
+  width: max-content;
+  color: var(--main-text-color);
   padding: 0.5rem;
   border-radius: 5px;
+}
+
+.dz-messages__error:empty {
+  display: none;
+}
+
+.inv-file select.is-invalid {
+  border: 1px solid red;
+}
+
+.inv-file__options:disabled {
+  color: #eee;
+}
+
+.inv-file__options {
+  margin-left: auto;
+  color: #888;
+  cursor: pointer;
+  transition: color 75ms ease-in;
+  background-color: inherit;
+  border: none;
+}
+
+/* .inv-file:hover .inv-file__options {
+  color: var(--main-text-color);
+} */
+
+.inv-file__options:not(:disabled):hover {
+  color: var(--main-text-color);
 }
 
 .hidden {

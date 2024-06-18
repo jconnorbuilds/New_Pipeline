@@ -15,6 +15,7 @@
             crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/3bfcb4bec9.js"
             crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
     {% render_bundle 'invoice-uploader' 'js' attrs="defer" %}
 {% endblock scripts %}
 {% block navbar %}
@@ -46,7 +47,7 @@
                         {% for invoice in requested_invoices %}
                             <li class="invoice" data-po-num="{{ invoice.PO_number }}">
                                 <div class="invoice__indicators">
-                                    <div class="indicators__attach-inv">
+                                    <div class="indicators__attach-inv" tabindex="0">
                                         <i class="fa-solid fa-plus"></i>
                                         <span>Add invoice</span>
                                     </div>
@@ -96,7 +97,7 @@
             </div>
             {% if requested_invoices %}
                 <div class="section dz-messages">
-                    <div class="dz-messages__error hidden"></div>
+                    <div class="dz-messages__error"></div>
                 </div>
                 <div class="section" id="step-1-area">
                     <p class="upload-step">Step 1: Drag and drop your invoice(s)</p>
@@ -109,7 +110,7 @@
                             <input name="file" type="file" multiple />
                         </div>
                     </form>
-                    <div id="invoice-select-area" style="display: none"></div>
+                    <div id="invoice-select-area"></div>
                 </div>
                 <div class="section hidden" id="step-2-area">
                     <p class="upload-step">Step 2: Select the job(s) that you're invoicing</p>

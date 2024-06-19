@@ -1,7 +1,7 @@
 import { CURRENCY_SYMBOLS } from '../utils.js';
 
 export const dropzoneMessages = document.querySelector('.dz-messages');
-export const dropzoneErrorMessages = document.querySelector('.dz-messages__error');
+export const dropzoneErrorMessages = document.querySelector('.dz-error-messages');
 export const invoiceSelectArea = document.querySelector('#invoice-select-area');
 export const requestedInvoicesArea = document.querySelector('.requested-invoices');
 export const invoiceUploadButton = document.querySelector('#invoice-upload-btn');
@@ -131,7 +131,7 @@ export function createAddedFileDisplayBase(file, costs, formNum, jobMap) {
       <div class="inv-file__selector"></div>
       <div class="inv-file__job-name hidden"></div>
       <button type="button" class="inv-file__options" disabled>
-        ${menuIcon}
+        <i class="fa-solid fa-eject"></i>
       </button>
     </div>
      <div class="inv-file__del">${deleteIcon}</div>

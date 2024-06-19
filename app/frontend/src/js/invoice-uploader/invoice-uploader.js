@@ -174,9 +174,9 @@ function getErrorMessage(fileToCheck, fileCurrentlyInDropzone = true) {
     if (isCurrentFile) return;
 
     if (filesAreTheSame(dropzoneFile, fileToCheck)) {
-      errMessage = `It looks like you uploaded two of the same file (${fileToCheck.name}). We've removed the duplicate.`;
+      errMessage = `It looks like you uploaded two of the same file twice (${fileToCheck.name}). `;
     } else if (filesHaveSamePONumber(dropzoneFile, fileToCheck)) {
-      errMessage = `It looks like you tried to add two files with the same PO number in the filename: (${fileToCheck.cleanName}). We've removed the duplicate.`;
+      errMessage = `It looks like you tried to add two files with the same PO number in the filename: (${fileToCheck.cleanName}).`;
     } else {
       errMessage = 'something else';
     }
@@ -463,12 +463,19 @@ document.addEventListener('cancel', () => {
 
 ['dragenter', 'dragover'].forEach((eventName) => {
   document.body.addEventListener(eventName, (e) => {
-    if (draggingFiles(e)) dzOverlay.classList.add('dropzone-overlay--active'), false;
-  });
+    if (draggingFiles(e)) {
+      dzOverlay.classList.remove('overlay--off');
+      dzOverlay.classList.add('overlay--active');
+    }
+  }),
+    false;
 });
 
 ['dragleave', 'drop'].forEach((eventName) => {
   document.body.addEventListener(eventName, () => {
-    dzOverlay.classList.remove('dropzone-overlay--active'), false;
-  });
+    dzOverlay.classList.remove('overlay--active');
+    // Without setTimeout, the overlay continually flickers between visibility hidden/visible.
+    setTimeout(() => dzOverlay.classList.add('overlay--off'), 150);
+  }),
+    false;
 });

@@ -3,6 +3,7 @@
 .prettierignore
 **/.vscode/
 htmlcov
+/nginx/certs
 *.numbers
 node_modules
 /app/frontend/build

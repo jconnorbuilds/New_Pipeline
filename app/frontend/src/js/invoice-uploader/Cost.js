@@ -32,6 +32,7 @@ export class CostDisplay {
   toggleInvoiceAttachedPill(isAttached) {
     const targetElement = this.UIElement.querySelector('.indicators__attach-inv');
     targetElement.classList.toggle('attached', isAttached);
+    targetElement.toggleAttribute('disabled', isAttached);
     targetElement.innerHTML = isAttached
       ? 'Invoice attached'
       : `<i class="fa-solid fa-plus"></i><span>Add invoice</span>`;

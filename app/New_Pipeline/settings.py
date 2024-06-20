@@ -30,8 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / "templates"
 
 dev_dotenv_path = BASE_DIR / "../.env.dev"
-if dev_dotenv_path.exists():
-    load_dotenv(dev_dotenv_path)
+
+ENVIRONMENT = os.environ.get("ENV")
+if ENVIRONMENT == "dev":
+    load_dotenv(dev_dotenv_path, override=True)
 
 LINODE_STORAGE = boto3.client(
     "s3",

@@ -779,12 +779,21 @@ def get_vendor_requested_invoices_data(request, vendor_uuid):
             "pk", "job_name", "job_code"
         )
     )
-
-    invoices_json = json.loads(serializers.serialize("json", requested_invoices))
+    invoices = list(
+        requested_invoices.values(
+            "pk",
+            "PO_number",
+            "amount",
+            "currency",
+            "description",
+            "job",
+            "job__job_name",
+        )
+    )
 
     data["jobs"] = jobs
-    data["requested_invoices"] = invoices_json
     data["vendor_id"] = vendor.id
+    data["requested_invoices"] = invoices
 
     return JsonResponse(data, safe=False)
 

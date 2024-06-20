@@ -146,6 +146,7 @@ export {
   separateThousands,
   separateThousandsOnInput,
   removeCommas,
+  stripTags,
   getFXRatesDict,
   getFXRatesDictOld,
   dates,
@@ -155,3 +156,6 @@ export {
   createElement,
   CURRENCY_SYMBOLS,
 };
+function stripTags(html) {
+  return new DOMParser().parseFromString(html, 'text/html').body.textContent;
+}

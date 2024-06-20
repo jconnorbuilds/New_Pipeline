@@ -57,43 +57,45 @@ function _addInvoiceValidationClass(selectEl) {
   selectEl.classList.toggle('is-valid', selectEl.value);
 }
 
-export function displayNewErrorMessage(message, oneOrMoreFiles = null) {
-  console.log(oneOrMoreFiles?.length);
-  console.log(message);
-  let errorMessages = [];
+// export function displayNewErrorMessage(message, oneOrMoreFiles = null) {
+//   console.log(oneOrMoreFiles?.length);
+//   console.log(message);
+//   let errorMessages = [];
 
-  if (oneOrMoreFiles && Array.isArray(oneOrMoreFiles)) {
-    oneOrMoreFiles.forEach((file) => {
-      const errorMessage = createErrorMessage(message, file);
-      errorMessages.push(errorMessage);
-    });
-  } else if (oneOrMoreFiles) {
-    // handles a single file
-    const errorMessage = createErrorMessage(message, oneOrMoreFiles);
-    errorMessages.push(errorMessage);
-  } else {
-    const errorMessage = createErrorMessage(message);
-    errorMessages.push(errorMessage);
-  }
+//   if (oneOrMoreFiles && Array.isArray(oneOrMoreFiles)) {
+//     oneOrMoreFiles.forEach((file) => {
+//       const errorMessage = createErrorMessage(message, file);
+//       errorMessages.push(errorMessage);
+//     });
+//   } else if (oneOrMoreFiles) {
+//     // handles a single file
+//     const errorMessage = createErrorMessage(message, oneOrMoreFiles);
+//     errorMessages.push(errorMessage);
+//   } else {
+//     const errorMessage = createErrorMessage(message);
+//     errorMessages.push(errorMessage);
+//   }
 
-  dropzoneErrorMessages.append(...errorMessages);
+//   dropzoneErrorMessages.append(...errorMessages);
 
-  return errorMessages;
-}
+//   return errorMessages;
+// }
 
-function createErrorMessage(message, file = null) {
-  const errorMessage = document.createElement('div');
-  errorMessage.classList.add('error-message');
-  if (file) {
-    errorMessage.dataset.fileName = file.cleanName;
-    errorMessage.innerHTML = `
-        <span class="bold">${file.cleanName}:</span> ${message}
-        `;
-  } else {
-    errorMessage.innerHTML = `<span class="bold">Error:</span> ${message}`;
-  }
+export function createErrorToast({ title, message }) {
+  const toast = document.createElement('div');
+  const toastHeader = document.createElement('div');
+  const toastBody = document.createElement('div');
 
-  return errorMessage;
+  toast.classList.add('toast', 'error-message', 'fade--shown');
+  toastHeader.classList.add('toast__header', 'bold');
+  toastBody.classList.add('toast__body');
+
+  toastHeader.textContent = title;
+  toastBody.innerHTML = message;
+
+  toast.append(toastHeader, toastBody);
+
+  return toast;
 }
 
 // If no file is specified, hanging error messages (ones with no associated file in the dropzone)
@@ -102,7 +104,7 @@ export function removeErrorMessages(dzFiles, file = null) {
   const errorMessages = [...document.querySelectorAll('.error-message')];
   if (file) {
     const messageToDelete = errorMessages
-      .filter((msg) => msg.dataset.fileName === file.cleanName)
+      .filter((msg) => msg.dataset.filename === file.cleanName)
       ?.forEach((msg) => msg.remove());
     console.log(messageToDelete);
   } else {
@@ -196,14 +198,14 @@ function updateFileStatusIndicator(element, status) {
   }
 }
 
-export function updateFileDisplay(fileDisplayEl, status, jobName = '', locked = false) {
+export function updateFileDisplay(element, status, jobName = '', isLocked = false) {
   try {
     if (status === 'matched') {
-      updateFileDisplayMatched(fileDisplayEl, jobName, locked);
+      updateFileDisplayMatched(element, jobName, isLocked);
     } else if (status === 'error') {
-      updateFileDisplayError(fileDisplayEl);
+      updateFileDisplayError(element);
     } else {
-      updateFileDisplayDefault(fileDisplayEl);
+      updateFileDisplayDefault(element);
     }
   } catch (err) {
     console.error(err);

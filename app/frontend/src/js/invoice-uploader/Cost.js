@@ -6,13 +6,17 @@ export class CostDisplay {
   invoiceFileDisplay;
   constructor(costData) {
     this.id = costData.pk;
-    this.PONumber = costData.fields.PO_number;
-    this.jobId = costData.fields.job;
-    this.amount = costData.fields.amount;
-    this.description = costData.fields.description;
-    this.currency = costData.fields.currency;
+    this.PONumber = costData.PO_number;
+    this.jobId = costData.job;
+    this.jobName = costData.job__job_name;
+    this.amount = costData.amount;
+    this.description = costData.description;
+    this.currency = costData.currency;
     this.UIElement = document.querySelector(`.invoice[data-po-num="${this.PONumber}"]`);
     this.isMatched = false;
+    this.tempDiv = document.createElement('div');
+    this.tempDiv.classList.add('redtext');
+    console.log(this);
   }
 
   matchFile(file, fileDisplay) {

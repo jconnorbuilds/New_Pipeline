@@ -23,6 +23,11 @@ button {
   border-radius: 10px;
 }
 
+.redtext {
+  color: red;
+  font-weight: 700;
+}
+
 .container {
   max-width: 1536px;
   margin-left: auto;
@@ -128,7 +133,7 @@ button[type='submit'].disabled {
 ol.invoice-list {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(375px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   grid-template-rows: auto;
   justify-content: center;
   padding: 1.5rem 0;
@@ -389,19 +394,16 @@ li.inv-detail {
   transform: translate(2px, -2px) scale(1.05);
   color: #911;
 }
+
 .messages-wrapper {
   position: absolute;
   top: 0;
   right: 1rem;
   width: max-content;
-  max-width: 250px;
+  max-width: 300px;
   height: 100%;
-  /* z-index: 1; */
-
-  /* display: flex; */
-  /* flex: 1; */
-  /* justify-content: flex-end; */
 }
+
 .messages {
   position: sticky;
   top: 1rem;
@@ -411,6 +413,7 @@ li.inv-detail {
   backdrop-filter: blur(3px);
   z-index: 2;
 }
+
 .dz-messages,
 .dz-error-messages {
   padding: 0;
@@ -421,11 +424,36 @@ li.inv-detail {
   margin-left: auto;
 }
 
-.error-message {
+.toast.error-message {
+  border-radius: 8px;
   border: 2px solid #911;
-  border-radius: 4px;
+}
+
+.toast > div {
+  padding: 0.3rem 0.5rem;
+}
+
+.toast {
+  transition: opacity 300ms ease-in 7s;
+}
+
+.toast.fade--shown {
+  opacity: 1;
+}
+
+.toast.fade--transitioning {
+  opacity: 0;
+}
+
+.error-message .toast__header {
+  border-bottom: 1px solid black;
+  background-color: rgba(242, 226, 226, 0.907);
+  border-radius: 6px 6px 0 0;
+}
+
+.error-message .toast__body {
   background-color: rgba(205, 156, 156, 0.697);
-  padding: 0.5rem;
+  border-radius: 0 0 6px 6px;
 }
 .dz-error-messages:empty {
   display: none;
@@ -467,6 +495,7 @@ li.inv-detail {
 @media (max-width: 1280px) {
   .container {
     max-width: 1024px;
+    width: 90%;
   }
 }
 
@@ -486,7 +515,7 @@ li.inv-detail {
     max-width: 640px;
   }
   .section {
-    width: 80%;
+    width: 90%;
   }
 }
 

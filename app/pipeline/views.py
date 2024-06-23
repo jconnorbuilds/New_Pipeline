@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.db.models import Sum, Q
@@ -19,6 +20,7 @@ from django.utils import timezone
 from django.utils.html import strip_tags
 from django.views.decorators.http import require_http_methods
 from django.views.generic import (
+    View,
     TemplateView,
     ListView,
     DetailView,
@@ -47,6 +49,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 import dropbox
 from dropbox.exceptions import AuthError
+import pprint
 from rest_framework import generics
 from rest_framework.renderers import TemplateHTMLRenderer
 from .serializers import VendorSerializer, JobSerializer
@@ -64,6 +67,7 @@ from .utils import (
 import json
 import csv
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -549,32 +553,183 @@ def dropbox_connect():
     return dbx
 
 
-# def dropbox_team_connect():
-#     """Create a connection to Dropbox."""
-#     try:
-#         dbx_team = dropbox.DropboxTeam(settings.DROPBOX_ACCESS_TOKEN)
-#     except AuthError as e:
-#         print('Error connecting to Dropbox Team with access token: ' + str(e))
-#     return dbx_team
-
-
 def dropbox_upload_file(file_to_upload, dropbox_file_path):
-    try:
-        dbx = dropbox_connect()
-        meta = dbx.with_path_root(
-            # namespace_id of the root folder of the Team Space in dropbox (e.g. "Black Cat White Cat Dropbox")
-            # TODO: this MAY change when a new team member is added so we should really assign it programatically.
-            path_root=dropbox.common.PathRoot.namespace_id("9004345616")
-        ).files_upload(
-            f=file_to_upload.read(),
-            path=dropbox_file_path,
-            mode=dropbox.files.WriteMode("overwrite"),
-        )
-        return meta
+    dbx = dropbox_connect()
+    meta = dbx.with_path_root(
+        # namespace_id of the root folder of the Team Space in dropbox (e.g. "Black Cat White Cat Dropbox")
+        # TODO: this MAY change when a new team member is added so we should really assign it programatically.
+        path_root=dropbox.common.PathRoot.namespace_id("9004345616")
+    ).files_upload(
+        f=file_to_upload.read(),
+        path=dropbox_file_path,
+        mode=dropbox.files.WriteMode("overwrite"),
+    )
+    return meta
 
-    except dropbox.exceptions.ApiError as e:
-        # TODO: enable logging
-        print(f"Error uploading file to Dropbox: {e.error}")
+
+def logging_test(request, loglevel):
+    if loglevel >= 10:
+        logger.debug("DEBUG level log")
+    if loglevel >= 20:
+        logger.info("INFO level log")
+    if loglevel >= 30:
+        logger.warning("WARN level log")
+    if loglevel >= 40:
+        logger.error("ERROR level log")
+    if loglevel >= 50:
+        logger.critical("CRITICAL level log")
+
+    return HttpResponse("ok")
+
+
+class FileUploadView(View):
+    MAX_ALLOWED_FILESIZE = 100 * 1024 * 1024  # 10MiB
+    ALLOWED_FILE_EXTENSIONS = [".pdf", ".jpg", ".jpeg"]
+    INVOICE_FOLDER = (
+        "/Financial/_ INVOICES/_VENDOR INVOICES"
+        if not settings.DEBUG
+        else "/Financial/TEST/_ INVOICES/_VENDOR INVOICES"
+    )
+    ERROR_MESSAGES = {
+        413: {"error": "File too large! Please limit files to 10MB or less."},
+        500: {
+            "error": "Oops, there was an error uploading your invoice. Please remove the files or refresh the page and try again. If the error persists, please email us at invoice@bwcatmusic.com - you can send us your invoice directly. We're working hard to make sure these errors don't happen, sorry for the trouble!"
+        },
+    }
+
+    def post(self, request, *args, **kwargs):
+        pp = pprint.PrettyPrinter(indent=4)
+
+        invoice_data = json.loads(request.POST.get("invoice_data"))
+        files = {file.name: file for file in request.FILES.values()}
+
+        logger.debug(files)
+
+        successful_invoices = []
+        unsuccessful_invoices = []
+
+        # Process each uploaded invoice
+        for filename, data in invoice_data.items():
+            logger.debug(f"{data}, {data['cost_id']}")
+
+            invoice_file = files.get(filename)
+            try:
+                cost = Cost.objects.get(id=data["cost_id"])
+            except ObjectDoesNotExist as e:
+                unsuccessful_invoices.append(
+                    {
+                        filename: {
+                            "cost_id": data["cost_id"],
+                            "message": str(e),
+                        }
+                    }
+                )
+                self.log_unsuccessful_upload_attempt(e, file=invoice_file)
+                continue
+
+            # If the file is an acceptable size and filetype, upload to dropbox
+            if invoice_file.size <= self.MAX_ALLOWED_FILESIZE and any(
+                invoice_file.name.lower().endswith(ext)
+                for ext in self.ALLOWED_FILE_EXTENSIONS
+            ):
+                try:
+                    date_folder_name = self.set_date_folder(cost.pay_period)
+                    currency_folder_name = "_" + cost.currency
+                    file_extension = f".{invoice_file.name.split('.')[-1]}"
+                    full_filepath = f"{self.INVOICE_FOLDER}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
+                    dropbox_upload_file(invoice_file, full_filepath)
+
+                except dropbox.exceptions.ApiError as e:
+                    unsuccessful_invoices.append(
+                        {
+                            filename: {
+                                "invoice_file_data": data,
+                                "cost_id": data["cost_id"],
+                                "message": str(e),
+                            }
+                        }
+                    )
+                    self.log_unsuccessful_upload_attempt(
+                        e, cost=cost, file=invoice_file
+                    )
+                    continue
+
+            # Else, if the file is too big or the wrong type, mark as unsuccessful and log the error
+            else:
+                error_msg = f"Invoice file too big. Max allowed filesize is {self.MAX_ALLOWED_FILESIZE}"
+                if invoice_file.size > self.MAX_ALLOWED_FILESIZE:
+                    unsuccessful_invoices.append(
+                        {
+                            data.filename: {
+                                "invoice_file_data": data,
+                                "cost_id": data["cost_id"],
+                                "message": error_msg,
+                            }
+                        }
+                    )
+                    self.log_unsuccessful_upload_attempt(
+                        e, cost=cost, file=invoice_file
+                    )
+                    continue
+                else:
+                    error_msg = f"Filetype not accepted. Max allowed filesize is ${self.MAX_ALLOWED_FILESIZE}"
+                    unsuccessful_invoices.append(
+                        {
+                            data.filename: {
+                                "invoice_file_data": data,
+                                "cost_id": data["cost_id"],
+                                "message": error_msg,
+                            }
+                        }
+                    )
+                    self.log_unsuccessful_upload_attempt(
+                        e, cost=cost, file=invoice_file
+                    )
+                    continue
+
+            successful_invoices.append({"cost": cost, "filename": filename})
+            logger.info(f"Successful invoice upload: {filename}")
+        # Catch other errors
+        # except Exception as e:
+        #     error_msg = "Unknown error"
+        #     unsuccessful_invoices.append({"cost": cost, "invoice_file_data": data, "error": error_msg})
+        #     self.log_unsuccessful_upload_attempt(
+        #                 cost, invoice_file, base_msg=error_msg
+        #             )
+
+        logger.debug(unsuccessful_invoices)
+        return JsonResponse(
+            {
+                "invoices": {
+                    "successful": [
+                        invoice["filename"] for invoice in successful_invoices
+                    ],
+                    "unsuccessful": unsuccessful_invoices,
+                },
+            },
+        )
+
+    def log_unsuccessful_upload_attempt(self, msg, **kwargs):
+        cost = kwargs.get("cost", None)
+        file = kwargs.get("file", None)
+        vendor = (
+            cost.vendor if cost else "Unknown"
+        )  # TODO: Get this from the uuid in the URL instead
+        filename = file.name if file else "Unknown"
+        file_size = file.size if file else "Unknown"
+        PO_number = cost.PO_number if cost else "Unknown"
+        cost_id = cost.id if cost else "Unknown"
+
+        logger.error(
+            f"{msg} / (Details: Vendor: {vendor} / Filename: {filename} / {round(file_size / 1024 / 1024, 2) }MiB / Cost ID:{cost_id} / PO#:{PO_number})"
+        )
+
+    def set_date_folder(self, pay_period):
+        return (
+            pay_period.strftime("%Y年%-m月")
+            if pay_period
+            else (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
+        )
 
 
 def process_uploaded_vendor_invoice(request):
@@ -584,93 +739,110 @@ def process_uploaded_vendor_invoice(request):
         "Oops, there was an error uploading your invoice. Please remove the files or refresh the page and try again. If the error persists, please email us at invoice@bwcatmusic.com - you can send us your invoice directly. We're working hard to make sure these errors don't happen, sorry for the trouble!",
     )
 
-    if request.POST and "invoices" in request.POST:
-        s3 = settings.LINODE_STORAGE
+    if request.POST:
 
-        file_dict = {}
-        file_ids_and_filenames = json.loads(request.POST["invoices"])
-        for file in request.FILES.values():
-            file_dict[unquote(file.name)] = file
+        print("\n~~POST DATA: ", request.POST, "\n")
+        for file in request.FILES.getlist("file"):
+            print("~~FILE: ", file)
+        print("\nFILES: ", request.FILES.get("file[0]"))
 
-        for invoice_id, invoice_filename in file_ids_and_filenames.items():
-            try:
-                cost = Cost.objects.get(id=invoice_id)
-                invoice_file = file_dict.get(invoice_filename, None)
-                date_folder_name = (
-                    cost.pay_period.strftime("%Y年%-m月")
-                    if cost.pay_period
-                    else (timezone.now() + relativedelta(months=+1)).strftime(
-                        "%Y年%-m月"
-                    )
-                )
-                print("PAY PERIOD: ", cost.pay_period)
-                currency_folder_name = "_" + cost.currency
-                file_extension = f".{invoice_filename.split('.')[-1]}"
-                if invoice_file and invoice_file.size < 100 * 1024 * 1024:
-                    if invoice_file.size < 100 * 1024 * 1024:
-                        try:
-                            invoice_folder = (
-                                "/Financial/_ INVOICES/_VENDOR INVOICES"
-                                if not settings.DEBUG
-                                else "/Financial/TEST/_ INVOICES/_VENDOR INVOICES"
-                            )
-                            full_filepath = f"{invoice_folder}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
-                            print("FILEPATH: ", full_filepath)
-                            dropbox_upload_file(invoice_file, full_filepath)
-                            cost.invoice_status = "REC"
-                            cost.save()
-                            successful_invoices.append(cost)
+    return JsonResponse(
+        {
+            "invoices": {
+                "successful": successful_invoices,
+                "unsuccessful": unsuccessful_invoices,
+            },
+        },
+        status=200,
+    )
 
-                        except Exception as e:
-                            cost.invoice_status = "ERR"
-                            cost.save()
-                            unsuccessful_invoices.append(cost)
-                            return JsonResponse(
-                                {"error": err_500_message, "status_code": 500},
-                                status=500,
-                            )
-                    else:
-                        return JsonResponse(
-                            {
-                                "error": """File too large! Please limit files to 10MB or less.""",
-                                "status_code": 413,
-                            },
-                            status=413,
-                        )
-                else:
-                    logger.error(
-                        f"{cost.vendor} attempted to upload an invoice and it failed. Maybe it was too big? {invoice_filename} (PO#:{cost.PO_number})"
-                    )
-                    return JsonResponse(
-                        {"error": err_500_message, "status_code": 500}, status=500
-                    )
-            # Catch errors that are not filesize errors
-            except Exception as e:
-                cost.invoice_status = "ERR"
-                cost.save()
-                unsuccessful_invoices.append(cost)
-                logger.error(
-                    f"{cost.vendor} attempted to upload an invoice and it failed. {invoice_filename} (PO#:{cost.PO_number}) \n Error: {e}"
-                )
-                return JsonResponse(
-                    {"error": err_500_message, "status_code": 500}, status=500
-                )
+    # if request.POST and "invoices" in request.POST:
+    #     s3 = settings.LINODE_STORAGE
 
-        print("Uploaded: ", successful_invoices)
-        request.session["successful_invoices"] = json.dumps(
-            [cost.id for cost in successful_invoices]
-        )
-        request.session["unsuccessful_invoices"] = json.dumps(
-            [cost.id for cost in unsuccessful_invoices]
-        )
-        return HttpResponse("success")
+    #     file_dict = {}
+    #     file_ids_and_filenames = json.loads(request.POST["invoices"])
+    #     for file in request.FILES.values():
+    #         file_dict[unquote(file.name)] = file
 
-    # UPDATE THIS to return an actual error page
-    elif request.POST and "invoices" not in request.POST:
-        return HttpResponse("error")
+    #     for invoice_id, invoice_filename in file_ids_and_filenames.items():
+    #         try:
+    #             cost = Cost.objects.get(id=invoice_id)
+    #             invoice_file = file_dict.get(invoice_filename, None)
+    #             date_folder_name = (
+    #                 cost.pay_period.strftime("%Y年%-m月")
+    #                 if cost.pay_period
+    #                 else (timezone.now() + relativedelta(months=+1)).strftime(
+    #                     "%Y年%-m月"
+    #                 )
+    #             )
+    #             print("PAY PERIOD: ", cost.pay_period)
+    #             currency_folder_name = "_" + cost.currency
+    #             file_extension = f".{invoice_filename.split('.')[-1]}"
+    #             if invoice_file and invoice_file.size < 100 * 1024 * 1024:
+    #                 if invoice_file.size < 100 * 1024 * 1024:
+    #                     try:
+    #                         invoice_folder = (
+    #                             "/Financial/_ INVOICES/_VENDOR INVOICES"
+    #                             if not settings.DEBUG
+    #                             else "/Financial/TEST/_ INVOICES/_VENDOR INVOICES"
+    #                         )
+    #                         full_filepath = f"{invoice_folder}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
+    #                         print("FILEPATH: ", full_filepath)
+    #                         dropbox_upload_file(invoice_file, full_filepath)
+    #                         cost.invoice_status = "REC"
+    #                         cost.save()
+    #                         successful_invoices.append(cost)
 
-    else:
-        return HttpResponse("error")
+    #                     except Exception as e:
+    #                         cost.invoice_status = "ERR"
+    #                         cost.save()
+    #                         unsuccessful_invoices.append(cost)
+    #                         return JsonResponse(
+    #                             {"error": err_500_message, "status_code": 500},
+    #                             status=500,
+    #                         )
+    #                 else:
+    #                     return JsonResponse(
+    #                         {
+    #                             "error": """File too large! Please limit files to 10MB or less.""",
+    #                             "status_code": 413,
+    #                         },
+    #                         status=413,
+    #                     )
+    #             else:
+    #                 logger.error(
+    #                     f"{cost.vendor} attempted to upload an invoice and it failed. Maybe it was too big? {invoice_filename} (PO#:{cost.PO_number})"
+    #                 )
+    #                 return JsonResponse(
+    #                     {"error": err_500_message, "status_code": 500}, status=500
+    #                 )
+    #         # Catch errors that are not filesize errors
+    #         except Exception as e:
+    #             cost.invoice_status = "ERR"
+    #             cost.save()
+    #             unsuccessful_invoices.append(cost)
+    #             logger.error(
+    #                 f"{cost.vendor} attempted to upload an invoice and it failed. {invoice_filename} (PO#:{cost.PO_number}) \n Error: {e}"
+    #             )
+    #             return JsonResponse(
+    #                 {"error": err_500_message, "status_code": 500}, status=500
+    #             )
+
+    #     print("Uploaded: ", successful_invoices)
+    #     request.session["successful_invoices"] = json.dumps(
+    #         [cost.id for cost in successful_invoices]
+    #     )
+    #     request.session["unsuccessful_invoices"] = json.dumps(
+    #         [cost.id for cost in unsuccessful_invoices]
+    #     )
+    #     return HttpResponse("success")
+
+    # # UPDATE THIS to return an actual error page
+    # elif request.POST and "invoices" not in request.POST:
+    #     return HttpResponse("error")
+
+    # else:
+    #     return HttpResponse("error")
 
 
 def upload_invoice_confirmation_email(request):
@@ -754,8 +926,6 @@ def invoice_upload_view(request, vendor_uuid):
     )
     jobs_json = json.dumps(jobs)
     invoices_json = serializers.serialize("json", requested_invoices)
-    for invoice in requested_invoices:
-        print(f"{invoice}")
 
     context = {
         "requested_invoices": requested_invoices,
@@ -788,6 +958,7 @@ def get_vendor_requested_invoices_data(request, vendor_uuid):
             "description",
             "job",
             "job__job_name",
+            "job__job_code",
         )
     )
 

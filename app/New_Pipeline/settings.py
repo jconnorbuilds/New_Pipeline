@@ -15,6 +15,7 @@ import os
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
 import boto3
+import logging
 
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
@@ -85,15 +86,71 @@ WEBPACK_LOADER = {
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     },
 }
+
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
-# REST_FRAMEWORK = {
-#     # Use Django's standard `django.contrib.auth` permissions,
-#     # or allow read-only access for unauthenticated users.
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ]
-# }
+ADMINS = [("Joe", "joe@bwcatmusic.com")]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "standard": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+            "filters": ["require_debug_true"],
+        },
+        "console-django": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+        "file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+            "formatter": "standard",
+            "filters": [],
+        },
+        "email": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "filters": ["require_debug_false"],
+        },
+    },
+    "root": {
+        "handlers": ["console", "file", "email"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "dropbox": {"handlers": ["file"], "level": "WARNING"},
+        "pipeline": {
+            "handlers": ["console", "file", "email"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

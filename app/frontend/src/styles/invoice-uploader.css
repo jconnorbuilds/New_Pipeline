@@ -269,19 +269,39 @@ li.inv-detail {
   align-items: center;
 }
 
+.inv-file__body-wrapper {
+}
+
 .inv-file__body {
-  position: relative;
   display: flex;
-  width: 90%;
-  max-width: 90%;
   align-items: center;
   gap: 0.4rem;
   flex-direction: row;
   padding: 1rem;
   background-color: #fdfdfd;
+  grid-template-rows: calc(1fr - 3px), auto;
+  position: relative;
+  width: 90%;
+  max-width: 90%;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
   border: 1px solid #bdbdbd;
+  overflow: hidden;
+}
+
+.inv-file__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  display: flex;
+  border-radius: 10px;
+
+  .progress {
+    height: 100%;
+    background-color: rgb(0, 87, 145);
+  }
 }
 
 .inv-file__inv-icon {

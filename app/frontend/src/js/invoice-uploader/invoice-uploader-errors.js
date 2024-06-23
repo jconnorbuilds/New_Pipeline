@@ -1,7 +1,6 @@
 import { createErrorToast, dropzoneErrorMessages } from './invoice-uploader-view.js';
 import { stripTags } from '../utils.js';
 import { myDropzone } from './invoice-uploader.js';
-import { error } from 'jquery';
 
 export function getErrorMessageContent({
   responseCode,

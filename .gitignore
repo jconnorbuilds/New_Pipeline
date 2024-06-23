@@ -2,6 +2,7 @@
 .env*
 .prettierignore
 **/.vscode/
+**.log
 htmlcov
 /nginx/certs
 *.numbers

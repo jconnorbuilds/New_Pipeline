@@ -6,6 +6,7 @@ from .models import Job
 app_name = "pipeline"
 
 urlpatterns = [
+    path("logging-test/<int:loglevel>/", views.logging_test, name="log"),
     path("currency-list", views.currency_list, name="currency-list"),
     path("forex-rates", views.forex_rates, name="forex-rates"),
     path("ajax/get_job_list/", views.get_job_list, name="get-job-list"),
@@ -158,7 +159,7 @@ urlpatterns = [
     ),
     path(
         "process-uploaded-vendor-invoice/",
-        views.process_uploaded_vendor_invoice,
+        views.FileUploadView.as_view(),
         name="process-uploaded-vendor-invoice",
     ),
     path(

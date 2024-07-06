@@ -33,11 +33,6 @@ urlpatterns = [
         name="upload-thanks",
     ),
     path(
-        "invoice-uploader/send-email/",
-        views.upload_invoice_confirmation_email,
-        name="upload-confirmation-email",
-    ),
-    path(
         "invoice-uploader/ajax/get_vendor_requested_invoices_data/<vendor_uuid>/",
         views.get_vendor_requested_invoices_data,
         name="get-requted-invoices-data",

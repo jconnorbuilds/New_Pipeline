@@ -6,7 +6,6 @@ from .models import Job
 app_name = "pipeline"
 
 urlpatterns = [
-    path("logging-test/<int:loglevel>/", views.logging_test, name="log"),
     path("currency-list", views.currency_list, name="currency-list"),
     path("forex-rates", views.forex_rates, name="forex-rates"),
     path("ajax/get_job_list/", views.get_job_list, name="get-job-list"),

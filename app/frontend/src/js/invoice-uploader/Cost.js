@@ -1,7 +1,7 @@
-export class CostDisplay {
+export class Cost {
   isMatched;
   invoiceFile;
-  invoiceFileDisplay;
+  invoicePreviewElement;
   constructor(costData) {
     this.id = costData.pk;
     this.PONumber = costData.PO_number;
@@ -17,15 +17,29 @@ export class CostDisplay {
 
   matchFile(file) {
     this.invoiceFile = file;
+    this.invoiceFile.costInfoElement = this.UIElement;
+    this.invoiceFile.PONumber = this.PONumber;
     this.isMatched = true;
-    this.invoiceFileDisplay = file.previewElement;
+    this.invoicePreviewElement = file.previewElement;
     this.toggleInvoiceAttachedPill(true);
+    document.dispatchEvent(
+      new CustomEvent('fileMatchedWithCost', {
+        detail: { PONumber: file.PONumber },
+      }),
+    );
   }
 
   unmatchFile() {
+    document.dispatchEvent(
+      new CustomEvent('fileUnmatchedFromCost', {
+        detail: { PONumber: this.PONumber },
+      }),
+    );
+    this.invoiceFile.costInfoElement = undefined;
+    this.invoiceFile.PONumber = undefined;
     this.invoiceFile = undefined;
     this.isMatched = false;
-    this.invoiceFileDisplay = undefined;
+    this.invoicePreviewElement = undefined;
     this.toggleInvoiceAttachedPill(false);
   }
 

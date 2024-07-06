@@ -1,4 +1,5 @@
-import { CURRENCY_SYMBOLS } from '../utils.js';
+import { CURRENCY_SYMBOLS, truncate } from '../utils.js';
+import successIcon from '../../images/check2-circle.svg';
 
 export const dropzoneMessages = document.querySelector('.dz-messages');
 export const dropzoneErrorMessages = document.querySelector('.dz-error-messages');
@@ -7,6 +8,9 @@ export const requestedInvoicesArea = document.querySelector('.requested-invoices
 export const invoiceUploadButton = document.querySelector('#invoice-upload-btn');
 export const dzOverlay = document.querySelector('.dropzone-overlay');
 export const fileUploadButtons = document.querySelectorAll('.indicators__attach-inv');
+export const processedInvoicesContainer = document.querySelector(
+  'section.processed-invoices',
+);
 export const invoiceIcon = `<i class="fa-solid fa-file-invoice"></i>`;
 const deleteIcon = `<i class="fa-solid fa-delete-left"></i>`;
 
@@ -24,6 +28,8 @@ function _appendOption(cost, file, selectEl) {
 
   option.toggleAttribute('selected', _fileMatchesCost(file, cost));
   selectEl.append(option);
+
+  return option;
 }
 
 function _createInvoiceSelector(file, formNum, costs) {
@@ -40,8 +46,12 @@ function _createInvoiceSelector(file, formNum, costs) {
   selectEl.appendChild(emptyOption);
   selectEl.value = 0;
   costs.forEach((cost) => {
-    _appendOption(cost, file, selectEl);
-    _addInvoiceValidationClass(selectEl);
+    {
+      const option = _appendOption(cost, file, selectEl);
+      _addInvoiceValidationClass(selectEl);
+
+      if (cost.isMatched) option.style.display = 'none';
+    }
   });
 
   return selectEl;
@@ -51,42 +61,28 @@ function _addInvoiceValidationClass(selectEl) {
   selectEl.classList.toggle('is-valid', selectEl.value);
 }
 
-// export function displayNewErrorMessage(message, oneOrMoreFiles = null) {
-//   console.log(oneOrMoreFiles?.length);
-//   console.log(message);
-//   let errorMessages = [];
+function closeToast(e) {
+  e.target.closest('.toast').remove();
+}
 
-//   if (oneOrMoreFiles && Array.isArray(oneOrMoreFiles)) {
-//     oneOrMoreFiles.forEach((file) => {
-//       const errorMessage = createErrorMessage(message, file);
-//       errorMessages.push(errorMessage);
-//     });
-//   } else if (oneOrMoreFiles) {
-//     // handles a single file
-//     const errorMessage = createErrorMessage(message, oneOrMoreFiles);
-//     errorMessages.push(errorMessage);
-//   } else {
-//     const errorMessage = createErrorMessage(message);
-//     errorMessages.push(errorMessage);
-//   }
-
-//   dropzoneErrorMessages.append(...errorMessages);
-
-//   return errorMessages;
-// }
-
-export function createErrorToast({ title, message }) {
+export function createToast(type, { title, message } = {}) {
   const toast = document.createElement('div');
   const toastHeader = document.createElement('div');
   const toastBody = document.createElement('div');
 
-  toast.classList.add('toast', 'error-message', 'fade--shown');
+  const closeBtn = document.createElement('button');
+  closeBtn.classList.add('toast-close');
+  closeBtn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+
+  toast.classList.add('toast', `${type}-message`, 'fade--shown');
   toastHeader.classList.add('toast__header', 'bold');
   toastBody.classList.add('toast__body');
 
   toastHeader.textContent = title;
+  toastHeader.append(closeBtn);
   toastBody.innerHTML = message;
 
+  closeBtn.addEventListener('click', closeToast);
   toast.append(toastHeader, toastBody);
 
   return toast;
@@ -100,7 +96,8 @@ export function removeErrorMessages(dzFiles, file = null) {
     const messageToDelete = errorMessages
       .filter((msg) => msg.dataset.filename === file.cleanName)
       ?.forEach((msg) => msg.remove());
-    console.log(messageToDelete);
+    // console.log(messageToDelete);
+    messageToDelete?.remove();
   } else {
     errorMessages.forEach((msg) => {
       if (!dzFiles.some((file) => file.cleanName === msg.dataset.filename)) msg.remove();
@@ -108,7 +105,7 @@ export function removeErrorMessages(dzFiles, file = null) {
   }
 }
 
-export function createAddedFileDisplayBase(file, costs, formNum) {
+export function createAddedFilePreviewElementBase(file, costs, formNum) {
   const container = document.createElement('div');
 
   container.classList.add('inv-file');
@@ -119,21 +116,21 @@ export function createAddedFileDisplayBase(file, costs, formNum) {
           ${invoiceIcon}
         </div>
         <div class="inv-file__file-name">
-          ${file.cleanName}
+          ${truncate(file.cleanName, 40)}
         </div>
         <div class="inv-file__status status--default">
           Unattached
         </div>
         <div class="inv-file__selector"></div>
         <div class="inv-file__job-name hidden"></div>
-        <button type="button" class="inv-file__options" disabled>
+        <button type="button" class="inv-file__reselect" disabled>
           <i class="fa-solid fa-eject"></i>
         </button>
        <div class="inv-file__progress">
         <span class="progress" data-dz-uploadprogress></span>
       </div>
     </div>
-     <div class="inv-file__del">${deleteIcon}</div>
+     <button class="inv-file__del" dz-data-remove>${deleteIcon}</button>
 
   `;
 
@@ -143,68 +140,74 @@ export function createAddedFileDisplayBase(file, costs, formNum) {
   return container;
 }
 
-export function updateFileDisplayMatched(fileDisplay, jobName, locked) {
-  if (!jobName) throw Error('jobName is required when updating to a "matched" display');
-
-  updateFileStatusIndicator(fileDisplay, 'matched');
-  showHideInvoiceSelector(false, fileDisplay);
-  showHideJobName(true, fileDisplay, jobName);
-  fileDisplay
-    .querySelector('button.inv-file__options')
-    .toggleAttribute('disabled', locked);
-}
-
-function updateFileDisplayError(fileDisplay) {
-  updateFileStatusIndicator(fileDisplay, 'error');
-  showHideInvoiceSelector(false, fileDisplay);
-  showHideJobName(false, fileDisplay);
-  fileDisplay.querySelector('button.inv-file__options').toggleAttribute('disabled', true);
-}
-
-function updateFileDisplayDefault(fileDisplay) {
-  updateFileStatusIndicator(fileDisplay, 'default');
-  showHideInvoiceSelector(true, fileDisplay);
-  showHideJobName(false, fileDisplay);
-  fileDisplay.querySelector('button.inv-file__options').toggleAttribute('disabled', true);
-}
-
-function showHideJobName(show, fileDisplay, jobName = '') {
-  const jobNameDisplay = fileDisplay.querySelector('.inv-file__job-name');
-  jobNameDisplay.textContent = jobName;
+function showHideJobName(show, previewElement, jobName = '') {
+  const jobNameDisplay = previewElement.querySelector('.inv-file__job-name');
+  jobNameDisplay.textContent = truncate(jobName, 40);
   jobNameDisplay.classList.toggle('hidden', !show);
 }
 
-function showHideInvoiceSelector(show, fileDisplay) {
-  const invoiceSelector = fileDisplay.querySelector('.inv-selector');
+function showHideInvoiceSelector(show, previewElement) {
+  const invoiceSelector = previewElement.querySelector('.inv-selector');
   if (show) invoiceSelector.value = 0;
   invoiceSelector.classList.toggle('hidden', !show);
 }
 
 function updateFileStatusIndicator(element, status) {
   const statusIndicator = element.querySelector('.inv-file__status');
-  statusIndicator.classList.remove('status-default', 'status--matched', 'status--error');
-  if (status === 'error') {
-    statusIndicator.classList.add('status--error');
+  statusIndicator.classList.remove(
+    'status--default',
+    'status--matched',
+    'status--error',
+    'status--processed-success',
+    'status--processed-fail',
+  );
+  statusIndicator.classList.add(`status--${status}`);
+
+  if (status === 'error' || status === 'processed-error') {
     statusIndicator.textContent = 'Error';
   } else if (status === 'matched') {
-    statusIndicator.classList.add('status--matched');
     statusIndicator.textContent = 'OK';
-  } else {
-    statusIndicator.classList.add('status--default');
+  } else if (status === 'status-default') {
     statusIndicator.textContent = 'Unattached';
+  } else if (status === 'processed-success') {
+    statusIndicator.textContent = 'Received';
   }
 }
 
-export function updateFileDisplay(element, status, jobName = '', isLocked = false) {
-  try {
-    if (status === 'matched') {
-      updateFileDisplayMatched(element, jobName, isLocked);
-    } else if (status === 'error') {
-      updateFileDisplayError(element);
-    } else {
-      updateFileDisplayDefault(element);
-    }
-  } catch (err) {
-    console.error(err);
+export function disablePreviewElementButtons(element) {
+  const jobReselectBtn = element.querySelector('button.inv-file__reselect');
+  const deleteBtn = element.querySelector('button.inv-file__del');
+  jobReselectBtn.setAttribute('disabled', '');
+  deleteBtn.setAttribute('disabled', '');
+}
+
+export function updatePreviewElement(
+  element,
+  { status = 'default', jobName = '--placeholder--', canReselect = false } = {},
+) {
+  updateFileStatusIndicator(element, status);
+  element
+    .querySelector('button.inv-file__reselect')
+    .toggleAttribute('disabled', canReselect);
+
+  if (status === 'matched') {
+    showHideInvoiceSelector(false, element);
+    showHideJobName(true, element, jobName);
+  } else if (status === 'error') {
+    showHideInvoiceSelector(false, element);
+    showHideJobName(false, element);
+    element.querySelector('button.inv-file__reselect').toggleAttribute('disabled', true);
+  } else if (status === 'processed-success') {
+    const previewElementBody = element.querySelector('.inv-file__body');
+    const validationSuccessIcon = document.createElement('div');
+    validationSuccessIcon.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
+    validationSuccessIcon.classList.add('validation', 'success');
+    previewElementBody.append(validationSuccessIcon);
+  } else if (status === 'processed-fail') {
+    // do something else
+  } else {
+    showHideInvoiceSelector(true, element);
+    showHideJobName(false, element);
+    element.querySelector('button.inv-file__reselect').toggleAttribute('disabled', true);
   }
 }

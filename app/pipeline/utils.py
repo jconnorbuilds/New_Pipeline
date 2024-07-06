@@ -233,9 +233,6 @@ def process_imported_jobs(csv_file):
                 errors["DATA ERROR"] = (
                     f'Could not parse the client "{client_code}". Make sure this client exists and that the code is being used in the import template.'
                 )
-
-            # for item in not_created_items:
-            #   messages.info(request, item)
     return response
 
 
@@ -250,7 +247,3 @@ def update_cost_addtl_row_data(cost):
         cost.pay_period = None
 
     cost.save()
-
-
-def update_job_addtl_row_data(job):
-    pass

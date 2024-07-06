@@ -4,6 +4,7 @@
 **/.vscode/
 **.log
 htmlcov
+**emails
 /nginx/certs
 *.numbers
 node_modules

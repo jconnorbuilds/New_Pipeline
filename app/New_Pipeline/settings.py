@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
+from . import customizations
 import boto3
 import logging
 
@@ -104,7 +105,12 @@ LOGGING = {
     },
     "formatters": {
         "standard": {
-            "format": "{asctime} {levelname} {name} {message}",
+            "format": "{asctime} {levelname} {name} {lineno} {message}",
+            "style": "{",
+        },
+        "colored": {
+            "()": "colorlog.ColoredFormatter",
+            "format": "{log_color}{levelname} {name} {lineno} {bold_white}{message}",
             "style": "{",
         },
     },
@@ -112,7 +118,7 @@ LOGGING = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "standard",
+            "formatter": "colored",
             "filters": ["require_debug_true"],
         },
         "console-django": {
@@ -121,7 +127,7 @@ LOGGING = {
             "formatter": "standard",
         },
         "file": {
-            "level": "WARNING",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "filename": "general.log",
             "formatter": "standard",
@@ -133,14 +139,10 @@ LOGGING = {
             "filters": ["require_debug_false"],
         },
     },
-    "root": {
-        "handlers": ["console", "file", "email"],
-        "level": "INFO",
-    },
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "level": "WARNING",
             "propagate": False,
         },
         "dropbox": {"handlers": ["file"], "level": "WARNING"},
@@ -149,6 +151,10 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
+    },
+    "root": {
+        "handlers": ["console", "file", "email"],
+        "level": "INFO",
     },
 }
 
@@ -236,7 +242,15 @@ EMAIL_HOST_USER = "invoice@bwcatmusic.com"
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_BACKEND = (
+#     "django.core.mail.backends.smtp.EmailBackend"
+#     if not DEBUG
+#     else "django.core.mail.backends.filebased.EmailBackend"
+# )
+EMAIL_BACKEND = "New_Pipeline.customizations.CustomEmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "emails"
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

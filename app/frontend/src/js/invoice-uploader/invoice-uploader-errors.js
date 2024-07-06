@@ -1,4 +1,8 @@
-import { createErrorToast, dropzoneErrorMessages } from './invoice-uploader-view.js';
+import {
+  createToast,
+  dropzoneErrorMessages,
+  dropzoneMessages,
+} from './invoice-uploader-view.js';
 import { stripTags } from '../utils.js';
 import { myDropzone } from './invoice-uploader.js';
 
@@ -6,12 +10,17 @@ export function getErrorMessageContent({
   responseCode,
   file = null,
   jobName = null,
+  message = null,
 } = {}) {
   const ERR_MESSAGES = {
     9999: { title: `Error`, message: `This is a default error message.` },
     9998: {
       title: `${jobName ? `${jobName}` : 'Error'}`,
       message: `This is an error with more details. ${file?.cleanName || ''}`,
+    },
+    5000: {
+      title: `Unknown error: ${jobName}`,
+      message: `${message}`,
     },
     1001: {
       title: `Couldn't add file${file ? `: ${file.cleanName}` : ''}`,
@@ -45,45 +54,39 @@ export function getErrorMessageContent({
       title: `Wrong file type`,
       message: `Files must be in .pdf or .jpg format.`,
     },
+    3003: {
+      title: `Upload cancelled`,
+      message: `${file.cleanName}`,
+    },
   };
 
   return (
     ERR_MESSAGES[responseCode] || {
-      title: 'Unknown error',
-      message: `${jobName} / ${file?.cleanName}`,
+      title: `Unhandled error: ${jobName}`,
+      message: `The following error was encountered. Please try again or contact us for help: ${message}`,
     }
   );
 }
 
-export function handleError(
+export function displayErrorMessage(
   file = null,
-  {
-    responseCode = null,
-    autoDeleteErrorMsg = null,
-    deleteFile = null,
-    jobName = null,
-  } = {},
+  { responseCode = null, autoDeleteErrorMsg = null, jobName = null } = {},
 ) {
   const msg = getErrorMessageContent({ responseCode, file: file, jobName });
-  console.warn(stripTags(msg.message));
-
-  const errorToast = createErrorToast(msg);
-  if (file && deleteFile) {
-    myDropzone.removeFile(file);
-  } else if (file) {
-    errorToast.dataset.filename = file.cleanName;
-  }
-
-  dropzoneErrorMessages.append(errorToast);
+  const errorToast = createToast('error', msg);
+  errorToast.dataset.filename = file?.cleanName;
+  dropzoneMessages.append(errorToast);
   if (autoDeleteErrorMsg) fadeOut(errorToast);
+
+  console.warn(stripTags(msg.message));
 }
 
-function fadeOut(element) {
-  // Currently uses 7s transition delay on the toast element. Maybe there's a better way?
+export function fadeOut(element) {
+  // Currently uses 9s transition delay on the toast element. Maybe there's a better way?
   setTimeout(() => {
     element.classList.add('fade--transitioning');
     element.classList.remove('fade--shown');
   }, 10);
 
-  setTimeout(() => element.remove(), 7500);
+  setTimeout(() => element.remove(), 9500);
 }

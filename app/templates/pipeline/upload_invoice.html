@@ -103,25 +103,28 @@
                 </div>
                 {% if requested_invoices %}
                     <div class="section" id="step-1-area">
-                        <p class="upload-step">Step 1: Drag and drop your invoice(s)</p>
-                        {% comment %} <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}" method="post" id="invoice-upload-form" enctype="multipart/form-data">
+                        <div class="loading-spinner hidden">
+                            Uploading
+                            <span class="seg-1"></span>
+                            <span class="seg-2"></span>
+                            <span class="seg-3"></span>
+                        </div>
+                        <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}"
+                              method="post"
+                              id="invoice-upload-form"
+                              enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class="fallback">
                                 <input name="file" type="file" multiple />
                             </div>
-                        </form> {% endcomment %}
+                        </form>
                         <div class="inv-file-displays-wrapper">
                             <div id="invoice-select-area" class="inv-file-displays"></div>
                         </div>
                         <button type="submit" name="submit" id="invoice-upload-btn" class="disabled">Submit!</button>
                     </div>
-                    <div class="section hidden" id="step-2-area">
-                        <p class="upload-step">Step 2: Select the job(s) that you're invoicing</p>
-                        <p>
-                            <em>Hint: If the PO number is in the name of your invoice file, the correct job should automatically link up!</em>
-                        </p>
-                        <p id="invoice-hint">Files will appear here once you've added them.</p>
-                    </div>
+                    <section class="section processed-invoices">
+                    </section>
                 {% endif %}
             </div>
         </div>

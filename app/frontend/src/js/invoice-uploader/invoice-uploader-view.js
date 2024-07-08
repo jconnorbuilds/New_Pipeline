@@ -1,16 +1,15 @@
 import { CURRENCY_SYMBOLS, truncate } from '../utils.js';
 import successIcon from '../../images/check2-circle.svg';
+import { formsAndFilesAreValid } from './invoice-uploader.js';
 
 export const dropzoneMessages = document.querySelector('.dz-messages');
+export const submitButton = document.querySelector('#invoice-upload-btn');
 export const dropzoneErrorMessages = document.querySelector('.dz-error-messages');
 export const invoiceSelectArea = document.querySelector('#invoice-select-area');
 export const requestedInvoicesArea = document.querySelector('.requested-invoices');
 export const invoiceUploadButton = document.querySelector('#invoice-upload-btn');
 export const dzOverlay = document.querySelector('.dropzone-overlay');
 export const fileUploadButtons = document.querySelectorAll('.indicators__attach-inv');
-export const processedInvoicesContainer = document.querySelector(
-  'section.processed-invoices',
-);
 export const invoiceIcon = `<i class="fa-solid fa-file-invoice"></i>`;
 const deleteIcon = `<i class="fa-solid fa-delete-left"></i>`;
 
@@ -105,6 +104,10 @@ export function removeErrorMessages(dzFiles, file = null) {
   }
 }
 
+export function enableSubmitButtonIfSubmittable() {
+  submitButton.toggleAttribute('disabled', !formsAndFilesAreValid());
+}
+
 export function createAddedFilePreviewElementBase(file, costs, formNum) {
   const container = document.createElement('div');
 
@@ -115,14 +118,18 @@ export function createAddedFilePreviewElementBase(file, costs, formNum) {
         <div class="inv-file__inv-icon">
           ${invoiceIcon}
         </div>
-        <div class="inv-file__file-name">
-          ${truncate(file.cleanName, 40)}
+        <div class="inv-file__file-name-wrapper">
+          <div class="inv-file__item-label">Filename</div>
+          <div class="inv-file__file-name ellipsify">${file.cleanName}</div>
+        </div>
+        <div class="inv-file__selector"></div>
+        <div class="inv-file__job-name-wrapper">
+          <div class="inv-file__item-label">Job name</div>
+          <div class="inv-file__job-name ellipsify"></div>
         </div>
         <div class="inv-file__status status--default">
           Unattached
         </div>
-        <div class="inv-file__selector"></div>
-        <div class="inv-file__job-name hidden"></div>
         <button type="button" class="inv-file__reselect" disabled>
           <i class="fa-solid fa-eject"></i>
         </button>
@@ -130,7 +137,8 @@ export function createAddedFilePreviewElementBase(file, costs, formNum) {
         <span class="progress" data-dz-uploadprogress></span>
       </div>
     </div>
-     <button class="inv-file__del" dz-data-remove>${deleteIcon}</button>
+    <button class="inv-file__del" data-dz-remove>${deleteIcon}</button>
+     
 
   `;
 
@@ -141,15 +149,22 @@ export function createAddedFilePreviewElementBase(file, costs, formNum) {
 }
 
 function showHideJobName(show, previewElement, jobName = '') {
+  const jobNameWrapper = previewElement.querySelector('.inv-file__job-name-wrapper');
   const jobNameDisplay = previewElement.querySelector('.inv-file__job-name');
-  jobNameDisplay.textContent = truncate(jobName, 40);
-  jobNameDisplay.classList.toggle('hidden', !show);
+  jobNameDisplay.textContent = jobName;
+  jobNameWrapper.classList.toggle('hidden', !show);
 }
 
 function showHideInvoiceSelector(show, previewElement) {
-  const invoiceSelector = previewElement.querySelector('.inv-selector');
-  if (show) invoiceSelector.value = 0;
-  invoiceSelector.classList.toggle('hidden', !show);
+  const invoiceSelectWrapper = previewElement.querySelector('.inv-file__selector');
+  const selectEl = invoiceSelectWrapper.querySelector('select');
+  if (show) selectEl.value = 0;
+  invoiceSelectWrapper.classList.toggle('hidden', !show);
+}
+
+function showHideReselectButton(show, previewElement) {
+  const reselectButton = previewElement.querySelector('.inv-file__reselect');
+  reselectButton.classList.toggle('hidden', !show);
 }
 
 function updateFileStatusIndicator(element, status) {
@@ -166,8 +181,8 @@ function updateFileStatusIndicator(element, status) {
   if (status === 'error' || status === 'processed-error') {
     statusIndicator.textContent = 'Error';
   } else if (status === 'matched') {
-    statusIndicator.textContent = 'OK';
-  } else if (status === 'status-default') {
+    statusIndicator.textContent = 'Ready';
+  } else if (status === 'default') {
     statusIndicator.textContent = 'Unattached';
   } else if (status === 'processed-success') {
     statusIndicator.textContent = 'Received';
@@ -200,9 +215,13 @@ export function updatePreviewElement(
   } else if (status === 'processed-success') {
     const previewElementBody = element.querySelector('.inv-file__body');
     const validationSuccessIcon = document.createElement('div');
+    const filenameWrapper = element.querySelector('.inv-file__file-name-wrapper');
     validationSuccessIcon.innerHTML = `<i class="fa-regular fa-circle-check"></i>`;
     validationSuccessIcon.classList.add('validation', 'success');
     previewElementBody.append(validationSuccessIcon);
+    showHideJobName(false, element);
+    showHideReselectButton(false, element);
+    filenameWrapper.style.gridColumn = '2/4';
   } else if (status === 'processed-fail') {
     // do something else
   } else {

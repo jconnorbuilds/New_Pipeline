@@ -1,12 +1,11 @@
-import { CURRENCY_SYMBOLS, truncate } from '../utils.js';
-import successIcon from '../../images/check2-circle.svg';
+import { CURRENCY_SYMBOLS } from '../utils.js';
 import { formsAndFilesAreValid } from './invoice-uploader.js';
 
 export const dropzoneMessages = document.querySelector('.dz-messages');
 export const submitButton = document.querySelector('#invoice-upload-btn');
 export const dropzoneErrorMessages = document.querySelector('.dz-error-messages');
 export const invoiceSelectArea = document.querySelector('#invoice-select-area');
-export const requestedInvoicesArea = document.querySelector('.requested-invoices');
+export const requestedInvoicesContainer = document.querySelector('.requested-invoices');
 export const invoiceUploadButton = document.querySelector('#invoice-upload-btn');
 export const dzOverlay = document.querySelector('.dropzone-overlay');
 export const fileUploadButtons = document.querySelectorAll('.indicators__attach-inv');
@@ -87,7 +86,7 @@ export function createToast(type, { title, message } = {}) {
   return toast;
 }
 
-// If no file is specified, hanging error messages (ones with no associated file in the dropzone)
+// If file is specified, hanging error messages (ones with no associated file in the dropzone)
 // will be deleted.
 export function removeErrorMessages(dzFiles, file = null) {
   const errorMessages = [...document.querySelectorAll('.error-message')];
@@ -106,6 +105,28 @@ export function removeErrorMessages(dzFiles, file = null) {
 
 export function enableSubmitButtonIfSubmittable() {
   submitButton.toggleAttribute('disabled', !formsAndFilesAreValid());
+}
+
+function createTooltip(content) {
+  const tooltip = document.createElement('div');
+  tooltip.classList.add('tooltip');
+  tooltip.textContent = content;
+  return tooltip;
+}
+
+function removeTooltip(target) {
+  target.querySelector('.tooltip')?.remove();
+}
+
+export function toggleTooltip(e) {
+  if (e.target.matches('.ellipsify') && e.target.offsetWidth < e.target.scrollWidth) {
+    if (e.type === 'mouseenter') {
+      const tt = createTooltip(e.target.textContent);
+      e.target.append(tt);
+    } else if (e.type === 'mouseleave') {
+      removeTooltip(e.target);
+    }
+  }
 }
 
 export function createAddedFilePreviewElementBase(file, costs, formNum) {
@@ -138,12 +159,31 @@ export function createAddedFilePreviewElementBase(file, costs, formNum) {
       </div>
     </div>
     <button class="inv-file__del" data-dz-remove>${deleteIcon}</button>
-     
-
   `;
 
   const selectorContainer = container.querySelector('.inv-file__selector');
   selectorContainer.appendChild(_createInvoiceSelector(file, formNum, costs));
+
+  // container.querySelector('.inv-file__body').addEventListener(
+  //   'mouseenter',
+  //   (e) => {
+  //     if (e.target.scrollWidth > e.target.clientWidth) {
+  //       const tooltip = createTooltip(e.target.textContent);
+  //       e.target.appendChild(tooltip);
+  //     }
+  //   },
+  //   true,
+  // );
+
+  // container.querySelector('.inv-file__body').addEventListener(
+  //   'mouseleave',
+  //   (e) => {
+  //     if (e.target.scrollWidth > e.target.clientWidth) {
+  //       removeTooltip(e.target);
+  //     }
+  //   },
+  //   true,
+  // );
 
   return container;
 }

@@ -36,18 +36,17 @@
                 <div class="dz-error-messages"></div>
             </div>
         </div>
-        <section class="header container">
-            <div class="bcwc-logo">
-                <img src="{% static 'images/bwcat_logo_720x720.png' %}"
-                     alt="BCWC logo"
-                     width="155px">
-            </div>
-            <h1 class="title">Invoice Uploader</h1>
-        </section>
-        <div class="main-content container">
-            {% if requested_invoices %}
-                <section class="requested-invoices">
-                    <h3>Please find the invoice(s) we're requesting below.</h3>
+        <div class="nav">
+            <img src="{% static 'images/bwcat_logo_720x720.png' %}"
+                 alt="BCWC logo"
+                 width="75px">
+            <h3>BCWC Invoice Uploader</h3>
+        </div>
+        <div class="container main-content">
+            <section class="requested-invoices">
+                <h1>Invoiceable jobs</h1>
+                <h3>Please find the invoice(s) we're requesting below.</h3>
+                {% if requested_invoices %}
                     <ol class="invoice-list">
                         {% for invoice in requested_invoices %}
                             <li class="invoice" data-po-num="{{ invoice.PO_number }}">
@@ -59,7 +58,9 @@
                                 </div>
                                 <div class="invoice__inv-info-header">
                                     <div class="inv-info-header__job-name">
-                                        <p class="job-name ellipsify">{{ invoice.job.job_name }}</p>
+                                        <div class="rel-pos-wrapper">
+                                            <p class="job-name ellipsify">{{ invoice.job.job_name }}</p>
+                                        </div>
                                         <div class="subtitle text-sm-ital">
                                             Job code: <span class="val">{{ invoice.job.job_code }}</span>
                                         </div>
@@ -68,7 +69,9 @@
                                 {% if invoice.job.is_extension_of %}
                                     <div class="invoice__extension-info">
                                         <p>Usage extension:</p>
-                                        <div class="ext-job-name ellipsify">{{ invoice.job.is_extension_of.job_name }}</div>
+                                        <div class="rel-pos-wrapper">
+                                            <div class="ext-job-name ellipsify">{{ invoice.job.is_extension_of.job_name }}</div>
+                                        </div>
                                         <div class="ext-job-code lh-narrow">Job code: {{ invoice.job.is_extension_of.job_code }}</div>
                                     </div>
                                 {% endif %}
@@ -91,8 +94,19 @@
                             </li>
                         {% endfor %}
                     </ol>
-                </section>
-                <section class="container invoice-upload-area">
+                    <div class="empty-message">
+                        <i class="fa-solid fa-circle-info"></i>You've submitted all requested invoices, and should receive a confirmation email shortly. Thank you!
+                    </div>
+                {% else %}
+                    <div class="empty-div"></div>
+                    <div class="empty-message">
+                        <i class="fa-solid fa-circle-info"></i> We aren't expecting any invoices from you right now. If you have any questions, please email us directly.
+                    </div>
+                {% endif %}
+            </section>
+            <section class="invoice-upload-area">
+                <h1>Your invoices</h1>
+                <div class="inv-file-displays-wrapper">
                     <form action="{% url 'pipeline:process-uploaded-vendor-invoice' %}"
                           method="post"
                           id="invoice-upload-form"
@@ -102,30 +116,23 @@
                             <input name="file" type="file" multiple />
                         </div>
                     </form>
-                    <h3>Your invoices</h3>
-                    <div class="loading-spinner hidden">
-                        <p class="spinner-text">are uploading</p>
-                        <span class="seg-1"></span>
-                        <span class="seg-2"></span>
-                        <span class="seg-3"></span>
+                    <div id="invoice-select-area" class="inv-file-displays"></div>
+                    <div class="empty-message">
+                        <i class="fa-solid fa-circle-info"></i> Drag and drop invoices to the screen and they will appear here.
                     </div>
-                    <div class="inv-file-displays-wrapper">
-                        <div class="empty-message">
-                            <i class="fa-solid fa-circle-info"></i> Drag and drop invoices to the screen and they will appear here.
-                        </div>
-                        <div id="invoice-select-area" class="inv-file-displays"></div>
-                        <div class="sticky-bound">
-                            <button type="submit" name="submit" id="invoice-upload-btn" disabled>Submit!</button>
-                        </div>
+                    <div class="sticky-bound">
+                        <button type="submit" name="submit" id="invoice-upload-btn" disabled>
+                            <span class="btn-text">Submit!</span>
+                            <div class="loading-spinner hidden">
+                                <p class="spinner-text">Uploading</p>
+                                <span class="seg-1"></span>
+                                <span class="seg-2"></span>
+                                <span class="seg-3"></span>
+                            </div>
+                        </button>
                     </div>
-                </section>
-            {% else %}
-                <section>
-                    <p class="text-center">
-                        It looks like we aren't expecting any invoices from you. If that doesn't seem right, please reach out to us directly! You can respond directly to the email you received from <strong>invoice@bwcatmusic.com</strong>.
-                    </p>
-                </section>
-            {% endif %}
+                </div>
+            </section>
         </div>
     </body>
 {% endblock body_block %}

@@ -13,6 +13,7 @@ body {
   background-color: #eee;
   position: relative;
   color: var(--main-text-color);
+  height: 100vh;
 }
 
 p,
@@ -32,14 +33,19 @@ button:disabled {
   cursor: default;
 }
 
+.rel-pos-wrapper {
+  position: relative;
+}
+
+section {
+  padding: 1.5rem;
+}
+
 .container {
   max-width: 1680px;
   width: 90%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  /* border: 1px solid blue; */
 }
 
 .text-center {
@@ -167,9 +173,25 @@ button[type='submit']:disabled {
   opacity: 1;
 }
 
+.nav {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  height: max-content;
+  margin-bottom: 2rem;
+  grid-template-columns: auto 1fr;
+  background-color: #292929;
+  padding: 0.1rem;
+  color: white;
+
+  h3 {
+    font-size: 1.2rem;
+  }
+}
+
 .main-content {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: minmax(auto, 5fr) 4fr;
 }
 
 ol.invoice-list {
@@ -191,9 +213,54 @@ ol.invoice-list {
     border: 1px solid #292929;
     border-left: 3px solid #292929;
     border-radius: 7px;
-    box-shadow: rgba(0, 0, 0, 0.2) -5px 0px 6px;
+    box-shadow: rgba(0, 0, 0, 0.2) -2px -3px 2px;
   }
 }
+
+ol.invoice-list:empty {
+  display: none;
+}
+
+:has(> .tooltip) > .tooltip {
+  /* display: none; */
+  position: absolute;
+  font-size: 0.8rem;
+  top: -100%;
+  font-weight: 400;
+  background-color: rgb(11, 73, 115);
+  padding: 0.2rem 0.5rem;
+  border-radius: 5px;
+  color: #fff;
+  z-index: 2;
+  cursor: default;
+  box-shadow: -2px -3px 8px #29292933;
+}
+
+:has(> .tooltip):hover > .tooltip {
+  display: block;
+}
+
+/* :has(> .tooltip) {
+  position: relative;
+} */
+
+/* [data-title] {
+  position: relative;
+  cursor: help;
+} */
+/* 
+[data-title]:hover::before {
+  content: attr(data-title);
+  position: absolute;
+  font-size: 0.8rem;
+  top: -85%;
+  font-weight: 300;
+  background-color: rgb(11, 73, 115);
+  padding: 0.2rem;
+  border-radius: 5px;
+  color: #fff;
+  z-index: 2;
+} */
 
 .invoice__inv-info-header {
   display: flex;
@@ -218,7 +285,8 @@ ol.invoice-list {
   display: block;
 }
 
-.invoice__extension-info {
+.invoice__extension-info,
+.empty-message {
   background-color: rgba(19, 121, 189, 0.2);
   padding: 0.75rem;
   margin-bottom: 0.75rem;
@@ -282,48 +350,10 @@ li.inv-detail {
   font-size: 1.2rem;
 }
 
-.input-group {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: max-content;
-  border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 6px;
-
-  & > * {
-    height: 2rem;
-    padding-top: 0.2rem;
-    padding-bottom: 0.2rem;
-  }
-}
-
-.input-group label.ig-text {
-  border-radius: 5px 0 0 5px;
-  background-color: #292929;
-  color: #eee;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  border: 1px solid #bdbdbd;
-}
-
 .input-group select.ig-select {
   border-radius: 0 5px 5px 0;
   border: 1px solid #bdbdbd;
   border-left: none;
-}
-
-.invoice-upload-area:has(.inv-file-displays:empty) button[type='submit'],
-.inv-file-displays-wrapper:has(.inv-file-displays:empty) .empty-message {
-  display: block;
-}
-
-.invoice-upload-area p.spinner-text {
-  display: inline;
-  font-size: 1.5rem;
-}
-
-.invoice-upload-area h3 {
-  display: inline;
 }
 
 .empty-message {
@@ -334,6 +364,19 @@ li.inv-detail {
   i {
     color: var(--main-blue);
   }
+}
+
+.content {
+  padding: 1rem;
+}
+
+.invoice-upload-area:has(.inv-file-displays:empty) button[type='submit'],
+:has(> :empty + .empty-message) > .empty-message {
+  display: block;
+}
+
+.invoice-upload-area h1 {
+  display: inline;
 }
 
 .sticky-bound {
@@ -355,7 +398,8 @@ li.inv-detail {
   margin-top: 1.4rem;
   background-color: #fdfdfd;
   border: 1px solid #292929;
-  border-left: 9px solid #292929;
+  border-left: 4px solid #292929;
+  box-shadow: rgba(0, 0, 0, 0.2) -2px -3px 2px;
 }
 
 .inv-file-displays {
@@ -365,15 +409,15 @@ li.inv-detail {
   /* height: 100%; */
 }
 
-h3:has(+ .inv-file-displays:empty) {
+/* h3:has(+ .inv-file-displays:empty) {
   display: none;
-}
+} */
 
 .inv-file {
   display: flex;
   position: relative;
   width: 100%;
-  max-width: 1000px;
+  /* max-width: 1000px; */
   align-items: center;
 }
 
@@ -391,9 +435,8 @@ h3:has(+ .inv-file-displays:empty) {
   min-width: 300px;
   border-radius: 7px;
   border: 1px solid #292929;
-  border-left: 9px solid #292929;
-  box-shadow: rgba(0, 0, 0, 0.2) -5px 0px 6px;
-  overflow: hidden;
+  border-left: 4px solid #292929;
+  box-shadow: rgba(0, 0, 0, 0.1) -2px -3px 3px;
 }
 
 .dz-complete:has(.inv-file__body) .inv-file__body * {
@@ -633,7 +676,7 @@ select.inv-selector {
   color: #666;
   font-size: 1.3rem;
   background-color: inherit;
-  padding: 2rem;
+  padding: 1rem 2rem;
   opacity: 0;
   transition: opacity 100ms ease-in, transform 100ms ease-in-out;
 }
@@ -681,7 +724,7 @@ select.inv-selector {
   border-radius: 6px;
   transition: opacity 300ms ease-in 9s;
   /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
-  box-shadow: rgba(0, 0, 0, 0.2) -5px 0px 6px;
+  box-shadow: rgba(0, 0, 0, 0.2) -5px -5px 3px;
 }
 
 .toast > div {
@@ -723,7 +766,7 @@ button.toast-close:hover {
 }
 
 .error-message .toast__body {
-  background-color: rgba(205, 156, 156, 0.697);
+  background-color: rgba(205, 156, 156, 0.8);
 }
 
 .success-message .toast__header {
@@ -731,7 +774,7 @@ button.toast-close:hover {
 }
 
 .success-message .toast__body {
-  background-color: rgba(156, 205, 181, 0.697);
+  background-color: rgba(156, 205, 181, 0.8);
 }
 
 .dz-error-messages:empty {
@@ -746,22 +789,23 @@ button.toast-close:hover {
   --animation-time: 2000ms;
   --spinner-color: #333;
   font-weight: 700;
-  color: var(--spinner-color);
-  display: inline-block;
+  color: inherit;
+  display: inline;
+  font-size: inherit;
 
   p {
     display: inline;
   }
 
   & > span {
-    font-size: 1.5rem;
+    /* font-size: 1.5rem; */
     display: inline-block;
     animation: loading-bounce var(--animation-time) infinite
       cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    height: 4px;
-    width: 4px;
-    border-radius: 50%;
-    background-color: var(--spinner-color);
+    height: 0.3em;
+    width: 0.3em;
+    border-radius: 5px;
+    background-color: currentColor;
   }
 
   .seg-2 {
@@ -782,7 +826,7 @@ button.toast-close:hover {
     transform: translateY(0%);
   }
   20% {
-    transform: translateY(-100%);
+    transform: translateY(-85%);
   }
   40% {
     transform: translateY(0%);

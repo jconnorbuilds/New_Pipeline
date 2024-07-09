@@ -272,7 +272,6 @@ class AddJobView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job_form = JobForm(request.POST)
         if job_form.is_valid():
-            print(job_form.cleaned_data)
             if not job_form.instance.granular_revenue:
                 job_form.instance.revenue = job_form.instance.revenue * 10000
             instance = job_form.save()
@@ -285,7 +284,6 @@ class AddJobView(PipelineViewBase):
 
 class SetInvoiceInfoView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
-        print(request.POST)
         job_id = kwargs["pk"]
         job = Job.objects.get(id=job_id)
         form = SetInvoiceInfoForm(request.POST, instance=job)
@@ -315,7 +313,6 @@ class PipelineJobUpdateView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job = Job.objects.get(id=kwargs["pk"])
         form = PipelineJobUpdateForm(request.POST, instance=job)
-        print(request.POST)
         if form.is_valid():
             form.save()
             return JsonResponse({"status": "success", "data": get_job_data(job)})
@@ -434,10 +431,7 @@ class VendorDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["costs"] = Cost.objects.filter(vendor__id=self.kwargs["pk"])
-        print(self.kwargs["pk"])
         currentJobs = Job.objects.filter(vendors__id=self.kwargs["pk"])
-        for job in currentJobs:
-            print(job)
         context["jobs"] = Job.objects.filter(vendors__id=self.kwargs["pk"])
 
         return context
@@ -558,7 +552,7 @@ def dropbox_upload_file(dbx, file_to_upload, dropbox_file_path):
         path=dropbox_file_path,
         mode=dropbox.files.WriteMode("overwrite"),
     )
-    print(meta)
+
     return meta
 
 
@@ -585,9 +579,7 @@ class FileUploadView(View):
         )
 
         if successful_invoices:
-            self.update_database(
-                successful_invoices, unsuccessful_invoices, write=False
-            )
+            self.update_database(successful_invoices, unsuccessful_invoices, write=True)
             self.send_confirmation_email(successful_invoices)
 
         return JsonResponse(
@@ -636,9 +628,10 @@ class FileUploadView(View):
 
     def update_database(self, successful_inv, unsuccessful_inv, write=True):
         for invoice in successful_inv:
-            invoice["cost_obj"].invoice_status = "REC"
+            cost_obj = invoice["cost_obj"]
+            cost_obj.invoice_status = "REC"
             if write:
-                invoice.cost.save()
+                cost_obj.save()
 
     def check_file_validity(self, filename, form_data, files):
         invoice_file = files.get(filename)
@@ -954,7 +947,6 @@ def email_test_view(request, cost_id):
 def jobs_csv_export(request):
     csv_export_form = PipelineCSVExportForm(request.POST)
     if csv_export_form.is_valid():
-        print("hello dude")
         useRange = csv_export_form.cleaned_data["useRange"]
         fromYear = csv_export_form.cleaned_data["fromYear"]
         fromMonth = csv_export_form.cleaned_data["fromMonth"]
@@ -995,7 +987,6 @@ def jobs_csv_export(request):
         writer.writerow(fields)
 
         scope = Job.objects.filter(job_date__gte=fromDate, job_date__lt=thruDate)
-        print(scope)
 
         expectedGrossRevenue = sum([job.revenue for job in scope])
         actualGrossRevenue = sum(
@@ -1044,7 +1035,6 @@ def create_batch_payment_file(request):
         invoices = Cost.objects.filter(invoice_status__in=["REC", "REC2"])
         # format: invoice PO number {status (success/error), message}
         processing_status = {}
-        print(invoices)
         response = HttpResponse(
             content_type="text/csv",
             headers={
@@ -1059,7 +1049,6 @@ def create_batch_payment_file(request):
             parts = [base_amount] * num_of_parts
             for i in range(remainder):
                 parts[i] += 1
-            print(f"new parts: {parts}")
             return parts
 
         csvfile = "static/pipeline/Recipients-Batch-File test.csv"
@@ -1108,7 +1097,6 @@ def create_batch_payment_file(request):
                         approx_amount_in_JPY = (
                             invoice.amount * forex_rates[row[target_currency_idx]]
                         )
-                        print(f"approx_amount_in_JPY: {approx_amount_in_JPY}")
 
                         if approx_amount_in_JPY > upper_limit_for_JPY:
                             print("over the limit")

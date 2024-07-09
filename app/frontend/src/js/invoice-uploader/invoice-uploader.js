@@ -7,7 +7,7 @@ import './invoice-uploader-view.js';
 import {
   dropzoneMessages,
   invoiceSelectArea,
-  requestedInvoicesArea,
+  requestedInvoicesContainer,
   invoiceUploadButton,
   dzOverlay,
   fileUploadButtons,
@@ -16,8 +16,9 @@ import {
   removeErrorMessages,
   createToast,
   disablePreviewElementButtons,
-  processedInvoicesContainer,
   enableSubmitButtonIfSubmittable,
+  toggleTooltip,
+  submitButton,
 } from './invoice-uploader-view.js';
 import { displayErrorMessage, fadeOut } from './invoice-uploader-errors.js';
 import { CSRFTOKEN } from '../utils.js';
@@ -26,6 +27,10 @@ const vendorUUID = window.location.href.split('/').pop();
 const requestedInvoiceData = await getRequestedInvoiceData();
 let allCosts = requestedInvoiceData.requested_invoices.map((cost) => new Cost(cost));
 let costListeningForFile;
+
+const CLICKABLE_ELEMENTS = document.querySelectorAll('.indicators__attach-inv')?.length
+  ? '.indicators__attach-inv'
+  : false;
 
 export const myDropzone = new Dropzone(document.body, {
   url: '/pipeline/process-uploaded-vendor-invoice/',
@@ -36,7 +41,7 @@ export const myDropzone = new Dropzone(document.body, {
   maxFiles: 50,
   maxFilesize: 10, // 10MiB
   disablePreviews: true,
-  clickable: '.indicators__attach-inv',
+  clickable: CLICKABLE_ELEMENTS,
   acceptedFiles: '.pdf, .jpg, .jpeg',
   renameFile: sanitizeFileName,
   dictFileTooBig: 'filesizeError',
@@ -285,8 +290,18 @@ function removeCostsByFilename(filenames) {
   return allCosts.filter((cost) => !invoiceFilenameInListOfFilenames(filenames, cost));
 }
 
+function toggleButtonDefaultText(shouldShow) {
+  const buttonText = submitButton.querySelector('.btn-text');
+  buttonText.classList.toggle('hidden', !shouldShow);
+}
+
 function toggleSpinner(shouldShow) {
   document.querySelector('.loading-spinner').classList.toggle('hidden', !shouldShow);
+}
+
+function updateSubmitButtonDisplay(showSpinner) {
+  toggleSpinner(showSpinner);
+  toggleButtonDefaultText(!showSpinner);
 }
 
 // Hides already-used options from the cost select list
@@ -316,7 +331,7 @@ myDropzone.on('sendingmultiple', function (files, xhr, formData) {
   });
   formData.append('invoice_data', JSON.stringify(invoices));
 
-  toggleSpinner(true);
+  updateSubmitButtonDisplay(true);
 });
 
 function getUploadResponseToasts(response) {
@@ -354,11 +369,11 @@ function getUploadResponseToasts(response) {
   return toasts;
 }
 
-function showNoMoreRequestedInvoicesDisplay() {}
+function trimWhitespace(element) {
+  element.textContent = element.textContent.trim();
+}
 
 myDropzone.on('successmultiple', function (files, response, e) {
-  console.log('from successmultiple', allCosts);
-  console.log('DZ SUCCESSMULTIPLE: ', files, response, e);
   /**
    * Currently handling all invoice uploads in one request.
    * To avoid one bad file causing an error across the entire request, all uploads are treated as
@@ -397,13 +412,13 @@ myDropzone.on('successmultiple', function (files, response, e) {
   const toasts = getUploadResponseToasts(response);
   dropzoneMessages.append(...toasts);
   enableSubmitButtonIfSubmittable();
-  toggleSpinner(false);
+  updateSubmitButtonDisplay(false);
 
-  if (!allCosts.length) showNoMoreRequestedInvoicesDisplay();
+  if (!allCosts.length) trimWhitespace(document.querySelector('ol.invoice-list'));
 });
 
 myDropzone.on('error', function (file, message) {
-  console.log('ERROR: ', message);
+  console.warn('ERROR: ', message);
   const response = {
     responseCode: 9997,
     autoDeleteErrorMsg: true,
@@ -489,7 +504,7 @@ invoiceSelectArea.addEventListener('click', (e) => {
 
 // If "attach invoice" button is clicked, have that file display listen for a file upload
 // The next file that's uploaded will be linked to that card, unless the upload dialog is cancelled
-requestedInvoicesArea.addEventListener('click', (e) => {
+requestedInvoicesContainer.addEventListener('click', (e) => {
   if (e.target.closest('.invoice .indicators__attach-inv')) {
     costListeningForFile = allCosts.find(
       (cost) => cost.PONumber === e.target.closest('.invoice').dataset.poNum,
@@ -519,4 +534,10 @@ document.addEventListener('cancel', () => {
     setTimeout(() => dzOverlay.classList.add('overlay--off'), 150);
   }),
     false;
+});
+
+[invoiceSelectArea, requestedInvoicesContainer].forEach((area) => {
+  ['mouseenter', 'mouseleave'].forEach((eventName) => {
+    area.addEventListener(eventName, toggleTooltip, true);
+  });
 });

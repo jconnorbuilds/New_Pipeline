@@ -2,17 +2,15 @@ import $ from 'jquery';
 import { CSRFTOKEN, createElement } from '../utils.js';
 import Modal from 'bootstrap/js/dist/modal';
 import createAndInitializeToast from '../toast-notifs.js';
-import invoiceInfo from './invoices-details-modal.js';
+import invoiceInfo from './invoice-details-modal.js';
 
 const newClientModalEl = document.querySelector('#new-client-modal');
 const newClientForm = document.querySelector('#new-client-form');
 const submitButton = newClientForm.querySelector('button[type="submit"]');
 const friendlyNameInput = newClientForm.querySelector('#id_friendly_name');
-const properNameInput = newClientForm.querySelector(
-  'input[name="proper_name"]'
-);
+const properNameInput = newClientForm.querySelector('input[name="proper_name"]');
 const properNameJapaneseInput = newClientForm.querySelector(
-  'input[name="proper_name_japanese"]'
+  'input[name="proper_name_japanese"]',
 );
 const spinner = document.querySelector('#add-client-spinner');
 const validateInputs = () => {
@@ -31,9 +29,7 @@ const processFormErrors = (errors) => {
   const clientFriendlyNameErrorMsg = errors['friendly_name'];
   if (clientFriendlyNameErrorMsg) {
     friendlyNameInput.classList.add('is-invalid'); // TODO: set up proper client-side validation
-    errorMsgs.appendChild(
-      createElement('div', { text: clientFriendlyNameErrorMsg })
-    );
+    errorMsgs.appendChild(createElement('div', { text: clientFriendlyNameErrorMsg }));
   }
   spinner.classList.add('invisible');
 };
@@ -57,14 +53,11 @@ const handleSuccessfulSubmission = (response) => {
     newClientForm.reset();
 
     // create and instantiate toast for successful client creation
-    createAndInitializeToast(
-      'New client added',
-      response.client_friendly_name
-    ).show();
+    createAndInitializeToast('New client added', response.client_friendly_name).show();
 
     errorMsgs.replaceChildren(); // removes all error messages
     [friendlyNameInput].forEach((field) =>
-      field.classList.remove('is-valid', 'is-invalid')
+      field.classList.remove('is-valid', 'is-invalid'),
     );
   } else {
     processFormErrors(response.errors);
@@ -77,8 +70,7 @@ const newClientFormSubmission = (e) => {
     friendly_name: document.querySelector('#id_friendly_name').value,
     job_code_prefix: document.querySelector('#id_job_code_prefix').value,
     proper_name: document.querySelector('#id_proper_name').value,
-    proper_name_japanese: document.querySelector('#id_proper_name_japanese')
-      .value,
+    proper_name_japanese: document.querySelector('#id_proper_name_japanese').value,
     new_client: 'new ajax client add',
   };
 

@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { CSRFTOKEN } from '../utils.js';
 import { displayErrorMessage } from './pipeline-funcs.js';
-import invoiceInfo from '../modals/invoices-details-modal.js';
+import invoiceInfo from '../modals/invoice-details-modal.js';
 import { plTable } from './pipeline-dt.js';
 import * as State from './pipeline-state.js';
 import { drawNewRow } from './pipeline-dt-ui-funcs.js';
@@ -94,9 +94,7 @@ const rowCallback = (row, data) => {
   initialStatus === 'FINISHED'
     ? row.classList.add('job-finished')
     : row.classList.remove('job-finished');
-  setTotalExpectedRevenueAmt(
-    getTotalExpectedRevenueAmt() + parseInt(data.revenue)
-  );
+  setTotalExpectedRevenueAmt(getTotalExpectedRevenueAmt() + parseInt(data.revenue));
 };
 
 export const queryJobs = (year, month) => {

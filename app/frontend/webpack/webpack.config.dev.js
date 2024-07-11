@@ -20,24 +20,27 @@ module.exports = merge(common, {
   },
 
   devServer: {
-    hot: false,
     port: 9091,
+    static: Path.resolve(__dirname, '../static'),
     devMiddleware: {
       writeToDisk: true,
     },
+    headers: { 'Access-Control-Allow-Origin': '*' },
+    watchFiles: ['templates/**/*', '(static||src)/styles/*.*css'],
   },
   plugins: [
     new Webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development'),
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name]-[contenthash:3].css',
+      filename: 'css/[name].css',
     }),
-    // new ESLintPlugin({
-    //   extensions: 'js',
-    //   emitWarning: true,
-    //   files: Path.resolve(__dirname, '../src'),
-    // }),
+    new ESLintPlugin({
+      emitWarning: true,
+      files: Path.resolve(__dirname, '../src'),
+      configType: 'flat',
+      eslintPath: 'eslint/use-at-your-own-risk',
+    }),
     new StylelintPlugin({
       files: Path.join('src', '**/*.s?(a|c)ss'),
       fix: true,
@@ -63,7 +66,6 @@ module.exports = merge(common, {
         test: /\.s?css$/i,
         use: [
           MiniCssExtractPlugin.loader,
-          // 'style-loader',
           {
             loader: 'css-loader',
             options: {

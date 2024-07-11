@@ -18,33 +18,25 @@ import { initializeGlobalMouseEvents } from '../tables/dt-shared.js';
 import { jobFormSubmissionHandler } from './pipeline-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 import initializeNewClientForm from '../modals/new-client-form-funcs.js';
-import invoiceInfo from '../modals/invoices-details-modal.js';
+import invoiceInfo from '../modals/invoice-details-modal.js';
 
-document
-  .querySelector('#revenue-unit')
-  .addEventListener('click', revenueToggleHandler);
+document.querySelector('#revenue-unit').addEventListener('click', revenueToggleHandler);
 
 document
   .querySelector('#pipeline-next')
   .parentNode.addEventListener('click', dateSelectionHandler);
 
-document
-  .querySelector('.toggle-view')
-  .addEventListener('click', toggleViewHandler);
+document.querySelector('.toggle-view').addEventListener('click', toggleViewHandler);
 
 document
   .querySelector('#deposit-date-form')
   .addEventListener('submit', depositDateFormSubmitHandler);
 
-document
-  .querySelector('#job-form')
-  .addEventListener('submit', jobFormSubmissionHandler);
+document.querySelector('#job-form').addEventListener('submit', jobFormSubmissionHandler);
 
-document
-  .querySelector('#pipeline-new-client-btn')
-  .addEventListener('click', () => {
-    invoiceInfo.preventFromOpening();
-  });
+document.querySelector('#pipeline-new-client-btn').addEventListener('click', () => {
+  invoiceInfo.preventFromOpening();
+});
 
 let filters = document.querySelectorAll('.display-filter input');
 

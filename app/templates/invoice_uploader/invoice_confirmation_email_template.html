@@ -1,51 +1,49 @@
 <!DOCTYPE html>
 {% load static %}
 <html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
-</head>
-<body>
-	<h1>Invoices received!</h1>
-
-	<p>This is just a confirmation email, letting you know that we've received the following invoices.</p>
-
-	{% if successful_invoices %}
-		<ul>
-			{% for invoice in successful_invoices %}
-				<li><strong>{{ invoice.job.job_name }}</strong>
-					<br>PO Number: {{ invoice.PO_number }}
-					<br>Description: {{ invoice.description }}
-					<br>Amount: {{ invoice.get_currency_display }}{{ invoice.amount }} (excl. tax)</li>
-			{% endfor %}
-		</ul>
-	{% endif %}
-	{% if unsuccessful_invoices %}
-		<p>Unfortunately it looks like we had an error receiving the following invoices. Please get in touch and we'll sort it out!</p>
-		<ul>
-			{% for invoice in unsuccessful_invoices %}
-				<li><strong>{{ invoice.job.job_name }}</strong>
-					<br>PO Number: {{ invoice.PO_number }}
-					<br>Description: {{ invoice.description }}
-					<br>Amount: {{ invoice.get_currency_display }}{{ invoice.amount }} (excl. tax)</li>
-			{% endfor %}
-		</ul>
-	{% endif %}
-	
-	<p><em>We plan to pay you by the 25th of the following month upon receipt of invoice. If you have any questions or concerns, please reach out directly. Looking forward to working with you again!</em></p>
-	<br>
-	<h3><u>Let us know about your experience!</u></h3>
-	<p><small>
-	We're trying to improve our systems so we can work together more effectively.
-	One of the big steps we're taking is automating the way we receive and process invoices.
-	Did everything go smoothly? Or, not so much? We really appreciate your feedback, 
-	so respond directly to this email and let us know how we can improve!<br><br>
-	
-	Best, <br><br>
-
-	your friends at Black Cat White Cat Music 🐈‍⬛
-	</small></p>
-	
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+  </head>
+  <body>
+    <h1>Invoices received!</h1>
+    <p>We're letting you know that we've received the following invoices.</p>
+    {% if successful_invoices %}
+      <ul>
+        {% for invoice in successful_invoices %}
+          <li>
+            <strong>{{ invoice.job.job_name }}</strong>
+            <br>
+            PO Number: {{ invoice.PO_number }}
+            <br>
+            Description: {{ invoice.description }}
+            <br>
+            Amount: {{ invoice.get_currency_display }}{{ invoice.amount }}
+            {% if invoice.currency == "JPY" %}(excl. tax){% endif %}
+          </li>
+          <br>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <p>
+      <em>We plan to pay you by the 25th of the following month upon receipt of invoice. If you have any questions or concerns, please reach out directly. We look forward to working with you again.</em>
+    </p>
+    <p>
+      Best,
+      <br>
+      your friends at Black Cat White Cat Music 🐈‍⬛
+    </p>
+    <br>
+    <h3>
+      <u>Run into any issues?</u>
+    </h3>
+    <p>
+      <small>
+        All of your feedback is heard and appreciated, and it helps us improve! There are still humans on the other side of this email (for now 🤖) so if you run into any errors, bugs, or something is not working right, you can respond directly to this email and let us know.
+        <br>
+        <br>
+      </small>
+    </p>
+  </body>
 </html>

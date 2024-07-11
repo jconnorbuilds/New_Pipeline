@@ -1,11 +1,14 @@
 name: New Pipline Tools Continuous Integration
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 env:
   WEB_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web"
   NGINX_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx"
-  TAG: 'v1.43'
+  TAG: 'v1.44'
 
 jobs:
   build:

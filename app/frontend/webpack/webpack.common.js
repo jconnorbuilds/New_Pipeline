@@ -8,19 +8,16 @@ module.exports = {
     base: Path.resolve(__dirname, '../src/js/base.js'),
     pipeline: Path.resolve(__dirname, '../src/js/main-pipeline/pipeline.js'),
     'invoice-uploader': {
-      import: Path.resolve(
-        __dirname,
-        '../src/js/invoice-uploader/invoice-uploader.js'
-      ),
+      import: Path.resolve(__dirname, '../src/js/invoice-uploader/invoice-uploader.js'),
     },
     'invoices-list': {
-      import: Path.resolve(
-        __dirname,
-        '../src/js/invoices-list/invoices-list.js'
-      ),
+      import: Path.resolve(__dirname, '../src/js/invoices-list/invoices-list.js'),
     },
     costsheet: {
       import: Path.resolve(__dirname, '../src/js/costsheet/costsheet.js'),
+    },
+    'job-details': {
+      import: Path.resolve(__dirname, '../src/js/job-details.js'),
     },
   },
   output: {
@@ -55,7 +52,15 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
-      patterns: [{ from: Path.resolve(__dirname, '../public'), to: 'public' }],
+      patterns: [
+        {
+          from: Path.resolve(__dirname, '../static/'),
+          to: './',
+        },
+        {
+          from: Path.resolve(__dirname, '../static/'),
+        },
+      ],
     }),
     new BundleTracker({
       path: Path.join(__dirname, './../'),
@@ -75,9 +80,14 @@ module.exports = {
         type: 'javascript/auto',
       },
       {
-        test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
+        test: /\.(ttf|woff|woff2)(\?.*)?$/,
         type: 'asset/resource',
-        generator: { filename: '[path][name][ext]' },
+        generator: { filename: 'fonts/[name].[contenthash][ext]' },
+      },
+      {
+        test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg)(\?.*)?$/,
+        type: 'asset/resource',
+        generator: { filename: 'images/[name].[contenthash][ext]' },
       },
     ],
   },

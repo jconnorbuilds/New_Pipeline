@@ -23,6 +23,8 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+node_modules
+app/frontend/build
 .git
 .DS_Store
 LICENSE

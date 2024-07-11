@@ -1,10 +1,7 @@
 // @import '~bootstrap/scss/bootstrap';
-
 // Bootstrap 5.3 ref https://github.com/twbs/examples/blob/main/webpack/src/scss/styles.scss
 // Place variable overrides first, then import just the styles you need. Note that some stylesheets are required no matter what.
-
 // Toggle global options
-
 // Include functions first
 @import 'bootstrap/scss/functions';
 
@@ -80,6 +77,22 @@ body {
   font-style: normal;
   font-optical-sizing: auto;
   font-weight: 400;
+}
+
+button.remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  padding: 0 5px;
+  background-color: inherit;
+  color: inherit;
+}
+
+button.remove:hover {
+  background-color: #aaa;
+  color: white;
 }
 
 strong {
@@ -229,4 +242,28 @@ td span.job-code.highlight {
   padding: 5px;
   border-radius: 3px;
   cursor: pointer;
+}
+
+.job-basic-info__ > div,
+.job-outgoing-invoices__ > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.job-basic-info__title {
+  font-weight: 700;
+}
+
+// .job-extension .menu-toggle {
+//   display: flex;
+//   align-items: center;
+// }
+.job-extension .menu-toggle {
+  cursor: pointer;
+}
+
+.job-extension__job-list {
+  max-height: 250px;
+  overflow-y: scroll;
 }

@@ -1,8 +1,17 @@
 <!DOCTYPE html>
 {% extends "pipeline/base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load widget_tweaks %}
+{% block styles %}
+    {{ block.super }}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+{% endblock styles %}
+{% block scripts %}
+    {% render_bundle 'job-details' 'js' attrs="defer" %}
+{% endblock scripts %}
 {% block body_block %}
     <div class="container col-lg-7 p-0">
-        {% comment %} <h1 class="display-3">{{ job.job_name }} - {{ job.job_code }} </h1> {% endcomment %}
         <h1 class="display-1 text-center">Job details</h1>
         <div class="container bg-body-secondary border rounded-1 p-3 mb-3">
             {% if messages %}
@@ -19,51 +28,53 @@
                 {% endfor %}
             {% endif %}
             <div class="bg-secondary-subtle border border-dark border-1 rounded-1 p-2">
-                <dl class="row job-details-w400 pt-2 align-items-center mx-auto">
-                    <dt class="job-details-item-sm">Client Name</dt>
-                    <dd class="job-details-desc align-items-center">
-                        {% if job.client.proper_name_japanese %}
-                            {{ job.client.proper_name_japanese }}
-                        {% else %}
-                            {{ job.client.proper_name }}
-                        {% endif %}
-                    </dd>
-                    <dt class="job-details-item-sm">Job code</dt>
-                    <dd class="job-details-desc">
-                        {{ job.job_code }}
-                    </dd>
-                    <dt class="job-details-item-sm">Person in Charge</dt>
-                    <dd class="job-details-desc">
-                        {{ job.get_personInCharge_display }}
-                    </dd>
-                </dl>
-                <hr style="width: 50%; margin-left:25%;">
+                <div class="job-basic-info__ col-md-6 mx-auto text-center">
+                    <h6 class="fw-bold">Basic info</h6>
+                    <div class="job-basic-info__client-name">
+                        <span class="fw-bold">Client name</span>
+                        <span>
+                            {% if job.client.proper_name_japanese %}
+                                {{ job.client.proper_name_japanese }}
+                            {% else %}
+                                {{ job.client.proper_name }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="job-basic-info__job-code">
+                        <span class="fw-bold">Job Code</span>
+                        <span class="job-basic-info__job-code">{{ job.job_code }}</span>
+                    </div>
+                    <div class="job-basic-info__pic">
+                        <span class="fw-bold">Person In Charge</span>
+                        <span class="job-basic-info__pic">{{ job.get_personInCharge_display }}</span>
+                    </div>
+                </div>
+                <hr class="col-md-6 mx-auto">
                 <h3 class="text-center">{{ job.job_name }}</h3>
-                <hr style="width: 50%; margin-left:25%;">
+                <hr class="col-md-6 mx-auto">
                 {% if job.vendors.all %}
-                    <div class="container col-4 mx-auto">
-                        <p class="text-center">
-                            <b>Vendors</b>
-                        </p>
+                    <div class="job-vendors__ container col-md-6 mx-auto text-center">
+                        <h6 class="fw-bold">Vendors</h6>
                         <ul class="list-unstyled">
                             {% for vendor in job.vendors.all %}<li class="text-center">{{ vendor.familiar_name }}</li>{% endfor %}
                         </ul>
                     </div>
-                    <hr style="width: 33.3%; margin-left: 33.3%;">
+                    <hr class="col-md-4 col-8 mx-auto">
                 {% endif %}
-                {% if job.costs_of_job.all %}
-                    <p class="text-center">
-                        <b>Costs (<a href={% url 'pipeline:cost-add' job_id %}>cost sheet</a>)</b>
-                    </p>
-                    <dl class="job-details-w400 mx-auto">
+                <div class="job-costs__ col-md-6 mx-auto">
+                    <div class="text-center">
+                        <h6 class="fw-bold d-inline-block">Costs</h6>
+                        <span class="fw-bold d-inline-block">
+                            (<a href="{% url 'pipeline:cost-add' job.id %}">cost sheet</a>)
+                        </span>
+                    </div>
+                    {% if job.costs_of_job.all %}
                         <ol>
-                            {% for cost in job.cost_rel.all %}
+                            {% for cost in job.costs_of_job.all %}
                                 <div class="row mb-3">
-                                    <p class="job-details-item-sm">
-                                        <li>{{ cost.description }}</li>
-                                    </p>
-                                    <p class="job-details-desc">
-                                        <ul class="list-unstyled">
+                                    <li class="mb-2 fw-bold">{{ cost.description }}</li>
+                                    <div class="job">
+                                        <ul class="list-unstyled ps-5 job-costs__details">
                                             <li>
                                                 {% if cost.vendor %}
                                                     {{ cost.vendor.familiar_name }}
@@ -82,98 +93,142 @@
                                             <li>{{ cost.get_currency_display }}{{ cost.amount }}</li>
                                             <li>Invoice status: {{ cost.get_invoice_status_display }}</li>
                                         </ul>
-                                    </p>
+                                    </div>
                                 </div>
                             {% endfor %}
                         </ol>
-                    </dl>
-                    <hr style="width: 33.3%; margin-left: 33.3%;">
-                    <dl class="row job-details-w400 mx-auto">
-                        <dt class="job-details-item">Vendor invoices received:</dt>
-                        <dd class="job-details-desc-sm">
+                    </div>
+                    <hr class="col-md-6 mx-auto">
+                    <div class="job-details__invoices-received text-center col-md-6 mx-auto">
+                        <h6 class="fw-bold">Vendor invoices</h6>
+                        <p>
                             {% if job.allVendorInvoicesReceived %}
-                                Yes
+                                All vendor invoices received!
                             {% else %}
-                                No
+                                Still waiting on vendor invoices.
                             {% endif %}
-                        </dd>
-                    </dl>
+                        </p>
+                    </div>
+                    <hr class="col-md-6 mx-auto">
                 {% else %}
-                    <p class="text-center">No costs associated with this job.</p>
+                    <p class="text-center">This job has no costs.</p>
+                </div>
+            {% endif %}
+            <div class="job-extension container col-xl-8">
+                {% if job.is_extension_of %}
+                    <div class="job-extension__label d-flex g-3 align-items-center justify-content-center">
+                        <h6 class="fw-bold m-0">Extension of {{ job.is_extension_of.job_name }} {{ job.is_extension_of.job_code }}</h6>
+                        <button class="remove">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="menu-toggle d-flex g-3 align-items-center justify-content-center">
+                        <h6 class="fw-bold m-0">Extension of...</h6>
+                        <i class="bi bi-caret-right-fill"></i>
+                    </div>
                 {% endif %}
-                {% if job.status in "INVOICED1,INVOICED2,FINISHED,ARCHIVED" %}
-                    <dl class="row job-details-w400 pt-2 align-items-center mx-auto">
-                        <dt class="job-details-item-sm">Invoiced To</dt>
-                        <dd class="job-details-desc">
+                <form id="job-extension-form" method="POST" class="d-none">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text"
+                               class="form-control"
+                               id="job-extension-search"
+                               placeholder="Search jobs..."
+                               aria-label="Job extension"
+                               aria-describedby="search-icon">
+                    </div>
+                    <ul class="job-extension__job-list">
+                    </ul>
+                </form>
+                {% comment %} {% if job.is_extension_of.all %}
+                    <ul class="list-unstyled">
+                        {% for original_job in job.is_extension_of.all %}
+                            <li class="text-center">{{ original_job.job_code }} {{ original_job.job_name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div>No extensions</div>
+                {% endif %} {% endcomment %}
+            </div>
+            {% if job.status in "INVOICED1,INVOICED2,FINISHED,ARCHIVED" %}
+                <div class="job-outgoing-invoices__ col-md-6 mx-auto text-center">
+                    <h6 class="fw-bold">Client invoice</h6>
+                    <div class="job-outgoing-invoices__invoiced-to">
+                        <span class="fw-bold">Invoiced To</span>
+                        <span class="job-details-desc">
                             {% if job.invoice_recipient.proper_name_japanese %}
                                 {{ job.invoice_recipient.proper_name_japanese }}
                             {% else %}
                                 {{ job.invoice_recipient.proper_name }}
                             {% endif %}
-                        </dd>
-                        <dt class="job-details-item-sm">Invoice Name</dt>
-                        <dd class="job-details-desc align-items-center">
-                            {{ job.invoice_name }}
-                        </dd>
-                    </dl>
-                {% endif %}
-            </div>
-            <hr>
-            <div class="mx-auto col-lg-6" style="width: 400px;">
-                <dl class="row my-0">
-                    <dt class="job-details-item">Revenue</dt>
-                    <dd class="job-details-amount">
-                        ¥{{ job.revenue }}&nbsp&nbsp&nbsp
-                    </dd>
-                    <dt class="job-details-item">10% Consumption Tax</dt>
-                    <dd class="job-details-amount">
-                        ¥{{ job.consumption_tax_amt }}&nbsp&nbsp&nbsp
-                    </dd>
-                </dl>
-                <hr class="my-1" style="width: 50%; margin-left: 50%;">
-                <dl class="row mb-3">
-                    <dt class="job-details-item">Total revenue (消費税込)</dt>
-                    <dd class="job-details-amount">
-                        ¥{{ job.revenue_incl_tax }}&nbsp&nbsp&nbsp
-                    </dd>
-                </dl>
-                <dl class="row mb-3">
-                    <dt class="job-details-item">Total cost</dt>
-                    <dd class="job-details-amount">
-                        ¥{{ job.total_cost }}&nbsp&nbsp&nbsp
-                    </dd>
-                    <hr class="my-1" style="width: 50%; margin-left: 50%;">
-                    <dt class="job-details-item">Profit (消費税込)</dt>
-                    <dd class="job-details-amount">
-                    ¥{{ job.profit_incl_tax }}&nbsp&nbsp&nbsp</em>
-                </dd>
-                <dt class="job-details-item">Profit (消費税抜)</dt>
+                        </span>
+                    </div>
+                    <div class="job-outgoing-invoices__invoice-name">
+                        <span class="fw-bold">Invoice Name</span>
+                        <span class="job-details-desc align-items-center">{{ job.invoice_name }}</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <hr>
+        <div class="mx-auto col-lg-6" style="width: 400px;">
+            <dl class="row my-0">
+                <dt class="job-details-item">Revenue</dt>
                 <dd class="job-details-amount">
-                ¥{{ job.profit_excl_tax }}&nbsp&nbsp&nbsp</em>
+                    ¥{{ job.revenue }}&nbsp&nbsp&nbsp
+                </dd>
+                <dt class="job-details-item">10% Consumption Tax</dt>
+                <dd class="job-details-amount">
+                    ¥{{ job.consumption_tax_amt }}&nbsp&nbsp&nbsp
+                </dd>
+            </dl>
+            <hr class="my-1" style="width: 50%; margin-left: 50%;">
+            <dl class="row mb-3">
+                <dt class="job-details-item">Total revenue (消費税込)</dt>
+                <dd class="job-details-amount">
+                    ¥{{ job.revenue_incl_tax }}&nbsp&nbsp&nbsp
+                </dd>
+            </dl>
+            <dl class="row mb-3">
+                <dt class="job-details-item">Total cost</dt>
+                <dd class="job-details-amount">
+                    ¥{{ job.total_cost }}&nbsp&nbsp&nbsp
+                </dd>
+                <hr class="my-1" style="width: 50%; margin-left: 50%;">
+                <dt class="job-details-item">Profit (消費税込)</dt>
+                <dd class="job-details-amount">
+                ¥{{ job.profit_incl_tax }}&nbsp&nbsp&nbsp</em>
             </dd>
-            <dt class="job-details-item">Profit rate</dt>
+            <dt class="job-details-item">Profit (消費税抜)</dt>
             <dd class="job-details-amount">
-                {{ job.profit_rate }}%
-            </dd>
-        </dl>
-        {% if job.relatedJobs.all %}
-            <div class="container bg-body-tertiary p-3">
-                <h3>Related jobs:</h3>
-                {% for relatedJob in job.relatedJobs.all %}
-                    <p>
-                        <strong>{{ relatedJob.job_name }} - {{ relatedJob.job_code }}</strong>
-                    </p>
-                    <p>Invoice name: {{ relatedJob.invoice_name }} - ¥{{ relatedJob.revenue }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
-    <div class="d-flex justify-content-end">
-        <a href="{% url 'pipeline:job-update' job_id %}"
-           class="btn btn-dark btn-sm col-auto">Update Job Details</a>
-        <a href="{% url 'pipeline:job-delete' job_id %}"
-           class="btn btn-danger btn-sm col-auto">Delete Job</a>
-    </div>
+            ¥{{ job.profit_excl_tax }}&nbsp&nbsp&nbsp</em>
+        </dd>
+        <dt class="job-details-item">Profit rate</dt>
+        <dd class="job-details-amount">
+            {{ job.profit_rate }}%
+        </dd>
+    </dl>
+    {% if job.relatedJobs.all %}
+        <div class="container bg-body-tertiary p-3">
+            <h3>Related jobs:</h3>
+            {% for relatedJob in job.relatedJobs.all %}
+                <p>
+                    <strong>{{ relatedJob.job_name }} - {{ relatedJob.job_code }}</strong>
+                </p>
+                <p>Invoice name: {{ relatedJob.invoice_name }} - ¥{{ relatedJob.revenue }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+<div class="d-flex justify-content-end">
+    <a href="{% url 'pipeline:job-update' job.id %}"
+       class="btn btn-dark btn-sm col-auto">Update Job Details</a>
+    <a href="{% url 'pipeline:job-delete' job.id %}"
+       class="btn btn-danger btn-sm col-auto">Delete Job</a>
 </div>
 </div>
 {% endblock body_block %}

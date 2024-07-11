@@ -3,7 +3,7 @@
 ###########
 
 # pull official base image
-FROM python:3.11.3-alpine3.17 as builder
+FROM python:3.12.4-alpine3.20 as builder
 
 # set work directory
 WORKDIR /usr/src/app
@@ -14,9 +14,10 @@ ENV PYTHONUNBUFFERED 1
 
 # install psycopg2 dependencies
 RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev
+    && apk add postgresql-dev gcc python3-dev musl-dev libffi-dev
 
 # install dependencies
+RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
 
@@ -24,7 +25,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 # FINAL #
 #########
 
-FROM python:3.11.3-alpine3.17
+FROM python:3.12.4-alpine3.20
 
 # create directory for the app user
 RUN mkdir -p /home/app
@@ -42,9 +43,18 @@ WORKDIR $APP_HOME
 
 # install dependencies
 RUN apk update && apk add libpq
+# Add Node.js and npm
+RUN apk add --update nodejs npm  
+
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --no-cache /wheels/*
+
+# copy package.json and package-lock.json
+COPY ./package*.json $APP_HOME/
+
+# install npm dependencies
+RUN npm ci
 
 # copy entrypoint.prod.sh
 COPY ./entrypoint.prod.sh .
@@ -53,6 +63,9 @@ RUN chmod +x  $APP_HOME/entrypoint.prod.sh
 
 # copy project
 COPY . $APP_HOME
+
+# build static assets
+RUN npm run build
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME

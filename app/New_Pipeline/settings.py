@@ -14,7 +14,9 @@ from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
 from dotenv import load_dotenv
+from . import customizations
 import boto3
+import logging
 
 LOGIN_REDIRECT_URL = "/pipeline/"
 MESSAGE_TAGS = {
@@ -30,8 +32,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = BASE_DIR / "templates"
 
 dev_dotenv_path = BASE_DIR / "../.env.dev"
-if dev_dotenv_path.exists():
-    load_dotenv(dev_dotenv_path)
+
+ENVIRONMENT = os.environ.get("ENV")
+if ENVIRONMENT == "dev":
+    load_dotenv(dev_dotenv_path, override=True)
 
 LINODE_STORAGE = boto3.client(
     "s3",
@@ -77,17 +81,82 @@ INSTALLED_APPS = [
 WEBPACK_LOADER = {
     "DEFAULT": {
         "STATS_FILE": str(BASE_DIR / "frontend" / "webpack-stats.json"),
+        "CACHE": not DEBUG,
+        "STATS_FILE": os.path.join(BASE_DIR, "frontend/webpack-stats.json"),
+        "POLL_INTERVAL": 0.1,
+        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
     },
 }
+
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
-# REST_FRAMEWORK = {
-#     # Use Django's standard `django.contrib.auth` permissions,
-#     # or allow read-only access for unauthenticated users.
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ]
-# }
+ADMINS = [("Joe", "joe@bwcatmusic.com")]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "standard": {
+            "format": "{asctime} {levelname} {name} {lineno} {message}",
+            "style": "{",
+        },
+        "colored": {
+            "()": "colorlog.ColoredFormatter",
+            "format": "{log_color}{levelname} {name} {lineno} {bold_white}{message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "colored",
+            "filters": ["require_debug_true"],
+        },
+        "console-django": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+        },
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "general.log",
+            "formatter": "standard",
+            "filters": [],
+        },
+        "email": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "filters": ["require_debug_false"],
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "dropbox": {"handlers": ["file"], "level": "WARNING"},
+        "pipeline": {
+            "handlers": ["console", "file", "email"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+    "root": {
+        "handlers": ["console", "file", "email"],
+        "level": "INFO",
+    },
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -173,7 +242,15 @@ EMAIL_HOST_USER = "invoice@bwcatmusic.com"
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_BACKEND = (
+#     "django.core.mail.backends.smtp.EmailBackend"
+#     if not DEBUG
+#     else "django.core.mail.backends.filebased.EmailBackend"
+# )
+EMAIL_BACKEND = "New_Pipeline.customizations.CustomEmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "emails"
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -192,13 +269,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    ("assets", BASE_DIR / "frontend/assets"),
+    ("images", BASE_DIR / "frontend/build/images"),
     ("js", BASE_DIR / "frontend/build/js"),
     ("css", BASE_DIR / "frontend/build/css"),
-    # ("build", BASE_DIR / "frontend/build"),
 ]
-
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"

@@ -1,39 +1,84 @@
 <!DOCTYPE html>
 {% load static %}
 <html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
-</head>
-<body>
-	<h1>We want to pay you! </h1>
-
-	<p>Hey {{ vendor_name }}, thanks for your work as always! Please send us your invoice(s) for the following job(s): <br>
-	</p>
-
-	{% if cost %}
-		<ul>
-			<li><strong>{{ cost.job.job_name }}</strong>
-				<br><strong>PO Number: {{ cost.PO_number }}</strong> ← Put this in your invoice filename!
-				<br>Description: {{ cost.description }}
-				<br>Amount: {{ cost.currency }}{{ cost.amount }} (excl. tax)</li>
-		</ul>
-
-	{% elif costs %}
-		{% for cost in costs %}
-		<ul>
-			<li><strong>{{ cost.job.job_name }}
-				<br><strong>PO Number: {{ cost.PO_number }}</strong>
-				<br>Description: {{ cost.description }}
-				<br>Amount: {{ cost.currency }}{{ cost.amount }} (excl. tax)</li>
-		</ul>
-		{% endfor %}
-	{% endif %}
-	<h4>Upload your invoices <a href="{{ protocol }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">HERE</a>!</h4>
-	<p>Open the page and simply drag and drop.</p>
-	
-	<p>We plan to pay you by the 25th of the following month upon receipt of invoice. If you have any questions or concerns, please reach out directly. Looking forward to working with you again! </p></br>
-	<p><small><em>If this email finds you erroneously, or if you encounter an issue with the uploader, please forgive us! We're trying out something new to improve the way we work together. Please reach out directly and we can help.</em></small></p>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <style>
+      th {
+        padding-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <h1>We want to pay you!</h1>
+      <p class="opener">
+        Hey {{ vendor_name }}, thanks for your work as always. Please send us your invoice(s) for the following job:
+      </p>
+      {% if cost %}
+        <div class="job-info">
+          <p class="main-info">
+            <b class="job-name">{{ cost.job.job_name }}</b> <span class="job-code">[Job Code: {{ cost.job.job_code }}]</span>
+            {% if cost.job.is_extension_of %}
+              <br>
+              <em>This is an extension or renewal of a past job.</em>
+            {% endif %}
+          </p>
+          <table cellspacing="0" style="text-align: left">
+            <tbody>
+              <tr>
+                <th>Amount:</th>
+                <td>
+                  <span>{{ cost.currency }}{{ cost.amount }}
+                    {% if cost.currency == 'JPY' %}<span>(excl. tax)</span>{% endif %}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Description:</th>
+                <td>{{ cost.description }}</td>
+              </tr>
+              <tr>
+                <th>Invoice no.:</th>
+                <td>{{ cost.PO_number }}</td>
+              </tr>
+              {% if cost.job.is_extension_of %}
+                <tr>
+                  <th>Renewal of:</th>
+                  <td>{{ cost.job.is_extension_of }}</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      {% elif costs %}
+        {% for cost in costs %}
+          <ul>
+            <li>
+              <strong>{{ cost.job.job_name }}</strong>
+              <br>
+              <strong>PO Number: {{ cost.PO_number }}</strong>
+              <br>
+              Description: {{ cost.description }}
+              <br>
+              Amount: {{ cost.currency }}{{ cost.amount }} (excl. tax)
+            </li>
+          </ul>
+        {% endfor %}
+      {% endif %}
+      <p>
+        <b>
+          Upload your invoices <a href="{{ protocol }}://{{ request.get_host }}{% url 'upload-invoice' vendor.uuid %}">HERE</a></b>!
+        </p>
+        <p>
+          We plan to pay you by the 25th of the following month upon receipt of invoice, but timing may vary depending on the job. If you have any questions or concerns, please reach out directly. Looking forward to working with you again!
+        </p>
+      </br>
+      <p>
+        <small><em>If this email finds you erroneously, or if you encounter an issue with the uploader, please forgive us - we're trying our best to provide the smoothest experience. Please reach out directly and we can help. All of your feedback is heard and appreciated!</em></small>
+      </p>
+    </div>
+  </body>
 </html>

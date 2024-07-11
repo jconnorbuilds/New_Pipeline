@@ -1,172 +1,2831 @@
 {
   "status": "done",
   "assets": {
-    "assets/images/check2-circle.svg": {
-      "name": "assets/images/check2-circle.svg",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/check2-circle.svg",
-      "publicPath": "/static/assets/images/check2-circle.svg"
+    "base.00e25c74e351a0858221.hot-update.js": {
+      "name": "base.00e25c74e351a0858221.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.00e25c74e351a0858221.hot-update.js",
+      "publicPath": "http://localhost:9091/base.00e25c74e351a0858221.hot-update.js"
     },
-    "assets/images/pencil-square.svg": {
-      "name": "assets/images/pencil-square.svg",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/pencil-square.svg",
-      "publicPath": "/static/assets/images/pencil-square.svg"
+    "base.00e25c74e351a0858221.hot-update.json": {
+      "name": "base.00e25c74e351a0858221.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.00e25c74e351a0858221.hot-update.json",
+      "publicPath": "http://localhost:9091/base.00e25c74e351a0858221.hot-update.json"
     },
-    "assets/images/trash3-fill.svg": {
-      "name": "assets/images/trash3-fill.svg",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/assets/images/trash3-fill.svg",
-      "publicPath": "/static/assets/images/trash3-fill.svg"
+    "base.057ad07c8539ad7782ce.hot-update.js": {
+      "name": "base.057ad07c8539ad7782ce.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.057ad07c8539ad7782ce.hot-update.js",
+      "publicPath": "http://localhost:9091/base.057ad07c8539ad7782ce.hot-update.js"
     },
-    "css/base-ea3f6.css": {
-      "name": "css/base-ea3f6.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-ea3f6.css",
-      "publicPath": "/static/css/base-ea3f6.css"
+    "base.057ad07c8539ad7782ce.hot-update.json": {
+      "name": "base.057ad07c8539ad7782ce.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.057ad07c8539ad7782ce.hot-update.json",
+      "publicPath": "http://localhost:9091/base.057ad07c8539ad7782ce.hot-update.json"
     },
-    "css/base-ea3f6.css.map": {
-      "name": "css/base-ea3f6.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base-ea3f6.css.map",
-      "publicPath": "/static/css/base-ea3f6.css.map"
+    "base.081a9ca5b2159a495541.hot-update.js": {
+      "name": "base.081a9ca5b2159a495541.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.081a9ca5b2159a495541.hot-update.js",
+      "publicPath": "http://localhost:9091/base.081a9ca5b2159a495541.hot-update.js"
     },
-    "css/costsheet-ea3f6.css": {
-      "name": "css/costsheet-ea3f6.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-ea3f6.css",
-      "publicPath": "/static/css/costsheet-ea3f6.css"
+    "base.081a9ca5b2159a495541.hot-update.json": {
+      "name": "base.081a9ca5b2159a495541.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.081a9ca5b2159a495541.hot-update.json",
+      "publicPath": "http://localhost:9091/base.081a9ca5b2159a495541.hot-update.json"
     },
-    "css/costsheet-ea3f6.css.map": {
-      "name": "css/costsheet-ea3f6.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet-ea3f6.css.map",
-      "publicPath": "/static/css/costsheet-ea3f6.css.map"
+    "base.134c59ee6f970351de1b.hot-update.js": {
+      "name": "base.134c59ee6f970351de1b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.134c59ee6f970351de1b.hot-update.js",
+      "publicPath": "http://localhost:9091/base.134c59ee6f970351de1b.hot-update.js"
     },
-    "css/invoice-uploader-cf2ac.css": {
-      "name": "css/invoice-uploader-cf2ac.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader-cf2ac.css",
-      "publicPath": "/static/css/invoice-uploader-cf2ac.css"
+    "base.134c59ee6f970351de1b.hot-update.json": {
+      "name": "base.134c59ee6f970351de1b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.134c59ee6f970351de1b.hot-update.json",
+      "publicPath": "http://localhost:9091/base.134c59ee6f970351de1b.hot-update.json"
     },
-    "css/invoice-uploader-cf2ac.css.map": {
-      "name": "css/invoice-uploader-cf2ac.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader-cf2ac.css.map",
-      "publicPath": "/static/css/invoice-uploader-cf2ac.css.map"
+    "base.17eb2c72f0f20a7b59a1.hot-update.js": {
+      "name": "base.17eb2c72f0f20a7b59a1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.17eb2c72f0f20a7b59a1.hot-update.js",
+      "publicPath": "http://localhost:9091/base.17eb2c72f0f20a7b59a1.hot-update.js"
     },
-    "css/invoices-list-ea3f6.css": {
-      "name": "css/invoices-list-ea3f6.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-ea3f6.css",
-      "publicPath": "/static/css/invoices-list-ea3f6.css"
+    "base.17eb2c72f0f20a7b59a1.hot-update.json": {
+      "name": "base.17eb2c72f0f20a7b59a1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.17eb2c72f0f20a7b59a1.hot-update.json",
+      "publicPath": "http://localhost:9091/base.17eb2c72f0f20a7b59a1.hot-update.json"
     },
-    "css/invoices-list-ea3f6.css.map": {
-      "name": "css/invoices-list-ea3f6.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list-ea3f6.css.map",
-      "publicPath": "/static/css/invoices-list-ea3f6.css.map"
+    "base.1a28910e43ad4061d11d.hot-update.js": {
+      "name": "base.1a28910e43ad4061d11d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.1a28910e43ad4061d11d.hot-update.js",
+      "publicPath": "http://localhost:9091/base.1a28910e43ad4061d11d.hot-update.js"
     },
-    "css/pipeline-ea3f6.css": {
-      "name": "css/pipeline-ea3f6.css",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-ea3f6.css",
-      "publicPath": "/static/css/pipeline-ea3f6.css"
+    "base.1a28910e43ad4061d11d.hot-update.json": {
+      "name": "base.1a28910e43ad4061d11d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.1a28910e43ad4061d11d.hot-update.json",
+      "publicPath": "http://localhost:9091/base.1a28910e43ad4061d11d.hot-update.json"
     },
-    "css/pipeline-ea3f6.css.map": {
-      "name": "css/pipeline-ea3f6.css.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline-ea3f6.css.map",
-      "publicPath": "/static/css/pipeline-ea3f6.css.map"
+    "base.1c24c4a866fcd8879a5b.hot-update.js": {
+      "name": "base.1c24c4a866fcd8879a5b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.1c24c4a866fcd8879a5b.hot-update.js",
+      "publicPath": "http://localhost:9091/base.1c24c4a866fcd8879a5b.hot-update.js"
+    },
+    "base.1c24c4a866fcd8879a5b.hot-update.json": {
+      "name": "base.1c24c4a866fcd8879a5b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.1c24c4a866fcd8879a5b.hot-update.json",
+      "publicPath": "http://localhost:9091/base.1c24c4a866fcd8879a5b.hot-update.json"
+    },
+    "base.21cd2ea8e6bfe58862d9.hot-update.js": {
+      "name": "base.21cd2ea8e6bfe58862d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.21cd2ea8e6bfe58862d9.hot-update.js",
+      "publicPath": "http://localhost:9091/base.21cd2ea8e6bfe58862d9.hot-update.js"
+    },
+    "base.21cd2ea8e6bfe58862d9.hot-update.json": {
+      "name": "base.21cd2ea8e6bfe58862d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.21cd2ea8e6bfe58862d9.hot-update.json",
+      "publicPath": "http://localhost:9091/base.21cd2ea8e6bfe58862d9.hot-update.json"
+    },
+    "base.24f954d199b54b1922f2.hot-update.js": {
+      "name": "base.24f954d199b54b1922f2.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.24f954d199b54b1922f2.hot-update.js",
+      "publicPath": "http://localhost:9091/base.24f954d199b54b1922f2.hot-update.js"
+    },
+    "base.24f954d199b54b1922f2.hot-update.json": {
+      "name": "base.24f954d199b54b1922f2.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.24f954d199b54b1922f2.hot-update.json",
+      "publicPath": "http://localhost:9091/base.24f954d199b54b1922f2.hot-update.json"
+    },
+    "base.281fe3287dc49694ab44.hot-update.js": {
+      "name": "base.281fe3287dc49694ab44.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.281fe3287dc49694ab44.hot-update.js",
+      "publicPath": "http://localhost:9091/base.281fe3287dc49694ab44.hot-update.js"
+    },
+    "base.281fe3287dc49694ab44.hot-update.json": {
+      "name": "base.281fe3287dc49694ab44.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.281fe3287dc49694ab44.hot-update.json",
+      "publicPath": "http://localhost:9091/base.281fe3287dc49694ab44.hot-update.json"
+    },
+    "base.29e165348ea0711db1be.hot-update.js": {
+      "name": "base.29e165348ea0711db1be.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.29e165348ea0711db1be.hot-update.js",
+      "publicPath": "http://localhost:9091/base.29e165348ea0711db1be.hot-update.js"
+    },
+    "base.29e165348ea0711db1be.hot-update.json": {
+      "name": "base.29e165348ea0711db1be.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.29e165348ea0711db1be.hot-update.json",
+      "publicPath": "http://localhost:9091/base.29e165348ea0711db1be.hot-update.json"
+    },
+    "base.2e317cdc735438779c79.hot-update.js": {
+      "name": "base.2e317cdc735438779c79.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.2e317cdc735438779c79.hot-update.js",
+      "publicPath": "http://localhost:9091/base.2e317cdc735438779c79.hot-update.js"
+    },
+    "base.2e317cdc735438779c79.hot-update.json": {
+      "name": "base.2e317cdc735438779c79.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.2e317cdc735438779c79.hot-update.json",
+      "publicPath": "http://localhost:9091/base.2e317cdc735438779c79.hot-update.json"
+    },
+    "base.3ab73f3120b4e873860c.hot-update.js": {
+      "name": "base.3ab73f3120b4e873860c.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.3ab73f3120b4e873860c.hot-update.js",
+      "publicPath": "http://localhost:9091/base.3ab73f3120b4e873860c.hot-update.js"
+    },
+    "base.3ab73f3120b4e873860c.hot-update.json": {
+      "name": "base.3ab73f3120b4e873860c.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.3ab73f3120b4e873860c.hot-update.json",
+      "publicPath": "http://localhost:9091/base.3ab73f3120b4e873860c.hot-update.json"
+    },
+    "base.3bfe672d01c4f6cb7fdf.hot-update.js": {
+      "name": "base.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "publicPath": "http://localhost:9091/base.3bfe672d01c4f6cb7fdf.hot-update.js"
+    },
+    "base.3bfe672d01c4f6cb7fdf.hot-update.json": {
+      "name": "base.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "publicPath": "http://localhost:9091/base.3bfe672d01c4f6cb7fdf.hot-update.json"
+    },
+    "base.3dec6594cb4d0f279795.hot-update.js": {
+      "name": "base.3dec6594cb4d0f279795.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.3dec6594cb4d0f279795.hot-update.js",
+      "publicPath": "http://localhost:9091/base.3dec6594cb4d0f279795.hot-update.js"
+    },
+    "base.3dec6594cb4d0f279795.hot-update.json": {
+      "name": "base.3dec6594cb4d0f279795.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.3dec6594cb4d0f279795.hot-update.json",
+      "publicPath": "http://localhost:9091/base.3dec6594cb4d0f279795.hot-update.json"
+    },
+    "base.438bd58e5ca238aae643.hot-update.js": {
+      "name": "base.438bd58e5ca238aae643.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.438bd58e5ca238aae643.hot-update.js",
+      "publicPath": "http://localhost:9091/base.438bd58e5ca238aae643.hot-update.js"
+    },
+    "base.438bd58e5ca238aae643.hot-update.json": {
+      "name": "base.438bd58e5ca238aae643.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.438bd58e5ca238aae643.hot-update.json",
+      "publicPath": "http://localhost:9091/base.438bd58e5ca238aae643.hot-update.json"
+    },
+    "base.4392c3f47ba672ab27ec.hot-update.js": {
+      "name": "base.4392c3f47ba672ab27ec.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.4392c3f47ba672ab27ec.hot-update.js",
+      "publicPath": "http://localhost:9091/base.4392c3f47ba672ab27ec.hot-update.js"
+    },
+    "base.4392c3f47ba672ab27ec.hot-update.json": {
+      "name": "base.4392c3f47ba672ab27ec.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.4392c3f47ba672ab27ec.hot-update.json",
+      "publicPath": "http://localhost:9091/base.4392c3f47ba672ab27ec.hot-update.json"
+    },
+    "base.491fd7554fb17b861172.hot-update.js": {
+      "name": "base.491fd7554fb17b861172.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.491fd7554fb17b861172.hot-update.js",
+      "publicPath": "http://localhost:9091/base.491fd7554fb17b861172.hot-update.js"
+    },
+    "base.491fd7554fb17b861172.hot-update.json": {
+      "name": "base.491fd7554fb17b861172.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.491fd7554fb17b861172.hot-update.json",
+      "publicPath": "http://localhost:9091/base.491fd7554fb17b861172.hot-update.json"
+    },
+    "base.4a3e465b0dd5021e5a4a.hot-update.js": {
+      "name": "base.4a3e465b0dd5021e5a4a.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.4a3e465b0dd5021e5a4a.hot-update.js",
+      "publicPath": "http://localhost:9091/base.4a3e465b0dd5021e5a4a.hot-update.js"
+    },
+    "base.4a3e465b0dd5021e5a4a.hot-update.json": {
+      "name": "base.4a3e465b0dd5021e5a4a.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.4a3e465b0dd5021e5a4a.hot-update.json",
+      "publicPath": "http://localhost:9091/base.4a3e465b0dd5021e5a4a.hot-update.json"
+    },
+    "base.4b59068325922db9da7f.hot-update.js": {
+      "name": "base.4b59068325922db9da7f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.4b59068325922db9da7f.hot-update.js",
+      "publicPath": "http://localhost:9091/base.4b59068325922db9da7f.hot-update.js"
+    },
+    "base.4b59068325922db9da7f.hot-update.json": {
+      "name": "base.4b59068325922db9da7f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.4b59068325922db9da7f.hot-update.json",
+      "publicPath": "http://localhost:9091/base.4b59068325922db9da7f.hot-update.json"
+    },
+    "base.5363234071d57d2c1cf3.hot-update.js": {
+      "name": "base.5363234071d57d2c1cf3.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.5363234071d57d2c1cf3.hot-update.js",
+      "publicPath": "http://localhost:9091/base.5363234071d57d2c1cf3.hot-update.js"
+    },
+    "base.5363234071d57d2c1cf3.hot-update.json": {
+      "name": "base.5363234071d57d2c1cf3.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.5363234071d57d2c1cf3.hot-update.json",
+      "publicPath": "http://localhost:9091/base.5363234071d57d2c1cf3.hot-update.json"
+    },
+    "base.563c82db9f831d7a32f8.hot-update.js": {
+      "name": "base.563c82db9f831d7a32f8.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.563c82db9f831d7a32f8.hot-update.js",
+      "publicPath": "http://localhost:9091/base.563c82db9f831d7a32f8.hot-update.js"
+    },
+    "base.563c82db9f831d7a32f8.hot-update.json": {
+      "name": "base.563c82db9f831d7a32f8.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.563c82db9f831d7a32f8.hot-update.json",
+      "publicPath": "http://localhost:9091/base.563c82db9f831d7a32f8.hot-update.json"
+    },
+    "base.5a118f191f7309d268e4.hot-update.js": {
+      "name": "base.5a118f191f7309d268e4.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.5a118f191f7309d268e4.hot-update.js",
+      "publicPath": "http://localhost:9091/base.5a118f191f7309d268e4.hot-update.js"
+    },
+    "base.5a118f191f7309d268e4.hot-update.json": {
+      "name": "base.5a118f191f7309d268e4.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.5a118f191f7309d268e4.hot-update.json",
+      "publicPath": "http://localhost:9091/base.5a118f191f7309d268e4.hot-update.json"
+    },
+    "base.694cd32b43f2ba03816f.hot-update.js": {
+      "name": "base.694cd32b43f2ba03816f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.694cd32b43f2ba03816f.hot-update.js",
+      "publicPath": "http://localhost:9091/base.694cd32b43f2ba03816f.hot-update.js"
+    },
+    "base.694cd32b43f2ba03816f.hot-update.json": {
+      "name": "base.694cd32b43f2ba03816f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.694cd32b43f2ba03816f.hot-update.json",
+      "publicPath": "http://localhost:9091/base.694cd32b43f2ba03816f.hot-update.json"
+    },
+    "base.697d84b10f28eb18efac.hot-update.js": {
+      "name": "base.697d84b10f28eb18efac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.697d84b10f28eb18efac.hot-update.js",
+      "publicPath": "http://localhost:9091/base.697d84b10f28eb18efac.hot-update.js"
+    },
+    "base.697d84b10f28eb18efac.hot-update.json": {
+      "name": "base.697d84b10f28eb18efac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.697d84b10f28eb18efac.hot-update.json",
+      "publicPath": "http://localhost:9091/base.697d84b10f28eb18efac.hot-update.json"
+    },
+    "base.729b1de36469b764bb88.hot-update.js": {
+      "name": "base.729b1de36469b764bb88.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.729b1de36469b764bb88.hot-update.js",
+      "publicPath": "http://localhost:9091/base.729b1de36469b764bb88.hot-update.js"
+    },
+    "base.729b1de36469b764bb88.hot-update.json": {
+      "name": "base.729b1de36469b764bb88.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.729b1de36469b764bb88.hot-update.json",
+      "publicPath": "http://localhost:9091/base.729b1de36469b764bb88.hot-update.json"
+    },
+    "base.7a5eeb6bfad2c0863a73.hot-update.js": {
+      "name": "base.7a5eeb6bfad2c0863a73.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.7a5eeb6bfad2c0863a73.hot-update.js",
+      "publicPath": "http://localhost:9091/base.7a5eeb6bfad2c0863a73.hot-update.js"
+    },
+    "base.7a5eeb6bfad2c0863a73.hot-update.json": {
+      "name": "base.7a5eeb6bfad2c0863a73.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.7a5eeb6bfad2c0863a73.hot-update.json",
+      "publicPath": "http://localhost:9091/base.7a5eeb6bfad2c0863a73.hot-update.json"
+    },
+    "base.7e5813d0c2ae1066e80d.hot-update.js": {
+      "name": "base.7e5813d0c2ae1066e80d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.7e5813d0c2ae1066e80d.hot-update.js",
+      "publicPath": "http://localhost:9091/base.7e5813d0c2ae1066e80d.hot-update.js"
+    },
+    "base.7e5813d0c2ae1066e80d.hot-update.json": {
+      "name": "base.7e5813d0c2ae1066e80d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.7e5813d0c2ae1066e80d.hot-update.json",
+      "publicPath": "http://localhost:9091/base.7e5813d0c2ae1066e80d.hot-update.json"
+    },
+    "base.8265ca63222d903c3b70.hot-update.js": {
+      "name": "base.8265ca63222d903c3b70.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.8265ca63222d903c3b70.hot-update.js",
+      "publicPath": "http://localhost:9091/base.8265ca63222d903c3b70.hot-update.js"
+    },
+    "base.8265ca63222d903c3b70.hot-update.json": {
+      "name": "base.8265ca63222d903c3b70.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.8265ca63222d903c3b70.hot-update.json",
+      "publicPath": "http://localhost:9091/base.8265ca63222d903c3b70.hot-update.json"
+    },
+    "base.84cd6c973a1c65002711.hot-update.js": {
+      "name": "base.84cd6c973a1c65002711.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.84cd6c973a1c65002711.hot-update.js",
+      "publicPath": "http://localhost:9091/base.84cd6c973a1c65002711.hot-update.js"
+    },
+    "base.84cd6c973a1c65002711.hot-update.json": {
+      "name": "base.84cd6c973a1c65002711.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.84cd6c973a1c65002711.hot-update.json",
+      "publicPath": "http://localhost:9091/base.84cd6c973a1c65002711.hot-update.json"
+    },
+    "base.859290089cea27848dac.hot-update.js": {
+      "name": "base.859290089cea27848dac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.859290089cea27848dac.hot-update.js",
+      "publicPath": "http://localhost:9091/base.859290089cea27848dac.hot-update.js"
+    },
+    "base.859290089cea27848dac.hot-update.json": {
+      "name": "base.859290089cea27848dac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.859290089cea27848dac.hot-update.json",
+      "publicPath": "http://localhost:9091/base.859290089cea27848dac.hot-update.json"
+    },
+    "base.932c9b29402cd0330fe5.hot-update.js": {
+      "name": "base.932c9b29402cd0330fe5.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.932c9b29402cd0330fe5.hot-update.js",
+      "publicPath": "http://localhost:9091/base.932c9b29402cd0330fe5.hot-update.js"
+    },
+    "base.932c9b29402cd0330fe5.hot-update.json": {
+      "name": "base.932c9b29402cd0330fe5.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.932c9b29402cd0330fe5.hot-update.json",
+      "publicPath": "http://localhost:9091/base.932c9b29402cd0330fe5.hot-update.json"
+    },
+    "base.9519b4a4cea2a6429bd1.hot-update.js": {
+      "name": "base.9519b4a4cea2a6429bd1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.9519b4a4cea2a6429bd1.hot-update.js",
+      "publicPath": "http://localhost:9091/base.9519b4a4cea2a6429bd1.hot-update.js"
+    },
+    "base.9519b4a4cea2a6429bd1.hot-update.json": {
+      "name": "base.9519b4a4cea2a6429bd1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.9519b4a4cea2a6429bd1.hot-update.json",
+      "publicPath": "http://localhost:9091/base.9519b4a4cea2a6429bd1.hot-update.json"
+    },
+    "base.9ea286761c7a4f12f957.hot-update.js": {
+      "name": "base.9ea286761c7a4f12f957.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.9ea286761c7a4f12f957.hot-update.js",
+      "publicPath": "http://localhost:9091/base.9ea286761c7a4f12f957.hot-update.js"
+    },
+    "base.9ea286761c7a4f12f957.hot-update.json": {
+      "name": "base.9ea286761c7a4f12f957.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.9ea286761c7a4f12f957.hot-update.json",
+      "publicPath": "http://localhost:9091/base.9ea286761c7a4f12f957.hot-update.json"
+    },
+    "base.aa9779a0c05ffff5b4d9.hot-update.js": {
+      "name": "base.aa9779a0c05ffff5b4d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.aa9779a0c05ffff5b4d9.hot-update.js",
+      "publicPath": "http://localhost:9091/base.aa9779a0c05ffff5b4d9.hot-update.js"
+    },
+    "base.aa9779a0c05ffff5b4d9.hot-update.json": {
+      "name": "base.aa9779a0c05ffff5b4d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.aa9779a0c05ffff5b4d9.hot-update.json",
+      "publicPath": "http://localhost:9091/base.aa9779a0c05ffff5b4d9.hot-update.json"
+    },
+    "base.b2c8634335186ba2ce61.hot-update.js": {
+      "name": "base.b2c8634335186ba2ce61.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.b2c8634335186ba2ce61.hot-update.js",
+      "publicPath": "http://localhost:9091/base.b2c8634335186ba2ce61.hot-update.js"
+    },
+    "base.b2c8634335186ba2ce61.hot-update.json": {
+      "name": "base.b2c8634335186ba2ce61.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.b2c8634335186ba2ce61.hot-update.json",
+      "publicPath": "http://localhost:9091/base.b2c8634335186ba2ce61.hot-update.json"
+    },
+    "base.c21138369f50868a1c84.hot-update.js": {
+      "name": "base.c21138369f50868a1c84.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.c21138369f50868a1c84.hot-update.js",
+      "publicPath": "http://localhost:9091/base.c21138369f50868a1c84.hot-update.js"
+    },
+    "base.c21138369f50868a1c84.hot-update.json": {
+      "name": "base.c21138369f50868a1c84.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.c21138369f50868a1c84.hot-update.json",
+      "publicPath": "http://localhost:9091/base.c21138369f50868a1c84.hot-update.json"
+    },
+    "base.c98e6eeeaecd550eeb68.hot-update.js": {
+      "name": "base.c98e6eeeaecd550eeb68.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.c98e6eeeaecd550eeb68.hot-update.js",
+      "publicPath": "http://localhost:9091/base.c98e6eeeaecd550eeb68.hot-update.js"
+    },
+    "base.c98e6eeeaecd550eeb68.hot-update.json": {
+      "name": "base.c98e6eeeaecd550eeb68.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.c98e6eeeaecd550eeb68.hot-update.json",
+      "publicPath": "http://localhost:9091/base.c98e6eeeaecd550eeb68.hot-update.json"
+    },
+    "base.ce299ceced7e8e28ff91.hot-update.js": {
+      "name": "base.ce299ceced7e8e28ff91.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.ce299ceced7e8e28ff91.hot-update.js",
+      "publicPath": "http://localhost:9091/base.ce299ceced7e8e28ff91.hot-update.js"
+    },
+    "base.ce299ceced7e8e28ff91.hot-update.json": {
+      "name": "base.ce299ceced7e8e28ff91.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.ce299ceced7e8e28ff91.hot-update.json",
+      "publicPath": "http://localhost:9091/base.ce299ceced7e8e28ff91.hot-update.json"
+    },
+    "base.dbb24465952fb2599863.hot-update.js": {
+      "name": "base.dbb24465952fb2599863.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.dbb24465952fb2599863.hot-update.js",
+      "publicPath": "http://localhost:9091/base.dbb24465952fb2599863.hot-update.js"
+    },
+    "base.dbb24465952fb2599863.hot-update.json": {
+      "name": "base.dbb24465952fb2599863.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.dbb24465952fb2599863.hot-update.json",
+      "publicPath": "http://localhost:9091/base.dbb24465952fb2599863.hot-update.json"
+    },
+    "base.e22f9a2f4725114610a9.hot-update.js": {
+      "name": "base.e22f9a2f4725114610a9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e22f9a2f4725114610a9.hot-update.js",
+      "publicPath": "http://localhost:9091/base.e22f9a2f4725114610a9.hot-update.js"
+    },
+    "base.e22f9a2f4725114610a9.hot-update.json": {
+      "name": "base.e22f9a2f4725114610a9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e22f9a2f4725114610a9.hot-update.json",
+      "publicPath": "http://localhost:9091/base.e22f9a2f4725114610a9.hot-update.json"
+    },
+    "base.e68d8d69ec59b1bb65bc.hot-update.js": {
+      "name": "base.e68d8d69ec59b1bb65bc.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e68d8d69ec59b1bb65bc.hot-update.js",
+      "publicPath": "http://localhost:9091/base.e68d8d69ec59b1bb65bc.hot-update.js"
+    },
+    "base.e68d8d69ec59b1bb65bc.hot-update.json": {
+      "name": "base.e68d8d69ec59b1bb65bc.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e68d8d69ec59b1bb65bc.hot-update.json",
+      "publicPath": "http://localhost:9091/base.e68d8d69ec59b1bb65bc.hot-update.json"
+    },
+    "base.e7b1b1a0a2337661f68d.hot-update.js": {
+      "name": "base.e7b1b1a0a2337661f68d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e7b1b1a0a2337661f68d.hot-update.js",
+      "publicPath": "http://localhost:9091/base.e7b1b1a0a2337661f68d.hot-update.js"
+    },
+    "base.e7b1b1a0a2337661f68d.hot-update.json": {
+      "name": "base.e7b1b1a0a2337661f68d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e7b1b1a0a2337661f68d.hot-update.json",
+      "publicPath": "http://localhost:9091/base.e7b1b1a0a2337661f68d.hot-update.json"
+    },
+    "base.e911e8ffaaf483e62f42.hot-update.js": {
+      "name": "base.e911e8ffaaf483e62f42.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e911e8ffaaf483e62f42.hot-update.js",
+      "publicPath": "http://localhost:9091/base.e911e8ffaaf483e62f42.hot-update.js"
+    },
+    "base.e911e8ffaaf483e62f42.hot-update.json": {
+      "name": "base.e911e8ffaaf483e62f42.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.e911e8ffaaf483e62f42.hot-update.json",
+      "publicPath": "http://localhost:9091/base.e911e8ffaaf483e62f42.hot-update.json"
+    },
+    "base.f6e0a561ec651d91d4b9.hot-update.js": {
+      "name": "base.f6e0a561ec651d91d4b9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.f6e0a561ec651d91d4b9.hot-update.js",
+      "publicPath": "http://localhost:9091/base.f6e0a561ec651d91d4b9.hot-update.js"
+    },
+    "base.f6e0a561ec651d91d4b9.hot-update.json": {
+      "name": "base.f6e0a561ec651d91d4b9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/base.f6e0a561ec651d91d4b9.hot-update.json",
+      "publicPath": "http://localhost:9091/base.f6e0a561ec651d91d4b9.hot-update.json"
+    },
+    "costsheet.00e25c74e351a0858221.hot-update.js": {
+      "name": "costsheet.00e25c74e351a0858221.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.00e25c74e351a0858221.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.00e25c74e351a0858221.hot-update.js"
+    },
+    "costsheet.00e25c74e351a0858221.hot-update.json": {
+      "name": "costsheet.00e25c74e351a0858221.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.00e25c74e351a0858221.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.00e25c74e351a0858221.hot-update.json"
+    },
+    "costsheet.057ad07c8539ad7782ce.hot-update.js": {
+      "name": "costsheet.057ad07c8539ad7782ce.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.057ad07c8539ad7782ce.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.057ad07c8539ad7782ce.hot-update.js"
+    },
+    "costsheet.057ad07c8539ad7782ce.hot-update.json": {
+      "name": "costsheet.057ad07c8539ad7782ce.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.057ad07c8539ad7782ce.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.057ad07c8539ad7782ce.hot-update.json"
+    },
+    "costsheet.081a9ca5b2159a495541.hot-update.js": {
+      "name": "costsheet.081a9ca5b2159a495541.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.081a9ca5b2159a495541.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.081a9ca5b2159a495541.hot-update.js"
+    },
+    "costsheet.081a9ca5b2159a495541.hot-update.json": {
+      "name": "costsheet.081a9ca5b2159a495541.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.081a9ca5b2159a495541.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.081a9ca5b2159a495541.hot-update.json"
+    },
+    "costsheet.134c59ee6f970351de1b.hot-update.js": {
+      "name": "costsheet.134c59ee6f970351de1b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.134c59ee6f970351de1b.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.134c59ee6f970351de1b.hot-update.js"
+    },
+    "costsheet.134c59ee6f970351de1b.hot-update.json": {
+      "name": "costsheet.134c59ee6f970351de1b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.134c59ee6f970351de1b.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.134c59ee6f970351de1b.hot-update.json"
+    },
+    "costsheet.17eb2c72f0f20a7b59a1.hot-update.js": {
+      "name": "costsheet.17eb2c72f0f20a7b59a1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.17eb2c72f0f20a7b59a1.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.17eb2c72f0f20a7b59a1.hot-update.js"
+    },
+    "costsheet.17eb2c72f0f20a7b59a1.hot-update.json": {
+      "name": "costsheet.17eb2c72f0f20a7b59a1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.17eb2c72f0f20a7b59a1.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.17eb2c72f0f20a7b59a1.hot-update.json"
+    },
+    "costsheet.1a28910e43ad4061d11d.hot-update.js": {
+      "name": "costsheet.1a28910e43ad4061d11d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.1a28910e43ad4061d11d.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.1a28910e43ad4061d11d.hot-update.js"
+    },
+    "costsheet.1a28910e43ad4061d11d.hot-update.json": {
+      "name": "costsheet.1a28910e43ad4061d11d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.1a28910e43ad4061d11d.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.1a28910e43ad4061d11d.hot-update.json"
+    },
+    "costsheet.1c24c4a866fcd8879a5b.hot-update.js": {
+      "name": "costsheet.1c24c4a866fcd8879a5b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.1c24c4a866fcd8879a5b.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.1c24c4a866fcd8879a5b.hot-update.js"
+    },
+    "costsheet.1c24c4a866fcd8879a5b.hot-update.json": {
+      "name": "costsheet.1c24c4a866fcd8879a5b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.1c24c4a866fcd8879a5b.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.1c24c4a866fcd8879a5b.hot-update.json"
+    },
+    "costsheet.21cd2ea8e6bfe58862d9.hot-update.js": {
+      "name": "costsheet.21cd2ea8e6bfe58862d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.21cd2ea8e6bfe58862d9.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.21cd2ea8e6bfe58862d9.hot-update.js"
+    },
+    "costsheet.21cd2ea8e6bfe58862d9.hot-update.json": {
+      "name": "costsheet.21cd2ea8e6bfe58862d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.21cd2ea8e6bfe58862d9.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.21cd2ea8e6bfe58862d9.hot-update.json"
+    },
+    "costsheet.24f954d199b54b1922f2.hot-update.js": {
+      "name": "costsheet.24f954d199b54b1922f2.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.24f954d199b54b1922f2.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.24f954d199b54b1922f2.hot-update.js"
+    },
+    "costsheet.24f954d199b54b1922f2.hot-update.json": {
+      "name": "costsheet.24f954d199b54b1922f2.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.24f954d199b54b1922f2.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.24f954d199b54b1922f2.hot-update.json"
+    },
+    "costsheet.281fe3287dc49694ab44.hot-update.js": {
+      "name": "costsheet.281fe3287dc49694ab44.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.281fe3287dc49694ab44.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.281fe3287dc49694ab44.hot-update.js"
+    },
+    "costsheet.281fe3287dc49694ab44.hot-update.json": {
+      "name": "costsheet.281fe3287dc49694ab44.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.281fe3287dc49694ab44.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.281fe3287dc49694ab44.hot-update.json"
+    },
+    "costsheet.29e165348ea0711db1be.hot-update.js": {
+      "name": "costsheet.29e165348ea0711db1be.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.29e165348ea0711db1be.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.29e165348ea0711db1be.hot-update.js"
+    },
+    "costsheet.29e165348ea0711db1be.hot-update.json": {
+      "name": "costsheet.29e165348ea0711db1be.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.29e165348ea0711db1be.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.29e165348ea0711db1be.hot-update.json"
+    },
+    "costsheet.2e317cdc735438779c79.hot-update.js": {
+      "name": "costsheet.2e317cdc735438779c79.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.2e317cdc735438779c79.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.2e317cdc735438779c79.hot-update.js"
+    },
+    "costsheet.2e317cdc735438779c79.hot-update.json": {
+      "name": "costsheet.2e317cdc735438779c79.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.2e317cdc735438779c79.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.2e317cdc735438779c79.hot-update.json"
+    },
+    "costsheet.3ab73f3120b4e873860c.hot-update.js": {
+      "name": "costsheet.3ab73f3120b4e873860c.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.3ab73f3120b4e873860c.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.3ab73f3120b4e873860c.hot-update.js"
+    },
+    "costsheet.3ab73f3120b4e873860c.hot-update.json": {
+      "name": "costsheet.3ab73f3120b4e873860c.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.3ab73f3120b4e873860c.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.3ab73f3120b4e873860c.hot-update.json"
+    },
+    "costsheet.3bfe672d01c4f6cb7fdf.hot-update.js": {
+      "name": "costsheet.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.3bfe672d01c4f6cb7fdf.hot-update.js"
+    },
+    "costsheet.3bfe672d01c4f6cb7fdf.hot-update.json": {
+      "name": "costsheet.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.3bfe672d01c4f6cb7fdf.hot-update.json"
+    },
+    "costsheet.3dec6594cb4d0f279795.hot-update.js": {
+      "name": "costsheet.3dec6594cb4d0f279795.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.3dec6594cb4d0f279795.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.3dec6594cb4d0f279795.hot-update.js"
+    },
+    "costsheet.3dec6594cb4d0f279795.hot-update.json": {
+      "name": "costsheet.3dec6594cb4d0f279795.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.3dec6594cb4d0f279795.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.3dec6594cb4d0f279795.hot-update.json"
+    },
+    "costsheet.438bd58e5ca238aae643.hot-update.js": {
+      "name": "costsheet.438bd58e5ca238aae643.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.438bd58e5ca238aae643.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.438bd58e5ca238aae643.hot-update.js"
+    },
+    "costsheet.438bd58e5ca238aae643.hot-update.json": {
+      "name": "costsheet.438bd58e5ca238aae643.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.438bd58e5ca238aae643.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.438bd58e5ca238aae643.hot-update.json"
+    },
+    "costsheet.4392c3f47ba672ab27ec.hot-update.js": {
+      "name": "costsheet.4392c3f47ba672ab27ec.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.4392c3f47ba672ab27ec.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.4392c3f47ba672ab27ec.hot-update.js"
+    },
+    "costsheet.4392c3f47ba672ab27ec.hot-update.json": {
+      "name": "costsheet.4392c3f47ba672ab27ec.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.4392c3f47ba672ab27ec.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.4392c3f47ba672ab27ec.hot-update.json"
+    },
+    "costsheet.491fd7554fb17b861172.hot-update.js": {
+      "name": "costsheet.491fd7554fb17b861172.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.491fd7554fb17b861172.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.491fd7554fb17b861172.hot-update.js"
+    },
+    "costsheet.491fd7554fb17b861172.hot-update.json": {
+      "name": "costsheet.491fd7554fb17b861172.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.491fd7554fb17b861172.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.491fd7554fb17b861172.hot-update.json"
+    },
+    "costsheet.4a3e465b0dd5021e5a4a.hot-update.js": {
+      "name": "costsheet.4a3e465b0dd5021e5a4a.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.4a3e465b0dd5021e5a4a.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.4a3e465b0dd5021e5a4a.hot-update.js"
+    },
+    "costsheet.4a3e465b0dd5021e5a4a.hot-update.json": {
+      "name": "costsheet.4a3e465b0dd5021e5a4a.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.4a3e465b0dd5021e5a4a.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.4a3e465b0dd5021e5a4a.hot-update.json"
+    },
+    "costsheet.4b59068325922db9da7f.hot-update.js": {
+      "name": "costsheet.4b59068325922db9da7f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.4b59068325922db9da7f.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.4b59068325922db9da7f.hot-update.js"
+    },
+    "costsheet.4b59068325922db9da7f.hot-update.json": {
+      "name": "costsheet.4b59068325922db9da7f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.4b59068325922db9da7f.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.4b59068325922db9da7f.hot-update.json"
+    },
+    "costsheet.5363234071d57d2c1cf3.hot-update.js": {
+      "name": "costsheet.5363234071d57d2c1cf3.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.5363234071d57d2c1cf3.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.5363234071d57d2c1cf3.hot-update.js"
+    },
+    "costsheet.5363234071d57d2c1cf3.hot-update.json": {
+      "name": "costsheet.5363234071d57d2c1cf3.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.5363234071d57d2c1cf3.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.5363234071d57d2c1cf3.hot-update.json"
+    },
+    "costsheet.563c82db9f831d7a32f8.hot-update.js": {
+      "name": "costsheet.563c82db9f831d7a32f8.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.563c82db9f831d7a32f8.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.563c82db9f831d7a32f8.hot-update.js"
+    },
+    "costsheet.563c82db9f831d7a32f8.hot-update.json": {
+      "name": "costsheet.563c82db9f831d7a32f8.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.563c82db9f831d7a32f8.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.563c82db9f831d7a32f8.hot-update.json"
+    },
+    "costsheet.5a118f191f7309d268e4.hot-update.js": {
+      "name": "costsheet.5a118f191f7309d268e4.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.5a118f191f7309d268e4.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.5a118f191f7309d268e4.hot-update.js"
+    },
+    "costsheet.5a118f191f7309d268e4.hot-update.json": {
+      "name": "costsheet.5a118f191f7309d268e4.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.5a118f191f7309d268e4.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.5a118f191f7309d268e4.hot-update.json"
+    },
+    "costsheet.694cd32b43f2ba03816f.hot-update.js": {
+      "name": "costsheet.694cd32b43f2ba03816f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.694cd32b43f2ba03816f.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.694cd32b43f2ba03816f.hot-update.js"
+    },
+    "costsheet.694cd32b43f2ba03816f.hot-update.json": {
+      "name": "costsheet.694cd32b43f2ba03816f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.694cd32b43f2ba03816f.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.694cd32b43f2ba03816f.hot-update.json"
+    },
+    "costsheet.697d84b10f28eb18efac.hot-update.js": {
+      "name": "costsheet.697d84b10f28eb18efac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.697d84b10f28eb18efac.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.697d84b10f28eb18efac.hot-update.js"
+    },
+    "costsheet.697d84b10f28eb18efac.hot-update.json": {
+      "name": "costsheet.697d84b10f28eb18efac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.697d84b10f28eb18efac.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.697d84b10f28eb18efac.hot-update.json"
+    },
+    "costsheet.729b1de36469b764bb88.hot-update.js": {
+      "name": "costsheet.729b1de36469b764bb88.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.729b1de36469b764bb88.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.729b1de36469b764bb88.hot-update.js"
+    },
+    "costsheet.729b1de36469b764bb88.hot-update.json": {
+      "name": "costsheet.729b1de36469b764bb88.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.729b1de36469b764bb88.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.729b1de36469b764bb88.hot-update.json"
+    },
+    "costsheet.7a5eeb6bfad2c0863a73.hot-update.js": {
+      "name": "costsheet.7a5eeb6bfad2c0863a73.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.7a5eeb6bfad2c0863a73.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.7a5eeb6bfad2c0863a73.hot-update.js"
+    },
+    "costsheet.7a5eeb6bfad2c0863a73.hot-update.json": {
+      "name": "costsheet.7a5eeb6bfad2c0863a73.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.7a5eeb6bfad2c0863a73.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.7a5eeb6bfad2c0863a73.hot-update.json"
+    },
+    "costsheet.7e5813d0c2ae1066e80d.hot-update.js": {
+      "name": "costsheet.7e5813d0c2ae1066e80d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.7e5813d0c2ae1066e80d.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.7e5813d0c2ae1066e80d.hot-update.js"
+    },
+    "costsheet.7e5813d0c2ae1066e80d.hot-update.json": {
+      "name": "costsheet.7e5813d0c2ae1066e80d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.7e5813d0c2ae1066e80d.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.7e5813d0c2ae1066e80d.hot-update.json"
+    },
+    "costsheet.8265ca63222d903c3b70.hot-update.js": {
+      "name": "costsheet.8265ca63222d903c3b70.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.8265ca63222d903c3b70.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.8265ca63222d903c3b70.hot-update.js"
+    },
+    "costsheet.8265ca63222d903c3b70.hot-update.json": {
+      "name": "costsheet.8265ca63222d903c3b70.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.8265ca63222d903c3b70.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.8265ca63222d903c3b70.hot-update.json"
+    },
+    "costsheet.84cd6c973a1c65002711.hot-update.js": {
+      "name": "costsheet.84cd6c973a1c65002711.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.84cd6c973a1c65002711.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.84cd6c973a1c65002711.hot-update.js"
+    },
+    "costsheet.84cd6c973a1c65002711.hot-update.json": {
+      "name": "costsheet.84cd6c973a1c65002711.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.84cd6c973a1c65002711.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.84cd6c973a1c65002711.hot-update.json"
+    },
+    "costsheet.859290089cea27848dac.hot-update.js": {
+      "name": "costsheet.859290089cea27848dac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.859290089cea27848dac.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.859290089cea27848dac.hot-update.js"
+    },
+    "costsheet.859290089cea27848dac.hot-update.json": {
+      "name": "costsheet.859290089cea27848dac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.859290089cea27848dac.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.859290089cea27848dac.hot-update.json"
+    },
+    "costsheet.932c9b29402cd0330fe5.hot-update.js": {
+      "name": "costsheet.932c9b29402cd0330fe5.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.932c9b29402cd0330fe5.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.932c9b29402cd0330fe5.hot-update.js"
+    },
+    "costsheet.932c9b29402cd0330fe5.hot-update.json": {
+      "name": "costsheet.932c9b29402cd0330fe5.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.932c9b29402cd0330fe5.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.932c9b29402cd0330fe5.hot-update.json"
+    },
+    "costsheet.9519b4a4cea2a6429bd1.hot-update.js": {
+      "name": "costsheet.9519b4a4cea2a6429bd1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.9519b4a4cea2a6429bd1.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.9519b4a4cea2a6429bd1.hot-update.js"
+    },
+    "costsheet.9519b4a4cea2a6429bd1.hot-update.json": {
+      "name": "costsheet.9519b4a4cea2a6429bd1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.9519b4a4cea2a6429bd1.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.9519b4a4cea2a6429bd1.hot-update.json"
+    },
+    "costsheet.9ea286761c7a4f12f957.hot-update.js": {
+      "name": "costsheet.9ea286761c7a4f12f957.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.9ea286761c7a4f12f957.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.9ea286761c7a4f12f957.hot-update.js"
+    },
+    "costsheet.9ea286761c7a4f12f957.hot-update.json": {
+      "name": "costsheet.9ea286761c7a4f12f957.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.9ea286761c7a4f12f957.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.9ea286761c7a4f12f957.hot-update.json"
+    },
+    "costsheet.aa9779a0c05ffff5b4d9.hot-update.js": {
+      "name": "costsheet.aa9779a0c05ffff5b4d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.aa9779a0c05ffff5b4d9.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.aa9779a0c05ffff5b4d9.hot-update.js"
+    },
+    "costsheet.aa9779a0c05ffff5b4d9.hot-update.json": {
+      "name": "costsheet.aa9779a0c05ffff5b4d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.aa9779a0c05ffff5b4d9.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.aa9779a0c05ffff5b4d9.hot-update.json"
+    },
+    "costsheet.b2c8634335186ba2ce61.hot-update.js": {
+      "name": "costsheet.b2c8634335186ba2ce61.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.b2c8634335186ba2ce61.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.b2c8634335186ba2ce61.hot-update.js"
+    },
+    "costsheet.b2c8634335186ba2ce61.hot-update.json": {
+      "name": "costsheet.b2c8634335186ba2ce61.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.b2c8634335186ba2ce61.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.b2c8634335186ba2ce61.hot-update.json"
+    },
+    "costsheet.c21138369f50868a1c84.hot-update.js": {
+      "name": "costsheet.c21138369f50868a1c84.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.c21138369f50868a1c84.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.c21138369f50868a1c84.hot-update.js"
+    },
+    "costsheet.c21138369f50868a1c84.hot-update.json": {
+      "name": "costsheet.c21138369f50868a1c84.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.c21138369f50868a1c84.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.c21138369f50868a1c84.hot-update.json"
+    },
+    "costsheet.c98e6eeeaecd550eeb68.hot-update.js": {
+      "name": "costsheet.c98e6eeeaecd550eeb68.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.c98e6eeeaecd550eeb68.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.c98e6eeeaecd550eeb68.hot-update.js"
+    },
+    "costsheet.c98e6eeeaecd550eeb68.hot-update.json": {
+      "name": "costsheet.c98e6eeeaecd550eeb68.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.c98e6eeeaecd550eeb68.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.c98e6eeeaecd550eeb68.hot-update.json"
+    },
+    "costsheet.ce299ceced7e8e28ff91.hot-update.js": {
+      "name": "costsheet.ce299ceced7e8e28ff91.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.ce299ceced7e8e28ff91.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.ce299ceced7e8e28ff91.hot-update.js"
+    },
+    "costsheet.ce299ceced7e8e28ff91.hot-update.json": {
+      "name": "costsheet.ce299ceced7e8e28ff91.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.ce299ceced7e8e28ff91.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.ce299ceced7e8e28ff91.hot-update.json"
+    },
+    "costsheet.dbb24465952fb2599863.hot-update.js": {
+      "name": "costsheet.dbb24465952fb2599863.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.dbb24465952fb2599863.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.dbb24465952fb2599863.hot-update.js"
+    },
+    "costsheet.dbb24465952fb2599863.hot-update.json": {
+      "name": "costsheet.dbb24465952fb2599863.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.dbb24465952fb2599863.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.dbb24465952fb2599863.hot-update.json"
+    },
+    "costsheet.e22f9a2f4725114610a9.hot-update.js": {
+      "name": "costsheet.e22f9a2f4725114610a9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e22f9a2f4725114610a9.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.e22f9a2f4725114610a9.hot-update.js"
+    },
+    "costsheet.e22f9a2f4725114610a9.hot-update.json": {
+      "name": "costsheet.e22f9a2f4725114610a9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e22f9a2f4725114610a9.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.e22f9a2f4725114610a9.hot-update.json"
+    },
+    "costsheet.e68d8d69ec59b1bb65bc.hot-update.js": {
+      "name": "costsheet.e68d8d69ec59b1bb65bc.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e68d8d69ec59b1bb65bc.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.e68d8d69ec59b1bb65bc.hot-update.js"
+    },
+    "costsheet.e68d8d69ec59b1bb65bc.hot-update.json": {
+      "name": "costsheet.e68d8d69ec59b1bb65bc.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e68d8d69ec59b1bb65bc.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.e68d8d69ec59b1bb65bc.hot-update.json"
+    },
+    "costsheet.e7b1b1a0a2337661f68d.hot-update.js": {
+      "name": "costsheet.e7b1b1a0a2337661f68d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e7b1b1a0a2337661f68d.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.e7b1b1a0a2337661f68d.hot-update.js"
+    },
+    "costsheet.e7b1b1a0a2337661f68d.hot-update.json": {
+      "name": "costsheet.e7b1b1a0a2337661f68d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e7b1b1a0a2337661f68d.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.e7b1b1a0a2337661f68d.hot-update.json"
+    },
+    "costsheet.e911e8ffaaf483e62f42.hot-update.js": {
+      "name": "costsheet.e911e8ffaaf483e62f42.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e911e8ffaaf483e62f42.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.e911e8ffaaf483e62f42.hot-update.js"
+    },
+    "costsheet.e911e8ffaaf483e62f42.hot-update.json": {
+      "name": "costsheet.e911e8ffaaf483e62f42.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.e911e8ffaaf483e62f42.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.e911e8ffaaf483e62f42.hot-update.json"
+    },
+    "costsheet.f6e0a561ec651d91d4b9.hot-update.js": {
+      "name": "costsheet.f6e0a561ec651d91d4b9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.f6e0a561ec651d91d4b9.hot-update.js",
+      "publicPath": "http://localhost:9091/costsheet.f6e0a561ec651d91d4b9.hot-update.js"
+    },
+    "costsheet.f6e0a561ec651d91d4b9.hot-update.json": {
+      "name": "costsheet.f6e0a561ec651d91d4b9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/costsheet.f6e0a561ec651d91d4b9.hot-update.json",
+      "publicPath": "http://localhost:9091/costsheet.f6e0a561ec651d91d4b9.hot-update.json"
+    },
+    "css/base.css": {
+      "name": "css/base.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/base.css",
+      "publicPath": "http://localhost:9091/css/base.css"
+    },
+    "css/costsheet.css": {
+      "name": "css/costsheet.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/costsheet.css",
+      "publicPath": "http://localhost:9091/css/costsheet.css"
+    },
+    "css/invoice-uploader.css": {
+      "name": "css/invoice-uploader.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoice-uploader.css",
+      "publicPath": "http://localhost:9091/css/invoice-uploader.css"
+    },
+    "css/invoices-list.css": {
+      "name": "css/invoices-list.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/invoices-list.css",
+      "publicPath": "http://localhost:9091/css/invoices-list.css"
+    },
+    "css/pipeline.css": {
+      "name": "css/pipeline.css",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/css/pipeline.css",
+      "publicPath": "http://localhost:9091/css/pipeline.css"
+    },
+    "images/bwcat_logo_720x720.png": {
+      "name": "images/bwcat_logo_720x720.png",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/images/bwcat_logo_720x720.png",
+      "publicPath": "http://localhost:9091/images/bwcat_logo_720x720.png"
+    },
+    "images/bwcat_logo_sm.png": {
+      "name": "images/bwcat_logo_sm.png",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/images/bwcat_logo_sm.png",
+      "publicPath": "http://localhost:9091/images/bwcat_logo_sm.png"
+    },
+    "images/check2-circle.ef84a970115e0ccc2e38.svg": {
+      "name": "images/check2-circle.ef84a970115e0ccc2e38.svg",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/images/check2-circle.ef84a970115e0ccc2e38.svg",
+      "publicPath": "http://localhost:9091/images/check2-circle.ef84a970115e0ccc2e38.svg"
+    },
+    "images/pencil-square.3bb70a9771e41b193ffd.svg": {
+      "name": "images/pencil-square.3bb70a9771e41b193ffd.svg",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/images/pencil-square.3bb70a9771e41b193ffd.svg",
+      "publicPath": "http://localhost:9091/images/pencil-square.3bb70a9771e41b193ffd.svg"
+    },
+    "images/trash3-fill.4af97979c7b17f44d3fd.svg": {
+      "name": "images/trash3-fill.4af97979c7b17f44d3fd.svg",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/images/trash3-fill.4af97979c7b17f44d3fd.svg",
+      "publicPath": "http://localhost:9091/images/trash3-fill.4af97979c7b17f44d3fd.svg"
+    },
+    "invoice-uploader.00e25c74e351a0858221.hot-update.js": {
+      "name": "invoice-uploader.00e25c74e351a0858221.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.00e25c74e351a0858221.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.00e25c74e351a0858221.hot-update.js"
+    },
+    "invoice-uploader.00e25c74e351a0858221.hot-update.json": {
+      "name": "invoice-uploader.00e25c74e351a0858221.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.00e25c74e351a0858221.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.00e25c74e351a0858221.hot-update.json"
+    },
+    "invoice-uploader.057ad07c8539ad7782ce.hot-update.js": {
+      "name": "invoice-uploader.057ad07c8539ad7782ce.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.057ad07c8539ad7782ce.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.057ad07c8539ad7782ce.hot-update.js"
+    },
+    "invoice-uploader.057ad07c8539ad7782ce.hot-update.json": {
+      "name": "invoice-uploader.057ad07c8539ad7782ce.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.057ad07c8539ad7782ce.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.057ad07c8539ad7782ce.hot-update.json"
+    },
+    "invoice-uploader.081a9ca5b2159a495541.hot-update.js": {
+      "name": "invoice-uploader.081a9ca5b2159a495541.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.081a9ca5b2159a495541.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.081a9ca5b2159a495541.hot-update.js"
+    },
+    "invoice-uploader.081a9ca5b2159a495541.hot-update.json": {
+      "name": "invoice-uploader.081a9ca5b2159a495541.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.081a9ca5b2159a495541.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.081a9ca5b2159a495541.hot-update.json"
+    },
+    "invoice-uploader.134c59ee6f970351de1b.hot-update.js": {
+      "name": "invoice-uploader.134c59ee6f970351de1b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.134c59ee6f970351de1b.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.134c59ee6f970351de1b.hot-update.js"
+    },
+    "invoice-uploader.134c59ee6f970351de1b.hot-update.json": {
+      "name": "invoice-uploader.134c59ee6f970351de1b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.134c59ee6f970351de1b.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.134c59ee6f970351de1b.hot-update.json"
+    },
+    "invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.js": {
+      "name": "invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.js"
+    },
+    "invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.json": {
+      "name": "invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.17eb2c72f0f20a7b59a1.hot-update.json"
+    },
+    "invoice-uploader.1a28910e43ad4061d11d.hot-update.js": {
+      "name": "invoice-uploader.1a28910e43ad4061d11d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.1a28910e43ad4061d11d.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.1a28910e43ad4061d11d.hot-update.js"
+    },
+    "invoice-uploader.1a28910e43ad4061d11d.hot-update.json": {
+      "name": "invoice-uploader.1a28910e43ad4061d11d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.1a28910e43ad4061d11d.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.1a28910e43ad4061d11d.hot-update.json"
+    },
+    "invoice-uploader.1c24c4a866fcd8879a5b.hot-update.js": {
+      "name": "invoice-uploader.1c24c4a866fcd8879a5b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.1c24c4a866fcd8879a5b.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.1c24c4a866fcd8879a5b.hot-update.js"
+    },
+    "invoice-uploader.1c24c4a866fcd8879a5b.hot-update.json": {
+      "name": "invoice-uploader.1c24c4a866fcd8879a5b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.1c24c4a866fcd8879a5b.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.1c24c4a866fcd8879a5b.hot-update.json"
+    },
+    "invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.js": {
+      "name": "invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.js"
+    },
+    "invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.json": {
+      "name": "invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.21cd2ea8e6bfe58862d9.hot-update.json"
+    },
+    "invoice-uploader.24f954d199b54b1922f2.hot-update.js": {
+      "name": "invoice-uploader.24f954d199b54b1922f2.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.24f954d199b54b1922f2.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.24f954d199b54b1922f2.hot-update.js"
+    },
+    "invoice-uploader.24f954d199b54b1922f2.hot-update.json": {
+      "name": "invoice-uploader.24f954d199b54b1922f2.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.24f954d199b54b1922f2.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.24f954d199b54b1922f2.hot-update.json"
+    },
+    "invoice-uploader.281fe3287dc49694ab44.hot-update.js": {
+      "name": "invoice-uploader.281fe3287dc49694ab44.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.281fe3287dc49694ab44.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.281fe3287dc49694ab44.hot-update.js"
+    },
+    "invoice-uploader.281fe3287dc49694ab44.hot-update.json": {
+      "name": "invoice-uploader.281fe3287dc49694ab44.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.281fe3287dc49694ab44.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.281fe3287dc49694ab44.hot-update.json"
+    },
+    "invoice-uploader.29e165348ea0711db1be.hot-update.js": {
+      "name": "invoice-uploader.29e165348ea0711db1be.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.29e165348ea0711db1be.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.29e165348ea0711db1be.hot-update.js"
+    },
+    "invoice-uploader.29e165348ea0711db1be.hot-update.json": {
+      "name": "invoice-uploader.29e165348ea0711db1be.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.29e165348ea0711db1be.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.29e165348ea0711db1be.hot-update.json"
+    },
+    "invoice-uploader.2e317cdc735438779c79.hot-update.js": {
+      "name": "invoice-uploader.2e317cdc735438779c79.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.2e317cdc735438779c79.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.2e317cdc735438779c79.hot-update.js"
+    },
+    "invoice-uploader.2e317cdc735438779c79.hot-update.json": {
+      "name": "invoice-uploader.2e317cdc735438779c79.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.2e317cdc735438779c79.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.2e317cdc735438779c79.hot-update.json"
+    },
+    "invoice-uploader.3ab73f3120b4e873860c.hot-update.js": {
+      "name": "invoice-uploader.3ab73f3120b4e873860c.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.3ab73f3120b4e873860c.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.3ab73f3120b4e873860c.hot-update.js"
+    },
+    "invoice-uploader.3ab73f3120b4e873860c.hot-update.json": {
+      "name": "invoice-uploader.3ab73f3120b4e873860c.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.3ab73f3120b4e873860c.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.3ab73f3120b4e873860c.hot-update.json"
+    },
+    "invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.js": {
+      "name": "invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.js"
+    },
+    "invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.json": {
+      "name": "invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.3bfe672d01c4f6cb7fdf.hot-update.json"
+    },
+    "invoice-uploader.3dec6594cb4d0f279795.hot-update.js": {
+      "name": "invoice-uploader.3dec6594cb4d0f279795.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.3dec6594cb4d0f279795.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.3dec6594cb4d0f279795.hot-update.js"
+    },
+    "invoice-uploader.3dec6594cb4d0f279795.hot-update.json": {
+      "name": "invoice-uploader.3dec6594cb4d0f279795.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.3dec6594cb4d0f279795.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.3dec6594cb4d0f279795.hot-update.json"
+    },
+    "invoice-uploader.438bd58e5ca238aae643.hot-update.js": {
+      "name": "invoice-uploader.438bd58e5ca238aae643.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.438bd58e5ca238aae643.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.438bd58e5ca238aae643.hot-update.js"
+    },
+    "invoice-uploader.438bd58e5ca238aae643.hot-update.json": {
+      "name": "invoice-uploader.438bd58e5ca238aae643.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.438bd58e5ca238aae643.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.438bd58e5ca238aae643.hot-update.json"
+    },
+    "invoice-uploader.4392c3f47ba672ab27ec.hot-update.js": {
+      "name": "invoice-uploader.4392c3f47ba672ab27ec.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.4392c3f47ba672ab27ec.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.4392c3f47ba672ab27ec.hot-update.js"
+    },
+    "invoice-uploader.4392c3f47ba672ab27ec.hot-update.json": {
+      "name": "invoice-uploader.4392c3f47ba672ab27ec.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.4392c3f47ba672ab27ec.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.4392c3f47ba672ab27ec.hot-update.json"
+    },
+    "invoice-uploader.491fd7554fb17b861172.hot-update.js": {
+      "name": "invoice-uploader.491fd7554fb17b861172.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.491fd7554fb17b861172.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.491fd7554fb17b861172.hot-update.js"
+    },
+    "invoice-uploader.491fd7554fb17b861172.hot-update.json": {
+      "name": "invoice-uploader.491fd7554fb17b861172.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.491fd7554fb17b861172.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.491fd7554fb17b861172.hot-update.json"
+    },
+    "invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.js": {
+      "name": "invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.js"
+    },
+    "invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.json": {
+      "name": "invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.4a3e465b0dd5021e5a4a.hot-update.json"
+    },
+    "invoice-uploader.4b59068325922db9da7f.hot-update.js": {
+      "name": "invoice-uploader.4b59068325922db9da7f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.4b59068325922db9da7f.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.4b59068325922db9da7f.hot-update.js"
+    },
+    "invoice-uploader.4b59068325922db9da7f.hot-update.json": {
+      "name": "invoice-uploader.4b59068325922db9da7f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.4b59068325922db9da7f.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.4b59068325922db9da7f.hot-update.json"
+    },
+    "invoice-uploader.5363234071d57d2c1cf3.hot-update.js": {
+      "name": "invoice-uploader.5363234071d57d2c1cf3.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.5363234071d57d2c1cf3.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.5363234071d57d2c1cf3.hot-update.js"
+    },
+    "invoice-uploader.5363234071d57d2c1cf3.hot-update.json": {
+      "name": "invoice-uploader.5363234071d57d2c1cf3.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.5363234071d57d2c1cf3.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.5363234071d57d2c1cf3.hot-update.json"
+    },
+    "invoice-uploader.563c82db9f831d7a32f8.hot-update.js": {
+      "name": "invoice-uploader.563c82db9f831d7a32f8.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.563c82db9f831d7a32f8.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.563c82db9f831d7a32f8.hot-update.js"
+    },
+    "invoice-uploader.563c82db9f831d7a32f8.hot-update.json": {
+      "name": "invoice-uploader.563c82db9f831d7a32f8.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.563c82db9f831d7a32f8.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.563c82db9f831d7a32f8.hot-update.json"
+    },
+    "invoice-uploader.5a118f191f7309d268e4.hot-update.js": {
+      "name": "invoice-uploader.5a118f191f7309d268e4.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.5a118f191f7309d268e4.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.5a118f191f7309d268e4.hot-update.js"
+    },
+    "invoice-uploader.5a118f191f7309d268e4.hot-update.json": {
+      "name": "invoice-uploader.5a118f191f7309d268e4.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.5a118f191f7309d268e4.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.5a118f191f7309d268e4.hot-update.json"
+    },
+    "invoice-uploader.694cd32b43f2ba03816f.hot-update.js": {
+      "name": "invoice-uploader.694cd32b43f2ba03816f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.694cd32b43f2ba03816f.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.694cd32b43f2ba03816f.hot-update.js"
+    },
+    "invoice-uploader.694cd32b43f2ba03816f.hot-update.json": {
+      "name": "invoice-uploader.694cd32b43f2ba03816f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.694cd32b43f2ba03816f.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.694cd32b43f2ba03816f.hot-update.json"
+    },
+    "invoice-uploader.697d84b10f28eb18efac.hot-update.js": {
+      "name": "invoice-uploader.697d84b10f28eb18efac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.697d84b10f28eb18efac.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.697d84b10f28eb18efac.hot-update.js"
+    },
+    "invoice-uploader.697d84b10f28eb18efac.hot-update.json": {
+      "name": "invoice-uploader.697d84b10f28eb18efac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.697d84b10f28eb18efac.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.697d84b10f28eb18efac.hot-update.json"
+    },
+    "invoice-uploader.729b1de36469b764bb88.hot-update.js": {
+      "name": "invoice-uploader.729b1de36469b764bb88.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.729b1de36469b764bb88.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.729b1de36469b764bb88.hot-update.js"
+    },
+    "invoice-uploader.729b1de36469b764bb88.hot-update.json": {
+      "name": "invoice-uploader.729b1de36469b764bb88.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.729b1de36469b764bb88.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.729b1de36469b764bb88.hot-update.json"
+    },
+    "invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.js": {
+      "name": "invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.js"
+    },
+    "invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.json": {
+      "name": "invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.7a5eeb6bfad2c0863a73.hot-update.json"
+    },
+    "invoice-uploader.7e5813d0c2ae1066e80d.hot-update.js": {
+      "name": "invoice-uploader.7e5813d0c2ae1066e80d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.7e5813d0c2ae1066e80d.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.7e5813d0c2ae1066e80d.hot-update.js"
+    },
+    "invoice-uploader.7e5813d0c2ae1066e80d.hot-update.json": {
+      "name": "invoice-uploader.7e5813d0c2ae1066e80d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.7e5813d0c2ae1066e80d.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.7e5813d0c2ae1066e80d.hot-update.json"
+    },
+    "invoice-uploader.8265ca63222d903c3b70.hot-update.js": {
+      "name": "invoice-uploader.8265ca63222d903c3b70.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.8265ca63222d903c3b70.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.8265ca63222d903c3b70.hot-update.js"
+    },
+    "invoice-uploader.8265ca63222d903c3b70.hot-update.json": {
+      "name": "invoice-uploader.8265ca63222d903c3b70.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.8265ca63222d903c3b70.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.8265ca63222d903c3b70.hot-update.json"
+    },
+    "invoice-uploader.84cd6c973a1c65002711.hot-update.js": {
+      "name": "invoice-uploader.84cd6c973a1c65002711.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.84cd6c973a1c65002711.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.84cd6c973a1c65002711.hot-update.js"
+    },
+    "invoice-uploader.84cd6c973a1c65002711.hot-update.json": {
+      "name": "invoice-uploader.84cd6c973a1c65002711.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.84cd6c973a1c65002711.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.84cd6c973a1c65002711.hot-update.json"
+    },
+    "invoice-uploader.859290089cea27848dac.hot-update.js": {
+      "name": "invoice-uploader.859290089cea27848dac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.859290089cea27848dac.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.859290089cea27848dac.hot-update.js"
+    },
+    "invoice-uploader.859290089cea27848dac.hot-update.json": {
+      "name": "invoice-uploader.859290089cea27848dac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.859290089cea27848dac.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.859290089cea27848dac.hot-update.json"
+    },
+    "invoice-uploader.932c9b29402cd0330fe5.hot-update.js": {
+      "name": "invoice-uploader.932c9b29402cd0330fe5.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.932c9b29402cd0330fe5.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.932c9b29402cd0330fe5.hot-update.js"
+    },
+    "invoice-uploader.932c9b29402cd0330fe5.hot-update.json": {
+      "name": "invoice-uploader.932c9b29402cd0330fe5.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.932c9b29402cd0330fe5.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.932c9b29402cd0330fe5.hot-update.json"
+    },
+    "invoice-uploader.9519b4a4cea2a6429bd1.hot-update.js": {
+      "name": "invoice-uploader.9519b4a4cea2a6429bd1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.9519b4a4cea2a6429bd1.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.9519b4a4cea2a6429bd1.hot-update.js"
+    },
+    "invoice-uploader.9519b4a4cea2a6429bd1.hot-update.json": {
+      "name": "invoice-uploader.9519b4a4cea2a6429bd1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.9519b4a4cea2a6429bd1.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.9519b4a4cea2a6429bd1.hot-update.json"
+    },
+    "invoice-uploader.9ea286761c7a4f12f957.hot-update.js": {
+      "name": "invoice-uploader.9ea286761c7a4f12f957.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.9ea286761c7a4f12f957.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.9ea286761c7a4f12f957.hot-update.js"
+    },
+    "invoice-uploader.9ea286761c7a4f12f957.hot-update.json": {
+      "name": "invoice-uploader.9ea286761c7a4f12f957.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.9ea286761c7a4f12f957.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.9ea286761c7a4f12f957.hot-update.json"
+    },
+    "invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.js": {
+      "name": "invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.js"
+    },
+    "invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.json": {
+      "name": "invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.aa9779a0c05ffff5b4d9.hot-update.json"
+    },
+    "invoice-uploader.b2c8634335186ba2ce61.hot-update.js": {
+      "name": "invoice-uploader.b2c8634335186ba2ce61.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.b2c8634335186ba2ce61.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.b2c8634335186ba2ce61.hot-update.js"
+    },
+    "invoice-uploader.b2c8634335186ba2ce61.hot-update.json": {
+      "name": "invoice-uploader.b2c8634335186ba2ce61.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.b2c8634335186ba2ce61.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.b2c8634335186ba2ce61.hot-update.json"
+    },
+    "invoice-uploader.c21138369f50868a1c84.hot-update.js": {
+      "name": "invoice-uploader.c21138369f50868a1c84.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.c21138369f50868a1c84.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.c21138369f50868a1c84.hot-update.js"
+    },
+    "invoice-uploader.c21138369f50868a1c84.hot-update.json": {
+      "name": "invoice-uploader.c21138369f50868a1c84.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.c21138369f50868a1c84.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.c21138369f50868a1c84.hot-update.json"
+    },
+    "invoice-uploader.c98e6eeeaecd550eeb68.hot-update.js": {
+      "name": "invoice-uploader.c98e6eeeaecd550eeb68.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.c98e6eeeaecd550eeb68.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.c98e6eeeaecd550eeb68.hot-update.js"
+    },
+    "invoice-uploader.c98e6eeeaecd550eeb68.hot-update.json": {
+      "name": "invoice-uploader.c98e6eeeaecd550eeb68.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.c98e6eeeaecd550eeb68.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.c98e6eeeaecd550eeb68.hot-update.json"
+    },
+    "invoice-uploader.ce299ceced7e8e28ff91.hot-update.js": {
+      "name": "invoice-uploader.ce299ceced7e8e28ff91.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.ce299ceced7e8e28ff91.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.ce299ceced7e8e28ff91.hot-update.js"
+    },
+    "invoice-uploader.ce299ceced7e8e28ff91.hot-update.json": {
+      "name": "invoice-uploader.ce299ceced7e8e28ff91.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.ce299ceced7e8e28ff91.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.ce299ceced7e8e28ff91.hot-update.json"
+    },
+    "invoice-uploader.dbb24465952fb2599863.hot-update.js": {
+      "name": "invoice-uploader.dbb24465952fb2599863.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.dbb24465952fb2599863.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.dbb24465952fb2599863.hot-update.js"
+    },
+    "invoice-uploader.dbb24465952fb2599863.hot-update.json": {
+      "name": "invoice-uploader.dbb24465952fb2599863.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.dbb24465952fb2599863.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.dbb24465952fb2599863.hot-update.json"
+    },
+    "invoice-uploader.e22f9a2f4725114610a9.hot-update.js": {
+      "name": "invoice-uploader.e22f9a2f4725114610a9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e22f9a2f4725114610a9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.e22f9a2f4725114610a9.hot-update.js"
+    },
+    "invoice-uploader.e22f9a2f4725114610a9.hot-update.json": {
+      "name": "invoice-uploader.e22f9a2f4725114610a9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e22f9a2f4725114610a9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.e22f9a2f4725114610a9.hot-update.json"
+    },
+    "invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.js": {
+      "name": "invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.js"
+    },
+    "invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.json": {
+      "name": "invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.e68d8d69ec59b1bb65bc.hot-update.json"
+    },
+    "invoice-uploader.e7b1b1a0a2337661f68d.hot-update.js": {
+      "name": "invoice-uploader.e7b1b1a0a2337661f68d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e7b1b1a0a2337661f68d.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.e7b1b1a0a2337661f68d.hot-update.js"
+    },
+    "invoice-uploader.e7b1b1a0a2337661f68d.hot-update.json": {
+      "name": "invoice-uploader.e7b1b1a0a2337661f68d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e7b1b1a0a2337661f68d.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.e7b1b1a0a2337661f68d.hot-update.json"
+    },
+    "invoice-uploader.e911e8ffaaf483e62f42.hot-update.js": {
+      "name": "invoice-uploader.e911e8ffaaf483e62f42.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e911e8ffaaf483e62f42.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.e911e8ffaaf483e62f42.hot-update.js"
+    },
+    "invoice-uploader.e911e8ffaaf483e62f42.hot-update.json": {
+      "name": "invoice-uploader.e911e8ffaaf483e62f42.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.e911e8ffaaf483e62f42.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.e911e8ffaaf483e62f42.hot-update.json"
+    },
+    "invoice-uploader.f6e0a561ec651d91d4b9.hot-update.js": {
+      "name": "invoice-uploader.f6e0a561ec651d91d4b9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.f6e0a561ec651d91d4b9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoice-uploader.f6e0a561ec651d91d4b9.hot-update.js"
+    },
+    "invoice-uploader.f6e0a561ec651d91d4b9.hot-update.json": {
+      "name": "invoice-uploader.f6e0a561ec651d91d4b9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoice-uploader.f6e0a561ec651d91d4b9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoice-uploader.f6e0a561ec651d91d4b9.hot-update.json"
+    },
+    "invoices-list.00e25c74e351a0858221.hot-update.js": {
+      "name": "invoices-list.00e25c74e351a0858221.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.00e25c74e351a0858221.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.00e25c74e351a0858221.hot-update.js"
+    },
+    "invoices-list.00e25c74e351a0858221.hot-update.json": {
+      "name": "invoices-list.00e25c74e351a0858221.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.00e25c74e351a0858221.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.00e25c74e351a0858221.hot-update.json"
+    },
+    "invoices-list.057ad07c8539ad7782ce.hot-update.js": {
+      "name": "invoices-list.057ad07c8539ad7782ce.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.057ad07c8539ad7782ce.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.057ad07c8539ad7782ce.hot-update.js"
+    },
+    "invoices-list.057ad07c8539ad7782ce.hot-update.json": {
+      "name": "invoices-list.057ad07c8539ad7782ce.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.057ad07c8539ad7782ce.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.057ad07c8539ad7782ce.hot-update.json"
+    },
+    "invoices-list.081a9ca5b2159a495541.hot-update.js": {
+      "name": "invoices-list.081a9ca5b2159a495541.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.081a9ca5b2159a495541.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.081a9ca5b2159a495541.hot-update.js"
+    },
+    "invoices-list.081a9ca5b2159a495541.hot-update.json": {
+      "name": "invoices-list.081a9ca5b2159a495541.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.081a9ca5b2159a495541.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.081a9ca5b2159a495541.hot-update.json"
+    },
+    "invoices-list.134c59ee6f970351de1b.hot-update.js": {
+      "name": "invoices-list.134c59ee6f970351de1b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.134c59ee6f970351de1b.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.134c59ee6f970351de1b.hot-update.js"
+    },
+    "invoices-list.134c59ee6f970351de1b.hot-update.json": {
+      "name": "invoices-list.134c59ee6f970351de1b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.134c59ee6f970351de1b.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.134c59ee6f970351de1b.hot-update.json"
+    },
+    "invoices-list.17eb2c72f0f20a7b59a1.hot-update.js": {
+      "name": "invoices-list.17eb2c72f0f20a7b59a1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.17eb2c72f0f20a7b59a1.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.17eb2c72f0f20a7b59a1.hot-update.js"
+    },
+    "invoices-list.17eb2c72f0f20a7b59a1.hot-update.json": {
+      "name": "invoices-list.17eb2c72f0f20a7b59a1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.17eb2c72f0f20a7b59a1.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.17eb2c72f0f20a7b59a1.hot-update.json"
+    },
+    "invoices-list.1a28910e43ad4061d11d.hot-update.js": {
+      "name": "invoices-list.1a28910e43ad4061d11d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.1a28910e43ad4061d11d.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.1a28910e43ad4061d11d.hot-update.js"
+    },
+    "invoices-list.1a28910e43ad4061d11d.hot-update.json": {
+      "name": "invoices-list.1a28910e43ad4061d11d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.1a28910e43ad4061d11d.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.1a28910e43ad4061d11d.hot-update.json"
+    },
+    "invoices-list.1c24c4a866fcd8879a5b.hot-update.js": {
+      "name": "invoices-list.1c24c4a866fcd8879a5b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.1c24c4a866fcd8879a5b.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.1c24c4a866fcd8879a5b.hot-update.js"
+    },
+    "invoices-list.1c24c4a866fcd8879a5b.hot-update.json": {
+      "name": "invoices-list.1c24c4a866fcd8879a5b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.1c24c4a866fcd8879a5b.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.1c24c4a866fcd8879a5b.hot-update.json"
+    },
+    "invoices-list.21cd2ea8e6bfe58862d9.hot-update.js": {
+      "name": "invoices-list.21cd2ea8e6bfe58862d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.21cd2ea8e6bfe58862d9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.21cd2ea8e6bfe58862d9.hot-update.js"
+    },
+    "invoices-list.21cd2ea8e6bfe58862d9.hot-update.json": {
+      "name": "invoices-list.21cd2ea8e6bfe58862d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.21cd2ea8e6bfe58862d9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.21cd2ea8e6bfe58862d9.hot-update.json"
+    },
+    "invoices-list.24f954d199b54b1922f2.hot-update.js": {
+      "name": "invoices-list.24f954d199b54b1922f2.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.24f954d199b54b1922f2.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.24f954d199b54b1922f2.hot-update.js"
+    },
+    "invoices-list.24f954d199b54b1922f2.hot-update.json": {
+      "name": "invoices-list.24f954d199b54b1922f2.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.24f954d199b54b1922f2.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.24f954d199b54b1922f2.hot-update.json"
+    },
+    "invoices-list.281fe3287dc49694ab44.hot-update.js": {
+      "name": "invoices-list.281fe3287dc49694ab44.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.281fe3287dc49694ab44.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.281fe3287dc49694ab44.hot-update.js"
+    },
+    "invoices-list.281fe3287dc49694ab44.hot-update.json": {
+      "name": "invoices-list.281fe3287dc49694ab44.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.281fe3287dc49694ab44.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.281fe3287dc49694ab44.hot-update.json"
+    },
+    "invoices-list.29e165348ea0711db1be.hot-update.js": {
+      "name": "invoices-list.29e165348ea0711db1be.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.29e165348ea0711db1be.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.29e165348ea0711db1be.hot-update.js"
+    },
+    "invoices-list.29e165348ea0711db1be.hot-update.json": {
+      "name": "invoices-list.29e165348ea0711db1be.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.29e165348ea0711db1be.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.29e165348ea0711db1be.hot-update.json"
+    },
+    "invoices-list.2e317cdc735438779c79.hot-update.js": {
+      "name": "invoices-list.2e317cdc735438779c79.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.2e317cdc735438779c79.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.2e317cdc735438779c79.hot-update.js"
+    },
+    "invoices-list.2e317cdc735438779c79.hot-update.json": {
+      "name": "invoices-list.2e317cdc735438779c79.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.2e317cdc735438779c79.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.2e317cdc735438779c79.hot-update.json"
+    },
+    "invoices-list.3ab73f3120b4e873860c.hot-update.js": {
+      "name": "invoices-list.3ab73f3120b4e873860c.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.3ab73f3120b4e873860c.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.3ab73f3120b4e873860c.hot-update.js"
+    },
+    "invoices-list.3ab73f3120b4e873860c.hot-update.json": {
+      "name": "invoices-list.3ab73f3120b4e873860c.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.3ab73f3120b4e873860c.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.3ab73f3120b4e873860c.hot-update.json"
+    },
+    "invoices-list.3bfe672d01c4f6cb7fdf.hot-update.js": {
+      "name": "invoices-list.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.3bfe672d01c4f6cb7fdf.hot-update.js"
+    },
+    "invoices-list.3bfe672d01c4f6cb7fdf.hot-update.json": {
+      "name": "invoices-list.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.3bfe672d01c4f6cb7fdf.hot-update.json"
+    },
+    "invoices-list.3dec6594cb4d0f279795.hot-update.js": {
+      "name": "invoices-list.3dec6594cb4d0f279795.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.3dec6594cb4d0f279795.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.3dec6594cb4d0f279795.hot-update.js"
+    },
+    "invoices-list.3dec6594cb4d0f279795.hot-update.json": {
+      "name": "invoices-list.3dec6594cb4d0f279795.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.3dec6594cb4d0f279795.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.3dec6594cb4d0f279795.hot-update.json"
+    },
+    "invoices-list.438bd58e5ca238aae643.hot-update.js": {
+      "name": "invoices-list.438bd58e5ca238aae643.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.438bd58e5ca238aae643.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.438bd58e5ca238aae643.hot-update.js"
+    },
+    "invoices-list.438bd58e5ca238aae643.hot-update.json": {
+      "name": "invoices-list.438bd58e5ca238aae643.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.438bd58e5ca238aae643.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.438bd58e5ca238aae643.hot-update.json"
+    },
+    "invoices-list.4392c3f47ba672ab27ec.hot-update.js": {
+      "name": "invoices-list.4392c3f47ba672ab27ec.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.4392c3f47ba672ab27ec.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.4392c3f47ba672ab27ec.hot-update.js"
+    },
+    "invoices-list.4392c3f47ba672ab27ec.hot-update.json": {
+      "name": "invoices-list.4392c3f47ba672ab27ec.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.4392c3f47ba672ab27ec.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.4392c3f47ba672ab27ec.hot-update.json"
+    },
+    "invoices-list.491fd7554fb17b861172.hot-update.js": {
+      "name": "invoices-list.491fd7554fb17b861172.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.491fd7554fb17b861172.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.491fd7554fb17b861172.hot-update.js"
+    },
+    "invoices-list.491fd7554fb17b861172.hot-update.json": {
+      "name": "invoices-list.491fd7554fb17b861172.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.491fd7554fb17b861172.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.491fd7554fb17b861172.hot-update.json"
+    },
+    "invoices-list.4a3e465b0dd5021e5a4a.hot-update.js": {
+      "name": "invoices-list.4a3e465b0dd5021e5a4a.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.4a3e465b0dd5021e5a4a.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.4a3e465b0dd5021e5a4a.hot-update.js"
+    },
+    "invoices-list.4a3e465b0dd5021e5a4a.hot-update.json": {
+      "name": "invoices-list.4a3e465b0dd5021e5a4a.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.4a3e465b0dd5021e5a4a.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.4a3e465b0dd5021e5a4a.hot-update.json"
+    },
+    "invoices-list.4b59068325922db9da7f.hot-update.js": {
+      "name": "invoices-list.4b59068325922db9da7f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.4b59068325922db9da7f.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.4b59068325922db9da7f.hot-update.js"
+    },
+    "invoices-list.4b59068325922db9da7f.hot-update.json": {
+      "name": "invoices-list.4b59068325922db9da7f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.4b59068325922db9da7f.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.4b59068325922db9da7f.hot-update.json"
+    },
+    "invoices-list.5363234071d57d2c1cf3.hot-update.js": {
+      "name": "invoices-list.5363234071d57d2c1cf3.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.5363234071d57d2c1cf3.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.5363234071d57d2c1cf3.hot-update.js"
+    },
+    "invoices-list.5363234071d57d2c1cf3.hot-update.json": {
+      "name": "invoices-list.5363234071d57d2c1cf3.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.5363234071d57d2c1cf3.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.5363234071d57d2c1cf3.hot-update.json"
+    },
+    "invoices-list.563c82db9f831d7a32f8.hot-update.js": {
+      "name": "invoices-list.563c82db9f831d7a32f8.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.563c82db9f831d7a32f8.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.563c82db9f831d7a32f8.hot-update.js"
+    },
+    "invoices-list.563c82db9f831d7a32f8.hot-update.json": {
+      "name": "invoices-list.563c82db9f831d7a32f8.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.563c82db9f831d7a32f8.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.563c82db9f831d7a32f8.hot-update.json"
+    },
+    "invoices-list.5a118f191f7309d268e4.hot-update.js": {
+      "name": "invoices-list.5a118f191f7309d268e4.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.5a118f191f7309d268e4.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.5a118f191f7309d268e4.hot-update.js"
+    },
+    "invoices-list.5a118f191f7309d268e4.hot-update.json": {
+      "name": "invoices-list.5a118f191f7309d268e4.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.5a118f191f7309d268e4.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.5a118f191f7309d268e4.hot-update.json"
+    },
+    "invoices-list.694cd32b43f2ba03816f.hot-update.js": {
+      "name": "invoices-list.694cd32b43f2ba03816f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.694cd32b43f2ba03816f.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.694cd32b43f2ba03816f.hot-update.js"
+    },
+    "invoices-list.694cd32b43f2ba03816f.hot-update.json": {
+      "name": "invoices-list.694cd32b43f2ba03816f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.694cd32b43f2ba03816f.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.694cd32b43f2ba03816f.hot-update.json"
+    },
+    "invoices-list.697d84b10f28eb18efac.hot-update.js": {
+      "name": "invoices-list.697d84b10f28eb18efac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.697d84b10f28eb18efac.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.697d84b10f28eb18efac.hot-update.js"
+    },
+    "invoices-list.697d84b10f28eb18efac.hot-update.json": {
+      "name": "invoices-list.697d84b10f28eb18efac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.697d84b10f28eb18efac.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.697d84b10f28eb18efac.hot-update.json"
+    },
+    "invoices-list.729b1de36469b764bb88.hot-update.js": {
+      "name": "invoices-list.729b1de36469b764bb88.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.729b1de36469b764bb88.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.729b1de36469b764bb88.hot-update.js"
+    },
+    "invoices-list.729b1de36469b764bb88.hot-update.json": {
+      "name": "invoices-list.729b1de36469b764bb88.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.729b1de36469b764bb88.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.729b1de36469b764bb88.hot-update.json"
+    },
+    "invoices-list.7a5eeb6bfad2c0863a73.hot-update.js": {
+      "name": "invoices-list.7a5eeb6bfad2c0863a73.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.7a5eeb6bfad2c0863a73.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.7a5eeb6bfad2c0863a73.hot-update.js"
+    },
+    "invoices-list.7a5eeb6bfad2c0863a73.hot-update.json": {
+      "name": "invoices-list.7a5eeb6bfad2c0863a73.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.7a5eeb6bfad2c0863a73.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.7a5eeb6bfad2c0863a73.hot-update.json"
+    },
+    "invoices-list.7e5813d0c2ae1066e80d.hot-update.js": {
+      "name": "invoices-list.7e5813d0c2ae1066e80d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.7e5813d0c2ae1066e80d.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.7e5813d0c2ae1066e80d.hot-update.js"
+    },
+    "invoices-list.7e5813d0c2ae1066e80d.hot-update.json": {
+      "name": "invoices-list.7e5813d0c2ae1066e80d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.7e5813d0c2ae1066e80d.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.7e5813d0c2ae1066e80d.hot-update.json"
+    },
+    "invoices-list.8265ca63222d903c3b70.hot-update.js": {
+      "name": "invoices-list.8265ca63222d903c3b70.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.8265ca63222d903c3b70.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.8265ca63222d903c3b70.hot-update.js"
+    },
+    "invoices-list.8265ca63222d903c3b70.hot-update.json": {
+      "name": "invoices-list.8265ca63222d903c3b70.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.8265ca63222d903c3b70.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.8265ca63222d903c3b70.hot-update.json"
+    },
+    "invoices-list.84cd6c973a1c65002711.hot-update.js": {
+      "name": "invoices-list.84cd6c973a1c65002711.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.84cd6c973a1c65002711.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.84cd6c973a1c65002711.hot-update.js"
+    },
+    "invoices-list.84cd6c973a1c65002711.hot-update.json": {
+      "name": "invoices-list.84cd6c973a1c65002711.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.84cd6c973a1c65002711.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.84cd6c973a1c65002711.hot-update.json"
+    },
+    "invoices-list.859290089cea27848dac.hot-update.js": {
+      "name": "invoices-list.859290089cea27848dac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.859290089cea27848dac.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.859290089cea27848dac.hot-update.js"
+    },
+    "invoices-list.859290089cea27848dac.hot-update.json": {
+      "name": "invoices-list.859290089cea27848dac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.859290089cea27848dac.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.859290089cea27848dac.hot-update.json"
+    },
+    "invoices-list.932c9b29402cd0330fe5.hot-update.js": {
+      "name": "invoices-list.932c9b29402cd0330fe5.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.932c9b29402cd0330fe5.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.932c9b29402cd0330fe5.hot-update.js"
+    },
+    "invoices-list.932c9b29402cd0330fe5.hot-update.json": {
+      "name": "invoices-list.932c9b29402cd0330fe5.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.932c9b29402cd0330fe5.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.932c9b29402cd0330fe5.hot-update.json"
+    },
+    "invoices-list.9519b4a4cea2a6429bd1.hot-update.js": {
+      "name": "invoices-list.9519b4a4cea2a6429bd1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.9519b4a4cea2a6429bd1.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.9519b4a4cea2a6429bd1.hot-update.js"
+    },
+    "invoices-list.9519b4a4cea2a6429bd1.hot-update.json": {
+      "name": "invoices-list.9519b4a4cea2a6429bd1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.9519b4a4cea2a6429bd1.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.9519b4a4cea2a6429bd1.hot-update.json"
+    },
+    "invoices-list.9ea286761c7a4f12f957.hot-update.js": {
+      "name": "invoices-list.9ea286761c7a4f12f957.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.9ea286761c7a4f12f957.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.9ea286761c7a4f12f957.hot-update.js"
+    },
+    "invoices-list.9ea286761c7a4f12f957.hot-update.json": {
+      "name": "invoices-list.9ea286761c7a4f12f957.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.9ea286761c7a4f12f957.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.9ea286761c7a4f12f957.hot-update.json"
+    },
+    "invoices-list.aa9779a0c05ffff5b4d9.hot-update.js": {
+      "name": "invoices-list.aa9779a0c05ffff5b4d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.aa9779a0c05ffff5b4d9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.aa9779a0c05ffff5b4d9.hot-update.js"
+    },
+    "invoices-list.aa9779a0c05ffff5b4d9.hot-update.json": {
+      "name": "invoices-list.aa9779a0c05ffff5b4d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.aa9779a0c05ffff5b4d9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.aa9779a0c05ffff5b4d9.hot-update.json"
+    },
+    "invoices-list.b2c8634335186ba2ce61.hot-update.js": {
+      "name": "invoices-list.b2c8634335186ba2ce61.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.b2c8634335186ba2ce61.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.b2c8634335186ba2ce61.hot-update.js"
+    },
+    "invoices-list.b2c8634335186ba2ce61.hot-update.json": {
+      "name": "invoices-list.b2c8634335186ba2ce61.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.b2c8634335186ba2ce61.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.b2c8634335186ba2ce61.hot-update.json"
+    },
+    "invoices-list.c21138369f50868a1c84.hot-update.js": {
+      "name": "invoices-list.c21138369f50868a1c84.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.c21138369f50868a1c84.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.c21138369f50868a1c84.hot-update.js"
+    },
+    "invoices-list.c21138369f50868a1c84.hot-update.json": {
+      "name": "invoices-list.c21138369f50868a1c84.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.c21138369f50868a1c84.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.c21138369f50868a1c84.hot-update.json"
+    },
+    "invoices-list.c98e6eeeaecd550eeb68.hot-update.js": {
+      "name": "invoices-list.c98e6eeeaecd550eeb68.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.c98e6eeeaecd550eeb68.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.c98e6eeeaecd550eeb68.hot-update.js"
+    },
+    "invoices-list.c98e6eeeaecd550eeb68.hot-update.json": {
+      "name": "invoices-list.c98e6eeeaecd550eeb68.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.c98e6eeeaecd550eeb68.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.c98e6eeeaecd550eeb68.hot-update.json"
+    },
+    "invoices-list.ce299ceced7e8e28ff91.hot-update.js": {
+      "name": "invoices-list.ce299ceced7e8e28ff91.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.ce299ceced7e8e28ff91.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.ce299ceced7e8e28ff91.hot-update.js"
+    },
+    "invoices-list.ce299ceced7e8e28ff91.hot-update.json": {
+      "name": "invoices-list.ce299ceced7e8e28ff91.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.ce299ceced7e8e28ff91.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.ce299ceced7e8e28ff91.hot-update.json"
+    },
+    "invoices-list.dbb24465952fb2599863.hot-update.js": {
+      "name": "invoices-list.dbb24465952fb2599863.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.dbb24465952fb2599863.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.dbb24465952fb2599863.hot-update.js"
+    },
+    "invoices-list.dbb24465952fb2599863.hot-update.json": {
+      "name": "invoices-list.dbb24465952fb2599863.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.dbb24465952fb2599863.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.dbb24465952fb2599863.hot-update.json"
+    },
+    "invoices-list.e22f9a2f4725114610a9.hot-update.js": {
+      "name": "invoices-list.e22f9a2f4725114610a9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e22f9a2f4725114610a9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.e22f9a2f4725114610a9.hot-update.js"
+    },
+    "invoices-list.e22f9a2f4725114610a9.hot-update.json": {
+      "name": "invoices-list.e22f9a2f4725114610a9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e22f9a2f4725114610a9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.e22f9a2f4725114610a9.hot-update.json"
+    },
+    "invoices-list.e68d8d69ec59b1bb65bc.hot-update.js": {
+      "name": "invoices-list.e68d8d69ec59b1bb65bc.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e68d8d69ec59b1bb65bc.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.e68d8d69ec59b1bb65bc.hot-update.js"
+    },
+    "invoices-list.e68d8d69ec59b1bb65bc.hot-update.json": {
+      "name": "invoices-list.e68d8d69ec59b1bb65bc.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e68d8d69ec59b1bb65bc.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.e68d8d69ec59b1bb65bc.hot-update.json"
+    },
+    "invoices-list.e7b1b1a0a2337661f68d.hot-update.js": {
+      "name": "invoices-list.e7b1b1a0a2337661f68d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e7b1b1a0a2337661f68d.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.e7b1b1a0a2337661f68d.hot-update.js"
+    },
+    "invoices-list.e7b1b1a0a2337661f68d.hot-update.json": {
+      "name": "invoices-list.e7b1b1a0a2337661f68d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e7b1b1a0a2337661f68d.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.e7b1b1a0a2337661f68d.hot-update.json"
+    },
+    "invoices-list.e911e8ffaaf483e62f42.hot-update.js": {
+      "name": "invoices-list.e911e8ffaaf483e62f42.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e911e8ffaaf483e62f42.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.e911e8ffaaf483e62f42.hot-update.js"
+    },
+    "invoices-list.e911e8ffaaf483e62f42.hot-update.json": {
+      "name": "invoices-list.e911e8ffaaf483e62f42.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.e911e8ffaaf483e62f42.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.e911e8ffaaf483e62f42.hot-update.json"
+    },
+    "invoices-list.f6e0a561ec651d91d4b9.hot-update.js": {
+      "name": "invoices-list.f6e0a561ec651d91d4b9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.f6e0a561ec651d91d4b9.hot-update.js",
+      "publicPath": "http://localhost:9091/invoices-list.f6e0a561ec651d91d4b9.hot-update.js"
+    },
+    "invoices-list.f6e0a561ec651d91d4b9.hot-update.json": {
+      "name": "invoices-list.f6e0a561ec651d91d4b9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/invoices-list.f6e0a561ec651d91d4b9.hot-update.json",
+      "publicPath": "http://localhost:9091/invoices-list.f6e0a561ec651d91d4b9.hot-update.json"
+    },
+    "job-details.00e25c74e351a0858221.hot-update.js": {
+      "name": "job-details.00e25c74e351a0858221.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.00e25c74e351a0858221.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.00e25c74e351a0858221.hot-update.js"
+    },
+    "job-details.00e25c74e351a0858221.hot-update.json": {
+      "name": "job-details.00e25c74e351a0858221.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.00e25c74e351a0858221.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.00e25c74e351a0858221.hot-update.json"
+    },
+    "job-details.057ad07c8539ad7782ce.hot-update.js": {
+      "name": "job-details.057ad07c8539ad7782ce.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.057ad07c8539ad7782ce.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.057ad07c8539ad7782ce.hot-update.js"
+    },
+    "job-details.057ad07c8539ad7782ce.hot-update.json": {
+      "name": "job-details.057ad07c8539ad7782ce.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.057ad07c8539ad7782ce.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.057ad07c8539ad7782ce.hot-update.json"
+    },
+    "job-details.081a9ca5b2159a495541.hot-update.js": {
+      "name": "job-details.081a9ca5b2159a495541.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.081a9ca5b2159a495541.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.081a9ca5b2159a495541.hot-update.js"
+    },
+    "job-details.081a9ca5b2159a495541.hot-update.json": {
+      "name": "job-details.081a9ca5b2159a495541.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.081a9ca5b2159a495541.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.081a9ca5b2159a495541.hot-update.json"
+    },
+    "job-details.134c59ee6f970351de1b.hot-update.js": {
+      "name": "job-details.134c59ee6f970351de1b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.134c59ee6f970351de1b.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.134c59ee6f970351de1b.hot-update.js"
+    },
+    "job-details.134c59ee6f970351de1b.hot-update.json": {
+      "name": "job-details.134c59ee6f970351de1b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.134c59ee6f970351de1b.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.134c59ee6f970351de1b.hot-update.json"
+    },
+    "job-details.17eb2c72f0f20a7b59a1.hot-update.js": {
+      "name": "job-details.17eb2c72f0f20a7b59a1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.17eb2c72f0f20a7b59a1.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.17eb2c72f0f20a7b59a1.hot-update.js"
+    },
+    "job-details.17eb2c72f0f20a7b59a1.hot-update.json": {
+      "name": "job-details.17eb2c72f0f20a7b59a1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.17eb2c72f0f20a7b59a1.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.17eb2c72f0f20a7b59a1.hot-update.json"
+    },
+    "job-details.1a28910e43ad4061d11d.hot-update.js": {
+      "name": "job-details.1a28910e43ad4061d11d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.1a28910e43ad4061d11d.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.1a28910e43ad4061d11d.hot-update.js"
+    },
+    "job-details.1a28910e43ad4061d11d.hot-update.json": {
+      "name": "job-details.1a28910e43ad4061d11d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.1a28910e43ad4061d11d.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.1a28910e43ad4061d11d.hot-update.json"
+    },
+    "job-details.1c24c4a866fcd8879a5b.hot-update.js": {
+      "name": "job-details.1c24c4a866fcd8879a5b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.1c24c4a866fcd8879a5b.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.1c24c4a866fcd8879a5b.hot-update.js"
+    },
+    "job-details.1c24c4a866fcd8879a5b.hot-update.json": {
+      "name": "job-details.1c24c4a866fcd8879a5b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.1c24c4a866fcd8879a5b.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.1c24c4a866fcd8879a5b.hot-update.json"
+    },
+    "job-details.21cd2ea8e6bfe58862d9.hot-update.js": {
+      "name": "job-details.21cd2ea8e6bfe58862d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.21cd2ea8e6bfe58862d9.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.21cd2ea8e6bfe58862d9.hot-update.js"
+    },
+    "job-details.21cd2ea8e6bfe58862d9.hot-update.json": {
+      "name": "job-details.21cd2ea8e6bfe58862d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.21cd2ea8e6bfe58862d9.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.21cd2ea8e6bfe58862d9.hot-update.json"
+    },
+    "job-details.24f954d199b54b1922f2.hot-update.js": {
+      "name": "job-details.24f954d199b54b1922f2.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.24f954d199b54b1922f2.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.24f954d199b54b1922f2.hot-update.js"
+    },
+    "job-details.24f954d199b54b1922f2.hot-update.json": {
+      "name": "job-details.24f954d199b54b1922f2.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.24f954d199b54b1922f2.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.24f954d199b54b1922f2.hot-update.json"
+    },
+    "job-details.281fe3287dc49694ab44.hot-update.js": {
+      "name": "job-details.281fe3287dc49694ab44.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.281fe3287dc49694ab44.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.281fe3287dc49694ab44.hot-update.js"
+    },
+    "job-details.281fe3287dc49694ab44.hot-update.json": {
+      "name": "job-details.281fe3287dc49694ab44.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.281fe3287dc49694ab44.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.281fe3287dc49694ab44.hot-update.json"
+    },
+    "job-details.29e165348ea0711db1be.hot-update.js": {
+      "name": "job-details.29e165348ea0711db1be.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.29e165348ea0711db1be.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.29e165348ea0711db1be.hot-update.js"
+    },
+    "job-details.29e165348ea0711db1be.hot-update.json": {
+      "name": "job-details.29e165348ea0711db1be.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.29e165348ea0711db1be.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.29e165348ea0711db1be.hot-update.json"
+    },
+    "job-details.2e317cdc735438779c79.hot-update.js": {
+      "name": "job-details.2e317cdc735438779c79.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.2e317cdc735438779c79.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.2e317cdc735438779c79.hot-update.js"
+    },
+    "job-details.2e317cdc735438779c79.hot-update.json": {
+      "name": "job-details.2e317cdc735438779c79.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.2e317cdc735438779c79.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.2e317cdc735438779c79.hot-update.json"
+    },
+    "job-details.3ab73f3120b4e873860c.hot-update.js": {
+      "name": "job-details.3ab73f3120b4e873860c.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.3ab73f3120b4e873860c.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.3ab73f3120b4e873860c.hot-update.js"
+    },
+    "job-details.3ab73f3120b4e873860c.hot-update.json": {
+      "name": "job-details.3ab73f3120b4e873860c.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.3ab73f3120b4e873860c.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.3ab73f3120b4e873860c.hot-update.json"
+    },
+    "job-details.3bfe672d01c4f6cb7fdf.hot-update.js": {
+      "name": "job-details.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.3bfe672d01c4f6cb7fdf.hot-update.js"
+    },
+    "job-details.3bfe672d01c4f6cb7fdf.hot-update.json": {
+      "name": "job-details.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.3bfe672d01c4f6cb7fdf.hot-update.json"
+    },
+    "job-details.3dec6594cb4d0f279795.hot-update.js": {
+      "name": "job-details.3dec6594cb4d0f279795.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.3dec6594cb4d0f279795.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.3dec6594cb4d0f279795.hot-update.js"
+    },
+    "job-details.3dec6594cb4d0f279795.hot-update.json": {
+      "name": "job-details.3dec6594cb4d0f279795.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.3dec6594cb4d0f279795.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.3dec6594cb4d0f279795.hot-update.json"
+    },
+    "job-details.438bd58e5ca238aae643.hot-update.js": {
+      "name": "job-details.438bd58e5ca238aae643.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.438bd58e5ca238aae643.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.438bd58e5ca238aae643.hot-update.js"
+    },
+    "job-details.438bd58e5ca238aae643.hot-update.json": {
+      "name": "job-details.438bd58e5ca238aae643.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.438bd58e5ca238aae643.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.438bd58e5ca238aae643.hot-update.json"
+    },
+    "job-details.4392c3f47ba672ab27ec.hot-update.js": {
+      "name": "job-details.4392c3f47ba672ab27ec.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.4392c3f47ba672ab27ec.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.4392c3f47ba672ab27ec.hot-update.js"
+    },
+    "job-details.4392c3f47ba672ab27ec.hot-update.json": {
+      "name": "job-details.4392c3f47ba672ab27ec.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.4392c3f47ba672ab27ec.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.4392c3f47ba672ab27ec.hot-update.json"
+    },
+    "job-details.491fd7554fb17b861172.hot-update.js": {
+      "name": "job-details.491fd7554fb17b861172.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.491fd7554fb17b861172.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.491fd7554fb17b861172.hot-update.js"
+    },
+    "job-details.491fd7554fb17b861172.hot-update.json": {
+      "name": "job-details.491fd7554fb17b861172.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.491fd7554fb17b861172.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.491fd7554fb17b861172.hot-update.json"
+    },
+    "job-details.4a3e465b0dd5021e5a4a.hot-update.js": {
+      "name": "job-details.4a3e465b0dd5021e5a4a.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.4a3e465b0dd5021e5a4a.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.4a3e465b0dd5021e5a4a.hot-update.js"
+    },
+    "job-details.4a3e465b0dd5021e5a4a.hot-update.json": {
+      "name": "job-details.4a3e465b0dd5021e5a4a.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.4a3e465b0dd5021e5a4a.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.4a3e465b0dd5021e5a4a.hot-update.json"
+    },
+    "job-details.4b59068325922db9da7f.hot-update.js": {
+      "name": "job-details.4b59068325922db9da7f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.4b59068325922db9da7f.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.4b59068325922db9da7f.hot-update.js"
+    },
+    "job-details.4b59068325922db9da7f.hot-update.json": {
+      "name": "job-details.4b59068325922db9da7f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.4b59068325922db9da7f.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.4b59068325922db9da7f.hot-update.json"
+    },
+    "job-details.5363234071d57d2c1cf3.hot-update.js": {
+      "name": "job-details.5363234071d57d2c1cf3.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.5363234071d57d2c1cf3.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.5363234071d57d2c1cf3.hot-update.js"
+    },
+    "job-details.5363234071d57d2c1cf3.hot-update.json": {
+      "name": "job-details.5363234071d57d2c1cf3.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.5363234071d57d2c1cf3.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.5363234071d57d2c1cf3.hot-update.json"
+    },
+    "job-details.563c82db9f831d7a32f8.hot-update.js": {
+      "name": "job-details.563c82db9f831d7a32f8.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.563c82db9f831d7a32f8.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.563c82db9f831d7a32f8.hot-update.js"
+    },
+    "job-details.563c82db9f831d7a32f8.hot-update.json": {
+      "name": "job-details.563c82db9f831d7a32f8.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.563c82db9f831d7a32f8.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.563c82db9f831d7a32f8.hot-update.json"
+    },
+    "job-details.5a118f191f7309d268e4.hot-update.js": {
+      "name": "job-details.5a118f191f7309d268e4.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.5a118f191f7309d268e4.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.5a118f191f7309d268e4.hot-update.js"
+    },
+    "job-details.5a118f191f7309d268e4.hot-update.json": {
+      "name": "job-details.5a118f191f7309d268e4.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.5a118f191f7309d268e4.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.5a118f191f7309d268e4.hot-update.json"
+    },
+    "job-details.694cd32b43f2ba03816f.hot-update.js": {
+      "name": "job-details.694cd32b43f2ba03816f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.694cd32b43f2ba03816f.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.694cd32b43f2ba03816f.hot-update.js"
+    },
+    "job-details.694cd32b43f2ba03816f.hot-update.json": {
+      "name": "job-details.694cd32b43f2ba03816f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.694cd32b43f2ba03816f.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.694cd32b43f2ba03816f.hot-update.json"
+    },
+    "job-details.697d84b10f28eb18efac.hot-update.js": {
+      "name": "job-details.697d84b10f28eb18efac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.697d84b10f28eb18efac.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.697d84b10f28eb18efac.hot-update.js"
+    },
+    "job-details.697d84b10f28eb18efac.hot-update.json": {
+      "name": "job-details.697d84b10f28eb18efac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.697d84b10f28eb18efac.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.697d84b10f28eb18efac.hot-update.json"
+    },
+    "job-details.729b1de36469b764bb88.hot-update.js": {
+      "name": "job-details.729b1de36469b764bb88.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.729b1de36469b764bb88.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.729b1de36469b764bb88.hot-update.js"
+    },
+    "job-details.729b1de36469b764bb88.hot-update.json": {
+      "name": "job-details.729b1de36469b764bb88.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.729b1de36469b764bb88.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.729b1de36469b764bb88.hot-update.json"
+    },
+    "job-details.7a5eeb6bfad2c0863a73.hot-update.js": {
+      "name": "job-details.7a5eeb6bfad2c0863a73.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.7a5eeb6bfad2c0863a73.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.7a5eeb6bfad2c0863a73.hot-update.js"
+    },
+    "job-details.7a5eeb6bfad2c0863a73.hot-update.json": {
+      "name": "job-details.7a5eeb6bfad2c0863a73.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.7a5eeb6bfad2c0863a73.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.7a5eeb6bfad2c0863a73.hot-update.json"
+    },
+    "job-details.7e5813d0c2ae1066e80d.hot-update.js": {
+      "name": "job-details.7e5813d0c2ae1066e80d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.7e5813d0c2ae1066e80d.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.7e5813d0c2ae1066e80d.hot-update.js"
+    },
+    "job-details.7e5813d0c2ae1066e80d.hot-update.json": {
+      "name": "job-details.7e5813d0c2ae1066e80d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.7e5813d0c2ae1066e80d.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.7e5813d0c2ae1066e80d.hot-update.json"
+    },
+    "job-details.8265ca63222d903c3b70.hot-update.js": {
+      "name": "job-details.8265ca63222d903c3b70.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.8265ca63222d903c3b70.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.8265ca63222d903c3b70.hot-update.js"
+    },
+    "job-details.8265ca63222d903c3b70.hot-update.json": {
+      "name": "job-details.8265ca63222d903c3b70.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.8265ca63222d903c3b70.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.8265ca63222d903c3b70.hot-update.json"
+    },
+    "job-details.84cd6c973a1c65002711.hot-update.js": {
+      "name": "job-details.84cd6c973a1c65002711.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.84cd6c973a1c65002711.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.84cd6c973a1c65002711.hot-update.js"
+    },
+    "job-details.84cd6c973a1c65002711.hot-update.json": {
+      "name": "job-details.84cd6c973a1c65002711.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.84cd6c973a1c65002711.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.84cd6c973a1c65002711.hot-update.json"
+    },
+    "job-details.859290089cea27848dac.hot-update.js": {
+      "name": "job-details.859290089cea27848dac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.859290089cea27848dac.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.859290089cea27848dac.hot-update.js"
+    },
+    "job-details.859290089cea27848dac.hot-update.json": {
+      "name": "job-details.859290089cea27848dac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.859290089cea27848dac.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.859290089cea27848dac.hot-update.json"
+    },
+    "job-details.932c9b29402cd0330fe5.hot-update.js": {
+      "name": "job-details.932c9b29402cd0330fe5.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.932c9b29402cd0330fe5.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.932c9b29402cd0330fe5.hot-update.js"
+    },
+    "job-details.932c9b29402cd0330fe5.hot-update.json": {
+      "name": "job-details.932c9b29402cd0330fe5.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.932c9b29402cd0330fe5.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.932c9b29402cd0330fe5.hot-update.json"
+    },
+    "job-details.9519b4a4cea2a6429bd1.hot-update.js": {
+      "name": "job-details.9519b4a4cea2a6429bd1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.9519b4a4cea2a6429bd1.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.9519b4a4cea2a6429bd1.hot-update.js"
+    },
+    "job-details.9519b4a4cea2a6429bd1.hot-update.json": {
+      "name": "job-details.9519b4a4cea2a6429bd1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.9519b4a4cea2a6429bd1.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.9519b4a4cea2a6429bd1.hot-update.json"
+    },
+    "job-details.9ea286761c7a4f12f957.hot-update.js": {
+      "name": "job-details.9ea286761c7a4f12f957.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.9ea286761c7a4f12f957.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.9ea286761c7a4f12f957.hot-update.js"
+    },
+    "job-details.9ea286761c7a4f12f957.hot-update.json": {
+      "name": "job-details.9ea286761c7a4f12f957.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.9ea286761c7a4f12f957.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.9ea286761c7a4f12f957.hot-update.json"
+    },
+    "job-details.aa9779a0c05ffff5b4d9.hot-update.js": {
+      "name": "job-details.aa9779a0c05ffff5b4d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.aa9779a0c05ffff5b4d9.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.aa9779a0c05ffff5b4d9.hot-update.js"
+    },
+    "job-details.aa9779a0c05ffff5b4d9.hot-update.json": {
+      "name": "job-details.aa9779a0c05ffff5b4d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.aa9779a0c05ffff5b4d9.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.aa9779a0c05ffff5b4d9.hot-update.json"
+    },
+    "job-details.b2c8634335186ba2ce61.hot-update.js": {
+      "name": "job-details.b2c8634335186ba2ce61.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.b2c8634335186ba2ce61.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.b2c8634335186ba2ce61.hot-update.js"
+    },
+    "job-details.b2c8634335186ba2ce61.hot-update.json": {
+      "name": "job-details.b2c8634335186ba2ce61.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.b2c8634335186ba2ce61.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.b2c8634335186ba2ce61.hot-update.json"
+    },
+    "job-details.c21138369f50868a1c84.hot-update.js": {
+      "name": "job-details.c21138369f50868a1c84.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.c21138369f50868a1c84.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.c21138369f50868a1c84.hot-update.js"
+    },
+    "job-details.c21138369f50868a1c84.hot-update.json": {
+      "name": "job-details.c21138369f50868a1c84.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.c21138369f50868a1c84.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.c21138369f50868a1c84.hot-update.json"
+    },
+    "job-details.c98e6eeeaecd550eeb68.hot-update.js": {
+      "name": "job-details.c98e6eeeaecd550eeb68.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.c98e6eeeaecd550eeb68.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.c98e6eeeaecd550eeb68.hot-update.js"
+    },
+    "job-details.c98e6eeeaecd550eeb68.hot-update.json": {
+      "name": "job-details.c98e6eeeaecd550eeb68.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.c98e6eeeaecd550eeb68.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.c98e6eeeaecd550eeb68.hot-update.json"
+    },
+    "job-details.ce299ceced7e8e28ff91.hot-update.js": {
+      "name": "job-details.ce299ceced7e8e28ff91.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.ce299ceced7e8e28ff91.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.ce299ceced7e8e28ff91.hot-update.js"
+    },
+    "job-details.ce299ceced7e8e28ff91.hot-update.json": {
+      "name": "job-details.ce299ceced7e8e28ff91.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.ce299ceced7e8e28ff91.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.ce299ceced7e8e28ff91.hot-update.json"
+    },
+    "job-details.dbb24465952fb2599863.hot-update.js": {
+      "name": "job-details.dbb24465952fb2599863.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.dbb24465952fb2599863.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.dbb24465952fb2599863.hot-update.js"
+    },
+    "job-details.dbb24465952fb2599863.hot-update.json": {
+      "name": "job-details.dbb24465952fb2599863.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.dbb24465952fb2599863.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.dbb24465952fb2599863.hot-update.json"
+    },
+    "job-details.e22f9a2f4725114610a9.hot-update.js": {
+      "name": "job-details.e22f9a2f4725114610a9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e22f9a2f4725114610a9.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.e22f9a2f4725114610a9.hot-update.js"
+    },
+    "job-details.e22f9a2f4725114610a9.hot-update.json": {
+      "name": "job-details.e22f9a2f4725114610a9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e22f9a2f4725114610a9.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.e22f9a2f4725114610a9.hot-update.json"
+    },
+    "job-details.e68d8d69ec59b1bb65bc.hot-update.js": {
+      "name": "job-details.e68d8d69ec59b1bb65bc.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e68d8d69ec59b1bb65bc.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.e68d8d69ec59b1bb65bc.hot-update.js"
+    },
+    "job-details.e68d8d69ec59b1bb65bc.hot-update.json": {
+      "name": "job-details.e68d8d69ec59b1bb65bc.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e68d8d69ec59b1bb65bc.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.e68d8d69ec59b1bb65bc.hot-update.json"
+    },
+    "job-details.e7b1b1a0a2337661f68d.hot-update.js": {
+      "name": "job-details.e7b1b1a0a2337661f68d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e7b1b1a0a2337661f68d.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.e7b1b1a0a2337661f68d.hot-update.js"
+    },
+    "job-details.e7b1b1a0a2337661f68d.hot-update.json": {
+      "name": "job-details.e7b1b1a0a2337661f68d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e7b1b1a0a2337661f68d.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.e7b1b1a0a2337661f68d.hot-update.json"
+    },
+    "job-details.e911e8ffaaf483e62f42.hot-update.js": {
+      "name": "job-details.e911e8ffaaf483e62f42.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e911e8ffaaf483e62f42.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.e911e8ffaaf483e62f42.hot-update.js"
+    },
+    "job-details.e911e8ffaaf483e62f42.hot-update.json": {
+      "name": "job-details.e911e8ffaaf483e62f42.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.e911e8ffaaf483e62f42.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.e911e8ffaaf483e62f42.hot-update.json"
+    },
+    "job-details.f6e0a561ec651d91d4b9.hot-update.js": {
+      "name": "job-details.f6e0a561ec651d91d4b9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.f6e0a561ec651d91d4b9.hot-update.js",
+      "publicPath": "http://localhost:9091/job-details.f6e0a561ec651d91d4b9.hot-update.js"
+    },
+    "job-details.f6e0a561ec651d91d4b9.hot-update.json": {
+      "name": "job-details.f6e0a561ec651d91d4b9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/job-details.f6e0a561ec651d91d4b9.hot-update.json",
+      "publicPath": "http://localhost:9091/job-details.f6e0a561ec651d91d4b9.hot-update.json"
     },
     "js/base.js": {
       "name": "js/base.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/base.js",
-      "publicPath": "/static/js/base.js"
+      "publicPath": "http://localhost:9091/js/base.js"
     },
     "js/costsheet.js": {
       "name": "js/costsheet.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.js",
-      "publicPath": "/static/js/costsheet.js"
-    },
-    "js/costsheet.js.map": {
-      "name": "js/costsheet.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/costsheet.js.map",
-      "publicPath": "/static/js/costsheet.js.map"
+      "publicPath": "http://localhost:9091/js/costsheet.js"
     },
     "js/invoice-uploader.js": {
       "name": "js/invoice-uploader.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.js",
-      "publicPath": "/static/js/invoice-uploader.js"
-    },
-    "js/invoice-uploader.js.map": {
-      "name": "js/invoice-uploader.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoice-uploader.js.map",
-      "publicPath": "/static/js/invoice-uploader.js.map"
+      "publicPath": "http://localhost:9091/js/invoice-uploader.js"
     },
     "js/invoices-list.js": {
       "name": "js/invoices-list.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.js",
-      "publicPath": "/static/js/invoices-list.js"
+      "publicPath": "http://localhost:9091/js/invoices-list.js"
     },
-    "js/invoices-list.js.map": {
-      "name": "js/invoices-list.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/invoices-list.js.map",
-      "publicPath": "/static/js/invoices-list.js.map"
+    "js/job-details.js": {
+      "name": "js/job-details.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/job-details.js",
+      "publicPath": "http://localhost:9091/js/job-details.js"
     },
     "js/pipeline.js": {
       "name": "js/pipeline.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.js",
-      "publicPath": "/static/js/pipeline.js"
-    },
-    "js/pipeline.js.map": {
-      "name": "js/pipeline.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/pipeline.js.map",
-      "publicPath": "/static/js/pipeline.js.map"
+      "publicPath": "http://localhost:9091/js/pipeline.js"
     },
     "js/vendor.bootstrap.js": {
       "name": "js/vendor.bootstrap.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.bootstrap.js",
-      "publicPath": "/static/js/vendor.bootstrap.js"
-    },
-    "js/vendor.bootstrap.js.LICENSE.txt": {
-      "name": "js/vendor.bootstrap.js.LICENSE.txt",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.bootstrap.js.LICENSE.txt",
-      "publicPath": "/static/js/vendor.bootstrap.js.LICENSE.txt"
-    },
-    "js/vendor.bootstrap.js.map": {
-      "name": "js/vendor.bootstrap.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.bootstrap.js.map",
-      "publicPath": "/static/js/vendor.bootstrap.js.map"
+      "publicPath": "http://localhost:9091/js/vendor.bootstrap.js"
     },
     "js/vendor.popperjs.js": {
       "name": "js/vendor.popperjs.js",
       "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.popperjs.js",
-      "publicPath": "/static/js/vendor.popperjs.js"
+      "publicPath": "http://localhost:9091/js/vendor.popperjs.js"
     },
-    "js/vendor.popperjs.js.map": {
-      "name": "js/vendor.popperjs.js.map",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/js/vendor.popperjs.js.map",
-      "publicPath": "/static/js/vendor.popperjs.js.map"
+    "pipeline.00e25c74e351a0858221.hot-update.js": {
+      "name": "pipeline.00e25c74e351a0858221.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.00e25c74e351a0858221.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.00e25c74e351a0858221.hot-update.js"
     },
-    "public/.gitkeep": {
-      "name": "public/.gitkeep",
-      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/public/.gitkeep",
-      "publicPath": "/static/public/.gitkeep"
+    "pipeline.00e25c74e351a0858221.hot-update.json": {
+      "name": "pipeline.00e25c74e351a0858221.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.00e25c74e351a0858221.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.00e25c74e351a0858221.hot-update.json"
+    },
+    "pipeline.057ad07c8539ad7782ce.hot-update.js": {
+      "name": "pipeline.057ad07c8539ad7782ce.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.057ad07c8539ad7782ce.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.057ad07c8539ad7782ce.hot-update.js"
+    },
+    "pipeline.057ad07c8539ad7782ce.hot-update.json": {
+      "name": "pipeline.057ad07c8539ad7782ce.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.057ad07c8539ad7782ce.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.057ad07c8539ad7782ce.hot-update.json"
+    },
+    "pipeline.081a9ca5b2159a495541.hot-update.js": {
+      "name": "pipeline.081a9ca5b2159a495541.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.081a9ca5b2159a495541.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.081a9ca5b2159a495541.hot-update.js"
+    },
+    "pipeline.081a9ca5b2159a495541.hot-update.json": {
+      "name": "pipeline.081a9ca5b2159a495541.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.081a9ca5b2159a495541.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.081a9ca5b2159a495541.hot-update.json"
+    },
+    "pipeline.134c59ee6f970351de1b.hot-update.js": {
+      "name": "pipeline.134c59ee6f970351de1b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.134c59ee6f970351de1b.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.134c59ee6f970351de1b.hot-update.js"
+    },
+    "pipeline.134c59ee6f970351de1b.hot-update.json": {
+      "name": "pipeline.134c59ee6f970351de1b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.134c59ee6f970351de1b.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.134c59ee6f970351de1b.hot-update.json"
+    },
+    "pipeline.17eb2c72f0f20a7b59a1.hot-update.js": {
+      "name": "pipeline.17eb2c72f0f20a7b59a1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.17eb2c72f0f20a7b59a1.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.17eb2c72f0f20a7b59a1.hot-update.js"
+    },
+    "pipeline.17eb2c72f0f20a7b59a1.hot-update.json": {
+      "name": "pipeline.17eb2c72f0f20a7b59a1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.17eb2c72f0f20a7b59a1.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.17eb2c72f0f20a7b59a1.hot-update.json"
+    },
+    "pipeline.1a28910e43ad4061d11d.hot-update.js": {
+      "name": "pipeline.1a28910e43ad4061d11d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.1a28910e43ad4061d11d.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.1a28910e43ad4061d11d.hot-update.js"
+    },
+    "pipeline.1a28910e43ad4061d11d.hot-update.json": {
+      "name": "pipeline.1a28910e43ad4061d11d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.1a28910e43ad4061d11d.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.1a28910e43ad4061d11d.hot-update.json"
+    },
+    "pipeline.1c24c4a866fcd8879a5b.hot-update.js": {
+      "name": "pipeline.1c24c4a866fcd8879a5b.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.1c24c4a866fcd8879a5b.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.1c24c4a866fcd8879a5b.hot-update.js"
+    },
+    "pipeline.1c24c4a866fcd8879a5b.hot-update.json": {
+      "name": "pipeline.1c24c4a866fcd8879a5b.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.1c24c4a866fcd8879a5b.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.1c24c4a866fcd8879a5b.hot-update.json"
+    },
+    "pipeline.21cd2ea8e6bfe58862d9.hot-update.js": {
+      "name": "pipeline.21cd2ea8e6bfe58862d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.21cd2ea8e6bfe58862d9.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.21cd2ea8e6bfe58862d9.hot-update.js"
+    },
+    "pipeline.21cd2ea8e6bfe58862d9.hot-update.json": {
+      "name": "pipeline.21cd2ea8e6bfe58862d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.21cd2ea8e6bfe58862d9.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.21cd2ea8e6bfe58862d9.hot-update.json"
+    },
+    "pipeline.24f954d199b54b1922f2.hot-update.js": {
+      "name": "pipeline.24f954d199b54b1922f2.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.24f954d199b54b1922f2.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.24f954d199b54b1922f2.hot-update.js"
+    },
+    "pipeline.24f954d199b54b1922f2.hot-update.json": {
+      "name": "pipeline.24f954d199b54b1922f2.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.24f954d199b54b1922f2.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.24f954d199b54b1922f2.hot-update.json"
+    },
+    "pipeline.281fe3287dc49694ab44.hot-update.js": {
+      "name": "pipeline.281fe3287dc49694ab44.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.281fe3287dc49694ab44.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.281fe3287dc49694ab44.hot-update.js"
+    },
+    "pipeline.281fe3287dc49694ab44.hot-update.json": {
+      "name": "pipeline.281fe3287dc49694ab44.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.281fe3287dc49694ab44.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.281fe3287dc49694ab44.hot-update.json"
+    },
+    "pipeline.29e165348ea0711db1be.hot-update.js": {
+      "name": "pipeline.29e165348ea0711db1be.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.29e165348ea0711db1be.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.29e165348ea0711db1be.hot-update.js"
+    },
+    "pipeline.29e165348ea0711db1be.hot-update.json": {
+      "name": "pipeline.29e165348ea0711db1be.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.29e165348ea0711db1be.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.29e165348ea0711db1be.hot-update.json"
+    },
+    "pipeline.2e317cdc735438779c79.hot-update.js": {
+      "name": "pipeline.2e317cdc735438779c79.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.2e317cdc735438779c79.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.2e317cdc735438779c79.hot-update.js"
+    },
+    "pipeline.2e317cdc735438779c79.hot-update.json": {
+      "name": "pipeline.2e317cdc735438779c79.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.2e317cdc735438779c79.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.2e317cdc735438779c79.hot-update.json"
+    },
+    "pipeline.3ab73f3120b4e873860c.hot-update.js": {
+      "name": "pipeline.3ab73f3120b4e873860c.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.3ab73f3120b4e873860c.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.3ab73f3120b4e873860c.hot-update.js"
+    },
+    "pipeline.3ab73f3120b4e873860c.hot-update.json": {
+      "name": "pipeline.3ab73f3120b4e873860c.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.3ab73f3120b4e873860c.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.3ab73f3120b4e873860c.hot-update.json"
+    },
+    "pipeline.3bfe672d01c4f6cb7fdf.hot-update.js": {
+      "name": "pipeline.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.3bfe672d01c4f6cb7fdf.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.3bfe672d01c4f6cb7fdf.hot-update.js"
+    },
+    "pipeline.3bfe672d01c4f6cb7fdf.hot-update.json": {
+      "name": "pipeline.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.3bfe672d01c4f6cb7fdf.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.3bfe672d01c4f6cb7fdf.hot-update.json"
+    },
+    "pipeline.3dec6594cb4d0f279795.hot-update.js": {
+      "name": "pipeline.3dec6594cb4d0f279795.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.3dec6594cb4d0f279795.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.3dec6594cb4d0f279795.hot-update.js"
+    },
+    "pipeline.3dec6594cb4d0f279795.hot-update.json": {
+      "name": "pipeline.3dec6594cb4d0f279795.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.3dec6594cb4d0f279795.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.3dec6594cb4d0f279795.hot-update.json"
+    },
+    "pipeline.438bd58e5ca238aae643.hot-update.js": {
+      "name": "pipeline.438bd58e5ca238aae643.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.438bd58e5ca238aae643.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.438bd58e5ca238aae643.hot-update.js"
+    },
+    "pipeline.438bd58e5ca238aae643.hot-update.json": {
+      "name": "pipeline.438bd58e5ca238aae643.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.438bd58e5ca238aae643.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.438bd58e5ca238aae643.hot-update.json"
+    },
+    "pipeline.4392c3f47ba672ab27ec.hot-update.js": {
+      "name": "pipeline.4392c3f47ba672ab27ec.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.4392c3f47ba672ab27ec.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.4392c3f47ba672ab27ec.hot-update.js"
+    },
+    "pipeline.4392c3f47ba672ab27ec.hot-update.json": {
+      "name": "pipeline.4392c3f47ba672ab27ec.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.4392c3f47ba672ab27ec.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.4392c3f47ba672ab27ec.hot-update.json"
+    },
+    "pipeline.491fd7554fb17b861172.hot-update.js": {
+      "name": "pipeline.491fd7554fb17b861172.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.491fd7554fb17b861172.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.491fd7554fb17b861172.hot-update.js"
+    },
+    "pipeline.491fd7554fb17b861172.hot-update.json": {
+      "name": "pipeline.491fd7554fb17b861172.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.491fd7554fb17b861172.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.491fd7554fb17b861172.hot-update.json"
+    },
+    "pipeline.4a3e465b0dd5021e5a4a.hot-update.js": {
+      "name": "pipeline.4a3e465b0dd5021e5a4a.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.4a3e465b0dd5021e5a4a.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.4a3e465b0dd5021e5a4a.hot-update.js"
+    },
+    "pipeline.4a3e465b0dd5021e5a4a.hot-update.json": {
+      "name": "pipeline.4a3e465b0dd5021e5a4a.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.4a3e465b0dd5021e5a4a.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.4a3e465b0dd5021e5a4a.hot-update.json"
+    },
+    "pipeline.4b59068325922db9da7f.hot-update.js": {
+      "name": "pipeline.4b59068325922db9da7f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.4b59068325922db9da7f.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.4b59068325922db9da7f.hot-update.js"
+    },
+    "pipeline.4b59068325922db9da7f.hot-update.json": {
+      "name": "pipeline.4b59068325922db9da7f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.4b59068325922db9da7f.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.4b59068325922db9da7f.hot-update.json"
+    },
+    "pipeline.5363234071d57d2c1cf3.hot-update.js": {
+      "name": "pipeline.5363234071d57d2c1cf3.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.5363234071d57d2c1cf3.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.5363234071d57d2c1cf3.hot-update.js"
+    },
+    "pipeline.5363234071d57d2c1cf3.hot-update.json": {
+      "name": "pipeline.5363234071d57d2c1cf3.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.5363234071d57d2c1cf3.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.5363234071d57d2c1cf3.hot-update.json"
+    },
+    "pipeline.563c82db9f831d7a32f8.hot-update.js": {
+      "name": "pipeline.563c82db9f831d7a32f8.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.563c82db9f831d7a32f8.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.563c82db9f831d7a32f8.hot-update.js"
+    },
+    "pipeline.563c82db9f831d7a32f8.hot-update.json": {
+      "name": "pipeline.563c82db9f831d7a32f8.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.563c82db9f831d7a32f8.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.563c82db9f831d7a32f8.hot-update.json"
+    },
+    "pipeline.5a118f191f7309d268e4.hot-update.js": {
+      "name": "pipeline.5a118f191f7309d268e4.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.5a118f191f7309d268e4.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.5a118f191f7309d268e4.hot-update.js"
+    },
+    "pipeline.5a118f191f7309d268e4.hot-update.json": {
+      "name": "pipeline.5a118f191f7309d268e4.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.5a118f191f7309d268e4.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.5a118f191f7309d268e4.hot-update.json"
+    },
+    "pipeline.694cd32b43f2ba03816f.hot-update.js": {
+      "name": "pipeline.694cd32b43f2ba03816f.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.694cd32b43f2ba03816f.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.694cd32b43f2ba03816f.hot-update.js"
+    },
+    "pipeline.694cd32b43f2ba03816f.hot-update.json": {
+      "name": "pipeline.694cd32b43f2ba03816f.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.694cd32b43f2ba03816f.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.694cd32b43f2ba03816f.hot-update.json"
+    },
+    "pipeline.697d84b10f28eb18efac.hot-update.js": {
+      "name": "pipeline.697d84b10f28eb18efac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.697d84b10f28eb18efac.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.697d84b10f28eb18efac.hot-update.js"
+    },
+    "pipeline.697d84b10f28eb18efac.hot-update.json": {
+      "name": "pipeline.697d84b10f28eb18efac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.697d84b10f28eb18efac.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.697d84b10f28eb18efac.hot-update.json"
+    },
+    "pipeline.729b1de36469b764bb88.hot-update.js": {
+      "name": "pipeline.729b1de36469b764bb88.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.729b1de36469b764bb88.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.729b1de36469b764bb88.hot-update.js"
+    },
+    "pipeline.729b1de36469b764bb88.hot-update.json": {
+      "name": "pipeline.729b1de36469b764bb88.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.729b1de36469b764bb88.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.729b1de36469b764bb88.hot-update.json"
+    },
+    "pipeline.7a5eeb6bfad2c0863a73.hot-update.js": {
+      "name": "pipeline.7a5eeb6bfad2c0863a73.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.7a5eeb6bfad2c0863a73.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.7a5eeb6bfad2c0863a73.hot-update.js"
+    },
+    "pipeline.7a5eeb6bfad2c0863a73.hot-update.json": {
+      "name": "pipeline.7a5eeb6bfad2c0863a73.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.7a5eeb6bfad2c0863a73.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.7a5eeb6bfad2c0863a73.hot-update.json"
+    },
+    "pipeline.7e5813d0c2ae1066e80d.hot-update.js": {
+      "name": "pipeline.7e5813d0c2ae1066e80d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.7e5813d0c2ae1066e80d.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.7e5813d0c2ae1066e80d.hot-update.js"
+    },
+    "pipeline.7e5813d0c2ae1066e80d.hot-update.json": {
+      "name": "pipeline.7e5813d0c2ae1066e80d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.7e5813d0c2ae1066e80d.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.7e5813d0c2ae1066e80d.hot-update.json"
+    },
+    "pipeline.8265ca63222d903c3b70.hot-update.js": {
+      "name": "pipeline.8265ca63222d903c3b70.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.8265ca63222d903c3b70.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.8265ca63222d903c3b70.hot-update.js"
+    },
+    "pipeline.8265ca63222d903c3b70.hot-update.json": {
+      "name": "pipeline.8265ca63222d903c3b70.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.8265ca63222d903c3b70.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.8265ca63222d903c3b70.hot-update.json"
+    },
+    "pipeline.84cd6c973a1c65002711.hot-update.js": {
+      "name": "pipeline.84cd6c973a1c65002711.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.84cd6c973a1c65002711.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.84cd6c973a1c65002711.hot-update.js"
+    },
+    "pipeline.84cd6c973a1c65002711.hot-update.json": {
+      "name": "pipeline.84cd6c973a1c65002711.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.84cd6c973a1c65002711.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.84cd6c973a1c65002711.hot-update.json"
+    },
+    "pipeline.859290089cea27848dac.hot-update.js": {
+      "name": "pipeline.859290089cea27848dac.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.859290089cea27848dac.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.859290089cea27848dac.hot-update.js"
+    },
+    "pipeline.859290089cea27848dac.hot-update.json": {
+      "name": "pipeline.859290089cea27848dac.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.859290089cea27848dac.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.859290089cea27848dac.hot-update.json"
+    },
+    "pipeline.932c9b29402cd0330fe5.hot-update.js": {
+      "name": "pipeline.932c9b29402cd0330fe5.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.932c9b29402cd0330fe5.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.932c9b29402cd0330fe5.hot-update.js"
+    },
+    "pipeline.932c9b29402cd0330fe5.hot-update.json": {
+      "name": "pipeline.932c9b29402cd0330fe5.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.932c9b29402cd0330fe5.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.932c9b29402cd0330fe5.hot-update.json"
+    },
+    "pipeline.9519b4a4cea2a6429bd1.hot-update.js": {
+      "name": "pipeline.9519b4a4cea2a6429bd1.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.9519b4a4cea2a6429bd1.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.9519b4a4cea2a6429bd1.hot-update.js"
+    },
+    "pipeline.9519b4a4cea2a6429bd1.hot-update.json": {
+      "name": "pipeline.9519b4a4cea2a6429bd1.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.9519b4a4cea2a6429bd1.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.9519b4a4cea2a6429bd1.hot-update.json"
+    },
+    "pipeline.9ea286761c7a4f12f957.hot-update.js": {
+      "name": "pipeline.9ea286761c7a4f12f957.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.9ea286761c7a4f12f957.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.9ea286761c7a4f12f957.hot-update.js"
+    },
+    "pipeline.9ea286761c7a4f12f957.hot-update.json": {
+      "name": "pipeline.9ea286761c7a4f12f957.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.9ea286761c7a4f12f957.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.9ea286761c7a4f12f957.hot-update.json"
+    },
+    "pipeline.aa9779a0c05ffff5b4d9.hot-update.js": {
+      "name": "pipeline.aa9779a0c05ffff5b4d9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.aa9779a0c05ffff5b4d9.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.aa9779a0c05ffff5b4d9.hot-update.js"
+    },
+    "pipeline.aa9779a0c05ffff5b4d9.hot-update.json": {
+      "name": "pipeline.aa9779a0c05ffff5b4d9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.aa9779a0c05ffff5b4d9.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.aa9779a0c05ffff5b4d9.hot-update.json"
+    },
+    "pipeline.b2c8634335186ba2ce61.hot-update.js": {
+      "name": "pipeline.b2c8634335186ba2ce61.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.b2c8634335186ba2ce61.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.b2c8634335186ba2ce61.hot-update.js"
+    },
+    "pipeline.b2c8634335186ba2ce61.hot-update.json": {
+      "name": "pipeline.b2c8634335186ba2ce61.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.b2c8634335186ba2ce61.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.b2c8634335186ba2ce61.hot-update.json"
+    },
+    "pipeline.c21138369f50868a1c84.hot-update.js": {
+      "name": "pipeline.c21138369f50868a1c84.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.c21138369f50868a1c84.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.c21138369f50868a1c84.hot-update.js"
+    },
+    "pipeline.c21138369f50868a1c84.hot-update.json": {
+      "name": "pipeline.c21138369f50868a1c84.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.c21138369f50868a1c84.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.c21138369f50868a1c84.hot-update.json"
+    },
+    "pipeline.c98e6eeeaecd550eeb68.hot-update.js": {
+      "name": "pipeline.c98e6eeeaecd550eeb68.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.c98e6eeeaecd550eeb68.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.c98e6eeeaecd550eeb68.hot-update.js"
+    },
+    "pipeline.c98e6eeeaecd550eeb68.hot-update.json": {
+      "name": "pipeline.c98e6eeeaecd550eeb68.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.c98e6eeeaecd550eeb68.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.c98e6eeeaecd550eeb68.hot-update.json"
+    },
+    "pipeline.ce299ceced7e8e28ff91.hot-update.js": {
+      "name": "pipeline.ce299ceced7e8e28ff91.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.ce299ceced7e8e28ff91.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.ce299ceced7e8e28ff91.hot-update.js"
+    },
+    "pipeline.ce299ceced7e8e28ff91.hot-update.json": {
+      "name": "pipeline.ce299ceced7e8e28ff91.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.ce299ceced7e8e28ff91.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.ce299ceced7e8e28ff91.hot-update.json"
+    },
+    "pipeline.dbb24465952fb2599863.hot-update.js": {
+      "name": "pipeline.dbb24465952fb2599863.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.dbb24465952fb2599863.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.dbb24465952fb2599863.hot-update.js"
+    },
+    "pipeline.dbb24465952fb2599863.hot-update.json": {
+      "name": "pipeline.dbb24465952fb2599863.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.dbb24465952fb2599863.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.dbb24465952fb2599863.hot-update.json"
+    },
+    "pipeline.e22f9a2f4725114610a9.hot-update.js": {
+      "name": "pipeline.e22f9a2f4725114610a9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e22f9a2f4725114610a9.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.e22f9a2f4725114610a9.hot-update.js"
+    },
+    "pipeline.e22f9a2f4725114610a9.hot-update.json": {
+      "name": "pipeline.e22f9a2f4725114610a9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e22f9a2f4725114610a9.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.e22f9a2f4725114610a9.hot-update.json"
+    },
+    "pipeline.e68d8d69ec59b1bb65bc.hot-update.js": {
+      "name": "pipeline.e68d8d69ec59b1bb65bc.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e68d8d69ec59b1bb65bc.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.e68d8d69ec59b1bb65bc.hot-update.js"
+    },
+    "pipeline.e68d8d69ec59b1bb65bc.hot-update.json": {
+      "name": "pipeline.e68d8d69ec59b1bb65bc.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e68d8d69ec59b1bb65bc.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.e68d8d69ec59b1bb65bc.hot-update.json"
+    },
+    "pipeline.e7b1b1a0a2337661f68d.hot-update.js": {
+      "name": "pipeline.e7b1b1a0a2337661f68d.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e7b1b1a0a2337661f68d.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.e7b1b1a0a2337661f68d.hot-update.js"
+    },
+    "pipeline.e7b1b1a0a2337661f68d.hot-update.json": {
+      "name": "pipeline.e7b1b1a0a2337661f68d.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e7b1b1a0a2337661f68d.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.e7b1b1a0a2337661f68d.hot-update.json"
+    },
+    "pipeline.e911e8ffaaf483e62f42.hot-update.js": {
+      "name": "pipeline.e911e8ffaaf483e62f42.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e911e8ffaaf483e62f42.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.e911e8ffaaf483e62f42.hot-update.js"
+    },
+    "pipeline.e911e8ffaaf483e62f42.hot-update.json": {
+      "name": "pipeline.e911e8ffaaf483e62f42.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.e911e8ffaaf483e62f42.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.e911e8ffaaf483e62f42.hot-update.json"
+    },
+    "pipeline.f6e0a561ec651d91d4b9.hot-update.js": {
+      "name": "pipeline.f6e0a561ec651d91d4b9.hot-update.js",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.f6e0a561ec651d91d4b9.hot-update.js",
+      "publicPath": "http://localhost:9091/pipeline.f6e0a561ec651d91d4b9.hot-update.js"
+    },
+    "pipeline.f6e0a561ec651d91d4b9.hot-update.json": {
+      "name": "pipeline.f6e0a561ec651d91d4b9.hot-update.json",
+      "path": "/Users/joeconnor_bcwc/repos/New_Pipeline/app/frontend/build/pipeline.f6e0a561ec651d91d4b9.hot-update.json",
+      "publicPath": "http://localhost:9091/pipeline.f6e0a561ec651d91d4b9.hot-update.json"
     }
   },
   "chunks": {
     "base": [
+      "css/base.css",
       "js/base.js",
-      "css/base-ea3f6.css"
+      "base.3dec6594cb4d0f279795.hot-update.js"
     ],
     "costsheet": [
       "js/vendor.bootstrap.js",
+      "css/costsheet.css",
       "js/costsheet.js",
-      "css/costsheet-ea3f6.css"
+      "costsheet.3dec6594cb4d0f279795.hot-update.js"
     ],
     "invoice-uploader": [
+      "css/invoice-uploader.css",
       "js/invoice-uploader.js",
-      "css/invoice-uploader-cf2ac.css"
+      "invoice-uploader.3dec6594cb4d0f279795.hot-update.js"
     ],
     "invoices-list": [
       "js/vendor.bootstrap.js",
+      "css/invoices-list.css",
       "js/invoices-list.js",
-      "css/invoices-list-ea3f6.css"
+      "invoices-list.3dec6594cb4d0f279795.hot-update.js"
+    ],
+    "job-details": [
+      "js/job-details.js",
+      "job-details.3dec6594cb4d0f279795.hot-update.js"
     ],
     "pipeline": [
       "js/vendor.bootstrap.js",
       "js/vendor.popperjs.js",
+      "css/pipeline.css",
       "js/pipeline.js",
-      "css/pipeline-ea3f6.css"
+      "pipeline.3dec6594cb4d0f279795.hot-update.js"
     ]
   },
-  "publicPath": "/static/"
+  "publicPath": "http://localhost:9091/"
 }

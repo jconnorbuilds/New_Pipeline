@@ -12,8 +12,8 @@ import {
 } from '../costs-and-invoices-common-funcs.js';
 import { createElement, truncate } from '../utils.js';
 
-import penIcon from '../../../assets/images/pencil-square.svg';
-import trashIcon from '../../../assets/images/trash3-fill.svg';
+import penIcon from '../../images/pencil-square.svg';
+import trashIcon from '../../images/trash3-fill.svg';
 
 /**
  * Returns the jobID, taken from the URL

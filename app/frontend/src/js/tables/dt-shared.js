@@ -58,7 +58,6 @@ export const preventHighlighting = (e) => {
 
 export const requestInvoice = (costID, table, costPayPeriod = 'next') => {
   // requests the vendor invoice
-  console.log({ costID }, { table });
   $.ajax({
     headers: { 'X-CSRFToken': CSRFTOKEN },
     url: '/pipeline/request-single-invoice/' + costID + '/',

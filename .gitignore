@@ -2,7 +2,10 @@
 .env*
 .prettierignore
 **/.vscode/
+**.log
 htmlcov
+**emails
+/nginx/certs
 *.numbers
 node_modules
 /app/frontend/build

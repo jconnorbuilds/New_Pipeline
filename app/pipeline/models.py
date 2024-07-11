@@ -23,7 +23,7 @@ class Vendor(models.Model):
     email = models.EmailField(max_length=100, blank=True, null=True, unique=True)
     payment_id = models.IntegerField(unique=True, null=True, blank=True)
     preferred_currency = models.CharField(max_length=3, null=True, blank=True)
-    jobs = models.ManyToManyField("Job", null=True, blank=True)
+    jobs = models.ManyToManyField("Job", blank=True)
 
     @property
     def full_name(self):
@@ -271,7 +271,9 @@ class Job(models.Model):
     isArchived = models.BooleanField(default=False)
     isInvoiced = models.BooleanField(default=False)
     revenue = models.IntegerField()
-    granular_revenue = models.BooleanField(default=False)
+    granular_revenue = models.BooleanField(
+        default=False
+    )  # TODO: remove the need for a separate column, do it in javascript
     add_consumption_tax = models.BooleanField(default=True)
     consumption_tax_amt = models.IntegerField(null=True, blank=True, editable=True)
     revenue_incl_tax = models.IntegerField(null=True, editable=False)
@@ -280,15 +282,17 @@ class Job(models.Model):
         verbose_name="vendors involved",
         related_name="jobs_with_vendor",
         blank=True,
-        null=True,
     )
     # Who the invoice is paid to, if it differs from the client
     invoice_recipient = models.ForeignKey(
         Client, on_delete=models.CASCADE, null=True, blank=True
     )
     # If the client has a job code or special name for the invoice
-    invoice_name = models.CharField(max_length=100, blank=True, null=True)
+    invoice_name = models.CharField(max_length=100, null=True)
     relatedJobs = models.ManyToManyField("self", blank=True)
+    is_extension_of = models.ForeignKey(
+        "self", on_delete=models.CASCADE, blank=True, null=True
+    )
     deposit_date = models.DateField(blank=True, null=True)
 
     # Separating out year and month because the day of the month doesn't matter
@@ -508,4 +512,4 @@ class Job(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.job_name} - {self.job_code}"
+        return f"{self.job_name} [Job Code: {self.job_code}]"

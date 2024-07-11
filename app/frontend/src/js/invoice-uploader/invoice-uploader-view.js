@@ -48,7 +48,10 @@ function _createInvoiceSelector(file, formNum, costs) {
       const option = _appendOption(cost, file, selectEl);
       _addInvoiceValidationClass(selectEl);
 
-      if (cost.isMatched) option.style.display = 'none';
+      if (cost.isMatched) {
+        option.style.display = 'none';
+        option.setAttribute('disabled', '');
+      }
     }
   });
 
@@ -164,27 +167,6 @@ export function createAddedFilePreviewElementBase(file, costs, formNum) {
   const selectorContainer = container.querySelector('.inv-file__selector');
   selectorContainer.appendChild(_createInvoiceSelector(file, formNum, costs));
 
-  // container.querySelector('.inv-file__body').addEventListener(
-  //   'mouseenter',
-  //   (e) => {
-  //     if (e.target.scrollWidth > e.target.clientWidth) {
-  //       const tooltip = createTooltip(e.target.textContent);
-  //       e.target.appendChild(tooltip);
-  //     }
-  //   },
-  //   true,
-  // );
-
-  // container.querySelector('.inv-file__body').addEventListener(
-  //   'mouseleave',
-  //   (e) => {
-  //     if (e.target.scrollWidth > e.target.clientWidth) {
-  //       removeTooltip(e.target);
-  //     }
-  //   },
-  //   true,
-  // );
-
   return container;
 }
 
@@ -263,7 +245,7 @@ export function updatePreviewElement(
     showHideReselectButton(false, element);
     filenameWrapper.style.gridColumn = '2/4';
   } else if (status === 'processed-fail') {
-    // do something else
+    // do something else (this status is currently never used)
   } else {
     showHideInvoiceSelector(true, element);
     showHideJobName(false, element);

@@ -35,11 +35,12 @@ module.exports = merge(common, {
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
     }),
-    // new ESLintPlugin({
-    //   extensions: 'js',
-    //   emitWarning: true,
-    //   files: Path.resolve(__dirname, '../src'),
-    // }),
+    new ESLintPlugin({
+      emitWarning: true,
+      files: Path.resolve(__dirname, '../src'),
+      configType: 'flat',
+      eslintPath: 'eslint/use-at-your-own-risk',
+    }),
     new StylelintPlugin({
       files: Path.join('src', '**/*.s?(a|c)ss'),
       fix: true,

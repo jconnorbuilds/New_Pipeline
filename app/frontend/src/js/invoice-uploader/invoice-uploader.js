@@ -20,7 +20,7 @@ import {
   toggleTooltip,
   submitButton,
 } from './invoice-uploader-view.js';
-import { displayErrorMessage, fadeOut } from './invoice-uploader-errors.js';
+import { displayErrorMessage } from './invoice-uploader-errors.js';
 import { CSRFTOKEN } from '../utils.js';
 
 const vendorUUID = window.location.href.split('/').pop();
@@ -144,6 +144,8 @@ function draggingFiles(e) {
     e.dataTransfer.items &&
     Array.from(e.dataTransfer.items).some((item) => item.kind === 'file')
   );
+
+  // return false;
 }
 
 function fileMatchesAlreadyMatchedCost(file) {
@@ -270,8 +272,10 @@ function toggleOptionVisibility(e, shouldBeVisible) {
   const costSelectDropdowns = [...document.querySelectorAll('.inv-selector')];
   costSelectDropdowns.forEach((element) => {
     [...element.querySelectorAll('option')].forEach((option) => {
-      if (option.dataset.poNum === matchedCostPONumber)
+      if (option.dataset.poNum === matchedCostPONumber) {
         option.style.display = displayStyle;
+        option.toggleAttribute('disabled', !shouldBeVisible);
+      }
     });
   });
 }
@@ -306,6 +310,7 @@ function updateSubmitButtonDisplay(showSpinner) {
 
 // Hides already-used options from the cost select list
 document.addEventListener('fileMatchedWithCost', (e) => {
+  console.log('matcher');
   toggleOptionVisibility(e, false);
 });
 
@@ -373,7 +378,7 @@ function trimWhitespace(element) {
   element.textContent = element.textContent.trim();
 }
 
-myDropzone.on('successmultiple', function (files, response, e) {
+myDropzone.on('successmultiple', function (files, response) {
   /**
    * Currently handling all invoice uploads in one request.
    * To avoid one bad file causing an error across the entire request, all uploads are treated as
@@ -398,7 +403,6 @@ myDropzone.on('successmultiple', function (files, response, e) {
     updatePreviewElement(file.previewElement, { status: 'processed-success' });
     disablePreviewElementButtons(file.previewElement);
     file.costInfoElement?.remove();
-    // processedInvoicesContainer.append(invoiceSelectArea.removeChild(file.previewElement));
   });
 
   // Remove failed uploads to allow the user to try again
@@ -451,7 +455,7 @@ myDropzone.on('errormultiple', function (files, message) {
 });
 
 myDropzone.on('removedfile', function (file) {
-  // If the removed file wasn't a duplicate, unmatch its related cost when possible
+  // If the removed file wasn't a duplicate, unmatch its related cost if it has one
   if (!filesAreTheSame(file, false) && !filesHaveSamePONumber(file, false)) {
     allCosts.find((cost) => cost.invoiceFile === file)?.unmatchFile();
   }

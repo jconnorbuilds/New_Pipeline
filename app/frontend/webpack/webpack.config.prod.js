@@ -3,15 +3,14 @@ const { merge } = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const common = require('./webpack.common.js');
 const autoprefixer = require('autoprefixer');
-const BundleAnalyzerPlugin =
-  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(common, {
   mode: 'production',
   devtool: 'source-map',
   bail: true,
   output: {
-    filename: 'js/[name].js',
+    filename: 'js/[name]-[contenthash].js',
     chunkFilename: 'js/[name].[contenthash].js',
   },
   plugins: [
@@ -19,17 +18,13 @@ module.exports = merge(common, {
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name]-[contenthash].css',
+      filename: 'css/[name].[contenthash].css',
+      chunkFilename: 'css/[id].[contenthash].css',
     }),
     new BundleAnalyzerPlugin({ analyzerMode: 'disabled' }),
   ],
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: 'babel-loader',
-      },
       {
         test: /\.s?(a|c)ss$/i,
         use: [

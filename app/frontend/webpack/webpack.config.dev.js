@@ -34,6 +34,7 @@ module.exports = merge(common, {
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
+      chunkFilename: 'css/[id].css',
     }),
     new ESLintPlugin({
       emitWarning: true,
@@ -41,10 +42,7 @@ module.exports = merge(common, {
       configType: 'flat',
       eslintPath: 'eslint/use-at-your-own-risk',
     }),
-    new StylelintPlugin({
-      files: Path.join('src', '**/*.s?(a|c)ss'),
-      fix: true,
-    }),
+    new StylelintPlugin(),
     new Webpack.optimize.ModuleConcatenationPlugin(),
   ],
   module: {
@@ -52,11 +50,6 @@ module.exports = merge(common, {
       {
         test: /\.html$/i,
         loader: 'html-loader',
-      },
-      {
-        test: /\.js$/,
-        include: Path.resolve(__dirname, '../src'),
-        loader: 'babel-loader',
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -76,7 +69,7 @@ module.exports = merge(common, {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: [autoprefixer],
+                plugins: [[autoprefixer, 'postcss-preset-env']],
               },
             },
           },

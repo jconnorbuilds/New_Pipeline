@@ -46,6 +46,28 @@ module.exports = {
           name: 'popperjs',
           filename: 'js/vendor.[name].js',
         },
+        pipelineStyles: {
+          reuseExistingChunk: true,
+          chunks: (chunk) => {
+            return [
+              'invoices-list',
+              'pipeline',
+              'costsheet',
+              'job-details',
+              'base',
+            ].includes(chunk.name);
+          },
+          type: 'css/mini-extract',
+          name: 'styles_pipeline',
+        },
+        invoiceUploaderStyles: {
+          reuseExistingChunk: true,
+          chunks: (chunk) => {
+            return chunk.name === 'invoice-uploader';
+          },
+          type: 'css/mini-extract',
+          name: 'invoice-uploader',
+        },
       },
     },
   },
@@ -69,11 +91,17 @@ module.exports = {
   ],
   resolve: {
     alias: {
-      '~': Path.resolve(__dirname, '../src'),
+      '~': Path.resolve(__dirname, './'),
     },
   },
   module: {
     rules: [
+      {
+        test: /\.js$/,
+        include: Path.resolve(__dirname, '../src'),
+        exclude: '/node_modules/',
+        loader: 'babel-loader',
+      },
       {
         test: /\.mjs$/,
         include: /node_modules/,

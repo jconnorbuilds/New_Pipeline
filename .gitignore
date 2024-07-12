@@ -15,5 +15,6 @@ docker-compose.yml
 docker-compose.local.yml
 import_templates
 data
+/**/webpack-stats.json
 
 **/__pycache__/

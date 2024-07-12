@@ -450,10 +450,6 @@ myDropzone.on('error', function (file, message) {
   }
 });
 
-myDropzone.on('errormultiple', function (files, message) {
-  console.log('DZ ERROR MULTIPLE: ', files, message);
-});
-
 myDropzone.on('removedfile', function (file) {
   // If the removed file wasn't a duplicate, unmatch its related cost if it has one
   if (!filesAreTheSame(file, false) && !filesHaveSamePONumber(file, false)) {

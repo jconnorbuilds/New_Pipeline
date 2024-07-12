@@ -66,7 +66,7 @@ module.exports = {
             return chunk.name === 'invoice-uploader';
           },
           type: 'css/mini-extract',
-          name: 'invoice-uploader',
+          name: 'styles_invoice-uploader',
         },
       },
     },

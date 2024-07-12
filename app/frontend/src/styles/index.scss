@@ -231,7 +231,13 @@ table div.btn-group button {
   color: red;
 }
 
-/* stylelint-disable-next-line */
+.job-basic-info__ > div,
+.job-outgoing-invoices__ > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 div.dt-processing > div:last-child > div {
   background: $primary;
 }
@@ -244,21 +250,10 @@ td span.job-code.highlight {
   cursor: pointer;
 }
 
-.job-basic-info__ > div,
-.job-outgoing-invoices__ > div {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
 .job-basic-info__title {
   font-weight: 700;
 }
 
-// .job-extension .menu-toggle {
-//   display: flex;
-//   align-items: center;
-// }
 .job-extension .menu-toggle {
   cursor: pointer;
 }

@@ -60,14 +60,6 @@
     </div>
     <div class="container-fluid p-4">
         <div class="row col-6">
-            {% comment %}
-    <form method="POST" id="batch-pay-csv-dl" enctype="multipart/form-data">
-      {% csrf_token %}
-      <button id="batch-pay-csv-dl-btn" type="submit" name="batch_pay_csv" value="batch-pay-csv" class="btn btn-dark">
-        Prepare Batch Payment
-      </button>
-    </form>
-            {% endcomment %}
             <div class="display-filter form-control">
                 <h3>Filter by status</h3>
                 <div>
@@ -97,6 +89,13 @@
                            value="rec2"
                            id="filter-rec2" />
                     <label for="filter-rec2">Received direct (pdf/paper)</label>
+                </div>
+                <div>
+                    <input type="checkbox"
+                           class="form-check-input status-filter"
+                           value="at"
+                           id="filter-at" />
+                    <label for="filter-at">Needs attention</label>
                 </div>
                 <div>
                     <input type="checkbox"

@@ -144,6 +144,7 @@ class Cost(models.Model):
         ("REQ", "Requested"),
         ("REC", "Received via upload"),
         ("REC2", "Received (direct PDF/paper)"),
+        ("AT", "Needs attention"),
         ("ERR", "Error on upload"),
         ("QUE", "Queued for payment"),
         ("PAID", "Paid"),

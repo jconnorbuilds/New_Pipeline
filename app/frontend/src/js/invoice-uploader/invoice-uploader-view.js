@@ -97,7 +97,6 @@ export function removeErrorMessages(dzFiles, file = null) {
     const messageToDelete = errorMessages
       .filter((msg) => msg.dataset.filename === file.cleanName)
       ?.forEach((msg) => msg.remove());
-    // console.log(messageToDelete);
     messageToDelete?.remove();
   } else {
     errorMessages.forEach((msg) => {

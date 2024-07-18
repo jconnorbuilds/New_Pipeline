@@ -44,9 +44,7 @@ export const selectOnDrag = (e) => {
     const row = e.target.closest('tr');
     const checkbox = row.querySelector('.form-check-input') || null;
     const isChecked = firstSelectedBox.checked;
-    isChecked
-      ? row.classList.add('selected-row')
-      : row.classList.remove('selected-row');
+    isChecked ? row.classList.add('selected-row') : row.classList.remove('selected-row');
 
     if (checkbox) checkbox.checked = isChecked;
   }
@@ -65,7 +63,7 @@ export const requestInvoice = (costID, table, costPayPeriod = 'next') => {
     data: { pay_period: costPayPeriod },
     dataType: 'json',
     success: function (data) {
-      console.log('invoice request callback: ', data); // make this a toast
+      // console.log('invoice request callback: ', data); // make this a toast
       new DataTable(table)
         .row(`#${data.response.id}`)
         .data(data.response)
@@ -75,7 +73,7 @@ export const requestInvoice = (costID, table, costPayPeriod = 'next') => {
     error: (data) => {
       console.warn(data);
       alert(
-        'There was an error. Try again, and if the error persists, request the invoice the old fashioned way'
+        'There was an error. Try again, and if the error persists, request the invoice the old fashioned way',
       );
     },
   });

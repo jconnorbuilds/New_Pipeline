@@ -25,7 +25,6 @@ const invoiceRecipient = document.querySelector('#id_inv-invoice_recipient');
 const errorMsgs = document.querySelector('#new-client-errors');
 
 const processFormErrors = (errors) => {
-  console.log(errors);
   const clientFriendlyNameErrorMsg = errors['friendly_name'];
   if (clientFriendlyNameErrorMsg) {
     friendlyNameInput.classList.add('is-invalid'); // TODO: set up proper client-side validation

@@ -310,7 +310,6 @@ function updateSubmitButtonDisplay(showSpinner) {
 
 // Hides already-used options from the cost select list
 document.addEventListener('fileMatchedWithCost', (e) => {
-  console.log('matcher');
   toggleOptionVisibility(e, false);
 });
 
@@ -472,7 +471,6 @@ invoiceSelectArea.addEventListener('change', (e) => {
 
     const status = checkForErrorsOnJobSelect(file, cost);
     if (status.responseCode !== 2000) {
-      console.log(file);
       displayErrorMessage(file, status);
       e.target.value = 0;
     } else {

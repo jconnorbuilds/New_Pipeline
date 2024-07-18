@@ -8,7 +8,7 @@ on:
 env:
   WEB_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/web"
   NGINX_IMAGE: "ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/nginx"
-  TAG: 'v1.46'
+  TAG: 'v1.47'
 
 jobs:
   build:

@@ -385,6 +385,7 @@ class Job(models.Model):
         (RYU, "Ryu Ishizawa"),
         (SEIYA, "Seiya Matsumiya"),
         (TIMO, "Timo Otsuki"),
+        (RYU, "Ryu Ishizawa"),
     ]
 
     personInCharge = models.CharField(

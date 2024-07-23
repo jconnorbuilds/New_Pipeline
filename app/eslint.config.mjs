@@ -21,6 +21,7 @@ export default [
   {
     rules: {
       'no-unused-vars': 0,
+      'no-debugger': 0,
     },
   },
 ];

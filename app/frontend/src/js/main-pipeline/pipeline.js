@@ -12,9 +12,10 @@ import { plTable } from './pipeline-dt.js';
 import {
   createFilters,
   revenueToggleHandler,
-  dateSelectionHandler,
+  dateSelectionButtonHandler,
   toggleViewHandler,
   initializeDateSelectors,
+  dateSelectionDropdownHandler,
 } from './pipeline-ui-funcs';
 import { initializeGlobalMouseEvents } from '../tables/dt-shared.js';
 import { jobFormSubmissionHandler } from './pipeline-funcs.js';
@@ -22,32 +23,30 @@ import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 import initializeNewClientForm from '../modals/new-client-form-funcs.js';
 import invoiceInfo from '../modals/invoice-details-modal.js';
 
-let filters = document.querySelectorAll('.display-filter input');
+const dateDropdownsContainer = document.querySelector('.select-date-dropdowns');
+const dateButtonsContainer = document.querySelector('.select-date-buttons');
+const revenueUnitToggler = document.querySelector('#revenue-unit');
+const viewToggler = document.querySelector('.toggle-view');
+const depositDateForm = document.querySelector('#deposit-date-form');
+const newJobForm = document.querySelector('#job-form');
+const newClientButton = document.querySelector('#pipeline-new-client-btn');
+
+const table = plTable.getOrInitTable();
+const filters = document.querySelectorAll('.display-filter input');
+revenueUnitToggler.addEventListener('click', revenueToggleHandler);
+dateButtonsContainer.addEventListener('click', dateSelectionButtonHandler);
+dateDropdownsContainer.addEventListener('change', dateSelectionDropdownHandler);
+viewToggler.addEventListener('click', toggleViewHandler);
+depositDateForm.addEventListener('submit', depositDateFormSubmitHandler);
+newJobForm.addEventListener('submit', jobFormSubmissionHandler);
+newClientButton.addEventListener('click', () => {
+  invoiceInfo.preventFromOpening();
+});
 
 initializeGlobalMouseEvents();
 initializeDateSelectors();
 
 $(function () {
-  document.querySelector('#revenue-unit').addEventListener('click', revenueToggleHandler);
-
-  document
-    .querySelector('#pipeline-next')
-    .parentNode.addEventListener('click', dateSelectionHandler);
-
-  document.querySelector('.toggle-view').addEventListener('click', toggleViewHandler);
-
-  document
-    .querySelector('#deposit-date-form')
-    .addEventListener('submit', depositDateFormSubmitHandler);
-
-  document
-    .querySelector('#job-form')
-    .addEventListener('submit', jobFormSubmissionHandler);
-
-  document.querySelector('#pipeline-new-client-btn').addEventListener('click', () => {
-    invoiceInfo.preventFromOpening();
-  });
-  const table = plTable.getOrInitTable();
   filters.forEach((f) => f.addEventListener('change', () => table.draw()));
   setupTableEventHandlers();
   createFilters();

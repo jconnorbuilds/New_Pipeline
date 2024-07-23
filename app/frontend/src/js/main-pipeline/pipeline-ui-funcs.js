@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
 import { updateRevenueDisplay } from './pipeline-funcs';
-import * as State from './pipeline-state.js';
+import { pipelineState } from './pipeline-dt-funcs';
 import { dates } from '../utils.js';
 import { queryJobs } from './pipeline-dt-funcs.js';
 import { createElement } from '../utils.js';
@@ -44,13 +44,13 @@ export const currentActualRevenueDisplayText = document.querySelector(
 
 export function refreshRevenueDisplay() {
   setExpectedRevenueDisplayText();
-  updateRevenueDisplay(...State.getViewDate());
+  updateRevenueDisplay(...pipelineState.viewDate);
   totalExpectedRevenueDisplay.textContent = `¥${getTotalExpectedRevenueAmt().toLocaleString()}`;
 }
 
 export function setExpectedRevenueDisplayText() {
   currentExpectedRevenueDisplay.textContent =
-    State.getViewType() !== 'monthly' || unreceivedFilter.checked
+    pipelineState.viewType !== 'monthly' || unreceivedFilter.checked
       ? '表示の案件　請求総額 (予定)'
       : '表示の月　請求総額 (予定)';
 }
@@ -125,32 +125,41 @@ export const initializeDateSelectors = () => {
   [pipelineYear.value, pipelineMonth.value] = dates.currentDate();
 };
 
-export const dateSelectionHandler = (event) => {
+export const dateSelectionButtonHandler = (event) => {
   let viewYear, viewMonth;
   switch (event.target.getAttribute('id')) {
     case 'pipeline-next':
-      [viewYear, viewMonth] = State.getNextMonth();
+      [viewYear, viewMonth] = pipelineState.nextMonth();
       break;
     case 'pipeline-prev':
-      [viewYear, viewMonth] = State.getPrevMonth();
+      [viewYear, viewMonth] = pipelineState.prevMonth();
       break;
     case 'pipeline-current':
       [viewYear, viewMonth] = dates.currentDate();
+      break;
   }
   // update UI
   [pipelineYear.value, pipelineMonth.value] = [viewYear, viewMonth];
-
+  console.log(pipelineState.viewDate);
   // update state
-  State.setViewDate([+pipelineYear.value, +pipelineMonth.value]);
+  pipelineState.viewDate = [+pipelineYear.value, +pipelineMonth.value];
 
   // get data
-  queryJobs(...State.getViewDate());
+  queryJobs(...pipelineState.viewDate);
+};
+
+export const dateSelectionDropdownHandler = (event) => {
+  event.target.matches('#pipeline-year')
+    ? (pipelineState.viewYear = event.target.value)
+    : (pipelineState.viewMonth = event.target.value);
+
+  queryJobs(...pipelineState.viewDate);
 };
 
 // TODO: replace jQuery with JS, forego slideUp/slideDown?
 export const toggleViewHandler = () => {
-  if (State.getViewType() === 'monthly') {
-    State.setViewType('all');
+  if (pipelineState.viewType === 'monthly') {
+    pipelineState.viewType = 'all';
     $('.monthly-item').slideUp('fast', function () {
       $('#pipeline-date-select .monthly-item').removeClass('d-flex');
     });
@@ -158,12 +167,12 @@ export const toggleViewHandler = () => {
     $('.toggle-view').html('<b>月別で表示</b>');
     queryJobs(undefined, undefined);
   } else {
-    State.setViewType('monthly');
+    pipelineState.viewType = 'monthly';
     currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
     $('#pipeline-date-select .monthly-item').addClass('d-flex');
     $('.monthly-item').slideDown('fast');
     $('.toggle-view').html('<b>全案件を表示</b>');
-    queryJobs(...State.getViewDate());
+    queryJobs(...pipelineState.viewDate);
   }
   setExpectedRevenueDisplayText();
 };

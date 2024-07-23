@@ -3,12 +3,12 @@ import { CSRFTOKEN } from '../utils.js';
 import { displayErrorMessage } from './pipeline-funcs.js';
 import invoiceInfo from '../modals/invoice-details-modal.js';
 import { plTable } from './pipeline-dt.js';
-import * as State from './pipeline-state.js';
 import { drawNewRow } from './pipeline-dt-ui-funcs.js';
 import {
   getTotalExpectedRevenueAmt,
   setTotalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
+import PipelineState from './PipelineState.js';
 
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.job_status_choices;
@@ -68,12 +68,12 @@ const handleNewRowDraw = (newRowData) => {
   if (newRowData.job_date) {
     const newDataInvoicePeriod = newRowData.job_date.split('-');
     if (newDataInvoicePeriod) {
-      State.checkForNeedsNewRow()
+      pipelineState.checkForNeedsNewRow()
         ? drawNewRow(newRowData, plTable.getOrInitTable())
         : plTable.refresh();
     }
   } else {
-    State.checkForNeedsNewRow()
+    pipelineState.checkForNeedsNewRow()
       ? drawNewRow(newRowData, plTable.getOrInitTable())
       : plTable.refresh();
   }
@@ -124,3 +124,4 @@ export {
   updateTable,
   handleAjaxError,
 };
+export const pipelineState = new PipelineState();

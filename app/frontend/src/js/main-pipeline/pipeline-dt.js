@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
-import * as State from './pipeline-state.js';
+import { pipelineState } from './pipeline-dt-funcs.js';
 import { truncate } from '../utils.js';
 import {
   setTotalExpectedRevenueAmt,
@@ -8,7 +8,7 @@ import {
   setupStatusOrdering,
 } from './pipeline-ui-funcs.js';
 import { renderInvoiceStatus, rowCallback } from './pipeline-dt-funcs.js';
-
+import { bootstrap } from '../base.js';
 let table;
 let tableEl;
 
@@ -37,7 +37,7 @@ const initTable = () => {
     preDrawCallback: () => setTotalExpectedRevenueAmt(0),
     drawCallback: () => refreshRevenueDisplay(),
     ajax: {
-      url: `/pipeline/pipeline-data/${State.getViewYear()}/${State.getViewMonth()}/`,
+      url: `/pipeline/pipeline-data/${pipelineState.viewYear}/${pipelineState.viewMonth}/`,
       dataSrc: (json) => json.data,
     },
     columns: [

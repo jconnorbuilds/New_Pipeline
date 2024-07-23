@@ -53,17 +53,17 @@ const CURRENCY_SYMBOLS = {
   THB: '฿',
 };
 
-const theDate = () => new Date();
+const getDate = () => new Date();
 
 const dates = {
   currentDate: () => {
-    const date = theDate();
+    const date = getDate();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     return [year, month];
   },
-  thisYear: () => theDate().getFullYear(),
-  thisMonth: () => theDate().getMonth() + 1,
+  thisYear: () => getDate().getFullYear(),
+  thisMonth: () => getDate().getMonth() + 1,
 };
 
 const truncate = (string, maxLength = 30) => {

@@ -1,21 +1,17 @@
+'use strict';
 import $ from 'jquery';
-import {
-  updateTable,
-  handleAjaxError,
-} from '../main-pipeline/pipeline-dt-funcs.js';
-import Modal from 'bootstrap/js/dist/modal';
+import { updateTable, handleAjaxError } from '../main-pipeline/pipeline-dt-funcs.js';
+import { bootstrap } from '../base.js';
+
 import { plTable } from '../main-pipeline/pipeline-dt.js';
 import { CSRFTOKEN } from '../utils.js';
 
 export const form = document.querySelector('#deposit-date-form');
 const modalEl = document.querySelector('#set-deposit-date');
-const modal = new Modal(modalEl);
+const modal = new bootstrap.Modal(modalEl);
 
 const modalShowHandler = () => {
-  const row = plTable
-    .getOrInitTable()
-    .row(`#${plTable.getCurrentRowID()}`)
-    .node();
+  const row = plTable.getOrInitTable().row(`#${plTable.getCurrentRowID()}`).node();
   const jobStatus = row.querySelector('.job-status-select').value;
   if (['INVOICED1', 'INVOICED2', 'FINISHED'].includes(jobStatus)) {
     modal.show();

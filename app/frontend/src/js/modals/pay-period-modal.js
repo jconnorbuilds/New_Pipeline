@@ -1,9 +1,10 @@
-import Modal from 'bootstrap/js/dist/modal';
-import { requestInvoice } from '../tables/dt-shared.js';
+'use strict';
 
+import { requestInvoice } from '../tables/dt-shared.js';
+import { bootstrap } from '../base.js';
 const form = document.querySelector('form#pay-period-form');
 const modalEl = document.querySelector('#pay-period-modal');
-const modal = new Modal(modalEl);
+const modal = new bootstrap.Modal(modalEl);
 const defineMenu = (row) => row.querySelector('ul.dropdown-menu > li');
 const descriptionDiv = document.querySelector('#pay-period-modal .invoice-desc');
 modalEl.addEventListener('hide.bs.modal', () => {

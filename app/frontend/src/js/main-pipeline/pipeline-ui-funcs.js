@@ -9,9 +9,7 @@ import { createElement } from '../utils.js';
 const unreceivedFilter = document.querySelector('input.unreceived');
 const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
 const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
-const showOutstandingPayments = document.querySelector(
-  'input.toggle-outstanding'
-);
+const showOutstandingPayments = document.querySelector('input.toggle-outstanding');
 
 export const revenueToggleHandler = (e) => {
   const btn = e.currentTarget;
@@ -35,13 +33,13 @@ export const setTotalExpectedRevenueAmt = (value) => {
 };
 export const getTotalExpectedRevenueAmt = () => totalExpectedRevenueAmt;
 export const totalExpectedRevenueDisplay = document.querySelector(
-  '#total-revenue-monthly-exp'
+  '#total-revenue-monthly-exp',
 );
 export const currentExpectedRevenueDisplay = document.querySelector(
-  '.revenue-display-text.expected'
+  '.revenue-display-text.expected',
 );
 export const currentActualRevenueDisplayText = document.querySelector(
-  '.revenue-display-text.actual'
+  '.revenue-display-text.actual',
 );
 
 export function refreshRevenueDisplay() {

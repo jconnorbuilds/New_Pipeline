@@ -1,4 +1,5 @@
-import { Toast } from 'bootstrap/dist/js/bootstrap.bundle';
+'use strict';
+import { bootstrap } from './base.js';
 import { createElement } from './utils.js';
 import successIcon from '../images/check2-circle.svg';
 
@@ -55,14 +56,14 @@ const createAndInitializeToast = (
   headerText,
   bodyText,
   options = {}, // animation, autohide, delay(ms)
-  id = ''
+  id = '',
 ) => {
   const toastEl = createToastEl(headerText, bodyText, id);
   const toastContainer = document.querySelector('.toast-container');
   toastContainer
     ? toastContainer.appendChild(toastEl)
     : document.body.appendChild(toastEl);
-  return new Toast(toastEl, options);
+  return new bootstrap.Toast(toastEl, options);
 };
 
 export default createAndInitializeToast;

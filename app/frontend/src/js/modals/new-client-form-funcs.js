@@ -1,6 +1,7 @@
+'use strict';
 import $ from 'jquery';
 import { CSRFTOKEN, createElement } from '../utils.js';
-import Modal from 'bootstrap/js/dist/modal';
+import { bootstrap } from '../base.js';
 import createAndInitializeToast from '../toast-notifs.js';
 import invoiceInfo from './invoice-details-modal.js';
 
@@ -44,7 +45,7 @@ const handleSuccessfulSubmission = (response) => {
     // adds the newly added client to the client list
     clientField.appendChild(addNewClientOption());
 
-    Modal.getOrCreateInstance('#new-client-modal').toggle();
+    bootstrap.Modal.getOrCreateInstance('#new-client-modal').toggle();
     // adds the newly added client to the invoice recipient list
     // ( in the invoice info modal)
     invoiceRecipient.appendChild(addNewClientOption());

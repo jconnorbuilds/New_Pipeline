@@ -6,7 +6,9 @@ const BundleTracker = require('webpack-bundle-tracker');
 module.exports = {
   entry: {
     base: Path.resolve(__dirname, '../src/js/base.js'),
-    pipeline: Path.resolve(__dirname, '../src/js/main-pipeline/pipeline.js'),
+    pipeline: {
+      import: Path.resolve(__dirname, '../src/js/main-pipeline/pipeline.js'),
+    },
     'invoice-uploader': {
       import: Path.resolve(__dirname, '../src/js/invoice-uploader/invoice-uploader.js'),
     },
@@ -37,13 +39,6 @@ module.exports = {
           chunks: 'all',
           test: /[\\/]node_modules[\\/]bootstrap[\\/]/i,
           name: 'bootstrap',
-          filename: 'js/vendor.[name].js',
-        },
-        popperjs: {
-          reuseExistingChunk: true,
-          chunks: 'all',
-          test: /[\\/]node_modules[\\/]@popperjs[\\/]/i,
-          name: 'popperjs',
           filename: 'js/vendor.[name].js',
         },
         pipelineStyles: {

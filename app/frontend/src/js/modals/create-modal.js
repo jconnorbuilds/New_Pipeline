@@ -1,8 +1,8 @@
-import Modal from 'bootstrap/js/dist/modal';
+import { bootstrap } from '../base.js';
 
 const createModal = (selector, eventHandlerFns = []) => {
   const modalEl = document.querySelector(selector);
-  const modal = new Modal(modalEl);
+  const modal = new bootstrap.Modal(modalEl);
 
   eventHandlerFns.forEach((fn) => fn());
 

@@ -4,7 +4,7 @@ import createModal from './create-modal.js';
 import { plTable } from '../main-pipeline/pipeline-dt.js';
 import { CSRFTOKEN } from '../utils.js';
 import createAndInitializeToast from '../toast-notifs.js';
-
+import { bootstrap } from '../base.js';
 const form = document.querySelector('#invoice-info-form');
 
 const getFormData = (newStatus) => {

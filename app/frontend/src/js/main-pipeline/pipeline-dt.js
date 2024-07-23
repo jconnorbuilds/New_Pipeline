@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
-import * as bootstrap from 'bootstrap';
 import * as State from './pipeline-state.js';
 import { truncate } from '../utils.js';
 import {
@@ -109,9 +108,7 @@ const initTable = () => {
         render: {
           display: (data) => {
             let date = new Date(data);
-            return data
-              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
-              : '---';
+            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
           },
           sort: (data) => data,
         },
@@ -140,9 +137,7 @@ const initTable = () => {
         name: 'invoice_info_completed',
         visible: false,
         render: (data, type, row) => {
-          return row.invoice_name && row.invoice_month && row.invoice_year
-            ? true
-            : false;
+          return row.invoice_name && row.invoice_month && row.invoice_year ? true : false;
         },
       },
       {
@@ -183,11 +178,11 @@ const initTable = () => {
       // workaround from https://github.com/DataTables/DataTablesSrc/issues/262
       if (ONGOING_STATUSES.includes(data.status)) {
         cells.forEach((cell) =>
-          cell.classList.add('bg-primary-subtle', 'text-primary-emphasis')
+          cell.classList.add('bg-primary-subtle', 'text-primary-emphasis'),
         );
       } else {
         cells.forEach((cell) =>
-          cell.classList.remove('bg-primary-subtle', 'text-primary-emphasis')
+          cell.classList.remove('bg-primary-subtle', 'text-primary-emphasis'),
         );
       }
     },
@@ -206,12 +201,10 @@ export const plTable = (() => {
   let currentSelectEl;
 
   const getOrInitTable = () => table || initTable();
-  const getTableEl = () =>
-    getOrInitTable().table().container().querySelector('table');
+  const getTableEl = () => getOrInitTable().table().container().querySelector('table');
   const setCurrentRowID = (id) => (currentRowID = id);
   const getCurrentRowID = () => currentRowID;
-  const getClientID = () =>
-    +table.cell(`#${currentRowID}`, 'client_id:name').data();
+  const getClientID = () => +table.cell(`#${currentRowID}`, 'client_id:name').data();
   const refresh = () => {
     table.ajax.reload();
   };

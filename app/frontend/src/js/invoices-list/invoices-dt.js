@@ -39,8 +39,7 @@ const initTable = () => {
       columns: [
         {
           data: 'job_id',
-          render: (data) =>
-            `<a href="/pipeline/cost-add/${data}">Cost Sheet</a>`,
+          render: (data) => `<a href="/pipeline/cost-add/${data}">Cost Sheet</a>`,
         },
         {
           data: 'amount_JPY',
@@ -65,9 +64,7 @@ const initTable = () => {
           className: 'invoice-period',
           render: (data) => {
             let date = new Date(data);
-            return data
-              ? `${date.getFullYear()}年${date.getMonth() + 1}月`
-              : '---';
+            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
           },
           type: invoicePeriodType,
         },
@@ -97,7 +94,6 @@ const initTable = () => {
           render: (data, type, row) => {
             return renderInvoiceStatus(data, row);
           },
-          // type: 'status',
           type: invoiceStatusType,
         },
         {
@@ -136,8 +132,7 @@ const initTable = () => {
 
 const invoiceTable = (() => {
   const getOrInitTable = () => table || initTable();
-  const getTableEl = () =>
-    getOrInitTable().table().container().querySelector('table');
+  const getTableEl = () => getOrInitTable().table().container().querySelector('table');
 
   const refresh = () => table.ajax.reload();
 

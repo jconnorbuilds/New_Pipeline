@@ -58,11 +58,9 @@ const initTable = () => {
           display: (data, type, row) => {
             const cellContent = document.createElement('a');
             cellContent.setAttribute('href', `/pipeline/${row.id}/job-detail/`);
-            if (!ONGOING_STATUSES.includes(row.status)) {
-              cellContent.textContent = `INV: ${truncate(row.invoice_name)}`;
-            } else {
-              cellContent.textContent = truncate(data);
-            }
+            cellContent.textContent = !ONGOING_STATUSES.includes(row.status)
+              ? `INV: ${truncate(row.invoice_name)}`
+              : (cellContent.textContent = truncate(data));
 
             return cellContent;
           },
@@ -166,16 +164,13 @@ const initTable = () => {
       if (!data.deposit_date) row.classList.add('payment-unreceived');
       jobCodeNameMap.set(data.job_code, data.job_name);
 
-      /* 
-      this should work but is currently broken in DataTables v2.0.2 as of 2023/3/23. Currently using the workaround from here:
-      
+      // // this should work but is currently broken in DataTables v2.0.2 as of 2023/3/23. Currently using the workaround from here:
 
-      if (['ONGOING', 'READYTOINV'].includes(data.status)) {
-        row.classList.add('table-primary');
-      } else {
-        row.classList.remove('table-primary');
-      }
-      */
+      // if (['ONGOING', 'READYTOINV'].includes(data.status)) {
+      //   row.classList.add('table-primary');
+      // } else {
+      //   row.classList.remove('table-primary');
+      // }
 
       // workaround from https://github.com/DataTables/DataTablesSrc/issues/262
       if (ONGOING_STATUSES.includes(data.status)) {

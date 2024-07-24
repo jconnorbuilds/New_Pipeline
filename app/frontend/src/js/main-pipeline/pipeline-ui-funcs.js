@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
 import { updateRevenueDisplay } from './pipeline-funcs';
-import { pipelineState } from './pipeline-dt-funcs';
+import { state, nextMonth, prevMonth, getState, setState } from './PipelineState.js';
 import { dates } from '../utils.js';
 import { queryJobs } from './pipeline-dt-funcs.js';
 import { createElement } from '../utils.js';
@@ -44,13 +44,13 @@ export const currentActualRevenueDisplayText = document.querySelector(
 
 export function refreshRevenueDisplay() {
   setExpectedRevenueDisplayText();
-  updateRevenueDisplay(...pipelineState.viewDate);
+  updateRevenueDisplay(state.viewYear, state.viewMonth);
   totalExpectedRevenueDisplay.textContent = `¥${getTotalExpectedRevenueAmt().toLocaleString()}`;
 }
 
 export function setExpectedRevenueDisplayText() {
   currentExpectedRevenueDisplay.textContent =
-    pipelineState.viewType !== 'monthly' || unreceivedFilter.checked
+    state.viewType !== 'monthly' || unreceivedFilter.checked
       ? '表示の案件　請求総額 (予定)'
       : '表示の月　請求総額 (予定)';
 }
@@ -126,13 +126,14 @@ export const initializeDateSelectors = () => {
 };
 
 export const dateSelectionButtonHandler = (event) => {
+  // debugger;
   let viewYear, viewMonth;
   switch (event.target.getAttribute('id')) {
     case 'pipeline-next':
-      [viewYear, viewMonth] = pipelineState.nextMonth();
+      [viewYear, viewMonth] = nextMonth();
       break;
     case 'pipeline-prev':
-      [viewYear, viewMonth] = pipelineState.prevMonth();
+      [viewYear, viewMonth] = prevMonth();
       break;
     case 'pipeline-current':
       [viewYear, viewMonth] = dates.currentDate();
@@ -140,39 +141,48 @@ export const dateSelectionButtonHandler = (event) => {
   }
   // update UI
   [pipelineYear.value, pipelineMonth.value] = [viewYear, viewMonth];
-  console.log(pipelineState.viewDate);
+
   // update state
-  pipelineState.viewDate = [+pipelineYear.value, +pipelineMonth.value];
+  setState({ viewYear: +pipelineYear.value, viewMonth: +pipelineMonth.value });
 
   // get data
-  queryJobs(...pipelineState.viewDate);
+  queryJobs(state.viewYear, state.viewMonth);
 };
 
 export const dateSelectionDropdownHandler = (event) => {
   event.target.matches('#pipeline-year')
-    ? (pipelineState.viewYear = event.target.value)
-    : (pipelineState.viewMonth = event.target.value);
+    ? setState({ viewYear: event.target.value })
+    : setState({ viewMonth: event.target.value });
 
-  queryJobs(...pipelineState.viewDate);
+  queryJobs(state.viewYear, state.viewMonth);
 };
 
 // TODO: replace jQuery with JS, forego slideUp/slideDown?
-export const toggleViewHandler = () => {
-  if (pipelineState.viewType === 'monthly') {
-    pipelineState.viewType = 'all';
-    $('.monthly-item').slideUp('fast', function () {
-      $('#pipeline-date-select .monthly-item').removeClass('d-flex');
-    });
-
-    $('.toggle-view').html('<b>月別で表示</b>');
-    queryJobs(undefined, undefined);
-  } else {
-    pipelineState.viewType = 'monthly';
-    currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
-    $('#pipeline-date-select .monthly-item').addClass('d-flex');
-    $('.monthly-item').slideDown('fast');
-    $('.toggle-view').html('<b>全案件を表示</b>');
-    queryJobs(...pipelineState.viewDate);
-  }
-  setExpectedRevenueDisplayText();
+export const toggleView = () => {
+  state.viewType === 'monthly' ? displayAllJobsView() : displayMonthlyJobsView();
 };
+
+export const displaySelectedView = () => {
+  state.viewType === 'all' ? displayAllJobsView() : displayMonthlyJobsView();
+};
+
+function displayMonthlyJobsView() {
+  setState({ viewType: 'monthly' });
+  currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
+  $('#pipeline-date-select .monthly-item').addClass('d-flex');
+  $('.monthly-item').slideDown('fast');
+  $('.toggle-view').html('<b>全案件を表示</b>');
+  queryJobs(state.viewYear, state.viewMonth);
+  setExpectedRevenueDisplayText();
+}
+
+function displayAllJobsView() {
+  setState({ viewType: 'all' });
+  $('.monthly-item').slideUp('fast', function () {
+    $('#pipeline-date-select .monthly-item').removeClass('d-flex');
+  });
+
+  $('.toggle-view').html('<b>月別で表示</b>');
+  queryJobs(undefined, undefined);
+  setExpectedRevenueDisplayText();
+}

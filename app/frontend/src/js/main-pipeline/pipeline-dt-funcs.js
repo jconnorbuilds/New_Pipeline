@@ -8,7 +8,12 @@ import {
   getTotalExpectedRevenueAmt,
   setTotalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
-import PipelineState from './PipelineState.js';
+import { checkForNeedsNewRow } from './PipelineState.js';
+
+// const stateObj = sessionStorage.getItem('pipelineState');
+// export const pipelineState = stateObj
+//   ? new PipelineState(JSON.parse(stateObj))
+//   : new PipelineState();
 
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.job_status_choices;
@@ -68,12 +73,12 @@ const handleNewRowDraw = (newRowData) => {
   if (newRowData.job_date) {
     const newDataInvoicePeriod = newRowData.job_date.split('-');
     if (newDataInvoicePeriod) {
-      pipelineState.checkForNeedsNewRow()
+      checkForNeedsNewRow()
         ? drawNewRow(newRowData, plTable.getOrInitTable())
         : plTable.refresh();
     }
   } else {
-    pipelineState.checkForNeedsNewRow()
+    checkForNeedsNewRow()
       ? drawNewRow(newRowData, plTable.getOrInitTable())
       : plTable.refresh();
   }
@@ -124,4 +129,3 @@ export {
   updateTable,
   handleAjaxError,
 };
-export const pipelineState = new PipelineState();

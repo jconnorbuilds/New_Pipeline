@@ -54,16 +54,19 @@ const initTable = () => {
       {
         data: 'job_name',
         className: 'job-label',
-        render: (data, type, row) => {
-          const cellContent = document.createElement('a');
-          cellContent.setAttribute('href', `/pipeline/${row.id}/job-detail/`);
-          if (!ONGOING_STATUSES.includes(row.status)) {
-            cellContent.textContent = `INV: ${truncate(row.invoice_name)}`;
-          } else {
-            cellContent.textContent = truncate(data);
-          }
+        render: {
+          display: (data, type, row) => {
+            const cellContent = document.createElement('a');
+            cellContent.setAttribute('href', `/pipeline/${row.id}/job-detail/`);
+            if (!ONGOING_STATUSES.includes(row.status)) {
+              cellContent.textContent = `INV: ${truncate(row.invoice_name)}`;
+            } else {
+              cellContent.textContent = truncate(data);
+            }
 
-          return cellContent;
+            return cellContent;
+          },
+          filter: (data) => data,
         },
       },
       {
@@ -92,7 +95,6 @@ const initTable = () => {
         className: 'px-4',
         render: {
           display: (data, type, row) =>
-            // prettier-ignore
             `<a href="/pipeline/cost-add/${row.id}/">¥${data.toLocaleString()}</a>`,
           sort: (data) => data,
         },

@@ -1,6 +1,6 @@
 import { bootstrap } from '../base.js';
 
-const createModal = (selector, eventHandlerFns = []) => {
+const createModal = ({ selector, eventHandlerFns = [] } = {}) => {
   const modalEl = document.querySelector(selector);
   const modal = new bootstrap.Modal(modalEl);
 

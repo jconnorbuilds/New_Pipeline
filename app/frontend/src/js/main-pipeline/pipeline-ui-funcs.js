@@ -1,15 +1,18 @@
 import $ from 'jquery';
 import DataTable from 'datatables.net';
-import { updateRevenueDisplay } from './pipeline-funcs';
-import { state, nextMonth, prevMonth, getState, setState } from './PipelineState.js';
+import { state, nextMonth, prevMonth, setState } from './PipelineState.js';
 import { dates } from '../utils.js';
 import { queryJobs } from './pipeline-dt-funcs.js';
 import { createElement } from '../utils.js';
+import { _fetchRevenueData } from './pipeline-funcs.js';
 
 const unreceivedFilter = document.querySelector('input.unreceived');
 const toggleOngoingFilter = document.querySelector('input.toggle-ongoing');
 const showOnlyOngoingFilter = document.querySelector('input.only-ongoing');
 const showOutstandingPayments = document.querySelector('input.toggle-outstanding');
+const ytdRevenueTotalUI = document.querySelector('#total-revenue-ytd');
+const ytdRevenueAvgUI = document.querySelector('#avg-revenue-ytd');
+const monthlyRevenueActualTotalUI = document.querySelector('#total-revenue-monthly-act');
 
 export const revenueToggleHandler = (e) => {
   const btn = e.currentTarget;
@@ -42,33 +45,28 @@ export const currentActualRevenueDisplayText = document.querySelector(
   '.revenue-display-text.actual',
 );
 
+export const updateRevenueDisplay = async (year, month) => {
+  const data = await _fetchRevenueData(year, month);
+
+  ytdRevenueTotalUI.textContent = data.total_revenue_ytd;
+  ytdRevenueAvgUI.textContent = data.avg_monthly_revenue_ytd;
+  monthlyRevenueActualTotalUI.textContent = data.total_revenue_monthly_actual;
+};
+
 export function refreshRevenueDisplay() {
   setExpectedRevenueDisplayText();
+  updateRevenueDisplay(state.viewYear, state.viewMonth);
   updateRevenueDisplay(state.viewYear, state.viewMonth);
   totalExpectedRevenueDisplay.textContent = `¥${getTotalExpectedRevenueAmt().toLocaleString()}`;
 }
 
+// TODO: get rid of this function, it's unnecessary to change the text
 export function setExpectedRevenueDisplayText() {
   currentExpectedRevenueDisplay.textContent =
-    state.viewType !== 'monthly' || unreceivedFilter.checked
-      ? '表示の案件　請求総額 (予定)'
-      : '表示の月　請求総額 (予定)';
-}
-
-export function setupStatusOrdering() {
-  const jobStatusOrderMap = {
-    ONGOING: 1,
-    READYTOINV: 2,
-    INVOICED1: 3,
-    INVOICED2: 4,
-    FINISHED: 5,
-    ARCHIVED: 6,
-  };
-
-  DataTable.ext.type.order['status-pre'] = (data) => {
-    const statusOrder = jobStatusOrderMap[data];
-    return statusOrder ? statusOrder : 0;
-  };
+    state.viewType !== 'monthly' || unreceivedFilter.checked;
+  state.viewType !== 'monthly' || unreceivedFilter.checked
+    ? '表示の案件　請求総額 (予定)'
+    : '表示の案件　請求総額 (予定)';
 }
 
 export function createFilters() {
@@ -97,14 +95,14 @@ export function createFilters() {
 
 // loading spinner functions for pipeline job form submission
 const spinner = document.querySelector('#add-job-spinner'); // rename this ID
-export const toggleLoadingSpinner = (spinnerEl = spinner) => {
-  spinnerEl.classList.toggle('invisible');
+export const toggleLoadingSpinner = () => {
+  spinner.classList.toggle('invisible');
 };
-export const hideLoadingSpinner = (spinnerEl = spinner) => {
-  spinnerEl.classList.add('invisible');
+export const hideLoadingSpinner = () => {
+  spinner.classList.add('invisible');
 };
-export const showLoadingSpinner = (spinnerEl = spinner) => {
-  spinnerEl.classList.remove('invisible');
+export const showLoadingSpinner = () => {
+  spinner.classList.remove('invisible');
 };
 
 // Pipeline date selection
@@ -126,7 +124,6 @@ export const initializeDateSelectors = () => {
 };
 
 export const dateSelectionButtonHandler = (event) => {
-  // debugger;
   let viewYear, viewMonth;
   switch (event.target.getAttribute('id')) {
     case 'pipeline-next':
@@ -166,7 +163,7 @@ export const displaySelectedView = () => {
   state.viewType === 'all' ? displayAllJobsView() : displayMonthlyJobsView();
 };
 
-function displayMonthlyJobsView() {
+export const displayMonthlyJobsView = () => {
   setState({ viewType: 'monthly' });
   currentExpectedRevenueDisplay.textContent = '表示の案件　請求総額(予定)';
   $('#pipeline-date-select .monthly-item').addClass('d-flex');
@@ -174,9 +171,9 @@ function displayMonthlyJobsView() {
   $('.toggle-view').html('<b>全案件を表示</b>');
   queryJobs(state.viewYear, state.viewMonth);
   setExpectedRevenueDisplayText();
-}
+};
 
-function displayAllJobsView() {
+export const displayAllJobsView = () => {
   setState({ viewType: 'all' });
   $('.monthly-item').slideUp('fast', function () {
     $('#pipeline-date-select .monthly-item').removeClass('d-flex');
@@ -185,4 +182,4 @@ function displayAllJobsView() {
   $('.toggle-view').html('<b>月別で表示</b>');
   queryJobs(undefined, undefined);
   setExpectedRevenueDisplayText();
-}
+};

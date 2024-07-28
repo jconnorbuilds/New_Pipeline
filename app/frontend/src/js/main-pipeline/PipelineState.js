@@ -2,81 +2,7 @@
 
 import { dates } from '../utils';
 
-// export default class PipelineState {
-//   constructor({ viewType = 'monthly', viewDate = dates.currentDate() } = {}) {
-//     this._viewType = viewType;
-//     [this._viewYear, this._viewMonth] = viewDate;
-//   }
-
-//   get viewType() {
-//     return this._viewType;
-//   }
-
-//   set viewType(typeString) {
-//     // Accepts either "monthly" or "all"
-//     this._viewType = typeString;
-//     this.saveState();
-//   }
-
-//   get viewYear() {
-//     return this._viewYear;
-//   }
-
-//   set viewYear(year) {
-//     this._viewYear = year;
-//     this.saveState();
-//   }
-
-//   get viewMonth() {
-//     return this._viewMonth;
-//   }
-
-//   set viewMonth(month) {
-//     this._viewMonth = month;
-//     this.saveState();
-//   }
-
-//   get viewDate() {
-//     return [this._viewYear, this._viewMonth];
-//   }
-
-//   set viewDate([year, month]) {
-//     [this._viewYear, this._viewMonth] = [year, month];
-//     this.saveState();
-//   }
-
-//   nextMonth() {
-//     return this._viewMonth != 12
-//       ? [this._viewYear, this._viewMonth + 1]
-//       : [this._viewYear + 1, 1];
-//   }
-
-//   prevMonth() {
-//     return this._viewMonth != 1
-//       ? [this._viewYear, this._viewMonth - 1]
-//       : [this._viewYear - 1, 12];
-//   }
-
-//   saveState() {
-//     const state = {
-//       viewType: this.viewType,
-//       viewDate: this.viewDate,
-//     };
-//     sessionStorage.setItem('pipelineState', JSON.stringify(state));
-//   }
-
-//   // Checks if a new row needs to be added when a new job is added.
-//   // This method doesn't really belong here
-//   // TODO: Move this somewhere else
-//   checkForNeedsNewRow() {
-//     return (
-//       (this._viewMonth == dates.thisMonth() && this._viewYear == dates.thisYear()) ||
-//       this._viewType === 'all'
-//     );
-//   }
-// }
-
-export const state = load() || {
+export const state = attemptToLoad() || {
   viewType: 'monthly',
   viewYear: dates.currentDate()[0],
   viewMonth: dates.currentDate()[1],
@@ -95,9 +21,25 @@ function save() {
   sessionStorage.setItem('pipelineState', JSON.stringify(state));
 }
 
+function attemptToLoad() {
+  try {
+    return load();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function load() {
   const state = sessionStorage.getItem('pipelineState');
+  if (dateIsInvalid(state.viewYear, state.viewMonth))
+    throw new Error(
+      `Invalid date provided: year: ${state.viewYear}, month: ${state.viewMonth}`,
+    );
   return state !== 'undefined' ? JSON.parse(state) : null;
+}
+
+function dateIsInvalid(year, month) {
+  return [year, month].some((date) => date <= 0) && year > 3000 && month > 12;
 }
 
 export function nextMonth() {

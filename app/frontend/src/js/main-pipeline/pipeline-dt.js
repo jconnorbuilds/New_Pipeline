@@ -5,8 +5,8 @@ import { truncate } from '../utils.js';
 import {
   setTotalExpectedRevenueAmt,
   refreshRevenueDisplay,
-  setupStatusOrdering,
 } from './pipeline-ui-funcs.js';
+import { setupOrderJobsByStatus } from '../datatables-extentions.js';
 import { renderInvoiceStatus, rowCallback } from './pipeline-dt-funcs.js';
 import { bootstrap } from '../base.js';
 let table;
@@ -164,8 +164,15 @@ const initTable = () => {
       if (!data.deposit_date) row.classList.add('payment-unreceived');
       jobCodeNameMap.set(data.job_code, data.job_name);
 
-      // // this should work but is currently broken in DataTables v2.0.2 as of 2023/3/23. Currently using the workaround from here:
+      /* 
+      this should work but is currently broken in DataTables v2.0.2 as of 2024/3/23.
+      */
 
+      // if (['ONGOING', 'READYTOINV'].includes(data.status)) {
+      //   row.classList.add('table-primary');
+      // } else {
+      //   row.classList.remove('table-primary');
+      // }
       // if (['ONGOING', 'READYTOINV'].includes(data.status)) {
       //   row.classList.add('table-primary');
       // } else {
@@ -184,7 +191,7 @@ const initTable = () => {
       }
     },
   });
-  setupStatusOrdering();
+  setupOrderJobsByStatus();
   return table;
 };
 
@@ -202,9 +209,7 @@ export const plTable = (() => {
   const setCurrentRowID = (id) => (currentRowID = id);
   const getCurrentRowID = () => currentRowID;
   const getClientID = () => +table.cell(`#${currentRowID}`, 'client_id:name').data();
-  const refresh = () => {
-    table.ajax.reload();
-  };
+  const refresh = () => table.ajax.reload();
   const keepTrackOfCurrentStatus = (status) => {
     selectedStatus = status;
   };

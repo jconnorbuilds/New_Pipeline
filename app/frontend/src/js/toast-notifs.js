@@ -52,12 +52,12 @@ const createToastEl = (headerText, bodyText, id = '') => {
   return toastEl;
 };
 
-const createAndInitializeToast = (
+const createAndInitializeToast = ({
   headerText,
   bodyText,
   options = {}, // animation, autohide, delay(ms)
   id = '',
-) => {
+} = {}) => {
   const toastEl = createToastEl(headerText, bodyText, id);
   const toastContainer = document.querySelector('.toast-container');
   toastContainer

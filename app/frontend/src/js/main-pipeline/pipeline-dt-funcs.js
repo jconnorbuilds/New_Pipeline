@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { CSRFTOKEN } from '../utils.js';
 import { displayErrorMessage } from './pipeline-funcs.js';
 import invoiceInfo from '../modals/invoice-details-modal.js';
@@ -9,11 +8,6 @@ import {
   setTotalExpectedRevenueAmt,
 } from './pipeline-ui-funcs.js';
 import { checkForNeedsNewRow } from './PipelineState.js';
-
-// const stateObj = sessionStorage.getItem('pipelineState');
-// export const pipelineState = stateObj
-//   ? new PipelineState(JSON.parse(stateObj))
-//   : new PipelineState();
 
 const renderInvoiceStatus = (data, row) => {
   const STATUSES = row.job_status_choices;
@@ -31,29 +25,22 @@ const renderInvoiceStatus = (data, row) => {
   return selectEl.outerHTML;
 };
 
-const updateTable = (response) => {
-  response.status === 'success'
-    ? handleNewRowDraw(response.data)
-    : console.error(response.message);
-};
-
 const handleAjaxError = (response) => {
   handleError(response.message);
 };
 
-const handleStatusUpdate = (status, rowID) => {
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'post',
-    url: '/pipeline/pl-job-update/' + rowID + '/',
-    data: { status: status },
-    dataType: 'json',
-    success: (response) => updateTable(response),
-    error: (response) => handleAjaxError(response),
-  });
+const handleStatusUpdate = async (status, rowID) => {
+  fetch(`/pipeline/pl-job-update/${rowID}/`, {
+    method: 'POST',
+    body: JSON.stringify({ status: status }),
+    headers: { 'X-CSRFToken': CSRFTOKEN, 'Content-Type': 'application/json' },
+  })
+    .then((response) => response.json())
+    .then((response) => updateTable(response.data))
+    .catch((error) => handleAjaxError(error.message));
 };
 
-const statusChangeHandler = (e) => {
+const handleStatusChange = (e) => {
   const statusSelectEl = e.target;
   const status = statusSelectEl.value;
   const rowID = plTable.getCurrentRowID();
@@ -64,24 +51,10 @@ const statusChangeHandler = (e) => {
     : handleStatusUpdate(status, rowID);
 };
 
-const handleNewRowDraw = (newRowData) => {
-  /*
-  Close the modal, draw a new row in the table if it belongs on the current
-  page.
-  */
-
-  if (newRowData.job_date) {
-    const newDataInvoicePeriod = newRowData.job_date.split('-');
-    if (newDataInvoicePeriod) {
-      checkForNeedsNewRow()
-        ? drawNewRow(newRowData, plTable.getOrInitTable())
-        : plTable.refresh();
-    }
-  } else {
-    checkForNeedsNewRow()
-      ? drawNewRow(newRowData, plTable.getOrInitTable())
-      : plTable.refresh();
-  }
+const updateTable = (newRowData) => {
+  checkForNeedsNewRow()
+    ? drawNewRow(newRowData, plTable.getOrInitTable())
+    : plTable.refresh();
 };
 
 const rowCallback = (row, data) => {
@@ -103,10 +76,11 @@ const rowCallback = (row, data) => {
 };
 
 export const queryJobs = (year, month) => {
-  var url = '/pipeline/pipeline-data/';
-  if (year !== undefined && month !== undefined) {
-    url = url + year + '/' + month + '/';
-  }
+  const url =
+    year !== undefined && month !== undefined
+      ? `/pipeline/pipeline-data/${year}/${month}/`
+      : '/pipeline/pipeline-data/';
+
   plTable.getOrInitTable().ajax.url(url).load();
 };
 
@@ -123,9 +97,8 @@ export {
   renderInvoiceStatus,
   rowCallback,
   showSelectedStatus,
-  handleNewRowDraw,
-  handleError,
-  statusChangeHandler,
   updateTable,
+  handleError,
+  handleStatusChange,
   handleAjaxError,
 };

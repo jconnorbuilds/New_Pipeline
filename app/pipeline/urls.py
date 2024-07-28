@@ -21,6 +21,11 @@ urlpatterns = [
         name="job-add",
     ),
     path(
+        "modal-client-add/",
+        views.NewClientView.as_view(),
+        name="client-add",
+    ),
+    path(
         "pl-job-update/<pk>/",
         views.PipelineJobUpdateView.as_view(),
         name="pipeline-update-job",

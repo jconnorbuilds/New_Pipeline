@@ -1,6 +1,6 @@
 import DataTable from 'datatables.net';
 import {
-  handleRowUpdate,
+  listenForRowChange,
   renderAmount,
   renderAmountJPY,
   renderInvoiceStatus,
@@ -15,11 +15,6 @@ import { createElement, truncate } from '../utils.js';
 import penIcon from '../../images/pencil-square.svg';
 import trashIcon from '../../images/trash3-fill.svg';
 
-/**
- * Returns the jobID, taken from the URL
- *
- * @returns {string}
- */
 const getJobID = () => {
   const jobID = window.location.href.split('/').slice(-2, -1)[0];
   return jobID;
@@ -144,11 +139,10 @@ const initTable = () => {
 
 const costTable = (() => {
   const getOrInitTable = () => table || initTable();
-  const getTableEl = () =>
-    getOrInitTable().table().container().querySelector('table');
+  const getTableEl = () => getOrInitTable().table().container().querySelector('table');
   const refresh = () => table.ajax.reload();
   const setupTableEventHandlers = (datatableEl = getTableEl()) => {
-    handleRowUpdate(datatableEl);
+    listenForRowChange(datatableEl);
     setupPayPeriodFormSubmission(datatableEl);
   };
 

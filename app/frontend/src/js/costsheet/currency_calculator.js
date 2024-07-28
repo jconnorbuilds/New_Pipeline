@@ -2,7 +2,7 @@ import {
   separateThousands,
   separateThousandsOnInput,
   removeCommas,
-  getFXRatesDictOld,
+  getFXRatesDict,
   createElement,
 } from '../utils.js';
 
@@ -66,8 +66,9 @@ const Calculator = (() => {
     });
   };
 
-  const setup = () => {
-    getFXRatesDictOld((fxRatesDict) => build(fxRatesDict));
+  const setup = async () => {
+    const fxRatesDict = await getFXRatesDict();
+    build(fxRatesDict);
   };
 
   return { setup };

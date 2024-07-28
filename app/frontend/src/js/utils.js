@@ -1,4 +1,4 @@
-import $ from 'jquery';
+'use strict';
 
 export const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')
   ? document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -18,25 +18,8 @@ const removeCommas = (numStr) => {
   return parseInt(numStr.replaceAll(',', ''));
 };
 
-/**
- * placeholder
- *
- * @param {String[]} currencySymbolsList // ex. ["USD", "JPY",...]
- */
-const getFXRatesDictOld = (successCallback) => {
-  $.ajax({
-    headers: { 'X-CSRFToken': csrftoken },
-    method: 'GET',
-    url: '/pipeline/forex-rates',
-    dataType: 'json',
-    /** @param {Object.<string, number>} i.e. ex. { USD: 146.3242, ...} */
-    success: successCallback,
-    error: (response) => alert(response),
-  });
-};
-
 const getFXRatesDict = async () => {
-  const data = fetch('/pipeline/forex-rates')
+  const data = await fetch('/pipeline/forex-rates')
     .then((response) => response.json())
     .catch((err) => console.error("Couldn't get the FX rates! ", err));
 
@@ -148,7 +131,6 @@ export {
   removeCommas,
   stripTags,
   getFXRatesDict,
-  getFXRatesDictOld,
   dates,
   csrftoken as CSRFTOKEN,
   truncate,

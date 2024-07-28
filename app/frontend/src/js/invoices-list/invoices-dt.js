@@ -6,9 +6,9 @@ import {
   renderPayPeriod,
   renderRequestBtn,
   invoicesTableRowCallback,
-  setupSortByStatus,
 } from '../costs-and-invoices-common-funcs.js';
 import { truncate } from '../utils.js';
+import { setupSortInvoicesByStatus } from '../datatables-extentions.js';
 
 let table;
 let tableEl;
@@ -126,7 +126,7 @@ const initTable = () => {
       rowCallback: (row, data) => invoicesTableRowCallback(row, data),
     });
   }
-  setupSortByStatus();
+  setupSortInvoicesByStatus();
   return table;
 };
 

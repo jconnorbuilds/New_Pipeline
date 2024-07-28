@@ -2,122 +2,88 @@ import $ from 'jquery';
 import { handleAjaxError } from '../main-pipeline/pipeline-dt-funcs.js';
 import createModal from './create-modal.js';
 import { plTable } from '../main-pipeline/pipeline-dt.js';
-import { CSRFTOKEN } from '../utils.js';
 import createAndInitializeToast from '../toast-notifs.js';
-import { bootstrap } from '../base.js';
+
 const form = document.querySelector('#invoice-info-form');
+const invoiceInfoNewClientBtn = document.querySelector(
+  '#set-invoice-modal-new-client-btn',
+);
 
-const getFormData = (newStatus) => {
-  const recipientField = document.querySelector('#id_inv-invoice_recipient');
-  const nameField = document.querySelector('#id_inv-invoice_name');
-  const jobIDField = document.querySelector('#id_inv-job_id');
-  const yearField = document.querySelector('#id_inv-invoice_year');
-  const monthField = document.querySelector('#id_inv-invoice_month');
-
-  let formData = {};
-  formData['inv-invoice_recipient'] = recipientField.value;
-  formData['inv-invoice_name'] = nameField.value;
-  formData['inv-job_id'] = jobIDField.value;
-  formData['inv-invoice_year'] = yearField.value;
-  formData['inv-invoice_month'] = monthField.value;
-  formData['inv-status'] = newStatus;
-
-  return { jobIDField, formData };
-};
-
-const submitForm = (newStatus) => (e) => {
+const submitForm = async (e) => {
   e.preventDefault();
 
-  let { jobIDField, formData } = getFormData(newStatus);
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'POST',
-    url: `/pipeline/set-client-invoice-info/${jobIDField.value}/`,
-    data: formData,
-    dataType: 'json',
-    success: (response) => {
-      const jobName = response.data.job_name;
-      const invoiceName = response.data.invoice_name;
-      invoiceInfo.modal.hide();
-      createAndInitializeToast(
-        'Invoice details saved',
-        `${jobName}
-        ${invoiceName}
-        `,
-      ).show();
-      plTable.refresh();
-      form.reset();
-    },
-    error: (response) => handleAjaxError(response),
-  });
+  const formData = new FormData(form);
+  const jobID = formData.get('inv-job_id');
+
+  fetch(`/pipeline/set-client-invoice-info/${jobID}/`, {
+    method: 'post',
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((response) => handleSuccessfulFormSubmission(response))
+    .catch((error) => handleAjaxError(error));
 };
 
-const setInitialInfo = () => {
+const setInitialFormInfo = () => {
   const invoiceRecipientField = form.querySelector('#id_inv-invoice_recipient');
   const hiddenJobIDField = form.querySelector('#id_inv-job_id');
+  const status = form.querySelector('#id_inv-status');
 
   invoiceRecipientField.value = plTable.getClientID();
   hiddenJobIDField.value = plTable.getCurrentRowID();
+  status.value = plTable.getStatus();
 };
 
-const formSubmitHandler = () => {
-  form.addEventListener('submit', (e) => {
-    submitForm(plTable.getStatus())(e);
-    invoiceInfo.preventFromOpening();
-  });
+const handleSuccessfulFormSubmission = (response) => {
+  const jobName = response.data.job_name;
+  const invoiceName = response.data.invoice_name;
+  invoiceInfo.modal.hide();
+  createAndInitializeToast({
+    headerText: 'Invoice details saved',
+    bodyText: `${jobName} ${invoiceName} `,
+  }).show();
+  plTable.refresh();
+  form.reset();
 };
 
 const invoiceInfo = (() => {
-  const [modal, el] = createModal('#set-job-invoice-info', [formSubmitHandler]);
-  const invoiceInfoNewClientBtn = document.querySelector(
-    '#set-invoice-modal-new-client-btn',
-  );
+  const [modal, el] = createModal({
+    selector: '#set-job-invoice-info',
+  });
 
   let modalWillOpen = false;
-
-  const preventFromOpening = () => {
-    modalWillOpen = false;
-  };
-  const letModalOpen = () => {
-    modalWillOpen = true;
-  };
-  const getOpenModal = () => {
-    return modalWillOpen;
+  const setOpenModal = (willOpen) => (modalWillOpen = willOpen);
+  const getOpenModal = () => modalWillOpen;
+  const initializeModal = () => {
+    setOpenModal(true);
+    setInitialFormInfo();
   };
 
   const formRequiresCompletion = (selectedStatus) => {
-    const _requiredStatuses = ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'];
+    const datatable = plTable.getOrInitTable();
+    const rowID = plTable.getCurrentRowID();
+    const requiredStatuses = ['INVOICED1', 'INVOICED2', 'FINISHED', 'ARCHIVED'];
 
-    const _formIsRequired = (selectedStatus) =>
-      _requiredStatuses.includes(selectedStatus);
-
-    const _jobIsCompleted = (
-      datatable = plTable.getOrInitTable(),
-      rowID = plTable.getCurrentRowID(),
-    ) =>
-      JSON.parse(
-        datatable.cell('#' + rowID, 'invoice_info_completed:name').node().textContent,
-      );
-
-    return !_jobIsCompleted() && _formIsRequired(selectedStatus);
+    const formIsRequired = requiredStatuses.includes(selectedStatus);
+    const jobIsCompleted = JSON.parse(
+      datatable.cell(`#${rowID}`, 'invoice_info_completed:name').node().textContent,
+    );
+    return !jobIsCompleted && formIsRequired;
   };
 
-  el.addEventListener('show.bs.modal', () => {
-    letModalOpen();
-    setInitialInfo();
-  });
+  el.addEventListener('show.bs.modal', () => initializeModal());
+  el.addEventListener('hide.bs.modal', () => plTable.refresh());
+  el.addEventListener('hidden.bs.modal', () => form.reset());
 
-  el.addEventListener('hide.bs.modal', () => {
-    plTable.refresh();
-    form.reset();
+  invoiceInfoNewClientBtn.addEventListener('click', () => setOpenModal(true));
+  form.addEventListener('submit', (e) => {
+    submitForm(e);
+    setOpenModal(false);
   });
-
-  invoiceInfoNewClientBtn.addEventListener('click', () => letModalOpen());
 
   return {
     modal,
-    preventFromOpening,
-    letModalOpen,
+    setOpenModal,
     getOpenModal,
     formRequiresCompletion,
   };

@@ -122,7 +122,6 @@ class SetInvoiceInfoForm(ModelForm):
 
 class SetDepositDateForm(ModelForm):
     deposit_date = forms.DateField(widget=forms.DateInput())
-
     job_id = forms.IntegerField(widget=forms.HiddenInput)
 
     class Meta:

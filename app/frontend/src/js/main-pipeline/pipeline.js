@@ -4,7 +4,6 @@ import $ from 'jquery';
 window.$ = $;
 
 import '../../styles/index.scss';
-import { bootstrap } from '../base.js';
 
 import { initCSVExporter } from '../csv-export.js';
 import { depositDateFormSubmitHandler } from '../modals/deposit-date-modal.js';
@@ -18,11 +17,10 @@ import {
   dateSelectionDropdownHandler,
   pipelineYear,
   pipelineMonth,
-  displayAllJobsView,
   displaySelectedView,
 } from './pipeline-ui-funcs';
 import { initializeGlobalMouseEvents } from '../tables/dt-shared.js';
-import { jobFormSubmissionHandler } from './pipeline-funcs.js';
+import { handleFormSubmission } from './pipeline-funcs.js';
 import { setupTableEventHandlers } from './pipeline-dt-ui-funcs.js';
 import initializeNewClientForm from '../modals/new-client-form-funcs.js';
 import invoiceInfo from '../modals/invoice-details-modal.js';
@@ -43,13 +41,14 @@ dateButtonsContainer.addEventListener('click', dateSelectionButtonHandler);
 dateDropdownsContainer.addEventListener('change', dateSelectionDropdownHandler);
 viewToggler.addEventListener('click', toggleView);
 depositDateForm.addEventListener('submit', depositDateFormSubmitHandler);
-newJobForm.addEventListener('submit', jobFormSubmissionHandler);
-newClientButton.addEventListener('click', () => {
-  invoiceInfo.preventFromOpening();
-});
+newJobForm.addEventListener('submit', handleFormSubmission);
+newClientButton.addEventListener('click', () => invoiceInfo.setOpenModal(false));
 
 initializeGlobalMouseEvents();
 initializeDateSelectors();
+let state = getState();
+[pipelineYear.value, pipelineMonth.value] = [state.viewYear, state.viewMonth];
+displaySelectedView();
 let state = getState();
 [pipelineYear.value, pipelineMonth.value] = [state.viewYear, state.viewMonth];
 displaySelectedView();

@@ -1,5 +1,4 @@
 import DataTable from 'datatables.net';
-import $ from 'jquery';
 import { CSRFTOKEN } from '../utils.js';
 
 let firstSelectedBox;
@@ -33,9 +32,7 @@ export const handleSingleClick = (e) => {
     const isChecked = firstSelectedBox.checked;
 
     checkbox.checked = !isChecked;
-    checkbox.checked
-      ? row.classList.add('selected-row')
-      : row.classList.remove('selected-row');
+    row.classList.toggle('selected-row', checkbox.checked);
   }
 };
 
@@ -54,27 +51,25 @@ export const preventHighlighting = (e) => {
   if (mouseDown && ongoingSelection) e.preventDefault();
 };
 
+// requests the vendor invoice
 export const requestInvoice = (costID, table, costPayPeriod = 'next') => {
-  // requests the vendor invoice
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    url: '/pipeline/request-single-invoice/' + costID + '/',
-    method: 'POST',
-    data: { pay_period: costPayPeriod },
-    dataType: 'json',
-    success: function (data) {
-      // console.log('invoice request callback: ', data); // make this a toast
+  fetch(`/pipeline/request-single-invoice/${costID}/`, {
+    method: 'post',
+    body: JSON.stringify({ pay_period: costPayPeriod }),
+    headers: { 'X-CSRFToken': CSRFTOKEN, 'Content-Type': 'application/json' },
+  })
+    .then((response) => response.json())
+    .then((data) => {
       new DataTable(table)
         .row(`#${data.response.id}`)
         .data(data.response)
         .invalidate()
         .draw(false);
-    },
-    error: (data) => {
-      console.warn(data);
+    })
+    .catch((error) => {
+      console.error(error);
       alert(
-        'There was an error. Try again, and if the error persists, request the invoice the old fashioned way',
+        `There was an error. Try again, and if the error persists, request the invoice the old fashioned way. Error: ${error}`,
       );
-    },
-  });
+    });
 };

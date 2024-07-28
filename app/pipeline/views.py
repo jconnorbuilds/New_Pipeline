@@ -213,21 +213,6 @@ class PipelineViewBase(LoginRequiredMixin, SuccessMessageMixin, TemplateView):
                     # TODO: use a better error message
                     return HttpResponse("error")
             return HttpResponseRedirect("/pipeline/")
-
-        elif "new_client" in request.POST:
-            form = self.client_form_class(request.POST)
-            if form.is_valid():
-                instance = form.save()
-                return JsonResponse(
-                    {
-                        "id": instance.id,
-                        "client_friendly_name": instance.friendly_name,
-                        "prefix": instance.job_code_prefix,
-                        "status": "success",
-                    }
-                )
-            return JsonResponse({"errors": form.errors})
-
         elif "import-jobs" in request.POST:
             if (
                 request.method == "POST"
@@ -282,6 +267,24 @@ class AddJobView(PipelineViewBase):
             return JsonResponse({"status": "error"})
 
 
+# TODO: rewrite this so we send back the whole client list and refresh on frontend
+# instead of 'patching in' just the new info into the list? Simpler but a tiny bit more costly...
+class NewClientView(PipelineViewBase):
+    def post(self, request, *args, **kwargs):
+        form = self.client_form_class(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "id": instance.id,
+                    "client_friendly_name": instance.friendly_name,
+                    "prefix": instance.job_code_prefix,
+                }
+            )
+        return JsonResponse({"errors": form.errors}, status=400)
+
+
 class SetInvoiceInfoView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job_id = kwargs["pk"]
@@ -306,18 +309,20 @@ class SetDepositDateView(PipelineViewBase):
         else:
             for error in form.errors:
                 print(error)
-            return JsonResponse({"status": "error"})
+            return JsonResponse({"status": "error", "message": json.dumps(form.errors)})
 
 
 class PipelineJobUpdateView(PipelineViewBase):
     def post(self, request, *args, **kwargs):
         job = Job.objects.get(id=kwargs["pk"])
-        form = PipelineJobUpdateForm(request.POST, instance=job)
+        form = PipelineJobUpdateForm(json.loads(request.body), instance=job)
         if form.is_valid():
             form.save()
-            return JsonResponse({"status": "success", "data": get_job_data(job)})
+            return JsonResponse(
+                {"status": "success", "data": get_job_data(job)}, status=200
+            )
         else:
-            return JsonResponse({"status": "error", "message": form.errors})
+            return JsonResponse({"status": "error", "message": form.errors}, status=400)
 
 
 def pipeline_data(request, year=None, month=None):
@@ -486,10 +491,12 @@ class InvoiceView(LoginRequiredMixin, TemplateView):
 
 
 def update_invoice_table_row(request):
-    if request.POST:
-        form_data_vendor = request.POST.get("vendor")
-        form_data_status = request.POST.get("status")
-        cost = Cost.objects.get(id=request.POST.get("cost_id"))
+    if request.method == "POST":
+        data = json.loads(request.body)
+        print(data)
+        form_data_vendor = data.get("vendor")
+        form_data_status = data.get("invoice_status")
+        cost = Cost.objects.get(id=data.get("cost_id"))
         vendors = Vendor.objects.filter(jobs_with_vendor=cost.job.id)
         forex_rates = get_forex_rates()
 
@@ -891,7 +898,9 @@ def RequestVendorInvoiceSingle(request, cost_id):
             logger.error(f"Unable to send out invoice request email: {str(e)}")
 
         today = date.today()
-        rel_pay_period = request.POST.get("pay_period")
+
+        # TODO: find a nicer way to do this
+        rel_pay_period = json.loads(request.body).get("pay_period")
         if rel_pay_period == "this":
             cost.pay_period = today.strftime("%Y-%-m-25")
         elif rel_pay_period == "next":

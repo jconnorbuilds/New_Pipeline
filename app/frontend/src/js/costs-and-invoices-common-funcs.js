@@ -1,5 +1,3 @@
-import $ from 'jquery';
-window.$ = $;
 import DataTable from 'datatables.net';
 import { CSRFTOKEN } from './utils.js';
 import * as PayPeriod from './modals/pay-period-modal.js';
@@ -16,10 +14,7 @@ const renderRequestBtn = (data, row) => {
   const btnGroup = document.createElement('div');
   btnGroup.classList.add('btn-group', 'btn-group-sm');
   btnGroup.setAttribute('role', 'group');
-  btnGroup.setAttribute(
-    'aria-label',
-    'Invoice request button with nested dropdown'
-  );
+  btnGroup.setAttribute('aria-label', 'Invoice request button with nested dropdown');
 
   const requestBtn = document.createElement('button');
   requestBtn.classList.add('btn', 'btn-primary', 'inv-req', 'inv-req-btn');
@@ -37,7 +32,7 @@ const renderRequestBtn = (data, row) => {
     'btn-primary',
     'dropdown-toggle',
     'inv-req',
-    'inv-req-menu'
+    'inv-req-menu',
   );
   dropdownBtn.setAttribute('type', 'button');
   dropdownBtn.setAttribute('aria-expanded', false);
@@ -104,7 +99,7 @@ const renderVendorName = (row) => {
   const selectEl = document.createElement('select');
 
   selectEl.classList.add('form-control-plaintext', 'vendor');
-  selectEl.setAttribute('name', 'vendor-select');
+  selectEl.setAttribute('name', 'vendor');
   createVendorOption(0, 'Select vendor', selectEl, row);
 
   if (vendors) {
@@ -133,9 +128,7 @@ const renderPayPeriod = (data) => {
   }
 };
 
-const statusFilters = document.querySelectorAll(
-  '.display-filter .status-filter'
-);
+const statusFilters = document.querySelectorAll('.display-filter .status-filter');
 
 /**
  * Extends DataTables search to allow filtering by checkbox selection
@@ -156,25 +149,6 @@ export const initializeStatusFilters = () => {
   });
 };
 
-export const setupSortByStatus = () => {
-  // Defines the order of the invoice status column
-  const invoiceStatusOrderMap = {
-    NR: 1,
-    REQ: 2,
-    REC: 3,
-    REC2: 4,
-    ERR: 5,
-    QUE: 6,
-    PAID: 7,
-    NA: 8,
-  };
-
-  DataTable.ext.type.order['status-pre'] = (data) => {
-    const statusOrder = invoiceStatusOrderMap[data];
-    return statusOrder ? statusOrder : -1;
-  };
-};
-
 const enableDisableVendorSelection = (row, data) => {
   data.invoice_status === 'NR'
     ? row.querySelector('.cost-vendor-select').removeAttribute('disabled')
@@ -184,65 +158,33 @@ const enableDisableVendorSelection = (row, data) => {
 const enableDisableInvoiceRequestBtn = (row, data) => {
   // enables/disables both parts of the invoice request button group
   data.invoice_status === 'NR' && data.vendor_id != 0
-    ? row
-        .querySelectorAll('.inv-req')
-        .forEach((el) => el.removeAttribute('disabled'))
-    : row
-        .querySelectorAll('.inv-req')
-        .forEach((el) => el.setAttribute('disabled', ''));
+    ? row.querySelectorAll('.inv-req').forEach((el) => el.removeAttribute('disabled'))
+    : row.querySelectorAll('.inv-req').forEach((el) => el.setAttribute('disabled', ''));
 };
 
-const handleStatusChange = (e) => {
+const handleRowChange = async (e) => {
   const selectEl = e.target;
   const table = selectEl.closest('table');
-  const status = selectEl.value;
   const rowID = selectEl.closest('tr').getAttribute('id');
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
+  fetch('/pipeline/update-invoice-table-row', {
     method: 'POST',
-    url: '/pipeline/update-invoice-table-row',
-    data: { status: status, cost_id: rowID },
-    dataType: 'json',
-    success: (response) => updateTable(response, table),
-    error: (response) => console.warn(response),
-  });
+    body: JSON.stringify({ [selectEl.name]: selectEl.value, cost_id: rowID }),
+    headers: { 'X-CSRFToken': CSRFTOKEN, 'Content-Type': 'application/json' },
+  })
+    .then((response) => response.json())
+    .then((data) => updateTable(data, table))
+    .catch((error) => console.error(error.message));
 };
 
-/**
- * Handler for when the vendor for a cost is changed (e.g. in a table)
- *
- * @todo update the error function with something useful
- * @param {*} e
- */
-const handleVendorChange = (e) => {
-  const selectEl = e.target;
-  const table = selectEl.closest('table');
-  const vendor = selectEl.value;
-  const rowID = selectEl.closest('tr').getAttribute('id');
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    method: 'POST',
-    url: '/pipeline/update-invoice-table-row',
-    data: { vendor: vendor, cost_id: rowID },
-    dataType: 'json',
-    success: (response) => updateTable(response, table),
-    error: (response) => console.warn(response),
-  });
-};
-
-const handleRowUpdate = (datatableEl) => {
+const listenForRowChange = (datatableEl) => {
   datatableEl.addEventListener('change', (e) => {
-    if (e.target.matches('select.status')) handleStatusChange(e);
-    if (e.target.matches('select.vendor')) handleVendorChange(e);
+    if (e.target.matches('select.status, select.vendor')) handleRowChange(e);
   });
 };
 
-const setupPayPeriodFormSubmission = (
-  datatableEl,
-  payPeriodModal = PayPeriod
-) => {
+const setupPayPeriodFormSubmission = (datatableEl, payPeriodModal = PayPeriod) => {
   payPeriodModal.form.addEventListener('submit', (e) =>
-    payPeriodModal.submitForm(e, datatableEl)
+    payPeriodModal.submitForm(e, datatableEl),
   );
 };
 
@@ -266,9 +208,7 @@ const invoicesTableRowCallback = (row, data) => {
   // TODO: add an empty option to the select to handle sorting better
   if (data.vendor_id == 0) {
     row.querySelector('select.status').style.display = 'none';
-    row
-      .querySelectorAll('.inv-req')
-      .forEach((el) => el.setAttribute('disabled', ''));
+    row.querySelectorAll('.inv-req').forEach((el) => el.setAttribute('disabled', ''));
   }
 };
 
@@ -281,9 +221,8 @@ export {
   renderPayPeriod,
   enableDisableVendorSelection,
   enableDisableInvoiceRequestBtn,
-  handleStatusChange,
-  handleVendorChange,
-  handleRowUpdate,
+  handleRowChange,
+  listenForRowChange,
   setupPayPeriodFormSubmission,
   addRequestBtnListener,
   updateTable,

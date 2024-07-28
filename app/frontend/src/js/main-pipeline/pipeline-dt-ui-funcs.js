@@ -5,7 +5,7 @@ import {
   preventHighlighting,
   selectOnDrag,
 } from '../tables/dt-shared.js';
-import { statusChangeHandler } from './pipeline-dt-funcs.js';
+import { handleStatusChange } from './pipeline-dt-funcs.js';
 import { copyJobCodeAndNameToClipboard, plTable } from './pipeline-dt.js';
 
 export const drawNewRow = (newRowData, table) =>
@@ -13,15 +13,12 @@ export const drawNewRow = (newRowData, table) =>
 
 export const setupTableEventHandlers = (datatableEl = plTable.getTableEl()) => {
   datatableEl.addEventListener('click', (e) => {
-    if (
-      e.target.matches('.deposit-date') ||
-      e.target.matches('.job-status-select')
-    )
+    if (e.target.matches('.deposit-date') || e.target.matches('.job-status-select'))
       plTable.setCurrentRowID(e.target.closest('tr').getAttribute('id'));
   });
 
   datatableEl.addEventListener('input', (e) =>
-    plTable.setCurrentSelectEl(e.target.closest('select'))
+    plTable.setCurrentSelectEl(e.target.closest('select')),
   );
 
   datatableEl.addEventListener('click', (e) => {
@@ -29,7 +26,7 @@ export const setupTableEventHandlers = (datatableEl = plTable.getTableEl()) => {
   });
 
   datatableEl.addEventListener('change', (e) => {
-    if (e.target.matches('.job-status-select')) statusChangeHandler(e);
+    if (e.target.matches('.job-status-select')) handleStatusChange(e);
   });
 
   datatableEl.addEventListener('mousedown', (e) => {

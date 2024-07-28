@@ -1,9 +1,9 @@
 'use strict';
-import $ from 'jquery';
-import { CSRFTOKEN, createElement } from '../utils.js';
+import { createElement } from '../utils.js';
 import { bootstrap } from '../base.js';
 import createAndInitializeToast from '../toast-notifs.js';
 import invoiceInfo from './invoice-details-modal.js';
+import { hideLoadingSpinner } from '../main-pipeline/pipeline-ui-funcs.js';
 
 const newClientModalEl = document.querySelector('#new-client-modal');
 const newClientForm = document.querySelector('#new-client-form');
@@ -31,9 +31,11 @@ const processFormErrors = (errors) => {
     friendlyNameInput.classList.add('is-invalid'); // TODO: set up proper client-side validation
     errorMsgs.appendChild(createElement('div', { text: clientFriendlyNameErrorMsg }));
   }
-  spinner.classList.add('invisible');
+  hideLoadingSpinner();
 };
 
+// TODO: Clean up all of this validation stuff
+// TODO: Maybe we simply re-load the list from the backend to greatly simplify
 const handleSuccessfulSubmission = (response) => {
   if (response.status === 'success') {
     spinner.classList.add('invisible');
@@ -47,13 +49,16 @@ const handleSuccessfulSubmission = (response) => {
 
     bootstrap.Modal.getOrCreateInstance('#new-client-modal').toggle();
     // adds the newly added client to the invoice recipient list
-    // ( in the invoice info modal)
+    // (in the invoice info modal)
     invoiceRecipient.appendChild(addNewClientOption());
     newClientForm.classList.remove('was-validated');
     newClientForm.reset();
 
     // create and instantiate toast for successful client creation
-    createAndInitializeToast('New client added', response.client_friendly_name).show();
+    createAndInitializeToast({
+      headerText: 'New client added',
+      bodyText: response.client_friendly_name,
+    }).show();
 
     errorMsgs.replaceChildren(); // removes all error messages
     [friendlyNameInput].forEach((field) =>
@@ -66,29 +71,18 @@ const handleSuccessfulSubmission = (response) => {
 
 const newClientFormSubmission = (e) => {
   e.preventDefault();
-  const formData = {
-    friendly_name: document.querySelector('#id_friendly_name').value,
-    job_code_prefix: document.querySelector('#id_job_code_prefix').value,
-    proper_name: document.querySelector('#id_proper_name').value,
-    proper_name_japanese: document.querySelector('#id_proper_name_japanese').value,
-    new_client: 'new ajax client add',
-  };
 
-  $.ajax({
-    headers: { 'X-CSRFToken': CSRFTOKEN },
-    type: 'POST',
-    url: '/pipeline/',
-    data: formData,
-    beforeSend: () => spinner.classList.remove('invisible'),
-    success: (response) => {
-      handleSuccessfulSubmission(response);
-    },
-    error: (jqXHR) => {
-      alert('form not submitted', jqXHR.statusText);
+  fetch('/pipeline/modal-client-add/', {
+    method: 'post',
+    body: new FormData(newClientForm),
+  })
+    .then((response) => response.json())
+    .then((response) => handleSuccessfulSubmission(response))
+    .catch((error) => {
+      alert(error);
       newClientForm.classList.add('was-validated');
-      spinner.classList.add('invisible');
-    },
-  });
+      hideLoadingSpinner();
+    });
 };
 
 const initializeNewClientForm = () => {

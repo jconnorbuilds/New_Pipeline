@@ -49,9 +49,6 @@ initializeDateSelectors();
 let state = getState();
 [pipelineYear.value, pipelineMonth.value] = [state.viewYear, state.viewMonth];
 displaySelectedView();
-let state = getState();
-[pipelineYear.value, pipelineMonth.value] = [state.viewYear, state.viewMonth];
-displaySelectedView();
 
 $(function () {
   filters.forEach((f) => f.addEventListener('change', () => table.draw()));

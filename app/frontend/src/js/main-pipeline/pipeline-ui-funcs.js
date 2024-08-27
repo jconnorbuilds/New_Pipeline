@@ -63,10 +63,9 @@ export function refreshRevenueDisplay() {
 // TODO: get rid of this function, it's unnecessary to change the text
 export function setExpectedRevenueDisplayText() {
   currentExpectedRevenueDisplay.textContent =
-    state.viewType !== 'monthly' || unreceivedFilter.checked;
-  state.viewType !== 'monthly' || unreceivedFilter.checked
-    ? '表示の案件　請求総額 (予定)'
-    : '表示の案件　請求総額 (予定)';
+    state.viewType !== 'monthly' || unreceivedFilter.checked
+      ? '表示の案件　請求総額 (予定)'
+      : '表示の案件　請求総額 (予定)';
 }
 
 export function createFilters() {

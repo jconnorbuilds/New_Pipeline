@@ -43,22 +43,20 @@ class CostForm(ModelForm):
 
 
 class CostPayPeriodForm(forms.Form):
-    this_month = timezone.now()
-    next_month = timezone.now() + timezone.timedelta(days=30)
-    next_next_month = timezone.now() + timezone.timedelta(days=60)
-
     cost_id = forms.IntegerField(widget=forms.HiddenInput)
-    pay_period = forms.ChoiceField(
-        required=False,
-        choices=[
-            ("this", f"This month ({this_month.strftime('%b')})"),
-            ("next", f"Next month ({next_month.strftime('%b')}, default)"),
-            ("next-next", f"In two months ({next_next_month.strftime('%b')})"),
-        ],
-    )
+    pay_period = forms.ChoiceField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.this_month = timezone.now()
+        self.next_month = timezone.now() + timezone.timedelta(days=30)
+        self.next_next_month = timezone.now() + timezone.timedelta(days=60)
+        self.fields["pay_period"].choices = [
+            ("this", f"This month ({self.this_month.strftime('%b')})"),
+            ("next", f"Next month ({self.next_month.strftime('%b')}, default)"),
+            ("next-next", f"In two months ({self.next_next_month.strftime('%b')})"),
+        ]
+
         self.fields["pay_period"].initial = "next"
 
 

@@ -7,7 +7,8 @@
     "lint": "npm run lint:styles; npm run lint:scripts",
     "lint:styles": "stylelint frontend/src/**/*.css",
     "lint:scripts": "eslint frontend/src",
-    "start": "webpack serve --config frontend/webpack/webpack.config.dev.js",
+    "django-dev": "ENV=dev python manage.py runserver",
+    "start": "webpack serve --config frontend/webpack/webpack.config.dev.js & npm run django-dev",
     "build": "cross-env NODE_ENV=production webpack --config frontend/webpack/webpack.config.prod.js"
   },
   "repository": {

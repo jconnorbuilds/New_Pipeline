@@ -568,62 +568,36 @@ class FileUploadView(View):
             return HttpResponseBadRequest("No invoice data found")
 
         invoice_data = json.loads(request.POST.get("invoice_data"))
-
         logger.info(f"INVOICE DATA: {invoice_data}")
         logger.info(f"INVOICE DATA ITEMS: {invoice_data.items()}")
 
         files = {file.name: file for file in request.FILES.values()}
-        successful_invoices, unsuccessful_invoices = self.process_invoices(
-            invoice_data, files
-        )
+        result = self.process_invoices(invoice_data, files)
 
-        if successful_invoices:
-            self.update_database(successful_invoices, unsuccessful_invoices, write=True)
-            self.send_confirmation_email(successful_invoices)
+        if result["successful"]:
+            self.update_database(*result, write=True)
+            self.send_confirmation_email(result["successful"])
 
         return JsonResponse(
             {
                 "invoices": {
                     "successful": [
-                        invoice["filename"] for invoice in successful_invoices
+                        invoice["filename"] for invoice in result["successful"]
                     ],
-                    "unsuccessful": unsuccessful_invoices,
+                    "unsuccessful": result["failed"],
                 },
             },
         )
 
     def process_invoices(self, invoice_data, files):
-        successful_invoices = []
-        unsuccessful_invoices = []
-        upload_queue = []
+        build_result = self.build_upload_queue(invoice_data, files)
+        upload_result = self.upload_files_to_dropbox(build_result["successful"])
 
-        for filename, form_data in invoice_data.items():
-            validity_result = self.check_file_validity(filename, form_data, files)
-            if not validity_result.get("is_valid"):
-                unsuccessful_invoices.append(validity_result)
-            else:
-                upload_queue.append(
-                    {
-                        "file": validity_result.get("file"),
-                        "cost_id": form_data.get("cost_id"),
-                    }
-                )
+        successful_invoices = upload_result["successful"]
+        failed_invoices = build_result["failed"] + upload_result["failed"]
 
-        uploaded_files = self.upload_files_to_dropbox(upload_queue)
-
-        for file in uploaded_files:
-            (
-                successful_invoices.append(file)
-                if file["success"]
-                else unsuccessful_invoices.append(file)
-            )
-
-        logger.info({"SUCCESS": successful_invoices, "FAILED": unsuccessful_invoices})
-
-        return (
-            successful_invoices,
-            unsuccessful_invoices,
-        )
+        logger.info({"SUCCESS": successful_invoices, "FAILED": failed_invoices})
+        return [successful_invoices, failed_invoices]
 
     def update_database(self, successful_inv, unsuccessful_inv, write=True):
         for invoice in successful_inv:
@@ -631,6 +605,34 @@ class FileUploadView(View):
             cost_obj.invoice_status = "REC"
             if write:
                 cost_obj.save()
+
+    def build_upload_queue(self, invoice_data, files):
+        result = {"successful": [], "failed": []}
+        for filename, form_data in invoice_data.items():
+            validity_result = self.check_file_validity(filename, form_data, files)
+
+            if not validity_result.get("is_valid"):
+                result["failed"].append(validity_result)
+            else:
+                result["successful"].append(
+                    {
+                        "file": validity_result.get("file"),
+                        "cost_id": form_data.get("cost_id"),
+                    }
+                )
+
+        return result
+
+    def handle_upload_results(self, uploaded_files):
+        result = {"successful": [], "unsuccessful": []}
+
+        for file in uploaded_files:
+            if file["success"]:
+                result["successful"].append(file)
+            else:
+                result["unsuccessful"].append(file)
+
+        return result
 
     def check_file_validity(self, filename, form_data, files):
         invoice_file = files.get(filename)

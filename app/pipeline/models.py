@@ -123,7 +123,7 @@ class Client(models.Model):
 
 
 class Cost(models.Model):
-    forex_rates = get_forex_rates()
+    # forex_rates = get_forex_rates()
 
     vendor = models.ForeignKey(
         Vendor,
@@ -232,7 +232,7 @@ class Cost(models.Model):
             self.exchange_rate_override = False
 
         if not self.locked_exchange_rate and self.invoice_status == "PAID":
-            self.locked_exchange_rate = self.forex_rates[self.currency]
+            self.locked_exchange_rate = get_forex_rates()[self.currency]
             self.exchange_rate_locked_at = timezone.now()
         super().save(*args, **kwargs)
 
@@ -241,7 +241,7 @@ class Cost(models.Model):
 
 
 class Job(models.Model):
-    forex_rates = get_forex_rates()
+    # forex_rates = get_forex_rates()
 
     def get_absolute_url(self):
         return reverse("pipeline:job-detail", kwargs={"pk": self.pk})
@@ -432,7 +432,7 @@ class Job(models.Model):
                     total += round(cost.amount * cost.locked_exchange_rate)
                 else:
                     try:
-                        total += round(self.forex_rates[cost.currency] * cost.amount)
+                        total += round(get_forex_rates()[cost.currency] * cost.amount)
                     except:
                         total += cost.amount * 10
         return total

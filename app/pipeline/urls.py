@@ -80,16 +80,16 @@ urlpatterns = [
         views.JobDetailView.as_view(),
         name="job-detail",
     ),
-    path(
-        "jobs-csv-export/",
-        views.jobs_csv_export,
-        name="jobs-csv-export",
-    ),
-    path(
-        "prepare-batch-payment/",
-        views.create_batch_payment_file,
-        name="prepare-batch-payment",
-    ),
+    # path(
+    #     "jobs-csv-export/",
+    #     views.jobs_csv_export,
+    #     name="jobs-csv-export",
+    # ),
+    # path(
+    #     "prepare-batch-payment/",
+    #     views.create_batch_payment_file,
+    #     name="prepare-batch-payment",
+    # ),
     path(
         "import-client/",
         views.importClients,

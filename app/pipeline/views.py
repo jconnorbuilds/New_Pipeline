@@ -572,32 +572,35 @@ class FileUploadView(View):
         logger.info(f"INVOICE DATA ITEMS: {invoice_data.items()}")
 
         files = {file.name: file for file in request.FILES.values()}
-        result = self.process_invoices(invoice_data, files)
+        processing_result = self.process_invoices(invoice_data, files)
 
-        if result["successful"]:
-            self.update_database(*result, write=True)
-            self.send_confirmation_email(result["successful"])
+        if processing_result["successful"]:
+            self.update_database(*processing_result, write=True)
+            self.send_confirmation_email(processing_result["successful"])
 
         return JsonResponse(
             {
                 "invoices": {
                     "successful": [
-                        invoice["filename"] for invoice in result["successful"]
+                        invoice["filename"]
+                        for invoice in processing_result["successful"]
                     ],
-                    "unsuccessful": result["failed"],
+                    "unsuccessful": processing_result["failed"],
                 },
             },
         )
 
     def process_invoices(self, invoice_data, files):
+        result = {"successful": [], "failed": []}
         build_result = self.build_upload_queue(invoice_data, files)
-        upload_result = self.upload_files_to_dropbox(build_result["successful"])
+        uploaded_files = self.upload_files_to_dropbox(build_result["successful"])
+        upload_result = self.process_upload_result(uploaded_files)
 
-        successful_invoices = upload_result["successful"]
-        failed_invoices = build_result["failed"] + upload_result["failed"]
+        result["successful"] = upload_result["successful"]
+        result["failed"] = build_result["failed"] + upload_result["failed"]
 
-        logger.info({"SUCCESS": successful_invoices, "FAILED": failed_invoices})
-        return [successful_invoices, failed_invoices]
+        logger.info({"SUCCESS": result["successful"], "FAILED": result["failed"]})
+        return result
 
     def update_database(self, successful_inv, unsuccessful_inv, write=True):
         for invoice in successful_inv:
@@ -623,14 +626,14 @@ class FileUploadView(View):
 
         return result
 
-    def handle_upload_results(self, uploaded_files):
-        result = {"successful": [], "unsuccessful": []}
+    def process_upload_result(self, uploaded_files):
+        result = {"successful": [], "failed": []}
 
         for file in uploaded_files:
             if file["success"]:
                 result["successful"].append(file)
             else:
-                result["unsuccessful"].append(file)
+                result["failed"].append(file)
 
         return result
 
@@ -777,6 +780,7 @@ class FileUploadView(View):
             if len(set(vendor_ids)) == 1
             else None
         )
+
         if not vendor:
             raise Exception(
                 f"Invoices for costs belonging to multiple vendors were found in a single upload. {[{invoice['filename']: invoice['cost_obj'].vendor.id} for invoice in successful_invoices]}"

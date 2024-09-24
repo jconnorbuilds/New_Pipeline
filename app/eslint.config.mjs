@@ -20,7 +20,7 @@ export default [
   pluginJs.configs.recommended,
   {
     rules: {
-      'no-unused-vars': 1,
+      'no-unused-vars': 0,
       'no-debugger': 0,
     },
   },

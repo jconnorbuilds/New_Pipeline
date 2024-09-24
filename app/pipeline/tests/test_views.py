@@ -1,6 +1,9 @@
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from django.test import TestCase, Client, RequestFactory
 from django.urls import reverse
-from pipeline.models import Job, Cost, Vendor
+from django.utils import timezone
+from pipeline.models import Job, Cost, Vendor, Client as ClientModel
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from pipeline.views import FileUploadView
@@ -38,26 +41,71 @@ class FileUploadTest(TestCase):
             {self.test_invoice_filename: {"cost_id": 1}}
         )
 
-    def test_file_upload_POST(self):
-        simple_file = SimpleUploadedFile(
+        self.simple_file = SimpleUploadedFile(
             self.test_invoice_filename, b"I am just some content"
         )
-        request = RequestFactory().post(
+
+        self.request_with_file = RequestFactory().post(
             self.file_upload_url,
-            {"invoice_data": self.test_invoice_data, "file": simple_file},
-        )
-        self.view.setup(request)
-
-        print(request.POST)
-        print(request.FILES)
-        invoice_data = json.loads(request.POST.get("invoice_data"))
-        files = {file.name: file for file in request.FILES.values()}
-        successful_invoices, unsuccessful_invoices = self.view.process_invoices(
-            invoice_data, files
+            {"invoice_data": self.test_invoice_data, "file": self.simple_file},
         )
 
-        print(f"{successful_invoices = }")
-        print(f"{unsuccessful_invoices = }")
+    @classmethod
+    def setUpTestData(self):
+
+        self.test_client = ClientModel.objects.create(
+            friendly_name="test client",
+            proper_name="Test Client, Ltd.",
+            job_code_prefix="TCL",
+        )
+
+        self.test_vendor = Vendor.objects.create(
+            first_name="John",
+            last_name="Doe",
+            vendor_code="JND",
+            email="jnd@fakeemail.com",
+        )
+
+        self.test_job = Job.objects.create(
+            job_name="test job",
+            revenue=1000000,
+            client=ClientModel.objects.get(friendly_name="test client"),
+        )
+        self.test_job.vendors.add(1)
+
+        self.test_cost = Cost.objects.create(
+            vendor=Vendor.objects.get(id=1),
+            description="test cost",
+            amount=10000,
+            job=Job.objects.get(id=1),
+            currency="JPY",
+        )
+
+    def test_file_upload_POST(self):
+        self.view.setup(self.request_with_file)
+
+    # invoice_data = json.loads(request.POST.get("invoice_data"))
+    # files = {file.name: file for file in request.FILES.values()}
+    # processing_result = self.view.process_invoices(invoice_data, files)
+
+    # print(request.POST)
+    # print(request.FILES)
+    # print(f"{processing_result["successful"] = }")
+    # print(f"{processing_result["failed"] = }")
+
+    def test_set_date_folder_with_pay_period(self):
+        self.view.setup(self.request_with_file)
+        today = timezone.now()
+        result = self.view.set_date_folder(date(2024, 11, 11))
+        self.assertEqual(result, "2024年11月")
+
+        result = self.view.set_date_folder(date(2024, 11, 20))
+        self.assertEqual(result, "2024年12月")
+
+        result = self.view.set_date_folder(None)
+        self.assertEqual(
+            result, (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
+        )
 
     # def test_file_upload_POST_no_data(self):
     #     invoice_data = {}

@@ -716,10 +716,18 @@ class FileUploadView(View):
         }
 
     def set_date_folder(self, pay_period):
+        tz_now = timezone.now()
+        print(tz_now.month, tz_now.day)
+        if pay_period:
+            if pay_period.month == tz_now.month:
+                if tz_now.day <= 20:
+                    return pay_period.strftime("%Y年%-m月")
+            return (pay_period + relativedelta(months=+1)).strftime("%Y年%-m月")
+
         return (
             pay_period.strftime("%Y年%-m月")
-            if pay_period
-            else (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
+            if pay_period.month == tz_now.month and tz_now.day < 20
+            else (pay_period + relativedelta(months=+1)).strftime("%Y年%-m月")
         )
 
     def send_confirmation_email(self, successful_invoices):

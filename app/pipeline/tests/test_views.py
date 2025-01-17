@@ -95,14 +95,23 @@ class FileUploadTest(TestCase):
 
     def test_set_date_folder_with_pay_period(self):
         self.view.setup(self.request_with_file)
-        today = timezone.now()
+
         result = self.view.set_date_folder(date(2024, 11, 11))
         self.assertEqual(result, "2024年11月")
 
-        result = self.view.set_date_folder(date(2024, 11, 20))
+        result = self.view.set_date_folder(date(2024, 11, 25))
         self.assertEqual(result, "2024年12月")
 
-        result = self.view.set_date_folder(None)
+        # If the pay period is in the future, the folder name will be the pay period month
+        result = self.view.set_date_folder(date(2024, 11, 25), date(2025, 3, 25))
+        self.assertEqual(result, "2025年3月")
+
+        # If the pay period is in the past, the folder name will be this month (if it's before the 25th)
+        result = self.view.set_date_folder(date(2024, 10, 24), date(2024, 10, 25))
+        self.assertEqual(result, (timezone.now()).strftime("%Y年%-m月"))
+
+        # If the pay period is in the past, the folder name will be next month (if it's currently the 25th or later)
+        result = self.view.set_date_folder(date(2024, 10, 26), date(2024, 10, 25))
         self.assertEqual(
             result, (timezone.now() + relativedelta(months=+1)).strftime("%Y年%-m月")
         )

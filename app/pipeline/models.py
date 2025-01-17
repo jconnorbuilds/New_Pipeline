@@ -153,6 +153,7 @@ class Cost(models.Model):
     invoice_status = models.CharField(
         max_length=50, default="NR", choices=INVOICE_STATUS_CHOICES
     )
+    invoice_received_datetime = models.DateTimeField(null=True)
 
     notes = models.CharField(max_length=300, blank=True)
     job = models.ForeignKey(
@@ -281,7 +282,7 @@ class Job(models.Model):
         Client, on_delete=models.CASCADE, null=True, blank=True
     )
     # If the client has a job code or special name for the invoice
-    invoice_name = models.CharField(max_length=100, null=True, blank=True)
+    invoice_name = models.CharField(max_length=100, null=True)
     relatedJobs = models.ManyToManyField("self", blank=True)
     is_extension_of = models.ForeignKey(
         "self", on_delete=models.CASCADE, blank=True, null=True
@@ -377,7 +378,6 @@ class Job(models.Model):
         (RYU, "Ryu Ishizawa"),
         (SEIYA, "Seiya Matsumiya"),
         (TIMO, "Timo Otsuki"),
-        (RYU, "Ryu Ishizawa"),
     ]
 
     personInCharge = models.CharField(

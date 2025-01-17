@@ -575,7 +575,9 @@ class FileUploadView(View):
         processing_result = self.process_invoices(invoice_data, files)
 
         if processing_result["successful"]:
-            self.update_database(*processing_result, write=True)
+            self.update_database(
+                processing_result["successful"], processing_result["failed"], write=True
+            )
             self.send_confirmation_email(processing_result["successful"])
 
         return JsonResponse(
@@ -603,9 +605,11 @@ class FileUploadView(View):
         return result
 
     def update_database(self, successful_inv, unsuccessful_inv, write=True):
+        print("SUCCESSFUL INV", successful_inv)
         for invoice in successful_inv:
             cost_obj = invoice["cost_obj"]
             cost_obj.invoice_status = "REC"
+            cost_obj.invoice_received_datetime = timezone.now()
             if write:
                 cost_obj.save()
 
@@ -677,7 +681,7 @@ class FileUploadView(View):
         file_list.append(failed_file)
 
     def get_full_filepath(self, invoice_file, cost):
-        date_folder_name = self.set_date_folder(cost.pay_period)
+        date_folder_name = self.set_date_folder(timezone.now().date(), cost.pay_period)
         currency_folder_name = "_" + cost.currency
         file_extension = f".{invoice_file.name.split('.')[-1]}"
         full_filepath = f"{self.INVOICE_FOLDER}/{date_folder_name}/{currency_folder_name}/{cost.PO_number}{file_extension}"
@@ -715,20 +719,18 @@ class FileUploadView(View):
             "success": False,
         }
 
-    def set_date_folder(self, pay_period):
-        tz_now = timezone.now()
-        print(tz_now.month, tz_now.day)
+    def set_date_folder(self, date_received, pay_period=None):
+        today = timezone.now().date()
         if pay_period:
-            if pay_period.month == tz_now.month:
-                if tz_now.day <= 20:
-                    return pay_period.strftime("%Y年%-m月")
-            return (pay_period + relativedelta(months=+1)).strftime("%Y年%-m月")
+            if pay_period > date_received:
+                if date_received.day < 25:
+                    return today.strftime("%Y年%-m月")
+                return pay_period.strftime("%Y年%-m月")
+            return (today + relativedelta(months=+1)).strftime("%Y年%-m月")
 
-        return (
-            pay_period.strftime("%Y年%-m月")
-            if pay_period.month == tz_now.month and tz_now.day < 20
-            else (pay_period + relativedelta(months=+1)).strftime("%Y年%-m月")
-        )
+        if date_received.day < 25:
+            return date_received.strftime("%Y年%-m月")
+        return (date_received + relativedelta(months=+1)).strftime("%Y年%-m月")
 
     def send_confirmation_email(self, successful_invoices):
         try:

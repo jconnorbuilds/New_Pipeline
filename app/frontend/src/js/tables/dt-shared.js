@@ -52,7 +52,12 @@ export const preventHighlighting = (e) => {
 };
 
 // requests the vendor invoice
-export const requestInvoice = (costID, table, costPayPeriod = 'next') => {
+export const requestInvoice = (
+  costID,
+  table,
+  costPayPeriod = new Date().getDate() < 25 ? 'this' : 'next',
+) => {
+  console.log(costPayPeriod);
   fetch(`/pipeline/request-single-invoice/${costID}/`, {
     method: 'post',
     body: JSON.stringify({ pay_period: costPayPeriod }),

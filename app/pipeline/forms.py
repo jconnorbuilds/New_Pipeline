@@ -57,7 +57,9 @@ class CostPayPeriodForm(forms.Form):
             ("next-next", f"In two months ({self.next_next_month.strftime('%b')})"),
         ]
 
-        self.fields["pay_period"].initial = "next"
+        self.fields["pay_period"].initial = (
+            "this" if timezone.now().day < 25 else "next"
+        )
 
 
 class AddVendorToCostForm(forms.Form):

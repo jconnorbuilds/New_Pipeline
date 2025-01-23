@@ -133,7 +133,7 @@ class Cost(models.Model):
         related_name="costs_by_vendor",
     )
     description = models.CharField(max_length=30, blank=True)
-    amount = models.IntegerField(null=True)
+    amount = models.DecimalField(null=True, max_digits=12, decimal_places=2)
     # TODO: Add conversion to JPY
 
     CURRENCIES = currencies  # tuple, format (USD,USD $)

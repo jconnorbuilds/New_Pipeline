@@ -7,4 +7,5 @@ currencies = (
     ("GBP", "£"),
     ("THB", "฿"),
     ("PHP", "₱"),
+    ("IDR", "Rp"),
 )

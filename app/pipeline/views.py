@@ -720,17 +720,24 @@ class FileUploadView(View):
         }
 
     def set_date_folder(self, date_received, pay_period=None):
-        today = timezone.now().date()
+        # If pay_period is in the future, and received date is the 25th or after, use pay_period's month
         if pay_period:
             if pay_period > date_received:
-                if date_received.day < 25:
-                    return today.strftime("%Y年%-m月")
-                return pay_period.strftime("%Y年%-m月")
-            return (today + relativedelta(months=+1)).strftime("%Y年%-m月")
+                if date_received.day >= 25:
+                    return pay_period.strftime("%Y年%-m月")
+                else:
+                    return date_received.strftime("%Y年%-m月")
+            # pay_period is in the past or today
+            if date_received.day < 25:
+                return date_received.strftime("%Y年%-m月")
+            else:
+                return (date_received + relativedelta(months=+1)).strftime("%Y年%-m月")
 
+        # No pay_period
         if date_received.day < 25:
             return date_received.strftime("%Y年%-m月")
-        return (date_received + relativedelta(months=+1)).strftime("%Y年%-m月")
+        else:
+            return (date_received + relativedelta(months=+1)).strftime("%Y年%-m月")
 
     def send_confirmation_email(self, successful_invoices):
         try:

@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from datetime import date
+from django.forms import ValidationError
 from django.urls import reverse
 from django.utils import timezone
 from .utils import get_forex_rates
@@ -44,11 +45,17 @@ class Vendor(models.Model):
         If it's a human name, just their first name will be used.
         """
         if not self.use_company_name:
-            return (
-                " ".join([self.first_name, self.last_name])
-                if self.last_name
-                else self.first_name
-            )
+            if self.first_name:
+                return (
+                    " ".join([self.first_name, self.last_name])
+                    if self.last_name
+                    else self.first_name
+                )
+            elif self.company_name:
+                return self.company_name
+            else:
+                raise ValueError("Vendor has no name defined.")
+
         else:
             return self.company_name
 
@@ -67,6 +74,29 @@ class Vendor(models.Model):
 
     def __str__(self):
         return f"{self.familiar_name} - {self.vendor_code}"
+
+    def clean(self):
+        if not self.use_company_name:
+            if self.company_name:
+                raise ValidationError(
+                    {
+                        "use_company_name": "Select 'Use company name,' or provide a first and last name for this vendor."
+                    }
+                )
+            elif not self.first_name:
+                raise ValidationError(
+                    {
+                        "first_name": "First name is required if not using a company name."
+                    }
+                )
+
+        else:
+            if not self.company_name:
+                raise ValidationError(
+                    {
+                        "company_name": "Company name is required when 'use company name' is selected."
+                    }
+                )
 
 
 class Client(models.Model):

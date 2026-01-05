@@ -22,6 +22,17 @@
       {% endif %}
       <form method="post" class="form-control shadow m-3 p-3">
         {% csrf_token %}
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            <strong>Please correct the errors below:</strong>
+            <ul class="mb-0">
+              {% for field in form %}
+                {% for error in field.errors %}<li>{{ error|escape }}</li>{% endfor %}
+              {% endfor %}
+              {% for error in form.non_field_errors %}<li>{{ error|escape }}</li>{% endfor %}
+            </ul>
+          </div>
+        {% endif %}
         <div class="p-3">
           <p class="m-0">Vendor name</p>
           <p class="text-muted mt-0">

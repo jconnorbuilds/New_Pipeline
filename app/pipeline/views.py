@@ -353,6 +353,8 @@ def revenue_display_data(request, year=None, month=None):
     total_revenue_monthly_actual: Revenue of all COMPLETED jobs in the current month
     """
     today = timezone.now()
+    FISCAL_YEAR_START = 4 # April
+    fiscal_year = date.today().year if date.today().month >= FISCAL_YEAR_START else date.today().year - 1
 
     jobs = Job.objects.filter(isDeleted=False)
     if year == today.year and month == today.month:
@@ -363,22 +365,23 @@ def revenue_display_data(request, year=None, month=None):
         jobs = jobs.filter(job_date__month=month, job_date__year=year)
 
     prev_month = today.month - 1 if today.month > 1 else 1
-    all_jobs_in_current_year = Job.objects.filter(
-        job_date__year=date.today().year, isDeleted=False
+    all_jobs_in_fiscal_year = Job.objects.filter(
+        job_date__year=fiscal_year isDeleted=False
     )
 
-    jobs_in_year_excl_this_month = all_jobs_in_current_year.filter(
-        job_date__month__lt=date.today().month
+    jobs_in_fiscal_year_excl_this_month = all_jobs_in_fiscal_year.filter(
+        Q(job_date__month__lt=date.today().month if date.today().year == fiscal_year else 13) 
+        & Q(job_date__month__gt=date.today().month if date.today().year == fiscal_year - 1 else 0)
     )
 
     total_revenue_ytd = (
-        all_jobs_in_current_year.filter(
+        all_jobs_in_fiscal_year.filter(
             status__in=["INVOICED1", "INVOICED2", "FINISHED", "ARCHIVED"]
         ).aggregate(total_revenue=Sum("revenue_incl_tax"))["total_revenue"]
         or 0
     )
     total_revenue_for_monthly_avg = (
-        jobs_in_year_excl_this_month.filter(
+        jobs_in_fiscal_year_excl_this_month.filter(
             status__in=["INVOICED1", "INVOICED2", "FINISHED", "ARCHIVED"]
         ).aggregate(total_revenue=Sum("revenue_incl_tax"))["total_revenue"]
         or 0
@@ -966,230 +969,6 @@ def email_test_view(request, cost_id):
             "protocol": protocol,
         },
     )
-
-
-# def jobs_csv_export(request):
-#     csv_export_form = PipelineCSVExportForm(request.POST)
-#     if csv_export_form.is_valid():
-#         useRange = csv_export_form.cleaned_data["useRange"]
-#         fromYear = csv_export_form.cleaned_data["fromYear"]
-#         fromMonth = csv_export_form.cleaned_data["fromMonth"]
-#         fromDate = f"{fromYear}-{fromMonth}" + "-01"
-#         if useRange:
-#             thruYear = csv_export_form.cleaned_data["thruYear"]
-#             # add an extra month to calculate from the first day of the next month
-#             # to save from having to calculate the last day of each month
-#             thruMonth = str(int(csv_export_form.cleaned_data["thruMonth"]))
-#         else:
-#             thruYear = fromYear
-#             thruMonth = fromMonth
-#         if thruMonth != "12":
-#             thruYear = thruYear
-#             thruMonth = str(int(thruMonth) + 1)
-#         else:
-#             thruYear = str(int(thruYear) + 1)
-#             thruMonth = "1"
-#         thruDate = f"{thruYear}-{thruMonth}" + "-01"
-#         print(f"from: {fromDate}\nthru: {thruDate}")
-
-#         response = HttpResponse(
-#             content_type="text/csv",
-#             headers={
-#                 "Content-Disposition": 'attachment; filename ="csv_simple_write.csv"'
-#             },
-#         )
-#         writer = csv.writer(response)
-#         fields = [
-#             "クライアント",
-#             "案件名",
-#             "ジョブコード",
-#             "予算 (¥)",
-#             "総費用",
-#             "案件タイプ",
-#             "日付",
-#         ]
-#         writer.writerow(fields)
-
-#         scope = Job.objects.filter(job_date__gte=fromDate, job_date__lt=thruDate)
-
-#         expectedGrossRevenue = sum([job.revenue for job in scope])
-#         actualGrossRevenue = sum(
-#             [job.revenue for job in scope if job.status in ["FINISHED", "ARCHIVED"]]
-#         )
-
-#         for job in scope:
-#             # Return date in format YYYY年MM月
-#             date_MY = f"{job.job_date.year}年{job.job_date.month}月"
-#             if job.client.proper_name_japanese:
-#                 client_name = job.client.proper_name_japanese
-#             else:
-#                 client_name = job.client.proper_name
-#             data = [
-#                 client_name,
-#                 job.job_name,
-#                 job.job_code,
-#                 f"{job.revenue:,}",
-#                 f"{job.total_cost:,}",
-#                 job.job_type,
-#                 date_MY,
-#             ]
-#             writer.writerow(data)
-#         writer.writerow("")
-#         writer.writerow(
-#             ["", "", "", "", "", "", "", "総収入(予想)", f"¥{expectedGrossRevenue:,}"]
-#         )
-#         writer.writerow(
-#             ["", "", "", "", "", "", "", "総収入(実際)", f"¥{actualGrossRevenue:,}"]
-#         )
-
-#         return response
-#     else:
-#         print("something bad happened")
-
-
-# def create_batch_payment_file(request):
-#     """
-#     Currently, WISE doesn't support batch payments from JPY accounts, so this is shelved until it's supported.
-
-#     Create a WISE batch payment file from the template in /static.
-#     Each payment can be maximum 1m JPY, so anything over ¥950k is split into multiple payments.
-#     """
-#     forex_rates = get_forex_rates()
-#     if request.method == "POST":
-#         invoices = Cost.objects.filter(invoice_status__in=["REC", "REC2"])
-#         # format: invoice PO number {status (success/error), message}
-#         processing_status = {}
-#         response = HttpResponse(
-#             content_type="text/csv",
-#             headers={
-#                 "Content-Disposition": 'attachment; filename = "WISE_BATCH_PAYMENT.csv"'
-#             },
-#         )
-
-#         def split_into_even_parts(amount, num_of_parts):
-#             parts = []
-#             base_amount = amount // num_of_parts
-#             remainder = amount % num_of_parts
-#             parts = [base_amount] * num_of_parts
-#             for i in range(remainder):
-#                 parts[i] += 1
-#             return parts
-
-#         csvfile = "static/pipeline/Recipients-Batch-File test.csv"
-#         try:
-#             with open(csvfile, newline="") as templateCSV:
-#                 reader = csv.reader(templateCSV)
-#                 writer = csv.writer(response)
-
-#                 column_names = ""
-#                 for row in reader:
-#                     column_names = row  # create header row with column names
-#                     break
-#                 writer.writerow(column_names)
-#                 recipient_id_idx = column_names.index("recipientId")
-#                 source_currency_idx = column_names.index("sourceCurrency")
-#                 target_currency_idx = column_names.index("targetCurrency")
-#                 amount_currency_idx = column_names.index("amountCurrency")
-#                 amount_idx = column_names.index("amount")
-#                 payment_reference_idx = column_names.index("paymentReference")
-
-#                 for row in reader:
-#                     recipient_id = int(row[recipient_id_idx])
-#                     if recipient_id not in [
-#                         invoice.vendor.payment_id for invoice in invoices
-#                     ]:
-#                         continue
-
-#                     invoices_from_vendor = [
-#                         invoice
-#                         for invoice in invoices
-#                         if invoice.vendor.payment_id == recipient_id
-#                     ]
-#                     for invoice in invoices_from_vendor:
-#                         """
-#                         Account for large payments over ¥1m JPY.
-#                         To avoid errors, split anything over ¥950k into two or more payments.
-#                         """
-#                         if invoice.currency != row[target_currency_idx]:
-#                             processing_status[invoice.PO_number] = {
-#                                 "status": "error",
-#                                 "message": f"Currency mismatch. Invoices for this vendor should be in {row[target_currency_idx]}.",
-#                             }
-#                             continue
-
-#                         upper_limit_for_JPY = 950000
-#                         approx_amount_in_JPY = (
-#                             invoice.amount * forex_rates[row[target_currency_idx]]
-#                         )
-
-#                         if approx_amount_in_JPY > upper_limit_for_JPY:
-#                             print("over the limit")
-#                             split_into = 2
-#                             within_limit = False
-#                             while not within_limit:
-#                                 print(
-#                                     f"amount {approx_amount_in_JPY:,} to split_into: {split_into} == {approx_amount_in_JPY / split_into:,}"
-#                                 )
-#                                 print(f"under 950k? {within_limit}")
-#                                 if (
-#                                     approx_amount_in_JPY / split_into
-#                                 ) < upper_limit_for_JPY:
-#                                     within_limit = True
-#                                 else:
-#                                     split_into += 1
-
-#                             split_payments = split_into_even_parts(
-#                                 invoice.amount, split_into
-#                             )
-#                             i = 0
-#                             while i < len(split_payments):
-#                                 print(f"{i}: processing row")
-#                                 row[amount_idx] = split_payments[i]
-#                                 row[source_currency_idx] = "JPY"
-#                                 row[amount_currency_idx] = row[target_currency_idx]
-
-#                                 # Wanted to include "n of n" when payments are split into multiple parts,
-#                                 # but payments in USD have a char limit of 10, so I accommodate for that.
-#                                 # Our PO numbers are limited to 10 characters.
-#                                 row[payment_reference_idx] = f"{invoice.PO_number}"
-#                                 writer.writerow(row)
-#                                 i += 1
-
-#                             invoice.invoice_status = "QUE"
-#                             invoice.save()
-#                             processing_status[invoice.PO_number] = {
-#                                 "status": "success",
-#                                 "message": f"Successfully processed as {split_into} payments!",
-#                             }
-
-#                         else:
-#                             row[amount_idx] = invoice.amount
-#                             row[source_currency_idx] = "JPY"
-#                             row[amount_currency_idx] = row[target_currency_idx]
-#                             row[payment_reference_idx] = invoice.PO_number
-
-#                             writer.writerow(row)
-#                             invoice.invoice_status = "QUE"
-#                             invoice.save()
-#                             processing_status[invoice.PO_number] = {
-#                                 "status": "success",
-#                                 "message": "Successfully processed!",
-#                             }
-
-#             for key in processing_status:
-#                 print(key, processing_status[key])
-
-#             data = processing_status
-#             response["X-Processing-Status"] = json.dumps(data)
-#             print(json.dumps(data))
-#             return response
-
-#         except FileNotFoundError:
-#             return HttpResponse(
-#                 f"Template file not found in the expected location: {csvfile}",
-#                 status=404,
-#             )
-
 
 def importClients(request):
     with open("static/pipeline/clients.csv", "r") as myFile:

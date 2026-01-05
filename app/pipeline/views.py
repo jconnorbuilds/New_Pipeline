@@ -353,8 +353,12 @@ def revenue_display_data(request, year=None, month=None):
     total_revenue_monthly_actual: Revenue of all COMPLETED jobs in the current month
     """
     today = timezone.now()
-    FISCAL_YEAR_START = 4 # April
-    fiscal_year = date.today().year if date.today().month >= FISCAL_YEAR_START else date.today().year - 1
+    FISCAL_YEAR_START = 4  # April
+    fiscal_year = (
+        date.today().year
+        if date.today().month >= FISCAL_YEAR_START
+        else date.today().year - 1
+    )
 
     jobs = Job.objects.filter(isDeleted=False)
     if year == today.year and month == today.month:
@@ -366,12 +370,20 @@ def revenue_display_data(request, year=None, month=None):
 
     prev_month = today.month - 1 if today.month > 1 else 1
     all_jobs_in_fiscal_year = Job.objects.filter(
-        job_date__year=fiscal_year isDeleted=False
+        job_date__year=fiscal_year, isDeleted=False
     )
 
     jobs_in_fiscal_year_excl_this_month = all_jobs_in_fiscal_year.filter(
-        Q(job_date__month__lt=date.today().month if date.today().year == fiscal_year else 13) 
-        & Q(job_date__month__gt=date.today().month if date.today().year == fiscal_year - 1 else 0)
+        Q(
+            job_date__month__lt=(
+                date.today().month if date.today().year == fiscal_year else 13
+            )
+        )
+        & Q(
+            job_date__month__gt=(
+                date.today().month if date.today().year == fiscal_year - 1 else 0
+            )
+        )
     )
 
     total_revenue_ytd = (
@@ -969,6 +981,7 @@ def email_test_view(request, cost_id):
             "protocol": protocol,
         },
     )
+
 
 def importClients(request):
     with open("static/pipeline/clients.csv", "r") as myFile:

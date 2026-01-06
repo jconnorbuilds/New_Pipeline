@@ -62,9 +62,12 @@ const initTable = () => {
           data: 'job_date',
           name: 'invoicePeriod',
           className: 'invoice-period',
-          render: (data) => {
-            let date = new Date(data);
-            return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
+          render: {
+            display: (data) => {
+              let date = new Date(data);
+              return data ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '---';
+            },
+            sort: (data) => data,
           },
           type: invoicePeriodType,
         },
